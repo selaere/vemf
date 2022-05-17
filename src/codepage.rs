@@ -1,5 +1,5 @@
 // im sorry
-
+use crate::Bstr;
 
 const CHARS: [char; 256] = [
     '␀', '☺', '☻', '♥', '♦', '♣', '♠', '•', '◘', '○', '◙', '♂', '♀', '♪', '♫', '☼',
@@ -95,8 +95,8 @@ pub const fn tobyte(x: char) -> u8 { // nonnull?
     }
 }
 
-pub fn tobytes(string: &str) -> Option<Vec<u8>> {
-    let mut vector = Vec::with_capacity(string.len() / 2);
+pub fn tobytes(string: &str) -> Option<Bstr> {
+    let mut vector = Bstr::with_capacity(string.len() / 2);
     for c in string.chars() {
         if c == '\r' { continue }
         match tobyte(c) {

@@ -1,9 +1,12 @@
+use crate::Bstr;
+use smallvec::smallvec;
+
 #[derive(Debug, Clone)]
 pub enum Tok {
     Just(u8), Cst(u8), Stmt(u8),
-    VarVal(Vec<u8>), VarFun(Vec<u8>), VarAv1(Vec<u8>), VarAv2(Vec<u8>), VarSet(Vec<u8>),
+    VarVal(Bstr), VarFun(Bstr), VarAv1(Bstr), VarAv2(Bstr), VarSet(Bstr),
     Chr(u8), Chr2(u8, u8), Num2(u8, u8), Num3(u8, u8, u8),
-    Num(Vec<u8>), HNum(Vec<u8>), Str(Vec<u8>),
+    Num(Bstr), HNum(Bstr), Str(Bstr),
 }
 
 pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
@@ -11,7 +14,7 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
     let mut toks = Vec::new();
     'outer: loop {toks.push(match iter.next() {
         Some(b'"') => {
-            let mut buf = Vec::new();
+            let mut buf = Bstr::new();
             loop { match iter.next() {
                 Some(b'"') | None => break,
                 Some(c) => buf.push(c),
@@ -19,7 +22,7 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
             Tok::Str(buf)
         }
         Some(b!('■')) => {
-            let mut buf = Vec::new();
+            let mut buf = Bstr::new();
             loop { match iter.next() {
                 Some(b!('■')) | None => break,
                 Some(c) => buf.push(c),
@@ -43,7 +46,7 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
                 _ => continue,
             }},
             Some(first @ (b'0'..=b'9' | b'-')) => {
-                let mut buf = vec![first];
+                let mut buf = smallvec![first];
                 while let Some(&x @ (b'0'..=b'9' | b'.')) = iter.peek() {
                     buf.push(x); iter.next();
                 }
@@ -62,7 +65,7 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
             };
             variant(match iter.next() {
                 Some(first @ b'a'..=b'z') => {
-                    let mut buf = vec![first];
+                    let mut buf = smallvec![first];
                     loop { match iter.peek() {
                         Some(&ltr @ b'a'..=b'z') => {
                             iter.next(); buf.push(ltr);
@@ -74,7 +77,7 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
                     }}
                     buf
                 }
-                Some(chr) => vec![chr],
+                Some(chr) => smallvec![chr],
                 None => panic!(),
             })
         }
@@ -84,9 +87,9 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
                '!''#''$''%''&''\'''*''+'',''-''/''<''=''>''@''[''\\'']''^''~')
             | 0x80..=0xAF // ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»
             | b!('▄''▌''▐''▀''≡''±''≥''≤''⌠''⌡''÷''≈''°''√''ⁿ''²')
-        )) => Tok::VarFun(vec![c]),
+        )) => Tok::VarFun(smallvec![c]),
         Some(c @ (b'A'..=b'Z' | b!('☺''☻'))) => Tok::Stmt(c),
-        Some(x @ (b'a'..=b'z' | b!('α''β''σ''μ''τ'))) => Tok::VarVal(vec![x]),
+        Some(x @ (b'a'..=b'z' | b!('α''β''σ''μ''τ'))) => Tok::VarVal(smallvec![x]),
         Some(x) => Tok::Just(x),
         None => break,
     })};

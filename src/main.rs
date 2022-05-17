@@ -3,6 +3,8 @@ mod token;
 mod parse;
 mod run;
 
+pub type Bstr = smallvec::SmallVec<[u8; 16]>; // length will be the same as a Vec in 64bit archs
+
 fn main() {
     if let Some(path) = std::env::args().nth(1) {
         let code = std::fs::read_to_string(path).expect("error while opening file");

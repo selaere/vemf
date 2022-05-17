@@ -1,13 +1,14 @@
 use std::fmt::Display;
 
-use crate::b;
+use smallvec::smallvec;
+use crate::{b, Bstr};
 use crate::codepage::tochars;
 use crate::token::Tok;
 
 // Value expression
 #[derive(Clone, Debug)]
 pub enum Ve {
-    Var(Vec<u8>),
+    Var(Bstr),
     Num(f64),
     Snd(Vec<Ve>),  // strand
     Nom(Fe),       // function as value
@@ -17,10 +18,10 @@ pub enum Ve {
 // Function expression
 #[derive(Clone, Debug)]
 pub enum Fe {
-    Var(Vec<u8>),
-    SetVar(Vec<u8>),
-    Aav1{            v: Vec<u8>, g: Box<Tg>}, //     apply monadic adverb
-    Aav2{f: Box<Tg>, v: Vec<u8>, g: Box<Tg>}, //     apply dyadic  adverb
+    Var(Bstr),
+    SetVar(Bstr),
+    Aav1{            v: Bstr   , g: Box<Tg>}, //     apply monadic adverb
+    Aav2{f: Box<Tg>, v: Bstr   , g: Box<Tg>}, //     apply dyadic  adverb
     Bind{            f: Box<Fe>, b: Box<Ve>}, // +1
     Trn1{a: Box<Fe>, f: Box<Fe>            }, // +/
     Trn2{a: Box<Fe>, f: Box<Fe>, b: Box<Ve>}, // +/2
@@ -95,13 +96,13 @@ fn parse_function(code: &[Tok]) -> (usize, Option<Fe>) {
     if let Some(t) = code.first() {
         match t {
             // these are functions until when they aren't
-            Tok::Stmt(c @ b'A'..=b'Z') => (1, Some(Fe::SetVar(vec![*c + 32]))),
-            Tok::Stmt(c @ b!('☺''☻')) => (1, Some(Fe::Var(vec![*c]))),
+            Tok::Stmt(c @ b'A'..=b'Z') => (1, Some(Fe::SetVar(smallvec![*c + 32]))),
+            Tok::Stmt(c @ b!('☺''☻')) => (1, Some(Fe::Var(smallvec![*c]))),
             Tok::VarSet(v) => (1, Some(Fe::SetVar(v.clone()))),
             // monadic adverbs
             Tok::Just(c @ b!('│''╡''╢''╞''╛''╜''╘''╙''═')) => {
                 let (offset, thing) = parse_thing(&code[1..]);
-                (offset+1, thing.map(|x| Fe::Aav1{v: vec![*c], g: Box::new(x)}))
+                (offset+1, thing.map(|x| Fe::Aav1{v: smallvec![*c], g: Box::new(x)}))
             },
             Tok::Just(b'{') => {
                 let mut slice = &code[1..];
@@ -219,7 +220,7 @@ pub fn parse_thing(code: &[Tok]) -> (usize, Option<Tg>) {
             let (len, t) = parse_thing(slice); slice = &slice[len..];
             thing = Tg::Fe(Fe::Aav2{
                 f: Box::new(thing),
-                v: vec![*c],
+                v: smallvec![*c],
                 g: Box::new(t.unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))});
         }
     }
