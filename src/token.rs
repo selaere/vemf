@@ -10,7 +10,7 @@ pub enum Tok {
 }
 
 pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
-    let mut iter = bytes.iter().cloned().peekable(); // .cloned() should noop
+    let mut iter = bytes.iter().copied().peekable();
     let mut toks = Vec::new();
     'outer: loop {toks.push(match iter.next() {
         Some(b'"') => {

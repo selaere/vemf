@@ -1,1 +1,11 @@
-1+2+3
+ϕ:loadintrinsics;
+
+˙ variances. 2-adverb.
+˙ calls α:f if called monadically, otherwise α:gβ
+.intrnvariances→║;
+
+.intrnadd→+;
+
+♪.intrnneg║.intrnsub→-;
+
+3-2

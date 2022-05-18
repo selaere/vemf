@@ -108,7 +108,7 @@ fn parse_function(code: &[Tok]) -> (usize, Option<Fe>) {
                 let mut slice = &code[1..];
                 let (len, b) = parse_block(slice); slice = &slice[len..];
                 (
-                    slice_offset(code, slice) + matches!(slice[0], Tok::Just(b'}')) as usize,
+                    slice_offset(code, slice) + usize::from(matches!(slice.first(), Some(Tok::Just(b'}')))),
                     Some(Fe::Dfn(b))
                 )
             }
@@ -120,7 +120,7 @@ fn parse_function(code: &[Tok]) -> (usize, Option<Fe>) {
 
 fn atom_token(chr: Tok) -> Option<Ve> {
     Some(match chr {
-        Tok::Just(c @ b'0'..=b'9') => Ve::Num((c - b'0') as f64),
+        Tok::Just(c @ b'0'..=b'9') => Ve::Num(f64::from(c - b'0')),
         Tok::Just(b!('Φ')) => Ve::Num(10.),
         Tok::Just(b!('Θ')) => Ve::Num(-1.),
         Tok::Just(b!('∞')) => Ve::Num(f64::INFINITY),
@@ -128,16 +128,16 @@ fn atom_token(chr: Tok) -> Option<Ve> {
         Tok::Just(b!('ϕ')) => Ve::Snd(Vec::new()),
         Tok::VarVal(x) => Ve::Var(x),
         Tok::Chr(x) =>
-            Ve::Num(if x <= 10 { -(x as f64) } else { x as f64 }),
+            Ve::Num(if x <= 10 { -f64::from(x) } else { f64::from(x) }),
         Tok::Chr2(x, y) =>
-            Ve::Snd(vec![Ve::Num(x as f64), Ve::Num(y as f64)]),
+            Ve::Snd(vec![Ve::Num(f64::from(x)), Ve::Num(f64::from(y))]),
         Tok::Num2(x, y) =>
-            Ve::Num((x as f64)*253. + (y as f64)),
+            Ve::Num(f64::from(x)*253. + f64::from(y)),
         Tok::Num3(x, y, z) =>
-            Ve::Num((x as f64)*253.*253. + (y as f64)*253. + (z as f64)),
+            Ve::Num(f64::from(x)*253.*253. + f64::from(y)*253. + f64::from(z)),
         Tok::Num(l) => {
             let mut num = 0.;
-            for i in l { num = num * 253. + (i as f64) }
+            for i in l { num = num * 253. + f64::from(i) }
             Ve::Num(num)
         }
         Tok::HNum(x) => unsafe {
@@ -145,7 +145,7 @@ fn atom_token(chr: Tok) -> Option<Ve> {
             Ve::Num(std::str::from_utf8_unchecked(&x).parse::<f64>().unwrap())
         },
         Tok::Str(x) =>
-            Ve::Snd(x.iter().map(|&x| Ve::Num(x as f64)).collect()),
+            Ve::Snd(x.iter().map(|&x| Ve::Num(f64::from(x))).collect()),
         Tok::Cst(x) => constant(x),
         _ => return None,
     })
@@ -158,7 +158,7 @@ fn parse_atom(code: &[Tok]) -> (usize, Option<Ve>) {
                 let mut slice = &code[1..];
                 let (len, ev) = parse_expression(slice, usize::MAX); slice = &slice[len..];
                 (
-                    slice_offset(code, slice) + matches!(slice[0], Tok::Just(b')')) as usize,
+                    slice_offset(code, slice) + usize::from(matches!(slice[0], Tok::Just(b')'))),
                     Some(ev.unwrap_or(Ve::Num(f64::NAN)))
                 )
             },
@@ -190,7 +190,7 @@ fn constant(thing: u8) -> Ve {
             b'u' => 512,    b'v' => 1024,   b'w' => 2048,   b'x' => 4096,   b'y' => 32768,
             b'z' => 65536,  _ => unreachable!(),
         } as f64),
-        _ => unimplemented!(),
+        _ => Ve::Num(f64::NAN),
     }
 }
 
@@ -206,7 +206,7 @@ pub fn parse_thing(code: &[Tok]) -> (usize, Option<Tg>) {
         // try with a function
         let (len, oef) = parse_function(slice); slice = &slice[len..];
         if let Some(ef) = oef {
-            thing = Tg::Fe(ef)
+            thing = Tg::Fe(ef);
         } else {
             // huh.
             return (0, None);

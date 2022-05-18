@@ -1,11 +1,9 @@
-#![allow(dead_code)]
+mod intrn;
 
-mod intrinsics;
-
-use crate::parse::{Fe, Ve};
+use crate::parse::{Tg, Fe, Ve};
 use crate::Bstr;
 use smallvec::smallvec;
-use intrinsics::Intr;
+use intrn::{Intrn};
 use std::{collections::HashMap, rc::Rc};
 
 #[derive(Clone, Debug)]
@@ -16,9 +14,27 @@ pub struct Env {
 #[derive(Clone, Debug)]
 pub enum Val {
     Num(f64),
-    Lis{i: Rc<[Val]>, fill: Box<Val>},
-    FIn(intrinsics::Intr),  // intrinsic function
+    Lis{ l: Rc<[Val]>, fill: Box<Val> },
+    FIntrn(intrn::Intrn),  // intrinsic function
     FSet(Bstr),
+}
+
+impl std::fmt::Display for Val {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Num(n) => write!(f, "{}", n),
+            Lis { l, .. } => {
+                let mut iter = l.iter();
+                write!(f, "(")?;
+                if let Some(i) = iter.next() { write!(f, "{}", i)?; }
+                for i in iter { write!(f, " {}", i)?; }
+                write!(f, ")")?;
+                Ok(())
+            },
+            Val::FIntrn(_) => write!(f, "<function>"),
+            Val::FSet(x) => write!(f, "→{}", crate::codepage::tochars(x)),
+        }
+    }
 }
 
 use Val::{Num, Lis};
@@ -34,7 +50,6 @@ const GLOBALS: &[(u8, Val)] = &[
     (b'q', Num(127.)),    (b'r', Num(128.)),    (b's', Num(255.)),    (b't', Num(256.)),
     (b'u', Num(512.)),    (b'v', Num(1024.)),   (b'w', Num(2048.)),   (b'x', Num(4096.)),
     (b'y', Num(32768.)),  (b'z', Num(65536.)),
-    (b'+', Val::FIn(Intr::Add)),
 ];
 
 impl Env {
@@ -42,6 +57,7 @@ impl Env {
     pub fn new() -> Env {
         let mut globals = HashMap::with_capacity(GLOBALS.len());
         for (b, v) in GLOBALS { globals.insert(smallvec![*b], v.clone()); }
+        globals.insert(Bstr::from(&b"loadintrinsics"[..]), Val::FIntrn(Intrn::LoadIntrinsics));
         Env { globals }
     }
 
@@ -50,47 +66,81 @@ impl Env {
             Ve::Var(s) => self.globals.get(&s[..]).cloned().unwrap_or_default(),
             Ve::Num(n) => Val::Num(*n),
             Ve::Snd(l) => Val::Lis{
-                i: Rc::from(l.iter().map(|x| self.evaluate(x)).collect::<Vec<_>>()),
-                fill: Default::default()
+                l: Rc::from(l.iter().map(|x| self.evaluate(x)).collect::<Vec<_>>()),
+                fill: Box::default()
             },
             Ve::Nom(f) => self.evaluate_fe(f),
             Ve::Afn1{ a, f } => {
                 let a = self.evaluate(a);
-                let v = self.evaluate_fe(f);
-                match v {
-                    Num(_) | Lis { .. } => v,
-                    Val::FIn(i) => i.monad(self, &a),
-                    Val::FSet(name) => {
-                        self.globals.insert(name, a.clone());
-                        a
-                    },
-                }
+                let f = self.evaluate_fe(f);
+                self.monad(f, a)
             },
             Ve::Afn2{ a, f, b } => {
                 let a = self.evaluate(a);
-                let v = self.evaluate_fe(f);
+                let f = self.evaluate_fe(f);
                 let b = self.evaluate(b);
-                match v {
-                    Num(_) | Lis { .. } => v,
-                    Val::FIn(i) => i.dyad(self, &a, &b),
-                    Val::FSet(name) => {
-                        self.globals.insert(name, a.clone());
-                        a
-                    },
-                }
+                self.dyad(f, a, b)
             },
         }
     }
-    pub fn evaluate_fe(&self, expr: &Fe) -> Val {
+    pub fn evaluate_fe(&mut self, expr: &Fe) -> Val {
         match expr {
             Fe::Var(s) => self.globals.get(&s[..]).cloned().unwrap_or_default(),
             Fe::SetVar(v) => Val::FSet(v.clone()),
-            Fe::Aav1 { .. } => todo!(),
-            Fe::Aav2 { .. } => todo!(),
+            Fe::Aav1 { v, g } => {
+                let g = self.evaluate_tg(&*g.clone());
+                self.monad(self.globals.get(&v[..]).cloned().unwrap_or_default(), g)
+            }
+            Fe::Aav2 { f, v, g } => {
+                let f = self.evaluate_tg(&*f.clone());
+                let g = self.evaluate_tg(&*g.clone());
+                self.dyad(self.globals.get(&v[..]).cloned().unwrap_or_default(), g, f)
+            },
             Fe::Bind { .. } => todo!(),
             Fe::Trn1 { .. } => todo!(),
             Fe::Trn2 { .. } => todo!(),
             Fe::Dfn(_) => todo!(),
+        }
+    }
+    fn evaluate_tg(&mut self, expr: &Tg) -> Val {
+        match expr {
+            Tg::Ve(ve) => self.evaluate(ve),
+            Tg::Fe(fe) => self.evaluate_fe(fe)
+        }
+    }
+    
+    pub fn monad(&mut self, f: Val, a: Val) -> Val {
+        match f {
+            Num(_) | Lis { .. } => f,
+            Val::FIntrn(i) => i.monad(self, a),
+            Val::FSet(name) => {
+                self.globals.insert(name, a.clone());
+                a
+            },
+        }
+    }
+    
+    pub fn dyad(&mut self, f: Val, a: Val, b: Val) -> Val {
+        match f {
+            Num(_) | Lis { .. } => f,
+            Val::FIntrn(i) => {
+                i.dyad(self, a, b)
+            },
+            Val::FSet(name) => {
+                self.globals.insert(name, a.clone());
+                a
+            },
+        }
+    }
+
+    pub fn index_value(&mut self, a: Val, index: f64) -> Val {
+        match a {
+            Num(n) => Num(n), // unchanged
+            Lis { l, fill } => {
+                if index < 0. || index.is_nan() { return *fill }
+                l.get(index as usize).cloned().unwrap_or(*fill)
+            },
+            x => self.monad(Num(index), x)
         }
     }
 }

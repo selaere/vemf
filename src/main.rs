@@ -17,11 +17,12 @@ fn main() {
         for (n, expr) in parsed.iter().enumerate() {
             let v = state.evaluate(expr);
             if n == parsed.len() - 1 {
+                println!("result: {}", v);
                 println!("result: {:?}", v);
             }
         }
         println!();
     } else {
-        println!("bruh")
+        println!("bruh");
     }
 }
