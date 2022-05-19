@@ -23,6 +23,24 @@ fn main() {
         }
         println!();
     } else {
-        println!("bruh");
+        let mut state = run::Env::new();
+        loop {
+            print!(">>> ");
+            let _ = std::io::Write::flush(&mut std::io::stdout());
+            let mut code = String::new();
+            std::io::stdin().read_line(&mut code).expect("error while reading from stdin");
+            // TODO make better
+            //println!("input : ```{}```", code);
+            let tokens = token::tokenize(&codepage::tobytes(&code).unwrap());
+            //println!("{:?}", tokens);
+            let parsed = parse::parse_file(&tokens);
+            for i in &parsed { println!("parsed: {}", i); }
+            for (n, expr) in parsed.iter().enumerate() {
+                let v = state.evaluate(expr);
+                if n == parsed.len() - 1 {
+                    println!("result: {}", v);
+                }
+            }
+        }
     }
 }

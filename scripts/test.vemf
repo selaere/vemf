@@ -1,11 +1,11 @@
-ϕ:loadintrinsics;
+ϕ:loadintrinsics·
 
-˙ variances. 2-adverb.
-˙ calls α:f if called monadically, otherwise α:gβ
-.intrnvariances→║;
+' variances. 2-adverb.
+' calls α:f if called monadically, otherwise α:gβ
+.intrnvariances→║·
 
-.intrnadd→+;
+.intrnadd→+·
 
-♪.intrnneg║.intrnsub→-;
+♪.intrnneg║.intrnsub→-·
 
 3-2

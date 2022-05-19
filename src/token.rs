@@ -3,7 +3,7 @@ use smallvec::smallvec;
 
 #[derive(Debug, Clone)]
 pub enum Tok {
-    Just(u8), Cst(u8), Stmt(u8),
+    Just(u8), Stmt(u8),
     VarVal(Bstr), VarFun(Bstr), VarAv1(Bstr), VarAv2(Bstr), VarSet(Bstr),
     Chr(u8), Chr2(u8, u8), Num2(u8, u8), Num3(u8, u8, u8),
     Num(Bstr), HNum(Bstr), Str(Bstr),
@@ -30,7 +30,7 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
             Tok::Num(buf)
         }
         Some(b'`') => Tok::Chr(iter.next().unwrap_or(0)),
-        Some(b'_') => Tok::Cst(iter.next().unwrap_or(b'_')),
+        Some(b'_') => Tok::VarVal(smallvec![b'_', iter.next().unwrap_or(b'_')]),
         Some(b!('♥')) => Tok::Chr2(
             iter.next().unwrap_or(  0), iter.next().unwrap_or(  0),
         ),
@@ -40,7 +40,7 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
         Some(b!('▒')) => Tok::Num3(
             iter.next().unwrap_or(253), iter.next().unwrap_or(253), iter.next().unwrap_or(253),
         ),
-        Some(b!('˙')) => match iter.next() {
+        Some(b!('\'')) => match iter.next() {
             Some(b' ') => loop { match iter.next() {
                 Some(b'\n') | None => continue 'outer,
                 _ => continue,
@@ -77,21 +77,33 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
                     }}
                     buf
                 }
+                Some(b'_') => smallvec![b'_', iter.next().unwrap_or(b'_')],
+                Some(b'"') => {
+                    let mut buf = Bstr::new();
+                    loop { match iter.next() {
+                        Some(b'"') | None => break,
+                        Some(c) => buf.push(c),
+                    }}
+                    buf
+                }
                 Some(chr) => smallvec![chr],
                 None => panic!(),
             })
         }
         Some(b' ' | b'\n') => continue,
         Some(c @ (
-            b!('♣''♠''♂''♀''♫' '►''◄''↕''‼''¶''§''▬''↨''←''↑''↓''∟''▲''▼'
-               '!''#''$''%''&''\'''*''+'',''-''/''<''=''>''@''[''\\'']''^''~')
+            b!('♦''♣''♠''♂''♀''♫''►''◄''↕''‼''¶''§''▬''↨''↑''↓''←''∟''▲''▼'
+               '!''#''$''%''&''*''+'',''-''/'';''<''=''>''@''[''\\'']''^''|''~')
             | 0x80..=0xAF // ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»
             | b!('▄''▌''▐''▀''≡''±''≥''≤''⌠''⌡''÷''≈''°''√''ⁿ''²')
         )) => Tok::VarFun(smallvec![c]),
-        Some(c @ (b'A'..=b'Z' | b!('☺''☻'))) => Tok::Stmt(c),
-        Some(x @ (b'a'..=b'z' | b!('α''β''σ''μ''τ'))) => Tok::VarVal(smallvec![x]),
+        Some(c @ b!('│''╡''╢''╞''╛''╜''╘''╙''═'))          => Tok::VarAv1(smallvec![c]),
+        Some(c @ b!('║''╟''╧''╨''╤''╥''╕''╖''╒''╓''╪''╫')) => Tok::VarAv2(smallvec![c]),
+        Some(c @ b'A'..=b'Z') => Tok::VarSet(smallvec![c]),
+        Some(c @ b!('☺''☻''⌂'))            => Tok::Stmt(c),
+        Some(c @ (b'a'..=b'z' | b!('α''β''σ''μ''τ')))      => Tok::VarVal(smallvec![c]),
         Some(x) => Tok::Just(x),
         None => break,
-    })};
+    });};
     toks
 }

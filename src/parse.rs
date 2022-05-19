@@ -12,19 +12,19 @@ pub enum Ve {
     Num(f64),
     Snd(Vec<Ve>),  // strand
     Nom(Fe),       // function as value
-    Afn1{ a: Box<Ve>, f: Fe             },  // apply monadic function
-    Afn2{ a: Box<Ve>, f: Fe, b: Box<Ve> },  // apply dyadic  function 
+    Afn1 { a: Box<Ve>, f: Fe             },  // apply monadic function
+    Afn2 { a: Box<Ve>, f: Fe, b: Box<Ve> },  // apply dyadic  function 
 }
 // Function expression
 #[derive(Clone, Debug)]
 pub enum Fe {
     Var(Bstr),
     SetVar(Bstr),
-    Aav1{            v: Bstr   , g: Box<Tg>}, //     apply monadic adverb
-    Aav2{f: Box<Tg>, v: Bstr   , g: Box<Tg>}, //     apply dyadic  adverb
-    Bind{            f: Box<Fe>, b: Box<Ve>}, // +1
-    Trn1{a: Box<Fe>, f: Box<Fe>            }, // +/
-    Trn2{a: Box<Fe>, f: Box<Fe>, b: Box<Ve>}, // +/2
+    Aav1 {            v: Bstr   , g: Box<Tg>}, //     apply monadic adverb
+    Aav2 {f: Box<Tg>, v: Bstr   , g: Box<Tg>}, //     apply dyadic  adverb
+    Bind {            f: Box<Fe>, b: Box<Ve>}, // +1
+    Trn1 {a: Box<Fe>, f: Box<Fe>            }, // +/
+    Trn2 {a: Box<Fe>, f: Box<Fe>, b: Box<Ve>}, // +/2
     Dfn(Vec<Ve>),
 }
 
@@ -37,11 +37,19 @@ pub enum Tg {
     Ve(Ve)
 }
 
+fn displayname(bytes: &[u8]) -> String {
+    if bytes.contains(&b' ') {
+        format!("\"{}\"", tochars(bytes).replace('"', "\""))
+    } else {
+        tochars(bytes)
+    }
+}
+
 impl Display for Ve {
     fn fmt(&self, m: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Ve::Var(v) => write!(m, ".{}", tochars(v)),
-            Ve::Num(n) => write!(m, "˙{}", n),
+            Ve::Var(v) => write!(m, ".{}", displayname(v)),
+            Ve::Num(n) => write!(m, "'{}", n),
             Ve::Snd(l) => {
                 write!(m, "(")?;
                 for v in l { write!(m, "{}", v)?; }
@@ -49,8 +57,8 @@ impl Display for Ve {
                 Ok(())
             },
             Ve::Nom(v) => write!(m, "♪{}", v),
-            Ve::Afn1{ a, f } => write!(m, "({} {})", a, f),
-            Ve::Afn2{ a, f, b } => write!(m, "({} {} {})", a, f, b),
+            Ve::Afn1 { a, f } => write!(m, "({} {})", a, f),
+            Ve::Afn2 { a, f, b } => write!(m, "({} {} {})", a, f, b),
         }
     }
 }
@@ -58,13 +66,13 @@ impl Display for Ve {
 impl Display for Fe {
     fn fmt(&self, m: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Fe::Var(v) => write!(m, ":{}", tochars(v)),
-            Fe::SetVar(v) => write!(m, "→{}", tochars(v)),
-            Fe::Aav1{    v, g } => write!(m, "[•{} {}]", tochars(v), g),
-            Fe::Aav2{ f, v, g } => write!(m, "[{} ○{} {}]", f, tochars(v), g),
-            Fe::Bind{    f, b } => write!(m, "[{} with {}]", f, b),
-            Fe::Trn1{ a, f    } => write!(m, "[{} {}]", a, f),
-            Fe::Trn2{ a, f, b } => write!(m, "[{} {} {}]", a, f, b),
+            Fe::Var(v) => write!(m, ":{}", displayname(v)),
+            Fe::SetVar(v) => write!(m, "→{}", displayname(v)),
+            Fe::Aav1 {    v, g } => write!(m, "[•{} {}]", displayname(v), g),
+            Fe::Aav2 { f, v, g } => write!(m, "[{} ○{} {}]", f, displayname(v), g),
+            Fe::Bind {    f, b } => write!(m, "[{} with {}]", f, b),
+            Fe::Trn1 { a, f    } => write!(m, "[{} {}]", a, f),
+            Fe::Trn2 { a, f, b } => write!(m, "[{} {} {}]", a, f, b),
             Fe::Dfn(efs) => {
                 write!(m, "{{ ")?;
                 for v in efs { write!(m, "{}; ", v)?; }
@@ -96,13 +104,12 @@ fn parse_function(code: &[Tok]) -> (usize, Option<Fe>) {
     if let Some(t) = code.first() {
         match t {
             // these are functions until when they aren't
-            Tok::Stmt(c @ b'A'..=b'Z') => (1, Some(Fe::SetVar(smallvec![*c + 32]))),
-            Tok::Stmt(c @ b!('☺''☻')) => (1, Some(Fe::Var(smallvec![*c]))),
+            Tok::Stmt(c @ b!('☺''☻''⌂')) => (1, Some(Fe::Var(smallvec![*c]))),
             Tok::VarSet(v) => (1, Some(Fe::SetVar(v.clone()))),
             // monadic adverbs
-            Tok::Just(c @ b!('│''╡''╢''╞''╛''╜''╘''╙''═')) => {
+            Tok::VarAv1(name) => {
                 let (offset, thing) = parse_thing(&code[1..]);
-                (offset+1, thing.map(|x| Fe::Aav1{v: smallvec![*c], g: Box::new(x)}))
+                (offset+1, thing.map(|x| Fe::Aav1 {v: name.clone(), g: Box::new(x)}))
             },
             Tok::Just(b'{') => {
                 let mut slice = &code[1..];
@@ -146,7 +153,6 @@ fn atom_token(chr: Tok) -> Option<Ve> {
         },
         Tok::Str(x) =>
             Ve::Snd(x.iter().map(|&x| Ve::Num(f64::from(x))).collect()),
-        Tok::Cst(x) => constant(x),
         _ => return None,
     })
 }
@@ -159,7 +165,7 @@ fn parse_atom(code: &[Tok]) -> (usize, Option<Ve>) {
                 let (len, ev) = parse_expression(slice, usize::MAX); slice = &slice[len..];
                 (
                     slice_offset(code, slice) + usize::from(matches!(slice[0], Tok::Just(b')'))),
-                    Some(ev.unwrap_or(Ve::Num(f64::NAN)))
+                    Some(ev.unwrap_or(Ve::Snd(vec![])))
                 )
             },
             Tok::Just(b!('♪')) => {
@@ -175,25 +181,10 @@ fn parse_atom(code: &[Tok]) -> (usize, Option<Ve>) {
                 });
                 if ev.is_some() {(len + 1, ev)} else {(0, None)}
             }
-            t => { let p = atom_token(t); (p.is_some() as usize, p) }
+            t => { let p = atom_token(t); (usize::from(p.is_some()), p) }
         }
     } else { (0, None) }
 }
-
-fn constant(thing: u8) -> Ve {
-    match thing {
-        b'a'..=b'z' => Ve::Num(match thing {
-            b'a' => 12,     b'b' => 20,     b'c' => 99,     b'd' => 100,    b'e' => 999,
-            b'f' => 1000,   b'g' => 9999,   b'h' => 10000,  b'i' => 100000, b'j' => 1000000,
-            b'k' => 15,     b'l' => 16,     b'm' => 31,     b'n' => 32,     b'o' => 63,
-            b'p' => 64,     b'q' => 127,    b'r' => 128,    b's' => 255,    b't' => 256,
-            b'u' => 512,    b'v' => 1024,   b'w' => 2048,   b'x' => 4096,   b'y' => 32768,
-            b'z' => 65536,  _ => unreachable!(),
-        } as f64),
-        _ => Ve::Num(f64::NAN),
-    }
-}
-
 
 pub fn parse_thing(code: &[Tok]) -> (usize, Option<Tg>) {
     let mut thing: Tg;
@@ -213,16 +204,13 @@ pub fn parse_thing(code: &[Tok]) -> (usize, Option<Tg>) {
         }
     }
     
-    if let Some(t) = slice.first() {
-        // dyadic adverbs
-        if let Tok::Just(c @ b!('║''╟''╧''╨''╤''╥''╕''╖''╒''╓''╪''╫')) = t {
-            slice = &slice[1..];
-            let (len, t) = parse_thing(slice); slice = &slice[len..];
-            thing = Tg::Fe(Fe::Aav2{
-                f: Box::new(thing),
-                v: smallvec![*c],
-                g: Box::new(t.unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))});
-        }
+    if let Some(Tok::VarAv2(name)) = slice.first() {
+        slice = &slice[1..];
+        let (len, t) = parse_thing(slice); slice = &slice[len..];
+        thing = Tg::Fe(Fe::Aav2 {
+            f: Box::new(thing),
+            v: name.clone(),
+            g: Box::new(t.unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))});
     }
 
     (slice_offset(code, slice), Some(thing))
@@ -260,9 +248,9 @@ pub fn parse_expression(code: &[Tok], limit: usize) -> (usize, Option<Ve>) {
         let mut value = start;
         while let Some(Tg::Fe(ef)) = iter.next() {
             value = if let Some(ev) = strand(&mut iter) {  // dyad
-                Ve::Afn2{a: Box::new(value), f: ef, b: Box::new(ev)}
+                Ve::Afn2 {a: Box::new(value), f: ef, b: Box::new(ev)}
             } else {  // monad
-                Ve::Afn1{a: Box::new(value), f: ef}
+                Ve::Afn1 {a: Box::new(value), f: ef}
             }
         }
         value
@@ -270,13 +258,13 @@ pub fn parse_expression(code: &[Tok], limit: usize) -> (usize, Option<Ve>) {
         Some(Tg::Fe(ef)) => {
             // Train
             let mut value = if let Some(b) = strand(&mut iter) {
-                Fe::Bind{f: Box::new(ef), b: Box::new(b)}
+                Fe::Bind {f: Box::new(ef), b: Box::new(b)}
             } else { ef };
             while let Some(Tg::Fe(ef)) = iter.next() {
                 value = if let Some(b) = strand(&mut iter) {  // dyad
-                    Fe::Trn2{a: Box::new(value), f: Box::new(ef), b: Box::new(b)}
+                    Fe::Trn2 {a: Box::new(value), f: Box::new(ef), b: Box::new(b)}
                 } else {  // monad
-                    Fe::Trn1{a: Box::new(value), f: Box::new(ef)}
+                    Fe::Trn1 {a: Box::new(value), f: Box::new(ef)}
                 }
             }
             Ve::Nom(value)
@@ -291,13 +279,13 @@ fn parse_block(code: &[Tok]) -> (usize, Vec<Ve>) {
     let mut slice = code;
     let mut exps = Vec::new();
     loop {
-        while let Some(Tok::Just(b!(';'))) = slice.first() { slice = &slice[1..]; }
+        while let Some(Tok::Just(b!('·'))) = slice.first() { slice = &slice[1..]; }
         let (len, ev) = parse_expression(slice, usize::MAX); slice = &slice[len..];
         if let Some(ev) = ev {
             exps.push(ev);
         } else { break }
     }
-    while let Some(Tok::Just(b!(';'))) = slice.first() { slice = &slice[1..]; }
+    while let Some(Tok::Just(b!('·'))) = slice.first() { slice = &slice[1..]; }
     (slice_offset(code, slice), exps)
 }
 
