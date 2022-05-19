@@ -54,13 +54,14 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
             },
             _ => unimplemented!(),
         },
-        Some(typ @ b!('.' ':' '•' '○' '→')) => {
+        Some(typ @ b!('.' ':' '•' '○' '→' '¨')) => {
             let variant = match typ {
                 b'.'    => Tok::VarVal,
                 b':'    => Tok::VarFun,
                 b!('•') => Tok::VarAv1,
                 b!('○') => Tok::VarAv2,
                 b!('→') => Tok::VarSet,
+                b!('¨') => Tok::Str,
                 _ => unreachable!(),
             };
             variant(match iter.next() {

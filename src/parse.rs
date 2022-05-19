@@ -100,7 +100,7 @@ fn slice_offset<T>(code: &[T], slice: &[T]) -> usize {
     }
 }
 
-fn parse_function(code: &[Tok]) -> (usize, Option<Fe>) {
+fn function(code: &[Tok]) -> (usize, Option<Fe>) {
     if let Some(t) = code.first() {
         match t {
             // these are functions until when they aren't
@@ -108,12 +108,12 @@ fn parse_function(code: &[Tok]) -> (usize, Option<Fe>) {
             Tok::VarSet(v) => (1, Some(Fe::SetVar(v.clone()))),
             // monadic adverbs
             Tok::VarAv1(name) => {
-                let (offset, thing) = parse_thing(&code[1..]);
+                let (offset, thing) = thing(&code[1..]);
                 (offset+1, thing.map(|x| Fe::Aav1 {v: name.clone(), g: Box::new(x)}))
             },
             Tok::Just(b'{') => {
                 let mut slice = &code[1..];
-                let (len, b) = parse_block(slice); slice = &slice[len..];
+                let (len, b) = block(slice); slice = &slice[len..];
                 (
                     slice_offset(code, slice) + usize::from(matches!(slice.first(), Some(Tok::Just(b'}')))),
                     Some(Fe::Dfn(b))
@@ -157,45 +157,51 @@ fn atom_token(chr: Tok) -> Option<Ve> {
     })
 }
 
-fn parse_atom(code: &[Tok]) -> (usize, Option<Ve>) {
+fn value(code: &[Tok]) -> (usize, Option<Ve>) {
     if let Some(t) = code.first() {
         match t.clone() {
             Tok::Just(b'(') => {
                 let mut slice = &code[1..];
-                let (len, ev) = parse_expression(slice, usize::MAX); slice = &slice[len..];
+                let (len, ev) = expression(slice, usize::MAX); slice = &slice[len..];
                 (
                     slice_offset(code, slice) + usize::from(matches!(slice[0], Tok::Just(b')'))),
                     Some(ev.unwrap_or(Ve::Snd(vec![])))
                 )
             },
             Tok::Just(b!('♪')) => {
-                let (len, t) = parse_thing(&code[1..]);
+                let (len, t) = thing(&code[1..]);
                 if let Some(t) = t { (len+1, Some(match t {
                     Tg::Ve(ev) => Ve::Snd(vec![ev]),
                     Tg::Fe(ef) => Ve::Nom(ef),
                 }))} else {(0, None)}
             },
-            Tok::Just(s @ b!('┐''┘''┌''└')) => {
-                let (len, ev) = parse_expression(&code[1..], match s {
-                    b!('┐')=>2, b!('┘')=>3, b!('┌')=>4, b!('└')=>5, _=>unreachable!()
+            Tok::Just(s @ b!('┌''└''┐''┘')) => {
+                let (len, ev) = expression(&code[1..], match s {
+                    b!('┌')=>2, b!('└')=>3, b!('┐')=>4, b!('┘')=>5, _=>unreachable!()
                 });
                 if ev.is_some() {(len + 1, ev)} else {(0, None)}
-            }
+            },
+            Tok::Just(s @ b!('╔''╚''╗''╝')) => {
+                let (len, ev) = expression_bites(&code[1..], match s {
+                    b!('╔')=>2, b!('╚')=>3, b!('╗')=>4, b!('╝')=>5, _=>unreachable!()
+                });
+                if ev.is_some() {(len + 1, ev)} else {(0, None)}
+            },
             t => { let p = atom_token(t); (usize::from(p.is_some()), p) }
         }
     } else { (0, None) }
 }
 
-pub fn parse_thing(code: &[Tok]) -> (usize, Option<Tg>) {
-    let mut thing: Tg;
+fn atom(code: &[Tok]) -> (usize, Option<Tg>) {
+    let thing: Tg;
     let mut slice = code;
     // try with a value
-    let (len, oev) = parse_atom(slice); slice = &slice[len..];
+    let (len, oev) = value(slice); slice = &slice[len..];
     if let Some(ev) = oev {
         thing = Tg::Ve(ev);
     } else {
         // try with a function
-        let (len, oef) = parse_function(slice); slice = &slice[len..];
+        let (len, oef) = function(slice); slice = &slice[len..];
         if let Some(ef) = oef {
             thing = Tg::Fe(ef);
         } else {
@@ -203,17 +209,41 @@ pub fn parse_thing(code: &[Tok]) -> (usize, Option<Tg>) {
             return (0, None);
         }
     }
-    
-    if let Some(Tok::VarAv2(name)) = slice.first() {
-        slice = &slice[1..];
-        let (len, t) = parse_thing(slice); slice = &slice[len..];
-        thing = Tg::Fe(Fe::Aav2 {
-            f: Box::new(thing),
-            v: name.clone(),
-            g: Box::new(t.unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))});
-    }
-
     (slice_offset(code, slice), Some(thing))
+}
+
+fn thing(code: &[Tok]) -> (usize, Option<Tg>) {
+    let mut slice = code;
+    let (len, tg) = atom(code); slice = &slice[len..];
+    if let Some(mut tg) = tg {
+        if let Some(Tok::VarAv2(name)) = slice.first() {
+            slice = &slice[1..];
+            let (len, t) = thing(slice); slice = &slice[len..];
+            tg = Tg::Fe(Fe::Aav2 {
+                f: Box::new(tg),
+                v: name.clone(),
+                g: Box::new(t.unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))});
+        }
+        (slice_offset(code, slice), Some(tg))
+    } else {(0, None)}
+}
+
+fn thing_bites(code: &[Tok], mut bites: usize) -> (usize, Option<Tg>, usize /*bites*/) {
+    if bites == 0 { return (0, None, 0) }
+    let mut slice = code;
+    let (len, thing) = atom(code); slice = &slice[len..]; bites -= 1;
+    if let Some(mut thing) = thing {
+        if bites == 0 { return (slice_offset(code, slice), Some(thing), 0) }
+        if let Some(Tok::VarAv2(name)) = slice.first() {
+            slice = &slice[1..];
+            let (len, t, b) = dbg!(thing_bites(slice, bites)); slice = &slice[len..]; bites = b;
+            thing = Tg::Fe(Fe::Aav2 {
+                f: Box::new(thing),
+                v: name.clone(),
+                g: Box::new(t.unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))});
+        }
+        dbg!((slice_offset(code, slice), Some(thing), bites))
+    } else {(0, None, 0)}
 }
 
 // takes from iterator to make a strand. if it's only one element, it's just the one value. 
@@ -226,24 +256,9 @@ fn strand(iter: &mut std::iter::Peekable<std::vec::IntoIter<Tg>>) -> Option<Ve> 
     (!evs.is_empty()).then(|| if evs.len() == 1 { evs[0].clone() } else { Ve::Snd(evs) })
 }
 
-pub fn parse_expression(code: &[Tok], limit: usize) -> (usize, Option<Ve>) {
-    let mut slice = code;
-    // makes a list of things before processing
-    let mut things = Vec::new();
-    let mut last_was_stmt = false;
-    while things.len() < limit {
-        let (len, t) = parse_thing(slice);
-        if let Some(thing) = t {
-            if matches!(thing, Tg::Ve(_)) && last_was_stmt { break }
-            things.push(thing);
-        } else { break }
-        last_was_stmt = matches!(slice.first(), Some(Tok::Stmt(_) | Tok::VarSet(_)));
-        slice = &slice[len..];
-    }
-    //println!("{:?}", things);
+fn things_to_expr(things: Vec<Tg>) -> Option<Ve> {
     let mut iter = things.into_iter().peekable();
-
-    let value = if let Some(start) = strand(&mut iter) {
+    Some(if let Some(start) = strand(&mut iter) {
         // Function application
         let mut value = start;
         while let Some(Tg::Fe(ef)) = iter.next() {
@@ -270,17 +285,56 @@ pub fn parse_expression(code: &[Tok], limit: usize) -> (usize, Option<Ve>) {
             Ve::Nom(value)
         },
         Some(Tg::Ve(_)) => unreachable!(),
-        None => return (0, None)
-    }};
-    (slice_offset(code, slice), Some(value))
+        None => return None
+    }})
 }
 
-fn parse_block(code: &[Tok]) -> (usize, Vec<Ve>) {
+pub fn expression(code: &[Tok], limit: usize) -> (usize, Option<Ve>) {
+    let mut slice = code;
+    // makes a list of things before processing
+    let mut things = Vec::new();
+    let mut last_was_stmt = false;
+    while things.len() < limit {
+        let (len, t) = thing(slice);
+        if let Some(thing) = t {
+            if matches!(thing, Tg::Ve(_)) && last_was_stmt { break }
+            things.push(thing);
+        } else { break }
+        last_was_stmt = matches!(slice.first(), Some(Tok::Stmt(_) | Tok::VarSet(_)));
+        slice = &slice[len..];
+    }
+    if limit != usize::MAX { while things.len() < limit {
+        things.push(things.last().cloned().unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))
+    }}
+    let expr = things_to_expr(things);
+    (usize::from(expr.is_some()) * slice_offset(code, slice), expr)
+}
+
+pub fn expression_bites(code: &[Tok], mut bites: usize) -> (usize, Option<Ve>) {
+    let mut slice = code;
+    // makes a list of things before processing
+    let mut things = Vec::new();
+    let mut last_was_stmt = false;
+    loop {
+        let (len, t, b) = thing_bites(slice, bites);
+        if let Some(thing) = t {
+            if matches!(thing, Tg::Ve(_)) && last_was_stmt { break }
+            things.push(thing);
+        } else { break }
+        last_was_stmt = matches!(slice.first(), Some(Tok::Stmt(_) | Tok::VarSet(_)));
+        slice = &slice[len..]; bites = b;
+    }
+
+    let expr = things_to_expr(things);
+    (usize::from(expr.is_some()) * slice_offset(code, slice), expr)
+}
+
+fn block(code: &[Tok]) -> (usize, Vec<Ve>) {
     let mut slice = code;
     let mut exps = Vec::new();
     loop {
         while let Some(Tok::Just(b!('·'))) = slice.first() { slice = &slice[1..]; }
-        let (len, ev) = parse_expression(slice, usize::MAX); slice = &slice[len..];
+        let (len, ev) = expression(slice, usize::MAX); slice = &slice[len..];
         if let Some(ev) = ev {
             exps.push(ev);
         } else { break }
@@ -289,8 +343,8 @@ fn parse_block(code: &[Tok]) -> (usize, Vec<Ve>) {
     (slice_offset(code, slice), exps)
 }
 
-pub fn parse_file(code: &[Tok]) -> Vec<Ve> {
-    let (len, exps) = parse_block(code);
+pub fn parse(code: &[Tok]) -> Vec<Ve> {
+    let (len, exps) = block(code);
     if code.len() > len {
         println!("unexpected token {:?}", code[len]);
     }

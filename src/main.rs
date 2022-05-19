@@ -11,7 +11,7 @@ fn main() {
         println!("input : ```{}```", code);
         let tokens = token::tokenize(&codepage::tobytes(&code).unwrap());
         //println!("{:?}", tokens);
-        let parsed = parse::parse_file(&tokens);
+        let parsed = parse::parse(&tokens);
         for i in &parsed { println!("parsed: {}", i); }
         let mut state = run::Env::new();
         for (n, expr) in parsed.iter().enumerate() {
@@ -33,7 +33,7 @@ fn main() {
             //println!("input : ```{}```", code);
             let tokens = token::tokenize(&codepage::tobytes(&code).unwrap());
             //println!("{:?}", tokens);
-            let parsed = parse::parse_file(&tokens);
+            let parsed = parse::parse(&tokens);
             for i in &parsed { println!("parsed: {}", i); }
             for (n, expr) in parsed.iter().enumerate() {
                 let v = state.evaluate(expr);
