@@ -2,12 +2,12 @@ mod intrn;
 
 use crate::parse::{Tg, Fe, Ve};
 use crate::Bstr;
-use smallvec::smallvec;
 use std::{collections::HashMap, rc::Rc};
 
 #[derive(Clone, Debug)]
-pub struct Env {
-    globals: HashMap<Bstr, Val>
+pub struct Env<'a> {
+    locals: HashMap<Bstr, Val>,
+    outer: Option<&'a Env<'a>>,
 }
 
 #[derive(Clone, Debug)]
@@ -15,6 +15,7 @@ pub enum Val {
     Num(f64),
     Lis { l: Rc<[Val]>, fill: Rc<Val> },
     FSet(Bstr),
+    Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Ve]> },
     Add, Sub, Mul, Div, Pow, Neg, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt,
     Selfie,    DSelfie(Rc<Val>),
     Variances, DVariances(Rc<Val>, Rc<Val>),
@@ -44,70 +45,72 @@ impl Default for Val {
     fn default() -> Self { Self::Num(f64::NAN) }
 }
 
-const GLOBALS: &[(u8, Val)] = &[
-    (b'a', Num(12.)),     (b'b', Num(20.)),     (b'c', Num(99.)),     (b'd', Num(100.)),    
-    (b'e', Num(999.)),    (b'f', Num(1000.)),   (b'g', Num(9999.)),   (b'h', Num(10000.)),  
-    (b'i', Num(100000.)), (b'j', Num(1000000.)),(b'k', Num(15.)),     (b'l', Num(16.)),     
-    (b'm', Num(31.)),     (b'n', Num(32.)),     (b'o', Num(63.)),     (b'p', Num(64.)),
-    (b'q', Num(127.)),    (b'r', Num(128.)),    (b's', Num(255.)),    (b't', Num(256.)),
-    (b'u', Num(512.)),    (b'v', Num(1024.)),   (b'w', Num(2048.)),   (b'x', Num(4096.)),
-    (b'y', Num(32768.)),  (b'z', Num(65536.)),
-];
-
-impl Env {
+impl Env<'_> {
     
-    pub fn new() -> Env {
-        let mut globals = HashMap::with_capacity(GLOBALS.len());
-        for (b, v) in GLOBALS { globals.insert(smallvec![*b], v.clone()); }
-        globals.insert(Bstr::from(&b"loadintrinsics"[..]), Val::LoadIntrinsics);
-        Env { globals }
+    pub fn new<'a>() -> Env<'a> {
+        let mut locals = HashMap::new();
+        locals.insert(Bstr::from(&b"loadintrinsics"[..]), Val::LoadIntrinsics);
+        Env { locals, outer: None }
     }
 
-    pub fn evaluate(&mut self, expr: &Ve) -> Val {
+    pub fn get_var(&self, name: &[u8]) -> Option<Val> {
+        self.locals.get(name).cloned().or_else(|| self.outer.and_then(|x| x.get_var(name)))
+    }
+
+    pub fn eval(&mut self, expr: &Ve) -> Val {
         match expr {
-            Ve::Var(s) => self.globals.get(&s[..]).cloned().unwrap_or_default(),
+            Ve::Var(s) => self.locals.get(&s[..]).cloned().unwrap_or_default(),
             Ve::Num(n) => Val::Num(*n),
             Ve::Snd(l) => Val::Lis {
-                l: Rc::from(l.iter().map(|x| self.evaluate(x)).collect::<Vec<_>>()),
+                l: Rc::from(l.iter().map(|x| self.eval(x)).collect::<Vec<_>>()),
                 fill: Rc::new(Num(f64::NAN))
             },
-            Ve::Nom(f) => self.evaluate_fe(f),
+            Ve::Nom(f) => self.eval_f(f),
             Ve::Afn1 { a, f } => {
-                let a = self.evaluate(a);
-                let f = self.evaluate_fe(f);
+                let a = self.eval(a);
+                let f = self.eval_f(f);
                 f.monad(self, &a)
             },
             Ve::Afn2 { a, f, b } => {
-                let a = self.evaluate(a);
-                let f = self.evaluate_fe(f);
-                let b = self.evaluate(b);
+                let a = self.eval(a);
+                let f = self.eval_f(f);
+                let b = self.eval(b);
                 f.dyad(self, &a, &b)
             },
         }
     }
-    pub fn evaluate_fe(&mut self, expr: &Fe) -> Val {
+    pub fn eval_f(&mut self, expr: &Fe) -> Val {
         match expr {
-            Fe::Var(s) => self.globals.get(&s[..]).cloned().unwrap_or_default(),
+            Fe::Var(s) => self.get_var(s).unwrap_or_default(),
             Fe::SetVar(v) => Val::FSet(v.clone()),
             Fe::Aav1 { v, g } => {
-                let g = self.evaluate_tg(&*g.clone());
-                self.globals.get(&v[..]).cloned().unwrap_or_default().monad(self, &g)
+                let g = self.eval_tg(&*g.clone());
+                self.locals.get(&v[..]).cloned().unwrap_or_default().monad(self, &g)
             }
             Fe::Aav2 { f, v, g } => {
-                let f = self.evaluate_tg(&*f.clone());
-                let g = self.evaluate_tg(&*g.clone());
-                self.globals.get(&v[..]).cloned().unwrap_or_default().dyad(self, &g, &f)
+                let f = self.eval_tg(&*f.clone());
+                let g = self.eval_tg(&*g.clone());
+                self.locals.get(&v[..]).cloned().unwrap_or_default().dyad(self, &g, &f)
             },
             Fe::Bind { .. } => todo!(),
             Fe::Trn1 { .. } => todo!(),
             Fe::Trn2 { .. } => todo!(),
-            Fe::Dfn(_) => todo!(),
+            Fe::Dfn {s, cap} => {
+                let mut locals = HashMap::with_capacity(cap.len());
+                for var in cap {
+                    self.locals.get(var)
+                        // TODO iterate through outer
+                        .cloned()
+                        .and_then(|x| locals.insert(var.clone(), x));
+                }
+                Val::Dfn {s: Rc::from(&s[..]), loc: Rc::new(locals)}
+            },
         }
     }
-    fn evaluate_tg(&mut self, expr: &Tg) -> Val {
+    fn eval_tg(&mut self, expr: &Tg) -> Val {
         match expr {
-            Tg::Ve(ve) => self.evaluate(ve),
-            Tg::Fe(fe) => self.evaluate_fe(fe)
+            Tg::Ve(ve) => self.eval(ve),
+            Tg::Fe(fe) => self.eval_f(fe)
         }
     }
 
@@ -121,4 +124,13 @@ impl Env {
             x => x.monad(self, &Num(index))
         }
     }
+
+    pub fn eval_block(&mut self, block: &[Ve]) -> Val {
+        let mut v = Num(f64::NAN);
+        for expr in block.iter() {
+            v = self.eval(expr);
+        }
+        v
+    }
+
 }

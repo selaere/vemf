@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fmt::Display;
 
 use smallvec::smallvec;
@@ -25,7 +26,7 @@ pub enum Fe {
     Bind {            f: Box<Fe>, b: Box<Ve>}, // +1
     Trn1 {a: Box<Fe>, f: Box<Fe>            }, // +/
     Trn2 {a: Box<Fe>, f: Box<Fe>, b: Box<Ve>}, // +/2
-    Dfn(Vec<Ve>),
+    Dfn  {s: Vec<Ve>, cap: HashSet<Bstr>},
 }
 
 // a thing (Tg) is either:
@@ -73,7 +74,7 @@ impl Display for Fe {
             Fe::Bind {    f, b } => write!(m, "[{} with {}]", f, b),
             Fe::Trn1 { a, f    } => write!(m, "[{} {}]", a, f),
             Fe::Trn2 { a, f, b } => write!(m, "[{} {} {}]", a, f, b),
-            Fe::Dfn(efs) => {
+            Fe::Dfn  { s: efs, .. } => {
                 write!(m, "{{ ")?;
                 for v in efs { write!(m, "{}; ", v)?; }
                 write!(m, "}}")?;
@@ -100,6 +101,50 @@ fn slice_offset<T>(code: &[T], slice: &[T]) -> usize {
     }
 }
 
+trait Capture {
+    fn capture(&self, vars: &mut HashSet<Bstr>);
+}
+
+impl Capture for Ve {
+fn capture(&self, vars: &mut HashSet<Bstr>) {
+    match self {
+        Ve::Var(n) => { vars.insert(n.clone()); },
+        Ve::Num(_) => (),
+        Ve::Snd(l) => for i in l { i.capture(vars) }
+        Ve::Nom(f) => f.capture(vars),
+        Ve::Afn1 { a, f    } => { a.capture(vars); f.capture(vars); },
+        Ve::Afn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
+    }
+}
+}
+
+impl Capture for Fe {
+fn capture(&self, vars: &mut HashSet<Bstr>) {
+    match self {
+        Fe::Var(n) | Fe::SetVar(n) => { vars.insert(n.clone()); },
+        Fe::Aav1 { v, g } => {
+            vars.insert(v.clone());
+            g.capture(vars);
+        },
+        Fe::Aav2 { f, v, g } => {
+            vars.insert(v.clone());
+            f.capture(vars); g.capture(vars);
+        },
+        Fe::Bind { f, b } => { f.capture(vars); b.capture(vars); },
+        Fe::Trn1 { a, f } => { a.capture(vars); f.capture(vars); },
+        Fe::Trn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
+        Fe::Dfn { .. } => todo!()
+    }
+}
+}
+impl Capture for Tg {
+fn capture(&self, vars: &mut HashSet<Bstr>) { match self {
+    Tg::Fe(fe) => fe.capture(vars),
+    Tg::Ve(ve) => ve.capture(vars),
+}}
+}
+
+
 fn function(code: &[Tok]) -> (usize, Option<Fe>) {
     if let Some(t) = code.first() {
         match t {
@@ -113,10 +158,12 @@ fn function(code: &[Tok]) -> (usize, Option<Fe>) {
             },
             Tok::Just(b'{') => {
                 let mut slice = &code[1..];
-                let (len, b) = block(slice); slice = &slice[len..];
+                let (len, s) = block(slice); slice = &slice[len..];
+                let mut vars = HashSet::new();
+                for i in &s { i.capture(&mut vars) }
                 (
                     slice_offset(code, slice) + usize::from(matches!(slice.first(), Some(Tok::Just(b'}')))),
-                    Some(Fe::Dfn(b))
+                    Some(Fe::Dfn {s, cap: vars})
                 )
             }
             Tok::VarFun(v) => (1, Some(Fe::Var(v.clone()))),

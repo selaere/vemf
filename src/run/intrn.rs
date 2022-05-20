@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
-use crate::{run::{Val, Env}, Bstr};
+use crate::{run::{Val, Env}, Bstr, b};
+use smallvec::smallvec;
 use Val::{Num, Lis};
 
 const NAN: Val = Num(f64::NAN);
@@ -21,7 +22,7 @@ pub fn call(&self, state: &mut Env, a: &Val, b: Option<&Val>) -> Val {
     match self {
         Num(_) | Lis { .. } => self.clone(),
         Val::FSet(name) => {
-            state.globals.insert(name.clone(), a.clone());
+            state.locals.insert(name.clone(), a.clone());
             a.clone()
         },
         Self::Add => match (a, b) {(Num(a), Some(Num(b))) => Num(a + b), _ => NAN },
@@ -48,12 +49,19 @@ pub fn call(&self, state: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             macro_rules! load { ($($name:ident),*) => { $( {
                 let mut name = Bstr::from(&b"intrn"[..]);
                 name.extend(stringify!($name).to_ascii_lowercase().bytes());
-                state.globals.insert(name, Self::$name)
+                state.locals.insert(name, Self::$name)
             } );* }}
             load!(Add, Sub, Mul, Div, Pow, Neg, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, 
                 Selfie, Variances);
             NAN
         }
+        Self::Dfn { s, loc } => {
+            let mut inner = Env { locals: (**loc).clone(), outer: Some(state) };
+            inner.locals.insert(smallvec![b!('α')], a.clone());
+            inner.locals.insert(smallvec![b!('β')], bb.clone());
+            inner.locals.insert(smallvec![b!('ƒ')], self.clone());
+            inner.eval_block(s)
+        },
     }
 }
 
