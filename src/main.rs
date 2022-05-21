@@ -9,7 +9,7 @@ fn main() {
     //println!("sizeof(Val) = {}", std::mem::size_of::<run::Val>());
     if let Some(path) = std::env::args().nth(1) {
         let code = std::fs::read_to_string(path).expect("error while opening file");
-        println!("input : ```{}```", code);
+        //println!("input : ```{}```", code);
         let tokens = token::tokenize(&codepage::tobytes(&code).unwrap());
         //println!("{:?}", tokens);
         let parsed = parse::parse(&tokens);
@@ -26,8 +26,8 @@ fn main() {
             // TODO make better
             //println!("input : ```{}```", code);
             let tokens = token::tokenize(&codepage::tobytes(&code).unwrap());
-            //println!("{:?}", tokens);
             let parsed = parse::parse(&tokens);
+            for i in &parsed { println!("parsed: {}", i); }
             println!("{}", state.eval_block(&parsed));
         }
     }

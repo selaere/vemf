@@ -1,8 +1,12 @@
 mod intrn;
+mod list;
 
 use crate::parse::{Tg, Fe, Ve};
 use crate::Bstr;
 use std::{collections::HashMap, rc::Rc};
+
+
+pub const NAN: Val = Num(f64::NAN);
 
 #[derive(Clone, Debug)]
 pub struct Env<'a> {
@@ -13,7 +17,7 @@ pub struct Env<'a> {
 #[derive(Clone, Debug)]
 pub enum Val {
     Num(f64),
-    Lis { l: Rc<[Val]>, fill: Rc<Val> },
+    Lis { l: Rc<Vec<Val>>, fill: Rc<Val> },
     FSet(Bstr),
     Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Ve]> },
     Bind{ f: Rc<Val>, b: Rc<Val> },
@@ -24,7 +28,7 @@ pub enum Val {
     Variances, DVariances(Rc<Val>, Rc<Val>),
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-    Left, Right, Len,
+    Left, Right, Len, Index,
     Print, Println, Exit,
     LoadIntrinsics,
 }
@@ -49,7 +53,7 @@ impl std::fmt::Display for Val {
 
 use Val::{Num, Lis};
 impl Default for Val {
-    fn default() -> Self { Self::Num(f64::NAN) }
+    fn default() -> Self { NAN }
 }
 
 impl Env<'_> {
@@ -70,7 +74,7 @@ impl Env<'_> {
             Ve::Num(n) => Val::Num(*n),
             Ve::Snd(l) => Val::Lis {
                 l: Rc::from(l.iter().map(|x| self.eval(x)).collect::<Vec<_>>()),
-                fill: Rc::new(Num(f64::NAN))
+                fill: Rc::new(NAN)
             },
             Ve::Nom(f) => self.eval_f(f),
             Ve::Afn1 { a, f } => {
@@ -141,7 +145,7 @@ impl Env<'_> {
     }
 
     pub fn eval_block(&mut self, block: &[Ve]) -> Val {
-        let mut v = Num(f64::NAN);
+        let mut v = NAN;
         for expr in block.iter() {
             v = self.eval(expr);
         }

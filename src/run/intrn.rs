@@ -1,10 +1,10 @@
 use std::rc::Rc;
 
-use crate::{run::{Val, Env}, Bstr, b};
+use crate::{Bstr, b};
+use super::{Val, Env, NAN};
 use smallvec::smallvec;
 use Val::{Num, Lis};
 
-const NAN: Val = Num(f64::NAN);
 
 
 impl Val {
@@ -46,7 +46,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 Selfie, Variances,
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-                Left, Right, Len,
+                Left, Right, Len, Index,
                 Print, Println, Exit,
             );
             Num(1.)
@@ -86,7 +86,8 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
 
         Val::Left => a.clone(),
         Val::Right => bb.clone(),
-        Val::Len => Num(a.len()),
+        Val::Len => Num(a.lenf()),
+        Val::Index => a.index_at_depth(env, bb),
 
         Val::Bind { f: af, b: ab } => af.dyad(env, a, ab),
         Val::Trn1 { a: aa, f: af }        => { let x = aa.call(env, a, b); af.monad(env, &x) },
@@ -113,24 +114,6 @@ fn display_string(&self) -> String {
     }
 }
 
-pub fn len(&self) -> f64 {
-    match self {
-        Num(_) => 1.,
-        Lis { l, .. } => l.len() as f64,
-        _ => f64::INFINITY,
-    }
-}
-
-
-pub fn index_value(&self, env: &mut Env, index: f64) -> Val {
-    match self {
-        Num(n) => Num(*n), // unchanged
-        Lis { l, fill } => {
-            if index < 0. || index.is_nan() { return (**fill).clone() }
-            l.get(index as usize).cloned().unwrap_or_else(|| (**fill).clone())
-        },
-        x => x.monad(env, &Num(index))
-    }
-}
+pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
 
 }
