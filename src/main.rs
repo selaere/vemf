@@ -6,7 +6,7 @@ mod run;
 pub type Bstr = smallvec::SmallVec<[u8; 16]>; // length will be the same as a Vec in 64bit archs
 
 fn main() {
-    println!("sizeof(Val) = {}", std::mem::size_of::<run::Val>());
+    //println!("sizeof(Val) = {}", std::mem::size_of::<run::Val>());
     if let Some(path) = std::env::args().nth(1) {
         let code = std::fs::read_to_string(path).expect("error while opening file");
         println!("input : ```{}```", code);

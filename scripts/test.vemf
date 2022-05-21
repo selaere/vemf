@@ -2,10 +2,18 @@
 
 ' variances. 2-adverb.
 ' calls α:f if called monadically, otherwise α:gβ
-.intrnvariances→║·
+.invariances→║·
 
-.intrnadd→+·
+.inadd→+ ·
 
-♪.intrnneg║.intrnsub→-·
+♪.inneg║.insub→- ·
 
-3-2
+.inmul→* ·
+
+.indiv→/ ·
+
+♪.inln║.inlog→∟ ·
+
+♪.inexp║.inpow→^ ·
+
+4∟^

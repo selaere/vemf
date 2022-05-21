@@ -16,9 +16,10 @@ pub enum Val {
     Lis { l: Rc<[Val]>, fill: Rc<Val> },
     FSet(Bstr),
     Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Ve]> },
-    Add, Sub, Mul, Div, Pow, Neg, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt,
     Selfie,    DSelfie(Rc<Val>),
     Variances, DVariances(Rc<Val>, Rc<Val>),
+    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq,
+    Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
     LoadIntrinsics,
 }
 
