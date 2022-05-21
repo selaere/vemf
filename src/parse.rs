@@ -26,6 +26,7 @@ pub enum Fe {
     Bind {            f: Box<Fe>, b: Box<Ve>}, // +1
     Trn1 {a: Box<Fe>, f: Box<Fe>            }, // +/
     Trn2 {a: Box<Fe>, f: Box<Fe>, b: Box<Ve>}, // +/2
+    Fork {a: Box<Tg>, f: Box<Tg>, b: Box<Tg>}, // ┼+/~
     Dfn  {s: Vec<Ve>, cap: HashSet<Bstr>},
 }
 
@@ -74,6 +75,7 @@ impl Display for Fe {
             Fe::Bind {    f, b } => write!(m, "[{} with {}]", f, b),
             Fe::Trn1 { a, f    } => write!(m, "[{} {}]", a, f),
             Fe::Trn2 { a, f, b } => write!(m, "[{} {} {}]", a, f, b),
+            Fe::Fork { a, f, b } => write!(m, "┼[{} {} {}]", a, f, b),
             Fe::Dfn  { s: efs, .. } => {
                 write!(m, "{{ ")?;
                 for v in efs { write!(m, "{}; ", v)?; }
@@ -133,6 +135,7 @@ fn capture(&self, vars: &mut HashSet<Bstr>) {
         Fe::Bind { f, b } => { f.capture(vars); b.capture(vars); },
         Fe::Trn1 { a, f } => { a.capture(vars); f.capture(vars); },
         Fe::Trn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
+        Fe::Fork { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
         Fe::Dfn { .. } => todo!()
     }
 }
@@ -144,6 +147,7 @@ fn capture(&self, vars: &mut HashSet<Bstr>) { match self {
 }}
 }
 
+fn identity() -> Tg { Tg::Fe(Fe::Var(smallvec![b!('◄')])) }
 
 fn function(code: &[Tok]) -> (usize, Option<Fe>) {
     if let Some(t) = code.first() {
@@ -156,13 +160,34 @@ fn function(code: &[Tok]) -> (usize, Option<Fe>) {
                 let (offset, thing) = thing(&code[1..]);
                 (offset+1, thing.map(|x| Fe::Aav1 {v: name.clone(), g: Box::new(x)}))
             },
+            Tok::Just(b!('┼')) => {
+                let mut slice = &code[1..];
+                let (len, a) = thing(slice); slice = &slice[len..];
+                let (len, f) = thing(slice); slice = &slice[len..];
+                let (len, b) = thing(slice); slice = &slice[len..];
+                (slice_offset(code, slice), Some(Fe::Fork {
+                    a: Box::new(a.unwrap_or_else(identity)),
+                    f: Box::new(f.unwrap_or_else(identity)),
+                    b: Box::new(b.unwrap_or_else(identity))}))
+            }
+            Tok::Just(b!('╬')) => {
+                let mut slice = &code[1..];
+                let (len, a) = thing(slice); slice = &slice[len..];
+                let (len, f) = thing(slice); slice = &slice[len..];
+                let (len, b) = atom (slice); slice = &slice[len..];
+                (slice_offset(code, slice), Some(Fe::Fork {
+                    a: Box::new(a.unwrap_or_else(identity)),
+                    f: Box::new(f.unwrap_or_else(identity)),
+                    b: Box::new(b.unwrap_or_else(identity))}))
+            }
             Tok::Just(b'{') => {
                 let mut slice = &code[1..];
                 let (len, s) = block(slice); slice = &slice[len..];
                 let mut vars = HashSet::new();
                 for i in &s { i.capture(&mut vars) }
+                let braces_closed = usize::from(matches!(slice.first(), Some(Tok::Just(b'}'))));
                 (
-                    slice_offset(code, slice) + usize::from(matches!(slice.first(), Some(Tok::Just(b'}')))),
+                    slice_offset(code, slice) + braces_closed,
                     Some(Fe::Dfn {s, cap: vars})
                 )
             }
@@ -172,7 +197,7 @@ fn function(code: &[Tok]) -> (usize, Option<Fe>) {
     } else {(0, None)}
 }
 
-fn atom_token(chr: Tok) -> Option<Ve> {
+fn value_token(chr: Tok) -> Option<Ve> {
     Some(match chr {
         Tok::Just(c @ b'0'..=b'9') => Ve::Num(f64::from(c - b'0')),
         Tok::Just(b!('Φ')) => Ve::Num(10.),
@@ -234,7 +259,7 @@ fn value(code: &[Tok]) -> (usize, Option<Ve>) {
                 });
                 if ev.is_some() {(len + 1, ev)} else {(0, None)}
             },
-            t => { let p = atom_token(t); (usize::from(p.is_some()), p) }
+            t => { let p = value_token(t); (usize::from(p.is_some()), p) }
         }
     } else { (0, None) }
 }
@@ -341,10 +366,19 @@ pub fn expression(code: &[Tok], limit: usize) -> (usize, Option<Ve>) {
     // makes a list of things before processing
     let mut things = Vec::new();
     let mut last_was_stmt = false;
+    // TODO: BAD BAD BAD code
     while things.len() < limit {
         let (len, t) = thing(slice);
+        if matches!(t, Some(Tg::Ve(_)) | None) && last_was_stmt { 
+            let last = match things.pop() {
+                Some(Tg::Fe(x)) => x, _ => unreachable!()
+            };
+            let expr = things_to_expr(things);
+            if let Some(expr) = expr {
+                return (slice_offset(code, slice), Some(Ve::Afn1 { a: Box::new(expr), f: last}))
+            } else {return (0, None)}
+        }
         if let Some(thing) = t {
-            if matches!(thing, Tg::Ve(_)) && last_was_stmt { break }
             things.push(thing);
         } else { break }
         last_was_stmt = matches!(slice.first(), Some(Tok::Stmt(_) | Tok::VarSet(_)));

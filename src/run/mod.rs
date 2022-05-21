@@ -16,10 +16,16 @@ pub enum Val {
     Lis { l: Rc<[Val]>, fill: Rc<Val> },
     FSet(Bstr),
     Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Ve]> },
+    Bind{ f: Rc<Val>, b: Rc<Val> },
+    Trn1{ a: Rc<Val>, f: Rc<Val> },
+    Trn2{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
+    Fork{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
     Selfie,    DSelfie(Rc<Val>),
     Variances, DVariances(Rc<Val>, Rc<Val>),
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
+    Left, Right, Len,
+    Print, Println, Exit,
     LoadIntrinsics,
 }
 
@@ -93,10 +99,29 @@ impl Env<'_> {
                 let g = self.eval_tg(&*g.clone());
                 self.locals.get(&v[..]).cloned().unwrap_or_default().dyad(self, &g, &f)
             },
-            Fe::Bind { .. } => todo!(),
-            Fe::Trn1 { .. } => todo!(),
-            Fe::Trn2 { .. } => todo!(),
-            Fe::Dfn {s, cap} => {
+            Fe::Bind { f, b } => {
+                let f = self.eval_f(&*f.clone());
+                let b = self.eval(&*b.clone());
+                Val::Bind{f: Rc::new(f), b: Rc::new(b)}
+            },
+            Fe::Trn1 { a, f } => {
+                let a = self.eval_f(&*a.clone());
+                let f = self.eval_f(&*f.clone());
+                Val::Trn1{a: Rc::new(a), f: Rc::new(f)}
+            },
+            Fe::Trn2 { a, f, b } => {
+                let a = self.eval_f(&*a.clone());
+                let f = self.eval_f(&*f.clone());
+                let b = self.eval(&*b.clone());
+                Val::Trn2{a: Rc::new(a), f: Rc::new(f), b: Rc::new(b)}
+            },
+            Fe::Fork { a, f, b } => {
+                let a = self.eval_tg(&*a.clone());
+                let f = self.eval_tg(&*f.clone());
+                let b = self.eval_tg(&*b.clone());
+                Val::Fork{a: Rc::new(a), f: Rc::new(f), b: Rc::new(b)}
+            },
+            Fe::Dfn { s, cap } => {
                 let mut locals = HashMap::with_capacity(cap.len());
                 for var in cap {
                     self.locals.get(var)
@@ -112,17 +137,6 @@ impl Env<'_> {
         match expr {
             Tg::Ve(ve) => self.eval(ve),
             Tg::Fe(fe) => self.eval_f(fe)
-        }
-    }
-
-    pub fn index_value(&mut self, a: &Val, index: f64) -> Val {
-        match a {
-            Num(n) => Num(*n), // unchanged
-            Lis { l, fill } => {
-                if index < 0. || index.is_nan() { return (**fill).clone() }
-                l.get(index as usize).cloned().unwrap_or_else(|| (**fill).clone())
-            },
-            x => x.monad(self, &Num(index))
         }
     }
 

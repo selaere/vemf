@@ -1,19 +1,32 @@
 ϕ:loadintrinsics·
 
+
+.inleft→◄ ·
+.inright→► ·
+
 ' variances. 2-adverb.
 ' calls α:f if called monadically, otherwise α:gβ
 .invariances→║·
 
+' a+│  ≡ a+a
+' a+│b ≡ b+a
+.inselfie→│·
+
 .inadd→+ ·
 
-♪.inneg║.insub→- ·
+.inneg║.insub→- ·
 
 .inmul→* ·
 
 .indiv→/ ·
+╬1/►║/→/ ·
 
-♪.inln║.inlog→∟ ·
+.inln║.inlog→∟ ·
 
-♪.inexp║.inpow→^ ·
+.inexp║.inpow→^ ·
 
-4∟^
++1→▲ ·
+
+-1→▼ ·
+
+5/2
