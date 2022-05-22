@@ -42,12 +42,14 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
 
         Val::Swap      => Val::DSwap   (Rc::new(a.clone())),
         Val::Each      => Val::DEach   (Rc::new(a.clone())),
+        Val::Scalar    => Val::DScalar   (Rc::new(a.clone())),
         Val::Valences  => Val::DValences(Rc::new(bb.clone()), Rc::new(a.clone())),
         Val::Over      => Val::DOver     (Rc::new(bb.clone()), Rc::new(a.clone())),
         Val::Overleft  => Val::DOverleft (Rc::new(bb.clone()), Rc::new(a.clone())),
         Val::Overright => Val::DOverright(Rc::new(bb.clone()), Rc::new(a.clone())),
         Val::DSwap(g) => g.dyad(env, bb, a),
         Val::DEach(g) => super::list::each(env, a, b, g),
+        Val::DScalar(g) => super::list::scal(env, a, b, g),
         Val::DValences(f, g) => (if b.is_none() {f} else {g}).call(env, a, b),
         Val::DOver(f, g) => {
             let l = f.monad(env, a); let r = f.monad(env, bb); g.dyad(env, &l, &r)
@@ -61,7 +63,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 env.locals.insert(name, Val::$name)
             } );* }}
             load!(
-                Swap, Valences, Overleft, Overright, Over, Each,
+                Swap, Valences, Overleft, Overright, Over, Each, Scalar,
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
                 Left, Right, Len, Index, Iota, Pair, Enlist,

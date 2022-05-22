@@ -6,21 +6,23 @@ use super::NAN;
 
 impl Val {
     
-    pub fn lenf(&self) -> f64 {
-        match self {
-            Num(_) => 1.,
-            Lis { l, .. } => l.len() as f64,
-            _ => f64::INFINITY,
-        }
-    }
+    pub fn lenf(&self) -> f64 { match self {
+        Num(_) => 1.,
+        Lis { l, .. } => l.len() as f64,
+        _ => f64::INFINITY,
+    }}
 
-    pub fn len(&self) -> usize {
-        match self {
-            Num(_) => 1,
-            Lis { l, .. } => l.len(),
-            _ => usize::MAX,
-        }
-    }
+    pub fn len(&self) -> usize { match self {
+        Num(_) => 1,
+        Lis { l, .. } => l.len(),
+        _ => usize::MAX,
+    }}
+
+    pub fn fill(&self) -> Val { match self {
+        Num(n) => Num(*n),
+        Lis { fill, .. } => (**fill).clone(),
+        _ => NAN, // good enough
+    }}
 
     pub fn indexval(&self, env: &mut Env, index: &Val) -> Val {
         match self {
@@ -32,7 +34,6 @@ impl Val {
             x => x.monad(env, index)
         }
     }
-
 
     pub fn index(&self, env: &mut Env, index: usize) -> Val {
         match self {
@@ -51,7 +52,6 @@ impl Val {
             let i = index.index(env, n);
             if i.is_nan() {
                 if n+1 == index.len() {return value}
-                //return value.iter(env).map(|x| x.index_at_depth(env, &slice)).collect::<Val>()
                 match value {
                     Lis {l, ..} => {
                         let slice = index.iter(env).skip(n+1).collect::<Val>();
@@ -137,6 +137,48 @@ pub fn each(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
         }
         let fill = match a { Lis { fill, .. } => g.monad(env, fill), _ => NAN };
         Lis{l: Rc::new(values), fill: Rc::new(fill)}
+    }
+}
+
+pub fn scal(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
+    if let Some(b) = b {
+        match (a, b) {
+            (Num(_), Num(_)) => g.dyad(env, a, b), // 1+2
+            (Num(_)|Lis{..}, Num(_)|Lis{..}) => Lis {  // 123+4, 123+456
+                l: Rc::new((0..usize::max(a.len(), b.len())).map(|n| {
+                    let l = a.index(env, n); let r = b.index(env, n); scal(env, &l, Some(&r), g)
+                }).collect()),
+                fill: Rc::new(scal(env, &a.fill(), Some(&b.fill()), g))
+            },
+            (Lis{..}, _) => Lis {  // 123+Σ
+                l: Rc::new((0..a.len()).map(|n| {
+                    let l = a.index(env, n); let r = b.index(env, n); scal(env, &l, Some(&r), g)
+                }).collect()),
+                fill: Rc::new(a.fill()),
+            },
+            (_, Lis{..}) => Lis {  // Σ+123
+                l: Rc::new((0..b.len()).map(|n| {
+                    let l = a.index(env, n); let r = b.index(env, n); scal(env, &l, Some(&r), g)
+                }).collect()),
+                fill: Rc::new(b.fill()),
+            },
+            (_, _) => Val::Fork {  // 1+Σ | Σ+1 | Σ+Ω
+                a: Rc::new(a.clone()), f: Rc::new(Val::DScalar(Rc::clone(g))), b: Rc::new(b.clone())
+            },
+        }
+    } else {
+        match a {
+            Num(_) => g.monad(env, a),
+            Lis{..} => Lis {
+                l: Rc::new((0..a.len()).map(|n| {
+                    let l = a.index(env, n); scal(env, &l, None, g)
+                }).collect()),
+                fill: Rc::new(a.fill()),
+            },
+            _ => Val::Trn2 {
+                a: Rc::new(a.clone()), f: Rc::new(Val::DScalar(Rc::clone(g)))
+            }
+        }
     }
 }
 

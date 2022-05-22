@@ -1,15 +1,5 @@
 ϕ:loadintrinsics·
 
-.inprint→☺
-.inprintln→☻
-.inexit→⌂
-
-.inleft→◄ ·
-.inright→► ·
-
-.inpair→♫ ·
-.iniota→↕ ·
-
 ' valences. 2-adverb.
 ' calls α:f if called monadically, otherwise α:gβ
 .invalences→║·
@@ -32,53 +22,69 @@
 
 .ineach→╘·
 
-.inadd→+ ·
+.inscalar→═·
 
-.inneg║.insub→- ·
+.inprint→☺ ·
+.inprintln→☻ ·
+.inexit→⌂ ·
 
-.inmul→* ·
+.inleft→◄ ·
+.inright→► ·
+
+.inpair→♫ ·
+.iniota→↕ ·
+
+═:inadd→+ ·
+
+═:inneg║:insub→- ·
+
+═:inmul→* ·
 
 .indiv→/ ·
-╬1/►║/→/ ·
+═╬1/►║/→/ ·
 
-└1╕^║.inmod→% ·
+═:inexp║:inpow→^ ·
 
-.inln║.inlog→∟ ·
+═└1╕^║:inmod→% ·
 
-.inexp║.inpow→^ ·
+═:inln║:inlog→∟ ·
 
-.insqrt║/╖^→√ ·
+═:insqrt║/╖^→√ ·
 
-:insin║:insin╕^→í ·
-:incos║:incos╕^→ó ·
-:intan║:intan╕^→á ·
+═:insin║:insin╕^→í ·
+═:incos║:incos╕^→ó ·
+═:intan║:intan╕^→á ·
 
-:inasin║:inasin╕^→ì ·
-:inacos║:inacos╕^→ò ·
-:inatan║:inatan╕^→à ·
+═:inasin║:inasin╕^→ì ·
+═:inacos║:inacos╕^→ò ·
+═:inatan║:inatan╕^→à ·
 
-+1→▲ ·
+═(+1)→▲ ·
 
--1→▼ ·
+═(-1)→▼ ·
 
 .inindex→@ ·
 
-.inlt→< ·
-.ineq→= ·
-.ingt→> ·
+═:inlt→< ·
+═:ineq→= ·
+═:ingt→> ·
 
-=0→¬ ·
-¬¬→⌐ ·
+═=0→¬ ·
+═¬¬→⌐ ·
 
-<¬→≥ ·
-=¬→~ ·
->¬→≤ ·
+═<¬→≥ ·
+═=¬→~ ·
+═>¬→≤ ·
 
-.inlen║~→~ ·
+(═.inlen)║~→~ ·
 
-^2→² ·
-/2→½ ·
-*2→¼ ·
+═(^2)→² ·
+═(/2)→½ ·
+═(*2)→¼ ·
+
+═:inceil→⌠ ·
+═:inround→≈ ·
+═:infloor→⌡ ·
 
 ┌└123└456┌└789└Φ`♂`♀→m ·
 

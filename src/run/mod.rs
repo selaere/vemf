@@ -27,6 +27,7 @@ pub enum Val {
     Fork{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
     Swap,      DSwap(Rc<Val>),
     Each,      DEach(Rc<Val>),
+    Scalar,    DScalar(Rc<Val>),
     Valences,  DValences(Rc<Val>, Rc<Val>),
     Overleft,  DOverleft(Rc<Val>, Rc<Val>),
     Overright, DOverright(Rc<Val>, Rc<Val>),
