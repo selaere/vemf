@@ -5,8 +5,6 @@ use super::{Val, Env, NAN};
 use smallvec::smallvec;
 use Val::{Num, Lis};
 
-
-
 impl Val {
 
 pub fn monad(&self, env: &mut Env, a: &Val) -> Val { 
@@ -32,10 +30,30 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             inner.locals.insert(smallvec![b!('ƒ')], self.clone());
             inner.eval_block(s)
         },
-        Val::Selfie => Val::DSelfie(Rc::new(a.clone())),
-        Val::DSelfie(g) => g.dyad(env, bb, a),
-        Val::Variances => Val::DVariances(Rc::new(bb.clone()), Rc::new(a.clone())),
-        Val::DVariances(f, g) => (if b.is_none() {f} else {g}).call(env, a, b),
+
+        Val::Bind { f: af, b: ab } => af.dyad(env, a, ab),
+        Val::Trn2 { a: aa, f: af }        => { let x = aa.call(env, a, b); af.monad(env, &x) },
+        Val::Trn3 { a: aa, f: af, b: ab } => { let x = aa.call(env, a, b); af.dyad(env, &x, ab) },
+        Val::Fork { a: aa, f: af, b: ab } => {
+            let l = aa.call(env, a, b);
+            let r = ab.call(env, a, b);
+            af.dyad(env, &l, &r)
+        }
+
+        Val::Swap      => Val::DSwap   (Rc::new(a.clone())),
+        Val::Each      => Val::DEach   (Rc::new(a.clone())),
+        Val::Valences  => Val::DValences(Rc::new(bb.clone()), Rc::new(a.clone())),
+        Val::Over      => Val::DOver     (Rc::new(bb.clone()), Rc::new(a.clone())),
+        Val::Overleft  => Val::DOverleft (Rc::new(bb.clone()), Rc::new(a.clone())),
+        Val::Overright => Val::DOverright(Rc::new(bb.clone()), Rc::new(a.clone())),
+        Val::DSwap(g) => g.dyad(env, bb, a),
+        Val::DEach(g) => super::list::each(env, a, b, g),
+        Val::DValences(f, g) => (if b.is_none() {f} else {g}).call(env, a, b),
+        Val::DOver(f, g) => {
+            let l = f.monad(env, a); let r = f.monad(env, bb); g.dyad(env, &l, &r)
+        },
+        Val::DOverleft(f, g) => {let x = f.monad(env, a); g.dyad(env, &x, bb)},
+        Val::DOverright(f, g) => {let x = f.monad(env, bb); g.dyad(env, a, &x)},
         Val::LoadIntrinsics => {
             macro_rules! load { ($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
@@ -43,10 +61,10 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 env.locals.insert(name, Val::$name)
             } );* }}
             load!(
-                Selfie, Variances,
+                Swap, Valences, Overleft, Overright, Over, Each,
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-                Left, Right, Len, Index,
+                Left, Right, Len, Index, Iota, Pair, Enlist,
                 Print, Println, Exit,
             );
             Num(1.)
@@ -88,17 +106,20 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Right => bb.clone(),
         Val::Len => Num(a.lenf()),
         Val::Index => a.index_at_depth(env, bb),
-
-        Val::Bind { f: af, b: ab } => af.dyad(env, a, ab),
-        Val::Trn1 { a: aa, f: af }        => { let x = aa.call(env, a, b); af.monad(env, &x) },
-        Val::Trn2 { a: aa, f: af, b: ab } => { let x = aa.call(env, a, b); af.dyad(env, &x, ab) },
-        Val::Fork { a: aa, f: af, b: ab } => {
-            let l = aa.call(env, a, b);
-            let r = ab.call(env, a, b);
-            af.dyad(env, &l, &r)
+        Val::Iota => match a {
+            Lis{l, ..} => super::list::iota(
+                Vec::new(), &l.iter().cloned().filter_map(|x| match x {
+                    Num(b) => Some(b as isize), _ => None
+                }).collect::<Vec<isize>>()),
+            Num(n) => if *n == f64::INFINITY {Val::Left} else {
+                super::list::iota_scalar(*n as isize)},
+            _ => Val::Bind{ f: Rc::new(Val::Right), b: Rc::new(NAN) }
         }
+        Val::Pair => [a, bb].into_iter().cloned().collect(),
+        Val::Enlist => [a].into_iter().cloned().collect(),
     }
 }
+
 
 fn from_bool(b: bool) -> Val { Num(f64::from(u8::from(b))) }
 
@@ -115,5 +136,7 @@ fn display_string(&self) -> String {
 }
 
 pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
+
+pub fn is_finite(&self) -> bool { matches!(self, Num(_) | Lis {..})}
 
 }

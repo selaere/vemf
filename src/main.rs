@@ -8,27 +8,18 @@ pub type Bstr = smallvec::SmallVec<[u8; 16]>; // length will be the same as a Ve
 fn main() {
     //println!("sizeof(Val) = {}", std::mem::size_of::<run::Val>());
     if let Some(path) = std::env::args().nth(1) {
-        let code = std::fs::read_to_string(path).expect("error while opening file");
-        //println!("input : ```{}```", code);
-        let tokens = token::tokenize(&codepage::tobytes(&code).unwrap());
-        //println!("{:?}", tokens);
-        let parsed = parse::parse(&tokens);
-        for i in &parsed { println!("parsed: {}", i); }
         let mut state = run::Env::new();
-        println!("{}", state.eval_block(&parsed));
+        state.include_stdlib();
+        println!("{}", state.include_file(&mut std::fs::File::open(path).unwrap()).unwrap());
     } else {
         let mut state = run::Env::new();
+        state.include_stdlib();
         loop {
             print!("vemf> ");
             let _ = std::io::Write::flush(&mut std::io::stdout());
             let mut code = String::new();
             std::io::stdin().read_line(&mut code).expect("error while reading from stdin");
-            // TODO make better
-            //println!("input : ```{}```", code);
-            let tokens = token::tokenize(&codepage::tobytes(&code).unwrap());
-            let parsed = parse::parse(&tokens);
-            for i in &parsed { println!("parsed: {}", i); }
-            println!("{}", state.eval_block(&parsed));
+            println!("{}", state.include_string(&code));
         }
     }
 }

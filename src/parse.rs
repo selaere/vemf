@@ -124,19 +124,13 @@ impl Capture for Fe {
 fn capture(&self, vars: &mut HashSet<Bstr>) {
     match self {
         Fe::Var(n) | Fe::SetVar(n) => { vars.insert(n.clone()); },
-        Fe::Aav1 { v, g } => {
-            vars.insert(v.clone());
-            g.capture(vars);
-        },
-        Fe::Aav2 { f, v, g } => {
-            vars.insert(v.clone());
-            f.capture(vars); g.capture(vars);
-        },
+        Fe::Aav1 { v, g } => { vars.insert(v.clone()); g.capture(vars); },
+        Fe::Aav2 { f, v, g } => { vars.insert(v.clone()); f.capture(vars); g.capture(vars); },
         Fe::Bind { f, b } => { f.capture(vars); b.capture(vars); },
         Fe::Trn1 { a, f } => { a.capture(vars); f.capture(vars); },
         Fe::Trn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
         Fe::Fork { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
-        Fe::Dfn { .. } => todo!()
+        Fe::Dfn { cap, .. } => { vars.extend(cap.iter().cloned()); }
     }
 }
 }
@@ -236,7 +230,7 @@ fn value(code: &[Tok]) -> (usize, Option<Ve>) {
                 let mut slice = &code[1..];
                 let (len, ev) = expression(slice, usize::MAX); slice = &slice[len..];
                 (
-                    slice_offset(code, slice) + usize::from(matches!(slice[0], Tok::Just(b')'))),
+                    slice_offset(code, slice) + usize::from(matches!(slice.first(), Some(Tok::Just(b')')))),
                     Some(ev.unwrap_or(Ve::Snd(vec![])))
                 )
             },
@@ -253,9 +247,9 @@ fn value(code: &[Tok]) -> (usize, Option<Ve>) {
                 });
                 if ev.is_some() {(len + 1, ev)} else {(0, None)}
             },
-            Tok::Just(s @ b!('╔''╚''╗''╝')) => {
+            Tok::Just(s @ b!('╦''╔''╚''╗''╝')) => {
                 let (len, ev) = expression_bites(&code[1..], match s {
-                    b!('╔')=>2, b!('╚')=>3, b!('╗')=>4, b!('╝')=>5, _=>unreachable!()
+                    b!('╦')=>1, b!('╔')=>2, b!('╚')=>3, b!('╗')=>4, b!('╝')=>5, _=>unreachable!()
                 });
                 if ev.is_some() {(len + 1, ev)} else {(0, None)}
             },
@@ -308,13 +302,13 @@ fn thing_bites(code: &[Tok], mut bites: usize) -> (usize, Option<Tg>, usize /*bi
         if bites == 0 { return (slice_offset(code, slice), Some(thing), 0) }
         if let Some(Tok::VarAv2(name)) = slice.first() {
             slice = &slice[1..];
-            let (len, t, b) = dbg!(thing_bites(slice, bites)); slice = &slice[len..]; bites = b;
+            let (len, t, b) = thing_bites(slice, bites); slice = &slice[len..]; bites = b;
             thing = Tg::Fe(Fe::Aav2 {
                 f: Box::new(thing),
                 v: name.clone(),
                 g: Box::new(t.unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))});
         }
-        dbg!((slice_offset(code, slice), Some(thing), bites))
+        (slice_offset(code, slice), Some(thing), bites)
     } else {(0, None, 0)}
 }
 

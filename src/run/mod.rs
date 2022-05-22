@@ -5,6 +5,7 @@ use crate::parse::{Tg, Fe, Ve};
 use crate::Bstr;
 use std::{collections::HashMap, rc::Rc};
 
+const STDLIB: &str = include_str!("../std.vemf");
 
 pub const NAN: Val = Num(f64::NAN);
 
@@ -21,14 +22,18 @@ pub enum Val {
     FSet(Bstr),
     Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Ve]> },
     Bind{ f: Rc<Val>, b: Rc<Val> },
-    Trn1{ a: Rc<Val>, f: Rc<Val> },
-    Trn2{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
+    Trn2{ a: Rc<Val>, f: Rc<Val> },
+    Trn3{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
     Fork{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
-    Selfie,    DSelfie(Rc<Val>),
-    Variances, DVariances(Rc<Val>, Rc<Val>),
+    Swap,      DSwap(Rc<Val>),
+    Each,      DEach(Rc<Val>),
+    Valences,  DValences(Rc<Val>, Rc<Val>),
+    Overleft,  DOverleft(Rc<Val>, Rc<Val>),
+    Overright, DOverright(Rc<Val>, Rc<Val>),
+    Over,      DOver(Rc<Val>, Rc<Val>),
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-    Left, Right, Len, Index,
+    Left, Right, Len, Index, Iota, Pair, Enlist,
     Print, Println, Exit,
     LoadIntrinsics,
 }
@@ -111,13 +116,13 @@ impl Env<'_> {
             Fe::Trn1 { a, f } => {
                 let a = self.eval_f(&*a.clone());
                 let f = self.eval_f(&*f.clone());
-                Val::Trn1{a: Rc::new(a), f: Rc::new(f)}
+                Val::Trn2{a: Rc::new(a), f: Rc::new(f)}
             },
             Fe::Trn2 { a, f, b } => {
                 let a = self.eval_f(&*a.clone());
                 let f = self.eval_f(&*f.clone());
                 let b = self.eval(&*b.clone());
-                Val::Trn2{a: Rc::new(a), f: Rc::new(f), b: Rc::new(b)}
+                Val::Trn3{a: Rc::new(a), f: Rc::new(f), b: Rc::new(b)}
             },
             Fe::Fork { a, f, b } => {
                 let a = self.eval_tg(&*a.clone());
@@ -128,10 +133,7 @@ impl Env<'_> {
             Fe::Dfn { s, cap } => {
                 let mut locals = HashMap::with_capacity(cap.len());
                 for var in cap {
-                    self.locals.get(var)
-                        // TODO iterate through outer
-                        .cloned()
-                        .and_then(|x| locals.insert(var.clone(), x));
+                    self.get_var(var).and_then(|x| locals.insert(var.clone(), x));
                 }
                 Val::Dfn {s: Rc::from(&s[..]), loc: Rc::new(locals)}
             },
@@ -150,6 +152,25 @@ impl Env<'_> {
             v = self.eval(expr);
         }
         v
+    }
+    pub fn include_string(&mut self, code: &str) -> Val{
+        use crate::{token, parse, codepage};
+        let tokens = token::tokenize(&codepage::tobytes(code).unwrap());
+        //println!("{:?}", tokens);
+        let parsed = parse::parse(&tokens);
+        //for i in &parsed { println!("parsed: {}", i); }
+        self.eval_block(&parsed)
+    }
+
+    pub fn include_stdlib(&mut self) {
+        self.include_string(STDLIB);
+    }
+
+    pub fn include_file<F: std::io::Read>(&mut self, file: &mut F) -> std::io::Result<Val> {
+        let mut code = String::new();
+        file.read_to_string(&mut code)?;
+        //println!("input : ```{}```", code);
+        Ok(self.include_string(&code))
     }
 
 }
