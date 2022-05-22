@@ -48,8 +48,8 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Overleft  => Val::DOverleft (Rc::new(bb.clone()), Rc::new(a.clone())),
         Val::Overright => Val::DOverright(Rc::new(bb.clone()), Rc::new(a.clone())),
         Val::DSwap(g) => g.dyad(env, bb, a),
-        Val::DEach(g) => super::list::each(env, a, b, g),
-        Val::DScalar(g) => super::list::scal(env, a, b, g),
+        Val::DEach(g) => super::adverb::each(env, a, b, g),
+        Val::DScalar(g) => super::adverb::scal(env, a, b, g),
         Val::DValences(f, g) => (if b.is_none() {f} else {g}).call(env, a, b),
         Val::DOver(f, g) => {
             let l = f.monad(env, a); let r = f.monad(env, bb); g.dyad(env, &l, &r)

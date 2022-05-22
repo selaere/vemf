@@ -1,5 +1,6 @@
 mod intrn;
 mod list;
+mod adverb;
 
 use crate::parse::{Tg, Fe, Ve};
 use crate::Bstr;
