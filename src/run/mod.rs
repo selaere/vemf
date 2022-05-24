@@ -146,9 +146,9 @@ impl Env<'_> {
     pub fn include_string(&mut self, code: &str) -> Val{
         use crate::{token, parse, codepage};
         let tokens = token::tokenize(&codepage::tobytes(code).unwrap());
-        println!("{:?}", tokens);
+        //println!("{:?}", tokens);
         let parsed = parse::parse(&tokens);
-        for i in &parsed { println!("parsed: {}", i); }
+        //for i in &parsed { println!("parsed: {}", i); }
         self.eval_block(&parsed)
     }
 
