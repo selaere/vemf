@@ -2,7 +2,7 @@ mod intrn;
 mod list;
 mod adverb;
 
-use crate::parse::{Tg, Fe, Ve};
+use crate::parse::{Expr};
 use crate::Bstr;
 use std::{collections::HashMap, rc::Rc};
 
@@ -21,7 +21,7 @@ pub enum Val {
     Num(f64),
     Lis { l: Rc<Vec<Val>>, fill: Rc<Val> },
     FSet(Bstr),
-    Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Ve]> },
+    Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Expr]> },
     Bind{ f: Rc<Val>, b: Rc<Val> },
     Trn2{ a: Rc<Val>, f: Rc<Val> },
     Trn3{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
@@ -75,64 +75,58 @@ impl Env<'_> {
         self.locals.get(name).cloned().or_else(|| self.outer.and_then(|x| x.get_var(name)))
     }
 
-    pub fn eval(&mut self, expr: &Ve) -> Val {
+    pub fn eval(&mut self, expr: &Expr) -> Val {
         match expr {
-            Ve::Var(s) => self.locals.get(&s[..]).cloned().unwrap_or_default(),
-            Ve::Num(n) => Val::Num(*n),
-            Ve::Snd(l) => Val::Lis {
+            Expr::Var(s) => self.get_var(s).unwrap_or_default(),
+            Expr::Num(n) => Val::Num(*n),
+            Expr::Snd(l) => Val::Lis {
                 l: Rc::from(l.iter().map(|x| self.eval(x)).collect::<Vec<_>>()),
                 fill: Rc::new(NAN)
             },
-            Ve::Nom(f) => self.eval_f(f),
-            Ve::Afn1 { a, f } => {
+            Expr::Afn1 { a, f } => {
                 let a = self.eval(a);
-                let f = self.eval_f(f);
+                let f = self.eval(f);
                 f.monad(self, &a)
             },
-            Ve::Afn2 { a, f, b } => {
+            Expr::Afn2 { a, f, b } => {
                 let a = self.eval(a);
-                let f = self.eval_f(f);
+                let f = self.eval(f);
                 let b = self.eval(b);
                 f.dyad(self, &a, &b)
             },
-        }
-    }
-    pub fn eval_f(&mut self, expr: &Fe) -> Val {
-        match expr {
-            Fe::Var(s) => self.get_var(s).unwrap_or_default(),
-            Fe::SetVar(v) => Val::FSet(v.clone()),
-            Fe::Aav1 { v, g } => {
-                let g = self.eval_tg(&*g.clone());
+            Expr::SetVar(v) => Val::FSet(v.clone()),
+            Expr::Aav1 { v, g } => {
+                let g = self.eval(&*g.clone());
                 self.locals.get(&v[..]).cloned().unwrap_or_default().monad(self, &g)
             }
-            Fe::Aav2 { f, v, g } => {
-                let f = self.eval_tg(&*f.clone());
-                let g = self.eval_tg(&*g.clone());
+            Expr::Aav2 { f, v, g } => {
+                let f = self.eval(&*f.clone());
+                let g = self.eval(&*g.clone());
                 self.locals.get(&v[..]).cloned().unwrap_or_default().dyad(self, &g, &f)
             },
-            Fe::Bind { f, b } => {
-                let f = self.eval_f(&*f.clone());
+            Expr::Bind { f, b } => {
+                let f = self.eval(&*f.clone());
                 let b = self.eval(&*b.clone());
                 Val::Bind{f: Rc::new(f), b: Rc::new(b)}
             },
-            Fe::Trn1 { a, f } => {
-                let a = self.eval_f(&*a.clone());
-                let f = self.eval_f(&*f.clone());
+            Expr::Trn1 { a, f } => {
+                let a = self.eval(&*a.clone());
+                let f = self.eval(&*f.clone());
                 Val::Trn2{a: Rc::new(a), f: Rc::new(f)}
             },
-            Fe::Trn2 { a, f, b } => {
-                let a = self.eval_f(&*a.clone());
-                let f = self.eval_f(&*f.clone());
+            Expr::Trn2 { a, f, b } => {
+                let a = self.eval(&*a.clone());
+                let f = self.eval(&*f.clone());
                 let b = self.eval(&*b.clone());
                 Val::Trn3{a: Rc::new(a), f: Rc::new(f), b: Rc::new(b)}
             },
-            Fe::Fork { a, f, b } => {
-                let a = self.eval_tg(&*a.clone());
-                let f = self.eval_tg(&*f.clone());
-                let b = self.eval_tg(&*b.clone());
+            Expr::Fork { a, f, b } => {
+                let a = self.eval(&*a.clone());
+                let f = self.eval(&*f.clone());
+                let b = self.eval(&*b.clone());
                 Val::Fork{a: Rc::new(a), f: Rc::new(f), b: Rc::new(b)}
             },
-            Fe::Dfn { s, cap } => {
+            Expr::Dfn { s, cap } => {
                 let mut locals = HashMap::with_capacity(cap.len());
                 for var in cap {
                     self.get_var(var).and_then(|x| locals.insert(var.clone(), x));
@@ -141,14 +135,8 @@ impl Env<'_> {
             },
         }
     }
-    fn eval_tg(&mut self, expr: &Tg) -> Val {
-        match expr {
-            Tg::Ve(ve) => self.eval(ve),
-            Tg::Fe(fe) => self.eval_f(fe)
-        }
-    }
 
-    pub fn eval_block(&mut self, block: &[Ve]) -> Val {
+    pub fn eval_block(&mut self, block: &[Expr]) -> Val {
         let mut v = NAN;
         for expr in block.iter() {
             v = self.eval(expr);
@@ -158,9 +146,9 @@ impl Env<'_> {
     pub fn include_string(&mut self, code: &str) -> Val{
         use crate::{token, parse, codepage};
         let tokens = token::tokenize(&codepage::tobytes(code).unwrap());
-        //println!("{:?}", tokens);
+        println!("{:?}", tokens);
         let parsed = parse::parse(&tokens);
-        //for i in &parsed { println!("parsed: {}", i); }
+        for i in &parsed { println!("parsed: {}", i); }
         self.eval_block(&parsed)
     }
 

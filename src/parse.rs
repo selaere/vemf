@@ -6,77 +6,56 @@ use crate::{b, Bstr};
 use crate::codepage::tochars;
 use crate::token::Tok;
 
+macro_rules! step {
+    ($code:ident) => { *$code = &$code[1..]; };
+}
+
 // Value expression
 #[derive(Clone, Debug)]
-pub enum Ve {
+pub enum Expr {
     Var(Bstr),
     Num(f64),
-    Snd(Vec<Ve>),  // strand
-    Nom(Fe),       // function as value
-    Afn1 { a: Box<Ve>, f: Fe             },  // apply monadic function
-    Afn2 { a: Box<Ve>, f: Fe, b: Box<Ve> },  // apply dyadic  function 
-}
-// Function expression
-#[derive(Clone, Debug)]
-pub enum Fe {
-    Var(Bstr),
+    Snd(Vec<Expr>),  // strand
+    Afn1 { a: Box<Expr>, f: Box<Expr>               },  // apply monadic function
+    Afn2 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> },  // apply dyadic  function 
     SetVar(Bstr),
-    Aav1 {            v: Bstr   , g: Box<Tg>}, //     apply monadic adverb
-    Aav2 {f: Box<Tg>, v: Bstr   , g: Box<Tg>}, //     apply dyadic  adverb
-    Bind {            f: Box<Fe>, b: Box<Ve>}, // +1
-    Trn1 {a: Box<Fe>, f: Box<Fe>            }, // +/
-    Trn2 {a: Box<Fe>, f: Box<Fe>, b: Box<Ve>}, // +/2
-    Fork {a: Box<Tg>, f: Box<Tg>, b: Box<Tg>}, // ┼+/~
-    Dfn  {s: Vec<Ve>, cap: HashSet<Bstr>},
+    Aav1 {              v: Bstr     , g: Box<Expr>}, //     apply monadic adverb
+    Aav2 {f: Box<Expr>, v: Bstr     , g: Box<Expr>}, //     apply dyadic  adverb
+    Bind {              f: Box<Expr>, b: Box<Expr>}, // +1
+    Trn1 {a: Box<Expr>, f: Box<Expr>              }, // +/
+    Trn2 {a: Box<Expr>, f: Box<Expr>, b: Box<Expr>}, // +/2
+    Fork {a: Box<Expr>, f: Box<Expr>, b: Box<Expr>}, // ┼+/~
+    Dfn  {s: Vec<Expr>, cap: HashSet<Bstr>},
 }
 
-// a thing (Tg) is either:
-// - a function
-// - a value
-#[derive(Clone, Debug)]
-pub enum Tg {
-    Fe(Fe),
-    Ve(Ve)
+#[derive(Debug)]
+pub enum Role {
+    Noun, Verb, Conj
 }
+use Role::{Noun, Verb, Conj};
+const NAN: Expr = Expr::Num(f64::NAN);
 
-fn displayname(bytes: &[u8]) -> String {
-    if bytes.contains(&b' ') {
-        format!("\"{}\"", tochars(bytes).replace('"', "\""))
-    } else {
-        tochars(bytes)
-    }
-}
-
-impl Display for Ve {
+impl Display for Expr {
     fn fmt(&self, m: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Ve::Var(v) => write!(m, ".{}", displayname(v)),
-            Ve::Num(n) => write!(m, "'{}", n),
-            Ve::Snd(l) => {
+            Self::Var(v) => write!(m, ".{}", displayname(v)),
+            Self::Num(n) => write!(m, "'{}", n),
+            Self::Snd(l) => {
                 write!(m, "(")?;
                 for v in l { write!(m, "{}", v)?; }
                 write!(m, ")")?;
                 Ok(())
             },
-            Ve::Nom(v) => write!(m, "♪{}", v),
-            Ve::Afn1 { a, f } => write!(m, "({} {})", a, f),
-            Ve::Afn2 { a, f, b } => write!(m, "({} {} {})", a, f, b),
-        }
-    }
-}
-
-impl Display for Fe {
-    fn fmt(&self, m: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Fe::Var(v) => write!(m, ":{}", displayname(v)),
-            Fe::SetVar(v) => write!(m, "→{}", displayname(v)),
-            Fe::Aav1 {    v, g } => write!(m, "[•{} {}]", displayname(v), g),
-            Fe::Aav2 { f, v, g } => write!(m, "[{} ○{} {}]", f, displayname(v), g),
-            Fe::Bind {    f, b } => write!(m, "[{} with {}]", f, b),
-            Fe::Trn1 { a, f    } => write!(m, "[{} {}]", a, f),
-            Fe::Trn2 { a, f, b } => write!(m, "[{} {} {}]", a, f, b),
-            Fe::Fork { a, f, b } => write!(m, "┼[{} {} {}]", a, f, b),
-            Fe::Dfn  { s: efs, .. } => {
+            Self::Afn1 { a, f } => write!(m, "({} {})", a, f),
+            Self::Afn2 { a, f, b } => write!(m, "({} {} {})", a, f, b),
+            Self::SetVar(v) => write!(m, "→{}", displayname(v)),
+            Self::Aav1 {    v, g } => write!(m, "[•{} {}]", displayname(v), g),
+            Self::Aav2 { f, v, g } => write!(m, "[{} ○{} {}]", f, displayname(v), g),
+            Self::Bind {    f, b } => write!(m, "[{} with {}]", f, b),
+            Self::Trn1 { a, f    } => write!(m, "[{} {}]", a, f),
+            Self::Trn2 { a, f, b } => write!(m, "[{} {} {}]", a, f, b),
+            Self::Fork { a, f, b } => write!(m, "┼[{} {} {}]", a, f, b),
+            Self::Dfn  { s: efs, .. } => {
                 write!(m, "{{ ")?;
                 for v in efs { write!(m, "{}; ", v)?; }
                 write!(m, "}}")?;
@@ -86,342 +65,258 @@ impl Display for Fe {
     }
 }
 
-impl Display for Tg {
-    fn fmt(&self, m: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self { Tg::Fe(f) => write!(m, "{}", f),
-                     Tg::Ve(v) => write!(m, "{}", v)}
+
+fn displayname(bytes: &[u8]) -> String {
+    if bytes.contains(&b' ') {
+        format!("\"{}\"", tochars(bytes).replace('"', "\""))
+    } else {
+        tochars(bytes)
     }
 }
 
-fn slice_offset<T>(code: &[T], slice: &[T]) -> usize {
-    if slice.is_empty() { return code.len() }
-    let ptr = slice.as_ptr();
-    assert!(code.as_ptr_range().contains(&ptr));
-    unsafe {
-        // SAFETY: we check that `slice` is a subset of `code`, so this SHOULD be fine
-        ptr.offset_from(code.as_ptr()) as usize
-    }
-}
-
-trait Capture {
-    fn capture(&self, vars: &mut HashSet<Bstr>);
-}
-
-impl Capture for Ve {
-fn capture(&self, vars: &mut HashSet<Bstr>) {
-    match self {
-        Ve::Var(n) => { vars.insert(n.clone()); },
-        Ve::Num(_) => (),
-        Ve::Snd(l) => for i in l { i.capture(vars) }
-        Ve::Nom(f) => f.capture(vars),
-        Ve::Afn1 { a, f    } => { a.capture(vars); f.capture(vars); },
-        Ve::Afn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
-    }
-}
-}
-
-impl Capture for Fe {
-fn capture(&self, vars: &mut HashSet<Bstr>) {
-    match self {
-        Fe::Var(n) | Fe::SetVar(n) => { vars.insert(n.clone()); },
-        Fe::Aav1 { v, g } => { vars.insert(v.clone()); g.capture(vars); },
-        Fe::Aav2 { f, v, g } => { vars.insert(v.clone()); f.capture(vars); g.capture(vars); },
-        Fe::Bind { f, b } => { f.capture(vars); b.capture(vars); },
-        Fe::Trn1 { a, f } => { a.capture(vars); f.capture(vars); },
-        Fe::Trn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
-        Fe::Fork { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
-        Fe::Dfn { cap, .. } => { vars.extend(cap.iter().cloned()); }
-    }
-}
-}
-impl Capture for Tg {
-fn capture(&self, vars: &mut HashSet<Bstr>) { match self {
-    Tg::Fe(fe) => fe.capture(vars),
-    Tg::Ve(ve) => ve.capture(vars),
-}}
-}
-
-fn identity() -> Tg { Tg::Fe(Fe::Var(smallvec![b!('◄')])) }
-
-fn function(code: &[Tok]) -> (usize, Option<Fe>) {
+fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
+    if *morphemes == 0 {return None}
     if let Some(t) = code.first() {
-        match t {
-            // these are functions until when they aren't
-            Tok::Stmt(c @ b!('☺''☻''⌂')) => (1, Some(Fe::Var(smallvec![*c]))),
-            Tok::VarSet(v) => (1, Some(Fe::SetVar(v.clone()))),
-            // monadic adverbs
-            Tok::VarAv1(name) => {
-                let (offset, thing) = thing(&code[1..]);
-                (offset+1, thing.map(|x| Fe::Aav1 {v: name.clone(), g: Box::new(x)}))
+        let (rol, val) = match t {
+            Tok::Stmt(c) => { step!(code); (Conj, Expr::Var(smallvec![*c])) },
+            Tok::VarSet(v) => { step!(code); (Conj, Expr::SetVar(v.clone())) },
+            Tok::VarAv1(name) => { step!(code);
+                let word = word(code, morphemes);
+                (Verb, Expr::Aav1{
+                    v: name.clone(),
+                    g: Box::new(word.map(|x| x.1).unwrap_or(NAN))
+                })
             },
-            Tok::Just(b!('┼')) => {
-                let mut slice = &code[1..];
-                let (len, a) = thing(slice); slice = &slice[len..];
-                let (len, f) = thing(slice); slice = &slice[len..];
-                let (len, b) = thing(slice); slice = &slice[len..];
-                (slice_offset(code, slice), Some(Fe::Fork {
-                    a: Box::new(a.unwrap_or_else(identity)),
-                    f: Box::new(f.unwrap_or_else(identity)),
-                    b: Box::new(b.unwrap_or_else(identity))}))
-            }
-            Tok::Just(b!('╬')) => {
-                let mut slice = &code[1..];
-                let (len, a) = thing(slice); slice = &slice[len..];
-                let (len, f) = thing(slice); slice = &slice[len..];
-                let (len, b) = atom (slice); slice = &slice[len..];
-                (slice_offset(code, slice), Some(Fe::Fork {
-                    a: Box::new(a.unwrap_or_else(identity)),
-                    f: Box::new(f.unwrap_or_else(identity)),
-                    b: Box::new(b.unwrap_or_else(identity))}))
-            }
-            Tok::Just(b'{') => {
-                let mut slice = &code[1..];
-                let (len, s) = block(slice); slice = &slice[len..];
+            #[allow(const_item_mutation)]
+            Tok::Just(b!('┼')) => { step!(code);
+                let a = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+                let f = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+                let b = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+                (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
+            },
+            #[allow(const_item_mutation)]
+            Tok::Just(b!('╬')) => { step!(code);
+                let a = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+                let f = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+                let b = word(code, &mut 1         ).map(|x| x.1).unwrap_or(NAN);
+                (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
+            },
+            Tok::Just(b'{') => { step!(code);
+                let s = block(code);
                 let mut vars = HashSet::new();
                 for i in &s { i.capture(&mut vars) }
-                let braces_closed = usize::from(matches!(slice.first(), Some(Tok::Just(b'}'))));
-                (
-                    slice_offset(code, slice) + braces_closed,
-                    Some(Fe::Dfn {s, cap: vars})
-                )
-            }
-            Tok::VarFun(v) => (1, Some(Fe::Var(v.clone()))),
-            _ => (0, None)
-        }
-    } else {(0, None)}
-}
-
-fn value_token(chr: Tok) -> Option<Ve> {
-    Some(match chr {
-        Tok::Just(c @ b'0'..=b'9') => Ve::Num(f64::from(c - b'0')),
-        Tok::Just(b!('Φ')) => Ve::Num(10.),
-        Tok::Just(b!('Θ')) => Ve::Num(-1.),
-        Tok::Just(b!('∞')) => Ve::Num(f64::INFINITY),
-        Tok::Just(b!('█')) => Ve::Num(f64::NAN),
-        Tok::Just(b!('ϕ')) => Ve::Snd(Vec::new()),
-        Tok::VarVal(x) => Ve::Var(x),
-        Tok::Chr(x) =>
-            Ve::Num(if x <= 10 { -f64::from(x) } else { f64::from(x) }),
-        Tok::Chr2(x, y) =>
-            Ve::Snd(vec![Ve::Num(f64::from(x)), Ve::Num(f64::from(y))]),
-        Tok::Num2(x, y) =>
-            Ve::Num(f64::from(x)*253. + f64::from(y)),
-        Tok::Num3(x, y, z) =>
-            Ve::Num(f64::from(x)*253.*253. + f64::from(y)*253. + f64::from(z)),
-        Tok::Num(l) => {
-            let mut num = 0.;
-            for i in l { num = num * 253. + f64::from(i) }
-            Ve::Num(num)
-        }
-        Tok::HNum(x) => unsafe {
-            // safety: HNums have only [0-9.]+, all are ascii characters
-            Ve::Num(std::str::from_utf8_unchecked(&x).parse::<f64>().unwrap())
-        },
-        Tok::Str(x) =>
-            Ve::Snd(x.iter().map(|&x| Ve::Num(f64::from(x))).collect()),
-        _ => return None,
-    })
-}
-
-fn value(code: &[Tok]) -> (usize, Option<Ve>) {
-    if let Some(t) = code.first() {
-        match t.clone() {
-            Tok::Just(b'(') => {
-                let mut slice = &code[1..];
-                let (len, ev) = expression(slice, usize::MAX); slice = &slice[len..];
-                (
-                    slice_offset(code, slice) + usize::from(matches!(slice.first(), Some(Tok::Just(b')')))),
-                    Some(ev.unwrap_or(Ve::Snd(vec![])))
-                )
+                if let Some(Tok::Just(b'}')) = code.first() { step!(code); }
+                (Noun, Expr::Dfn {s, cap: vars})
             },
-            Tok::Just(b!('♪')) => {
-                let (len, t) = thing(&code[1..]);
-                if let Some(t) = t { (len+1, Some(match t {
-                    Tg::Ve(ev) => Ve::Snd(vec![ev]),
-                    Tg::Fe(ef) => Ve::Nom(ef),
-                }))} else {(0, None)}
+            Tok::VarFun(v) | Tok::VarAv2(v) => {step!(code); (Verb, Expr::Var(v.clone()))},
+            Tok::Just(b'(') => { step!(code);
+                let expr = phrase_to_expr(phrase(code)).unwrap_or(Expr::Snd(vec![]));
+                if let Some(Tok::Just(b')')) = code.first() { step!(code); }
+                (Noun, expr)
             },
-            Tok::Just(s @ b!('┌''└''┐''┘')) => {
-                let (len, ev) = expression(&code[1..], match s {
+            Tok::Just(b!('♪')) => { step!(code);
+                #[allow(const_item_mutation)]
+                let (rol, arg) = word(code, &mut usize::MAX).unwrap_or((Noun, NAN));
+                (Noun, match rol {
+                    Noun => Expr::Snd(vec![arg]),
+                    Verb | Conj => arg
+                })
+            },
+            Tok::Just(s @ b!('┌''└''┐''┘')) => { step!(code);
+                let p = phrase_by_words(code, match s {
                     b!('┌')=>2, b!('└')=>3, b!('┐')=>4, b!('┘')=>5, _=>unreachable!()
                 });
-                if ev.is_some() {(len + 1, ev)} else {(0, None)}
+                let e = phrase_to_expr(p);
+                (Noun, e.unwrap_or(NAN))
             },
-            Tok::Just(s @ b!('╦''╔''╚''╗''╝')) => {
-                let (len, ev) = expression_bites(&code[1..], match s {
+            Tok::Just(s @ b!('╦''╔''╚''╗''╝')) => { step!(code);
+                let p = phrase_by_morphemes(code, match s {
                     b!('╦')=>1, b!('╔')=>2, b!('╚')=>3, b!('╗')=>4, b!('╝')=>5, _=>unreachable!()
                 });
-                if ev.is_some() {(len + 1, ev)} else {(0, None)}
+                let e = phrase_to_expr(p);
+                (Noun, e.unwrap_or(NAN))
             },
-            t => { let p = value_token(t); (usize::from(p.is_some()), p) }
-        }
-    } else { (0, None) }
+            t => if let Some(p) = value_token(t.clone()) { 
+                step!(code); (Noun, p)
+            } else {return None}
+        };
+        if *morphemes > 1 { if let Some(Tok::VarAv2(n)) = code.first() {
+            *morphemes -= 1;
+            step!(code);
+            let word = word(code, morphemes);
+            return Some((Verb, Expr::Aav2{
+                f: Box::new(val),
+                v: n.clone(),
+                g: Box::new(word.map(|x| x.1).unwrap_or(NAN)),
+            }))
+        }}
+        Some((rol, val))
+    } else {None}
 }
 
-fn atom(code: &[Tok]) -> (usize, Option<Tg>) {
-    let thing: Tg;
-    let mut slice = code;
-    // try with a value
-    let (len, oev) = value(slice); slice = &slice[len..];
-    if let Some(ev) = oev {
-        thing = Tg::Ve(ev);
-    } else {
-        // try with a function
-        let (len, oef) = function(slice); slice = &slice[len..];
-        if let Some(ef) = oef {
-            thing = Tg::Fe(ef);
-        } else {
-            // huh.
-            return (0, None);
-        }
-    }
-    (slice_offset(code, slice), Some(thing))
+pub fn phrase_by_morphemes(code: &mut&[Tok], mut morphemes: usize) -> Vec<(Role, Expr)> {
+    let mut phrase = Vec::new();
+    let mut last_was_conj = false;
+    let morphemes = &mut morphemes;
+    loop {
+        // we need to make another reference in case we have to backtrack in case we get a Conj
+        let copy = &mut &**code;
+        let word = word(copy, morphemes);
+        //println!("{:?} {:?}", word, morphemes);
+        if let Some(word) = word {
+            if last_was_conj && matches!(word.0, Noun) { break }
+            last_was_conj = matches!(word.0, Conj);
+            *code = copy; phrase.push(word);
+        } else { break }
+        if *morphemes >= 1 {*morphemes -= 1} else {break}
+    };
+    phrase
 }
 
-fn thing(code: &[Tok]) -> (usize, Option<Tg>) {
-    let mut slice = code;
-    let (len, tg) = atom(code); slice = &slice[len..];
-    if let Some(mut tg) = tg {
-        if let Some(Tok::VarAv2(name)) = slice.first() {
-            slice = &slice[1..];
-            let (len, t) = thing(slice); slice = &slice[len..];
-            tg = Tg::Fe(Fe::Aav2 {
-                f: Box::new(tg),
-                v: name.clone(),
-                g: Box::new(t.unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))});
-        }
-        (slice_offset(code, slice), Some(tg))
-    } else {(0, None)}
+pub fn phrase_by_words(code: &mut&[Tok], words: usize) -> Vec<(Role, Expr)> {
+    let mut phrase = Vec::with_capacity(if words > 10 {0} else {words});
+    let mut last_was_conj = false;
+    while phrase.len() < words {
+        // we need to make another reference in case we have to backtrack in case we get a Conj
+        let copy = &mut &**code;
+        #[allow(const_item_mutation)]
+        let word = word(copy, &mut usize::MAX);
+        //println!("{:?} {:?}", word, morphemes);
+        if let Some(word) = word {
+            if last_was_conj && matches!(word.0, Noun) { break }
+            last_was_conj = matches!(word.0, Conj);
+            *code = copy; phrase.push(word);
+        } else { break }
+    };
+    phrase
+
 }
 
-fn thing_bites(code: &[Tok], mut bites: usize) -> (usize, Option<Tg>, usize /*bites*/) {
-    if bites == 0 { return (0, None, 0) }
-    let mut slice = code;
-    let (len, thing) = atom(code); slice = &slice[len..]; bites -= 1;
-    if let Some(mut thing) = thing {
-        if bites == 0 { return (slice_offset(code, slice), Some(thing), 0) }
-        if let Some(Tok::VarAv2(name)) = slice.first() {
-            slice = &slice[1..];
-            let (len, t, b) = thing_bites(slice, bites); slice = &slice[len..]; bites = b;
-            thing = Tg::Fe(Fe::Aav2 {
-                f: Box::new(thing),
-                v: name.clone(),
-                g: Box::new(t.unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))});
-        }
-        (slice_offset(code, slice), Some(thing), bites)
-    } else {(0, None, 0)}
+pub fn phrase(code: &mut&[Tok]) -> Vec<(Role, Expr)> {
+    phrase_by_words(code, usize::MAX)
 }
+
 
 // takes from iterator to make a strand. if it's only one element, it's just the one value. 
 // if it's not a strand, returns None
-fn strand(iter: &mut std::iter::Peekable<std::vec::IntoIter<Tg>>) -> Option<Ve> {
+fn strand(iter: &mut std::iter::Peekable<std::vec::IntoIter<(Role, Expr)>>) -> Option<Expr> {
     let mut evs = Vec::new();
-    while let Some(Tg::Ve(v)) = iter.peek() {
+    while let Some((Noun, v)) = iter.peek() {
         evs.push(v.clone()); iter.next();
     }
-    (!evs.is_empty()).then(|| if evs.len() == 1 { evs[0].clone() } else { Ve::Snd(evs) })
+    (!evs.is_empty()).then(|| if evs.len() == 1 { evs[0].clone() } else { Expr::Snd(evs) })
 }
 
-fn things_to_expr(things: Vec<Tg>) -> Option<Ve> {
+
+fn phrase_to_expr(things: Vec<(Role, Expr)>) -> Option<Expr> {
     let mut iter = things.into_iter().peekable();
     Some(if let Some(start) = strand(&mut iter) {
         // Function application
         let mut value = start;
-        while let Some(Tg::Fe(ef)) = iter.next() {
+        while let Some((Verb | Conj, ef)) = iter.next() {
             value = if let Some(ev) = strand(&mut iter) {  // dyad
-                Ve::Afn2 {a: Box::new(value), f: ef, b: Box::new(ev)}
+                Expr::Afn2 {a: Box::new(value), f: Box::new(ef), b: Box::new(ev)}
             } else {  // monad
-                Ve::Afn1 {a: Box::new(value), f: ef}
+                Expr::Afn1 {a: Box::new(value), f: Box::new(ef)}
             }
         }
         value
     } else { match iter.next() {
-        Some(Tg::Fe(ef)) => {
+        Some((Verb | Conj, ef)) => {
             // Train
             let mut value = if let Some(b) = strand(&mut iter) {
-                Fe::Bind {f: Box::new(ef), b: Box::new(b)}
+                Expr::Bind {f: Box::new(ef), b: Box::new(b)}
             } else { ef };
-            while let Some(Tg::Fe(ef)) = iter.next() {
+            while let Some((Verb | Conj, ef)) = iter.next() {
                 value = if let Some(b) = strand(&mut iter) {  // dyad
-                    Fe::Trn2 {a: Box::new(value), f: Box::new(ef), b: Box::new(b)}
+                    Expr::Trn2 {a: Box::new(value), f: Box::new(ef), b: Box::new(b)}
                 } else {  // monad
-                    Fe::Trn1 {a: Box::new(value), f: Box::new(ef)}
+                    Expr::Trn1 {a: Box::new(value), f: Box::new(ef)}
                 }
             }
-            Ve::Nom(value)
+            value
         },
-        Some(Tg::Ve(_)) => unreachable!(),
+        Some((Noun, _)) => unreachable!(),
         None => return None
     }})
 }
 
-pub fn expression(code: &[Tok], limit: usize) -> (usize, Option<Ve>) {
-    let mut slice = code;
-    // makes a list of things before processing
-    let mut things = Vec::new();
-    let mut last_was_stmt = false;
-    // TODO: BAD BAD BAD code
-    while things.len() < limit {
-        let (len, t) = thing(slice);
-        if matches!(t, Some(Tg::Ve(_)) | None) && last_was_stmt { 
-            let last = match things.pop() {
-                Some(Tg::Fe(x)) => x, _ => unreachable!()
-            };
-            let expr = things_to_expr(things);
-            if let Some(expr) = expr {
-                return (slice_offset(code, slice), Some(Ve::Afn1 { a: Box::new(expr), f: last}))
-            } else {return (0, None)}
+
+fn value_token(chr: Tok) -> Option<Expr> {
+    Some(match chr {
+        Tok::Just(c @ b'0'..=b'9') => Expr::Num(f64::from(c - b'0')),
+        Tok::Just(b!('Φ')) => Expr::Num(10.),
+        Tok::Just(b!('Θ')) => Expr::Num(-1.),
+        Tok::Just(b!('∞')) => Expr::Num(f64::INFINITY),
+        Tok::Just(b!('█')) => NAN,
+        Tok::Just(b!('ϕ')) => Expr::Snd(Vec::new()),
+        Tok::VarVal(x) => Expr::Var(x),
+        Tok::Chr(x) =>
+            Expr::Num(if x <= 10 { -f64::from(x) } else { f64::from(x) }),
+        Tok::Chr2(x, y) =>
+            Expr::Snd(vec![Expr::Num(f64::from(x)), Expr::Num(f64::from(y))]),
+        Tok::Num2(x, y) =>
+            Expr::Num(f64::from(x)*253. + f64::from(y)),
+        Tok::Num3(x, y, z) =>
+            Expr::Num(f64::from(x)*253.*253. + f64::from(y)*253. + f64::from(z)),
+        Tok::Num(l) => {
+            let mut num = 0.;
+            for i in l { num = num*253. + f64::from(i) }
+            Expr::Num(num)
         }
-        if let Some(thing) = t {
-            things.push(thing);
-        } else { break }
-        last_was_stmt = matches!(slice.first(), Some(Tok::Stmt(_) | Tok::VarSet(_)));
-        slice = &slice[len..];
-    }
-    if limit != usize::MAX { while things.len() < limit {
-        things.push(things.last().cloned().unwrap_or(Tg::Ve(Ve::Num(f64::NAN))))
-    }}
-    let expr = things_to_expr(things);
-    (usize::from(expr.is_some()) * slice_offset(code, slice), expr)
+        Tok::HNum(x) => unsafe {
+            // safety: HNums have only [0-9.]+, all are ascii characters
+            Expr::Num(std::str::from_utf8_unchecked(&x).parse::<f64>().unwrap())
+        },
+        Tok::Str(x) =>
+            Expr::Snd(x.iter().map(|&x| Expr::Num(f64::from(x))).collect()),
+        _ => return None,
+    })
 }
 
-pub fn expression_bites(code: &[Tok], mut bites: usize) -> (usize, Option<Ve>) {
-    let mut slice = code;
-    // makes a list of things before processing
-    let mut things = Vec::new();
-    let mut last_was_stmt = false;
-    loop {
-        let (len, t, b) = thing_bites(slice, bites);
-        if let Some(thing) = t {
-            if matches!(thing, Tg::Ve(_)) && last_was_stmt { break }
-            things.push(thing);
-        } else { break }
-        last_was_stmt = matches!(slice.first(), Some(Tok::Stmt(_) | Tok::VarSet(_)));
-        slice = &slice[len..]; bites = b;
+impl Expr {
+fn capture(&self, vars: &mut HashSet<Bstr>) { // yeah...
+    match self {
+        Expr::Var(n) | Expr::SetVar(n) => { vars.insert(n.clone()); },
+        Expr::Num(_) => (),
+        Expr::Snd(l) => for i in l { i.capture(vars) }
+        Expr::Afn1 { a, f    } => { a.capture(vars); f.capture(vars); },
+        Expr::Afn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
+        Expr::Aav1 { v, g } => { vars.insert(v.clone()); g.capture(vars); },
+        Expr::Aav2 { f, v, g } => { vars.insert(v.clone()); f.capture(vars); g.capture(vars); },
+        Expr::Bind { f, b } => { f.capture(vars); b.capture(vars); },
+        Expr::Trn1 { a, f } => { a.capture(vars); f.capture(vars); },
+        Expr::Trn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
+        Expr::Fork { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
+        Expr::Dfn { cap, .. } => { vars.extend(cap.iter().cloned()); }
     }
-
-    let expr = things_to_expr(things);
-    (usize::from(expr.is_some()) * slice_offset(code, slice), expr)
+}
 }
 
-fn block(code: &[Tok]) -> (usize, Vec<Ve>) {
-    let mut slice = code;
+
+pub fn block(code: &mut&[Tok]) -> Vec<Expr> {
     let mut exps = Vec::new();
     loop {
-        while let Some(Tok::Just(b!('·'))) = slice.first() { slice = &slice[1..]; }
-        let (len, ev) = expression(slice, usize::MAX); slice = &slice[len..];
+        while let Some(Tok::Just(b!('·'))) = code.first() { step!(code); }
+        let mut phrase = phrase(code);
+        let ev = match phrase.pop() {
+            Some((Conj, c)) => phrase_to_expr(phrase).map(|x| Expr::Afn1{a: Box::new(x), f: Box::new(c.clone())}),
+            Some(els) => { phrase.push(els); phrase_to_expr(phrase) }
+            None => None
+        };
         if let Some(ev) = ev {
             exps.push(ev);
         } else { break }
     }
-    while let Some(Tok::Just(b!('·'))) = slice.first() { slice = &slice[1..]; }
-    (slice_offset(code, slice), exps)
+    while let Some(Tok::Just(b!('·'))) = code.first() { step!(code); }
+    exps
 }
 
-pub fn parse(code: &[Tok]) -> Vec<Ve> {
-    let (len, exps) = block(code);
-    if code.len() > len {
-        println!("unexpected token {:?}", code[len]);
+pub fn parse(code: &[Tok]) -> Vec<Expr> {
+    let mut slice = code;
+    let exps = block(&mut slice);
+    if !slice.is_empty() {
+        println!("unexpected token {:?}", code[code.len() - slice.len()]);
     }
     exps
 }

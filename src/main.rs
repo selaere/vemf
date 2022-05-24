@@ -6,14 +6,14 @@ mod run;
 pub type Bstr = smallvec::SmallVec<[u8; 16]>; // length will be the same as a Vec in 64bit archs
 
 fn main() {
-    println!("sizeof(Val) = {}", std::mem::size_of::<std::rc::Rc<run::Val>>());
+    println!("sizeof(Val) = {}", std::mem::size_of::<&run::Val>());
     if let Some(path) = std::env::args().nth(1) {
         let mut state = run::Env::new();
         state.include_stdlib();
         println!("{}", state.include_file(&mut std::fs::File::open(path).unwrap()).unwrap());
     } else {
         let mut state = run::Env::new();
-        state.include_stdlib();
+        //state.include_stdlib();
         loop {
             print!("vemf> ");
             let _ = std::io::Write::flush(&mut std::io::stdout());

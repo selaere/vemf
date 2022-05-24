@@ -101,8 +101,8 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
         Some(c @ b!('│''╡''╢''╞''╛''╜''╘''╙''═'))          => Tok::VarAv1(smallvec![c]),
         Some(c @ b!('║''╟''╧''╨''╤''╥''╕''╖''╒''╓''╪''╫')) => Tok::VarAv2(smallvec![c]),
         Some(c @ b'A'..=b'Z') => Tok::VarSet(smallvec![c + 32]),
-        Some(c @ b!('☺''☻''⌂'))            => Tok::Stmt(c),
-        Some(c @ (b'a'..=b'z' | b!('α''β''σ''μ''τ')))      => Tok::VarVal(smallvec![c]),
+        Some(c @ b!('☺''☻''⌂')) => Tok::Stmt(c),
+        Some(c @ (b'a'..=b'z' | b!('α''β''σ''μ''τ'))) => Tok::VarVal(smallvec![c]),
         Some(x) => Tok::Just(x),
         None => break,
     });};
