@@ -88,14 +88,14 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
                 })
             },
             #[allow(const_item_mutation)]
-            Tok::Just(b!('┼')) => { step!(code);
+            Tok::Just(b!('┘')) => { step!(code);
                 let a = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
                 let f = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
                 let b = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
                 (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
             },
             #[allow(const_item_mutation)]
-            Tok::Just(b!('╬')) => { step!(code);
+            Tok::Just(b!('└')) => { step!(code);
                 let a = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
                 let f = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
                 let b = word(code, &mut 1         ).map(|x| x.1).unwrap_or(NAN);
@@ -122,17 +122,17 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
                     Verb | Conj => arg
                 })
             },
-            Tok::Just(s @ b!('┌''└''┐''┘')) => { step!(code);
+            Tok::Just(s @ b!('┐''┤''╡''╢''╣')) => { step!(code);
                 let p = phrase_by_words(code, match s {
-                    b!('┌')=>2, b!('└')=>3, b!('┐')=>4, b!('┘')=>5, _=>unreachable!()
-                });
+                    b!('┐')=>2, b!('┤')=>3, b!('╡')=>4, b!('╢')=>5, b!('╣')=>6,
+                _ => unreachable!()});
                 let e = phrase_to_expr(p);
                 (Noun, e.unwrap_or(NAN))
             },
-            Tok::Just(s @ b!('╦''╔''╚''╗''╝')) => { step!(code);
+            Tok::Just(s @ b!('│''┌''├''╞''╟''╠')) => { step!(code);
                 let p = phrase_by_morphemes(code, match s {
-                    b!('╦')=>1, b!('╔')=>2, b!('╚')=>3, b!('╗')=>4, b!('╝')=>5, _=>unreachable!()
-                });
+                    b!('│')=>1, b!('┌')=>2, b!('├')=>3, b!('╞')=>4, b!('╟')=>5, b!('╠')=>6,
+                _ => unreachable!()});
                 let e = phrase_to_expr(p);
                 (Noun, e.unwrap_or(NAN))
             },
