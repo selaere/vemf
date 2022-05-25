@@ -1,26 +1,16 @@
 ϕ:loadintrinsics·
 
-' valences. 2-adverb.
-' calls α:f if called monadically, otherwise α:gβ
 .invalences→╬·
-
-' α/┴  ≡ α/α
-' α/┴β ≡ β/α
 .inswap→┴·
-
-' α +╜/ β ≡ α+ / β
-' α +╜/   ≡ α+ / α
+.inmonadic→┬·
 .inoverleft→╜·
-
-' α +╙/   ≡ α / (α+)
-' α +╙/ β ≡ α / (β+)
 .inoverright→╙·
-
-' α+ / (α+) ≡ α +╓/
-' α+ / (β+) ≡ α +╓/ β
 .inover→╓·
 
 .ineach→╕·
+
+.inscan→╤·
+.inreduce→╧·
 
 .inscalar→┼·
 
@@ -33,12 +23,13 @@
 
 .inpair→♫ ·
 .iniota→↕ ·
+.inravel→▬ ·
 
-┼:inadd→+ ·
+:inadd→+ · ┌▬╧+╬┼+→+ ·
 
 ┼:inneg╬:insub→- ·
 
-┼:inmul→* ·
+:inmul→* · ┌▬╧*╬┼*→* ·
 
 .indiv→/ ·
 ┼└1/►╬/→/ ·
@@ -59,8 +50,8 @@
 ┼:inacos╬:inacos╜^→ò ·
 ┼:inatan╬:inatan╜^→à ·
 
-┼┐+1→▲ ·
-┼┐-1→▼ ·
++1→▲ ·
+-1→▼ ·
 
 .inindex→@ ·
 
@@ -80,6 +71,9 @@
 ^2→² ·
 /2→½ ·
 *2→¼ ·
+
+.inmax→| · ┌▬╧|╬┼|→| ·
+.inmin→& · ┌▬╧&╬┼&→& ·
 
 ┼:inceil→⌠ ·
 ┼:inround→≈ ·

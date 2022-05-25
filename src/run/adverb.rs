@@ -76,3 +76,37 @@ pub fn scal(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
         }
     }
 }
+
+
+pub fn scan(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
+    if a.len() == 0 { return b.cloned().unwrap_or(NAN) }
+    if let Some(mut iter) = a.iterf() {
+        let mut values = Vec::with_capacity(a.len());
+        let start = iter.next().unwrap();
+        let mut val = match b {
+            Some(b) => g.dyad(env, b, start),
+            None => start.clone(),
+        };
+        values.push(val.clone());
+        for i in iter {
+            val = g.dyad(env, &val, i);
+            values.push(val.clone());
+        }
+        values.into_iter().collect()
+    } else {NAN}
+}
+
+pub fn reduce(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
+    if a.len() == 0 { return b.cloned().unwrap_or(NAN) }
+    if let Some(mut iter) = a.iterf() {
+        let start = iter.next().unwrap();
+        let mut val = match b {
+            Some(b) => g.dyad(env, b, start),
+            None => start.clone(),
+        };
+        for i in iter {
+            val = g.dyad(env, &val, i);
+        }
+        val
+    } else {NAN}
+}

@@ -70,7 +70,21 @@ impl Val {
             i: 0, value: self, env
         }
     }
+
+    // create a finite iterator of `&Val`s. this returns None for functions, so it will never be 
+    // infinite AND it doesnt need a &mut env which is more convenient most of the time
+    pub fn iterf<'v>(&'v self) -> Option<Box<dyn Iterf<'v> + 'v>> {
+        match self {
+            Lis{l, ..} => Some(Box::new(l.iter())),
+            Num(_) => Some(Box::new(std::iter::once(self))),
+            _ => None
+        }
+    }
 }
+
+pub trait Iterf<'v>: Iterator<Item=&'v Val> + ExactSizeIterator + DoubleEndedIterator {}
+impl<'v> Iterf<'v> for std::iter::Once<&'v Val> {}
+impl<'v> Iterf<'v> for std::slice::Iter<'v, Val> {}
 
 pub struct ValueIter<'a: 'v, 'v> {
     i: usize,
@@ -128,4 +142,11 @@ pub fn iota_scalar(arg: isize) -> Val {
     };
     let lis = iter.map(|i| Num(i as f64)).collect();
     Lis{l: Rc::new(lis), fill: Rc::new(NAN)}
+}
+
+pub fn ravel<'a>(arg: &'a Val, list: &mut Vec<&'a Val>) {
+    match arg {
+        Lis{ l, .. } => for i in l.iter() {ravel(i, list)},
+        _ => list.push(arg)
+    }
 }

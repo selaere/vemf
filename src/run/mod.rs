@@ -29,13 +29,16 @@ pub enum Val {
     Swap,      DSwap(Rc<Val>),
     Each,      DEach(Rc<Val>),
     Scalar,    DScalar(Rc<Val>),
+    Scan,      DScan(Rc<Val>),
+    Reduce,    DReduce(Rc<Val>),
     Valences,  DValences(Rc<Val>, Rc<Val>),
     Overleft,  DOverleft(Rc<Val>, Rc<Val>),
     Overright, DOverright(Rc<Val>, Rc<Val>),
     Over,      DOver(Rc<Val>, Rc<Val>),
-    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq,
+    Monadic,   DMonadic(Rc<Val>),
+    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-    Left, Right, Len, Index, Iota, Pair, Enlist,
+    Left, Right, Len, Index, Iota, Pair, Enlist, Ravel,
     Print, Println, Exit,
     LoadIntrinsics,
 }
@@ -53,7 +56,7 @@ impl std::fmt::Display for Val {
                 Ok(())
             },
             Val::FSet(x) => write!(f, "→{}", crate::codepage::tochars(x)),
-            _ => write!(f, "<function>"),
+            z => write!(f, "<function {:?}>", z),
         }
     }
 }
@@ -148,7 +151,7 @@ impl Env<'_> {
         let tokens = token::tokenize(&codepage::tobytes(code).unwrap());
         //println!("{:?}", tokens);
         let parsed = parse::parse(&tokens);
-        for i in &parsed { println!("parsed: {}", i); }
+        //for i in &parsed { println!("parsed: {}", i); }
         self.eval_block(&parsed)
     }
 

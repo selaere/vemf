@@ -16,7 +16,7 @@ pub fn dyad(&self, env: &mut Env, a: &Val, b: &Val) -> Val {
 }
 
 pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val { 
-    let bb = b.unwrap_or(a);
+    let ba = b.unwrap_or(a);
     match self {
         Num(_) | Lis { .. } => self.clone(),
         Val::FSet(name) => {
@@ -26,36 +26,42 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Dfn { s, loc } => {
             let mut inner = Env { locals: (**loc).clone(), outer: Some(env) };
             inner.locals.insert(smallvec![b!('α')], a.clone());
-            inner.locals.insert(smallvec![b!('β')], bb.clone());
+            inner.locals.insert(smallvec![b!('β')], ba.clone());
             inner.locals.insert(smallvec![b!('ƒ')], self.clone());
             inner.eval_block(s)
         },
 
-        Val::Bind { f: af, b: ab } => af.dyad(env, a, ab),
-        Val::Trn2 { a: aa, f: af }        => { let x = aa.call(env, a, b); af.monad(env, &x) },
-        Val::Trn3 { a: aa, f: af, b: ab } => { let x = aa.call(env, a, b); af.dyad(env, &x, ab) },
-        Val::Fork { a: aa, f: af, b: ab } => {
+        Val::Bind { f: aa, b: bb } => aa.dyad(env, a, bb),
+        Val::Trn2 { a: aa, f: ff }        => { let x = aa.call(env, a, b); ff.monad(env, &x) },
+        Val::Trn3 { a: aa, f: ff, b: bb } => { let x = aa.call(env, a, b); ff.dyad(env, &x, bb) },
+        Val::Fork { a: aa, f: ff, b: bb } => {
             let l = aa.call(env, a, b);
-            let r = ab.call(env, a, b);
-            af.dyad(env, &l, &r)
+            let r = bb.call(env, a, b);
+            ff.dyad(env, &l, &r)
         }
 
-        Val::Swap      => Val::DSwap   (Rc::new(a.clone())),
-        Val::Each      => Val::DEach   (Rc::new(a.clone())),
+        Val::Swap      => Val::DSwap     (Rc::new(a.clone())),
+        Val::Monadic   => Val::DMonadic  (Rc::new(a.clone())),
+        Val::Each      => Val::DEach     (Rc::new(a.clone())),
         Val::Scalar    => Val::DScalar   (Rc::new(a.clone())),
-        Val::Valences  => Val::DValences(Rc::new(bb.clone()), Rc::new(a.clone())),
-        Val::Over      => Val::DOver     (Rc::new(bb.clone()), Rc::new(a.clone())),
-        Val::Overleft  => Val::DOverleft (Rc::new(bb.clone()), Rc::new(a.clone())),
-        Val::Overright => Val::DOverright(Rc::new(bb.clone()), Rc::new(a.clone())),
-        Val::DSwap(g) => g.dyad(env, bb, a),
-        Val::DEach(g) => super::adverb::each(env, a, b, g),
+        Val::Scan      => Val::DScan     (Rc::new(a.clone())),
+        Val::Reduce    => Val::DReduce   (Rc::new(a.clone())),
+        Val::Valences  => Val::DValences (Rc::new(ba.clone()), Rc::new(a.clone())),
+        Val::Over      => Val::DOver     (Rc::new(ba.clone()), Rc::new(a.clone())),
+        Val::Overleft  => Val::DOverleft (Rc::new(ba.clone()), Rc::new(a.clone())),
+        Val::Overright => Val::DOverright(Rc::new(ba.clone()), Rc::new(a.clone())),
+        Val::DSwap(g) => g.dyad(env, ba, a),
+        Val::DMonadic(g) => g.monad(env, a),
+        Val::DEach(g) =>   super::adverb::each(env, a, b, g),
         Val::DScalar(g) => super::adverb::scal(env, a, b, g),
+        Val::DScan(g) =>   super::adverb::scan(env, a, b, g),
+        Val::DReduce(g) => super::adverb::reduce(env, a, b, g),
         Val::DValences(f, g) => (if b.is_none() {f} else {g}).call(env, a, b),
         Val::DOver(f, g) => {
-            let l = f.monad(env, a); let r = f.monad(env, bb); g.dyad(env, &l, &r)
+            let l = f.monad(env, a); let r = f.monad(env, ba); g.dyad(env, &l, &r)
         },
-        Val::DOverleft(f, g) => {let x = f.monad(env, a); g.dyad(env, &x, bb)},
-        Val::DOverright(f, g) => {let x = f.monad(env, bb); g.dyad(env, a, &x)},
+        Val::DOverleft(f, g) => {let x = f.monad(env, a); g.dyad(env, &x, ba)},
+        Val::DOverright(f, g) => {let x = f.monad(env, ba); g.dyad(env, a, &x)},
         Val::LoadIntrinsics => {
             macro_rules! load { ($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
@@ -63,10 +69,10 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 env.locals.insert(name, Val::$name)
             } );* }}
             load!(
-                Swap, Valences, Overleft, Overright, Over, Each, Scalar,
-                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt,
+                Swap, Valences, Overleft, Overright, Over, Each, Scalar, Scan, Reduce, Monadic,
+                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-                Left, Right, Len, Index, Iota, Pair, Enlist,
+                Left, Right, Len, Index, Iota, Pair, Enlist, Ravel,
                 Print, Println, Exit,
             );
             Num(1.)
@@ -81,6 +87,8 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Lt   => match (a, b) {(Num(a), Some(Num(b))) => Val::from_bool(a < b), _ => NAN },
         Val::Eq   => match (a, b) {(Num(a), Some(Num(b))) => Val::from_bool(a == b), _ => NAN },
         Val::Gt   => match (a, b) {(Num(a), Some(Num(b))) => Val::from_bool(a > b), _ => NAN },
+        Val::Max  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.max(*b)), _ => NAN },
+        Val::Min  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.min(*b)), _ => NAN },
         Val::Isnan=> match a { Num(a) => Val::from_bool(a.is_nan()), _ => NAN },
         Val::Abs  => match a { Num(a) => Num(a.abs()  ), _ => NAN },
         Val::Neg  => match a { Num(a) => Num(-a       ), _ => NAN },
@@ -105,9 +113,9 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         }
 
         Val::Left => a.clone(),
-        Val::Right => bb.clone(),
+        Val::Right => ba.clone(),
         Val::Len => Num(a.lenf()),
-        Val::Index => a.index_at_depth(env, bb),
+        Val::Index => a.index_at_depth(env, ba),
         Val::Iota => match a {
             Lis{l, ..} => super::list::iota(
                 Vec::new(), &l.iter().cloned().filter_map(|x| match x {
@@ -117,8 +125,13 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 super::list::iota_scalar(*n as isize)},
             _ => Val::Bind{ f: Rc::new(Val::Right), b: Rc::new(NAN) }
         }
-        Val::Pair => [a, bb].into_iter().cloned().collect(),
+        Val::Pair => [a, ba].into_iter().cloned().collect(),
         Val::Enlist => [a].into_iter().cloned().collect(),
+        Val::Ravel => {
+            let mut list = Vec::new();
+            super::list::ravel(a, &mut list);
+            list.into_iter().cloned().collect()
+        },
     }
 }
 
