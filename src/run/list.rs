@@ -150,3 +150,14 @@ pub fn ravel<'a>(arg: &'a Val, list: &mut Vec<&'a Val>) {
         _ => list.push(arg)
     }
 }
+
+
+pub fn concat(a: &Val, b: &Val) -> Val {
+    if !(a.is_finite() && b.is_finite()) { return NAN }
+    a.iterf().unwrap().chain(b.iterf().unwrap()).cloned().collect()
+}
+
+pub fn reverse(a: &Val) -> Val {
+    if !a.is_finite() { return NAN }
+    a.iterf().unwrap().rev().cloned().collect()
+}

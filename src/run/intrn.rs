@@ -72,7 +72,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 Swap, Valences, Overleft, Overright, Over, Each, Scalar, Scan, Reduce, Monadic,
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-                Left, Right, Len, Index, Iota, Pair, Enlist, Ravel,
+                Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit,
             );
             Num(1.)
@@ -132,6 +132,16 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             super::list::ravel(a, &mut list);
             list.into_iter().cloned().collect()
         },
+        Val::Concat => super::list::concat(a, ba),
+        Val::Reverse => super::list::reverse(a),
+        Val::GetFill => match a {
+            Lis {fill, ..} => (**fill).clone(),
+            _ => NAN
+        },
+        Val::SetFill => match a {
+            Lis {l, ..} => Lis {l: Rc::clone(l), fill: Rc::new(ba.clone())},
+            _ => a.clone(),
+        }
     }
 }
 

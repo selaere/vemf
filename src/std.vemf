@@ -21,9 +21,10 @@
 .inleft→◄ ·
 .inright→► ·
 
-.inpair→♫ ·
+.inenlist╬.inpair→♫ ·
 .iniota→↕ ·
 .inravel→▬ ·
+.inconcat→, · │┴♫╬┴,→; · │╧,╬,→, ·
 
 :inadd→+ · ┌▬╧+╬┼+→+ ·
 
@@ -74,6 +75,10 @@
 
 .inmax→| · ┌▬╧|╬┼|→| ·
 .inmin→& · ┌▬╧&╬┼&→& ·
+
+:ingetfill╬:insetfill→▐ ·
+┼.inisnan→▄ ·
+.inreverse→♠ ·
 
 ┼:inceil→⌠ ·
 ┼:inround→≈ ·
