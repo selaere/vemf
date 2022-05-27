@@ -30,9 +30,9 @@ pub enum Expr {
 
 #[derive(Debug)]
 pub enum Role {
-    Noun, Verb, Conj
+    Noun, Verb
 }
-use Role::{Noun, Verb, Conj};
+use Role::{Noun, Verb};
 const NAN: Expr = Expr::Num(f64::NAN);
 
 impl Display for Expr {
@@ -78,8 +78,8 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
     if *morphemes == 0 {return None}
     if let Some(t) = code.first() {
         let (rol, val) = match t {
-            Tok::Stmt(c) => { step!(code); (Conj, Expr::Var(smallvec![*c])) },
-            Tok::VarSet(v) => { step!(code); (Conj, Expr::SetVar(v.clone())) },
+            Tok::Stmt(c) => { step!(code); (Verb, Expr::Var(smallvec![*c])) },
+            Tok::VarSet(v) => { step!(code); (Verb, Expr::SetVar(v.clone())) },
             Tok::VarAv1(name) => { step!(code);
                 let word = word(code, morphemes);
                 (Verb, Expr::Aav1{
@@ -119,7 +119,7 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
                 let (rol, arg) = word(code, &mut usize::MAX).unwrap_or((Noun, NAN));
                 (Noun, match rol {
                     Noun => Expr::Snd(vec![arg]),
-                    Verb | Conj => arg
+                    Verb => arg
                 })
             },
             Tok::Just(s @ b!('┐''┤''╡''╢''╣')) => { step!(code);
@@ -156,36 +156,54 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
 
 pub fn phrase_by_morphemes(code: &mut&[Tok], mut morphemes: usize) -> Vec<(Role, Expr)> {
     let mut phrase = Vec::new();
-    let mut last_was_conj = false;
     let morphemes = &mut morphemes;
     loop {
-        // we need to make another reference in case we have to backtrack in case we get a Conj
-        let copy = &mut &**code;
-        let word = word(copy, morphemes);
+        let mut backtrack: Option<&[Tok]> = None;
+        if let Some(Tok::VarSet(_) | Tok::Stmt(_)) = code.first() {
+            let ptr = &**code;
+            let word = word(code, morphemes);
+            if let Some(word) = word { phrase.push(word); } else { break }
+            if let Some(Tok::Just(b!('·'))) = code.first() {
+                *code = ptr; phrase.pop(); break;
+            }
+            backtrack = Some(ptr);
+            if *morphemes >= 1 {*morphemes -= 1} else {break}
+        }
+        let word = word(code, morphemes);
         //println!("{:?} {:?}", word, morphemes);
         if let Some(word) = word {
-            if last_was_conj && matches!(word.0, Noun) { break }
-            last_was_conj = matches!(word.0, Conj);
-            *code = copy; phrase.push(word);
+            if let Some(ptr) = backtrack { if let Noun = word.0 {
+                *code = ptr; phrase.pop(); break;
+            }}
+            phrase.push(word);
         } else { break }
         if *morphemes >= 1 {*morphemes -= 1} else {break}
     };
     phrase
 }
 
+#[allow(const_item_mutation)]
 pub fn phrase_by_words(code: &mut&[Tok], words: usize) -> Vec<(Role, Expr)> {
     let mut phrase = Vec::with_capacity(if words > 10 {0} else {words});
-    let mut last_was_conj = false;
     while phrase.len() < words {
-        // we need to make another reference in case we have to backtrack in case we get a Conj
-        let copy = &mut &**code;
-        #[allow(const_item_mutation)]
-        let word = word(copy, &mut usize::MAX);
+        let mut backtrack: Option<&[Tok]> = None;
+        if let Some(Tok::VarSet(_) | Tok::Stmt(_)) = code.first() {
+            let ptr = &**code;
+            let word = word(code, &mut usize::MAX);
+            if let Some(word) = word { phrase.push(word); } else { break }
+            if phrase.len() >= words { break }
+            if let Some(Tok::Just(b!('·'))) = code.first() {
+                *code = ptr; phrase.pop(); break;
+            }
+            backtrack = Some(ptr);
+        }
+        let word = word(code, &mut usize::MAX);
         //println!("{:?} {:?}", word, morphemes);
         if let Some(word) = word {
-            if last_was_conj && matches!(word.0, Noun) { break }
-            last_was_conj = matches!(word.0, Conj);
-            *code = copy; phrase.push(word);
+            if let Some(ptr) = backtrack { if let Noun = word.0 {
+                *code = ptr; phrase.pop(); break;
+            }}
+            phrase.push(word);
         } else { break }
     };
     phrase
@@ -213,7 +231,7 @@ fn phrase_to_expr(things: Vec<(Role, Expr)>) -> Option<Expr> {
     Some(if let Some(start) = strand(&mut iter) {
         // Function application
         let mut value = start;
-        while let Some((Verb | Conj, ef)) = iter.next() {
+        while let Some((Verb, ef)) = iter.next() {
             value = if let Some(ev) = strand(&mut iter) {  // dyad
                 Expr::Afn2 {a: Box::new(value), f: Box::new(ef), b: Box::new(ev)}
             } else {  // monad
@@ -222,12 +240,12 @@ fn phrase_to_expr(things: Vec<(Role, Expr)>) -> Option<Expr> {
         }
         value
     } else { match iter.next() {
-        Some((Verb | Conj, ef)) => {
+        Some((Verb, ef)) => {
             // Train
             let mut value = if let Some(b) = strand(&mut iter) {
                 Expr::Bind {f: Box::new(ef), b: Box::new(b)}
             } else { ef };
-            while let Some((Verb | Conj, ef)) = iter.next() {
+            while let Some((Verb, ef)) = iter.next() {
                 value = if let Some(b) = strand(&mut iter) {  // dyad
                     Expr::Trn2 {a: Box::new(value), f: Box::new(ef), b: Box::new(b)}
                 } else {  // monad
@@ -282,7 +300,7 @@ fn capture(&self, vars: &mut HashSet<Bstr>) { // yeah...
         Expr::Snd(l) => for i in l { i.capture(vars) }
         Expr::Afn1 { a, f    } => { a.capture(vars); f.capture(vars); },
         Expr::Afn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
-        Expr::Aav1 { v, g } => { vars.insert(v.clone()); g.capture(vars); },
+        Expr::Aav1 {    v, g } => { vars.insert(v.clone()); g.capture(vars); },
         Expr::Aav2 { f, v, g } => { vars.insert(v.clone()); f.capture(vars); g.capture(vars); },
         Expr::Bind { f, b } => { f.capture(vars); b.capture(vars); },
         Expr::Trn1 { a, f } => { a.capture(vars); f.capture(vars); },
@@ -298,13 +316,16 @@ pub fn block(code: &mut&[Tok]) -> Vec<Expr> {
     let mut exps = Vec::new();
     loop {
         while let Some(Tok::Just(b!('·'))) = code.first() { step!(code); }
-        let mut phrase = phrase(code);
-        let ev = match phrase.pop() {
-            Some((Conj, c)) => phrase_to_expr(phrase).map(|x| Expr::Afn1{a: Box::new(x), f: Box::new(c.clone())}),
-            Some(els) => { phrase.push(els); phrase_to_expr(phrase) }
-            None => None
-        };
-        if let Some(ev) = ev {
+        let phrase = phrase(code);
+        let ev = phrase_to_expr(phrase);
+        if let Some(mut ev) = ev {
+            match code.first() {
+                Some(Tok::Stmt(c)) => { step!(code); 
+                    ev = Expr::Afn1{a: Box::new(ev), f: Box::new(Expr::Var(smallvec![*c]))}; },
+                Some(Tok::VarSet(v)) => { step!(code); 
+                    ev = Expr::Afn1{a: Box::new(ev), f: Box::new(Expr::SetVar(v.clone()))} },
+                _ => ()
+            }
             exps.push(ev);
         } else { break }
     }
@@ -316,7 +337,8 @@ pub fn parse(code: &[Tok]) -> Vec<Expr> {
     let mut slice = code;
     let exps = block(&mut slice);
     if !slice.is_empty() {
-        println!("unexpected token {:?}", code[code.len() - slice.len()]);
+        let num = code.len() - slice.len();
+        println!("unexpected token {:?} at {}", code[num], num);
     }
     exps
 }
