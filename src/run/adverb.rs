@@ -30,8 +30,8 @@ pub fn each(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
             let x = a.index(env, n);
             values.push(g.monad(env, &x));
         }
-        let fill = match a { Lis { fill, .. } => g.monad(env, fill), _ => NAN };
-        Lis{l: Rc::new(values), fill: Rc::new(fill)}
+        let fill = match a { Lis { fill: f, .. } => f.clone(), _ => Rc::new(NAN) };
+        Lis{l: Rc::new(values), fill}
     }
 }
 

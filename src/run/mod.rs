@@ -12,8 +12,8 @@ pub const NAN: Val = Num(f64::NAN);
 
 #[derive(Clone, Debug)]
 pub struct Env<'a> {
-    locals: HashMap<Bstr, Val>,
-    outer: Option<&'a Env<'a>>,
+    pub locals: HashMap<Bstr, Val>,
+    pub outer: Option<&'a Env<'a>>,
 }
 
 #[derive(Clone, Debug)]
@@ -39,7 +39,7 @@ pub enum Val {
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
     Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-    Print, Println, Exit,
+    Print, Println, Exit, Format,
     LoadIntrinsics,
 }
 
@@ -76,6 +76,14 @@ impl Env<'_> {
 
     pub fn get_var(&self, name: &[u8]) -> Option<Val> {
         self.locals.get(name).cloned().or_else(|| self.outer.and_then(|x| x.get_var(name)))
+    }
+
+    pub fn get_var_rec(&self, name: &[u8]) -> Option<Val> {
+        if let Some(stripped) = name.strip_prefix(&[b!('■')]) {
+            self.outer.and_then(|x| x.get_var_rec(stripped))
+        } else {
+            self.get_var(name)
+        }
     }
 
     pub fn eval(&mut self, expr: &Expr) -> Val {
@@ -132,7 +140,9 @@ impl Env<'_> {
             Expr::Dfn { s, cap } => {
                 let mut locals = HashMap::with_capacity(cap.len());
                 for var in cap {
-                    self.get_var(var).and_then(|x| locals.insert(var.clone(), x));
+                    Env {
+                        locals: HashMap::new(), outer: Some(self),
+                    }.get_var_rec(var).and_then(|x| locals.insert(var.clone(), x));
                 }
                 Val::Dfn {s: Rc::from(&s[..]), loc: Rc::new(locals)}
             },

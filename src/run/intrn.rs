@@ -73,7 +73,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
                 Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-                Print, Println, Exit,
+                Print, Println, Exit, Format,
             );
             Num(1.)
         }
@@ -111,6 +111,8 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             Num(n) => std::process::exit(*n as i32),
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
         }
+        Val::Format => format!("{}", a).chars().map(|x| Num(x as u32 as f64)).collect(),
+        
 
         Val::Left => a.clone(),
         Val::Right => ba.clone(),

@@ -1,13 +1,22 @@
 ϕ:loadintrinsics·
 
+.inleft→◄ ·
+.inright→► ·
+
 .invalences→╬·
+
+' these could be dfns but it's so easy to make them intrinsics. and its more efficient too probably
 .inswap→┴·
 .inmonadic→┬·
 .inoverleft→╜·
 .inoverright→╙·
 .inover→╓·
+►→╒·
 
 .ineach→╕·
+
+{{α╕β╙μ}}→╛ ·
+{{β╕α╜μ}}→╘ ·
 
 .inscan→╤·
 .inreduce→╧·
@@ -17,9 +26,6 @@
 .inprint→☺ ·
 .inprintln→☻ ·
 .inexit→⌂ ·
-
-.inleft→◄ ·
-.inright→► ·
 
 .inenlist╬.inpair→♫ ·
 .iniota→↕ ·
@@ -83,3 +89,7 @@
 ┼:inceil→⌠ ·
 ┼:inround→≈ ·
 ┼:infloor→⌡ ·
+
+.informat→ⁿ ·
+
+/⌡→÷ ·

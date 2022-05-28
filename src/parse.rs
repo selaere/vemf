@@ -106,7 +106,7 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
                 let mut vars = HashSet::new();
                 for i in &s { i.capture(&mut vars) }
                 if let Some(Tok::Just(b'}')) = code.first() { step!(code); }
-                (Noun, Expr::Dfn {s, cap: vars})
+                (Verb, Expr::Dfn {s, cap: vars})
             },
             Tok::VarFun(v) | Tok::VarAv2(v) => {step!(code); (Verb, Expr::Var(v.clone()))},
             Tok::Just(b'(') => { step!(code);
