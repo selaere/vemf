@@ -1,3 +1,5 @@
+#![feature(let_else)]
+
 #[macro_use] mod codepage;
 mod token;
 mod parse;

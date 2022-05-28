@@ -151,7 +151,6 @@ pub fn ravel<'a>(arg: &'a Val, list: &mut Vec<&'a Val>) {
     }
 }
 
-
 pub fn concat(a: &Val, b: &Val) -> Val {
     if !(a.is_finite() && b.is_finite()) { return NAN }
     a.iterf().unwrap().chain(b.iterf().unwrap()).cloned().collect()
@@ -160,4 +159,30 @@ pub fn concat(a: &Val, b: &Val) -> Val {
 pub fn reverse(a: &Val) -> Val {
     if !a.is_finite() { return NAN }
     a.iterf().unwrap().rev().cloned().collect()
+}
+
+pub fn reshape_iter(a: &mut ValueIter, b: &[usize], fill: &Val) -> Val {
+    if b.is_empty() {return a.next().unwrap_or_else(|| fill.clone())}
+    let (pre, suf) = (b[0], &b[1..]);
+    (0..pre).map(move |_| reshape_iter(a, suf, fill)).collect()
+}
+
+pub fn reshape(env: &mut Env, a: &Val, b: &Val) -> Val {
+    let mut shape = Vec::new();
+    let mut spot = None::<usize>;
+    let Some(iter) = b.iterf() else {return NAN};
+    for i in iter { match i {
+        Num(n) if n.is_nan() && spot.is_none() => {
+            spot = Some(shape.len());
+            shape.push(1);
+        },
+        Num(n) => shape.push(*n as usize),
+        _ => return NAN
+    }};
+    if let Some(index) = spot {
+        fn divceil(x: usize, y: usize) -> usize {x / y + usize::from(x % y != 0)}
+        shape[index] = divceil(a.len(), shape.iter().product());
+    }
+    let mut iter = a.iter(env);
+    reshape_iter(&mut iter, &shape[..], &a.fill())
 }

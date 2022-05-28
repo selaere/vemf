@@ -163,7 +163,7 @@ pub fn phrase_by_morphemes(code: &mut&[Tok], mut morphemes: usize) -> Vec<(Role,
             let ptr = &**code;
             let word = word(code, morphemes);
             if let Some(word) = word { phrase.push(word); } else { break }
-            if let Some(Tok::Just(b!('·'))) = code.first() {
+            if let Some(Tok::Just(b!('·'))) | None = code.first() {
                 *code = ptr; phrase.pop(); break;
             }
             backtrack = Some(ptr);

@@ -73,9 +73,8 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
                 Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-                Print, Println, Exit, Format,
-            );
-            Num(1.)
+                Print, Println, Exit, Format, Numfmt, Parse, Leftpad, Replist, Cycle,
+            ); Num(1.)
         }
         Val::Add  => match (a, b) {(Num(a), Some(Num(b))) => Num(a + b), _ => NAN },
         Val::Sub  => match (a, b) {(Num(a), Some(Num(b))) => Num(a - b), _ => NAN },
@@ -112,7 +111,12 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
         }
         Val::Format => format!("{}", a).chars().map(|x| Num(x as u32 as f64)).collect(),
-        
+        Val::Numfmt => match a { // TODO support more bases and stuff
+            Num(a) => format!("{}", a).chars().map(|x| Num(x as u32 as f64)).collect(),
+            _ => NAN 
+        }
+        Val::Parse => a.display_string().parse::<f64>().map(Num).unwrap_or(NAN),
+        Val::Leftpad => super::list::reshape(env, a, ba),
 
         Val::Left => a.clone(),
         Val::Right => ba.clone(),
@@ -143,7 +147,21 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::SetFill => match a {
             Lis {l, ..} => Lis {l: Rc::clone(l), fill: Rc::new(ba.clone())},
             _ => a.clone(),
-        }
+        },
+        Val::Replist => if a.is_finite() {
+            let num = match ba {Num(n) => *n as usize, _ => return NAN};
+            let mut list = Vec::new();
+            for _ in 0..num {list.extend(a.iterf().unwrap().cloned())};
+            list.into_iter().collect()
+        } else {a.clone()},
+        Val::Cycle => match a.iterf() {
+            Some(i) => Val::DCycle(Rc::from(&i.cloned().collect::<Vec<_>>()[..])),
+            None => a.clone()
+        },
+        Val::DCycle(l) => match a {
+            Num(a) => l[(*a as usize) % l.len()].clone(),
+            _ => NAN,
+        },
     }
 }
 

@@ -36,10 +36,11 @@ pub enum Val {
     Overright, DOverright(Rc<Val>, Rc<Val>),
     Over,      DOver(Rc<Val>, Rc<Val>),
     Monadic,   DMonadic(Rc<Val>),
+    Cycle,     DCycle(Rc<[Val]>),
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
     Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-    Print, Println, Exit, Format,
+    Print, Println, Exit, Format, Numfmt, Parse, Leftpad, Replist,
     LoadIntrinsics,
 }
 
