@@ -18,6 +18,22 @@ pub fn dyad(&self, env: &mut Env, a: &Val, b: &Val) -> Val {
 pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val { 
     let ba = b.unwrap_or(a);
     match self {
+
+        Val::LoadIntrinsics => {
+            macro_rules! load { ($($name:ident,)*) => { $( {
+                let mut name = Bstr::from(&b"in"[..]);
+                name.extend(stringify!($name).to_ascii_lowercase().bytes());
+                env.locals.insert(name, Val::$name)
+            } );* }}
+            load!(
+                Swap, Monadic, Each, Scalar, Scan, Reduce, Valences, Over, Overleft, Overright, Until, UntilScan, Power, PowerScan,
+                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
+                Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
+                Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
+                Print, Println, Exit, Format, Numfmt, Parse, Leftpad, Replist, Cycle,
+            ); Num(1.)
+        }
+
         Num(_) | Lis { .. } => self.clone(),
         Val::FSet(name) => {
             env.locals.insert(name.clone(), a.clone());
@@ -50,6 +66,10 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Over      => Val::DOver     (Rc::new(ba.clone()), Rc::new(a.clone())),
         Val::Overleft  => Val::DOverleft (Rc::new(ba.clone()), Rc::new(a.clone())),
         Val::Overright => Val::DOverright(Rc::new(ba.clone()), Rc::new(a.clone())),
+        Val::Until     => Val::DUntil    (Rc::new(ba.clone()), Rc::new(a.clone())),
+        Val::UntilScan => Val::DUntilScan(Rc::new(ba.clone()), Rc::new(a.clone())),
+        Val::Power     => Val::DPower    (Rc::new(ba.clone()), Rc::new(a.clone())),
+        Val::PowerScan => Val::DPowerScan(Rc::new(ba.clone()), Rc::new(a.clone())),
         Val::DSwap(g) => g.dyad(env, ba, a),
         Val::DMonadic(g) => g.monad(env, a),
         Val::DEach(g) =>   super::adverb::each(env, a, b, g),
@@ -62,20 +82,10 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         },
         Val::DOverleft(f, g) => {let x = f.monad(env, a); g.dyad(env, &x, ba)},
         Val::DOverright(f, g) => {let x = f.monad(env, ba); g.dyad(env, a, &x)},
-        Val::LoadIntrinsics => {
-            macro_rules! load { ($($name:ident,)*) => { $( {
-                let mut name = Bstr::from(&b"in"[..]);
-                name.extend(stringify!($name).to_ascii_lowercase().bytes());
-                env.locals.insert(name, Val::$name)
-            } );* }}
-            load!(
-                Swap, Valences, Overleft, Overright, Over, Each, Scalar, Scan, Reduce, Monadic,
-                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
-                Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-                Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-                Print, Println, Exit, Format, Numfmt, Parse, Leftpad, Replist, Cycle,
-            ); Num(1.)
-        }
+        Val::DUntil(f, g) => super::adverb::until(env, a, b, f, g),
+        Val::DUntilScan(f, g) => super::adverb::until_scan(env, a, b, f, g),
+        Val::DPower(f, g) => super::adverb::power(env, a, b, f, g),
+        Val::DPowerScan(f, g) => super::adverb::power_scan(env, a, b, f, g),
         Val::Add  => match (a, b) {(Num(a), Some(Num(b))) => Num(a + b), _ => NAN },
         Val::Sub  => match (a, b) {(Num(a), Some(Num(b))) => Num(a - b), _ => NAN },
         Val::Mul  => match (a, b) {(Num(a), Some(Num(b))) => Num(a * b), _ => NAN },

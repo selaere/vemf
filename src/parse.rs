@@ -76,82 +76,81 @@ fn displayname(bytes: &[u8]) -> String {
 
 fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
     if *morphemes == 0 {return None}
-    if let Some(t) = code.first() {
-        let (rol, val) = match t {
-            Tok::Stmt(c) => { step!(code); (Verb, Expr::Var(smallvec![*c])) },
-            Tok::VarSet(v) => { step!(code); (Verb, Expr::SetVar(v.clone())) },
-            Tok::VarAv1(name) => { step!(code);
-                let word = word(code, morphemes);
-                (Verb, Expr::Aav1{
-                    v: name.clone(),
-                    g: Box::new(word.map(|x| x.1).unwrap_or(NAN))
-                })
-            },
-            #[allow(const_item_mutation)]
-            Tok::Just(b!('┘')) => { step!(code);
-                let a = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
-                let f = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
-                let b = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
-                (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
-            },
-            #[allow(const_item_mutation)]
-            Tok::Just(b!('└')) => { step!(code);
-                let a = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
-                let f = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
-                let b = word(code, &mut 1         ).map(|x| x.1).unwrap_or(NAN);
-                (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
-            },
-            Tok::Just(b'{') => { step!(code);
-                let s = block(code);
-                let mut vars = HashSet::new();
-                for i in &s { i.capture(&mut vars) }
-                if let Some(Tok::Just(b'}')) = code.first() { step!(code); }
-                (Verb, Expr::Dfn {s, cap: vars})
-            },
-            Tok::VarFun(v) | Tok::VarAv2(v) => {step!(code); (Verb, Expr::Var(v.clone()))},
-            Tok::Just(b'(') => { step!(code);
-                let expr = phrase_to_expr(phrase(code)).unwrap_or(Expr::Snd(vec![]));
-                if let Some(Tok::Just(b')')) = code.first() { step!(code); }
-                (Noun, expr)
-            },
-            Tok::Just(b!('♪')) => { step!(code);
-                #[allow(const_item_mutation)]
-                let (rol, arg) = word(code, &mut usize::MAX).unwrap_or((Noun, NAN));
-                (Noun, match rol {
-                    Noun => Expr::Snd(vec![arg]),
-                    Verb => arg
-                })
-            },
-            Tok::Just(s @ b!('┐''┤''╡''╢''╣')) => { step!(code);
-                let p = phrase_by_words(code, match s {
-                    b!('┐')=>2, b!('┤')=>3, b!('╡')=>4, b!('╢')=>5, b!('╣')=>6,
-                _ => unreachable!()});
-                let e = phrase_to_expr(p);
-                (Noun, e.unwrap_or(NAN))
-            },
-            Tok::Just(s @ b!('│''┌''├''╞''╟''╠')) => { step!(code);
-                let p = phrase_by_morphemes(code, match s {
-                    b!('│')=>1, b!('┌')=>2, b!('├')=>3, b!('╞')=>4, b!('╟')=>5, b!('╠')=>6,
-                _ => unreachable!()});
-                let e = phrase_to_expr(p);
-                (Noun, e.unwrap_or(NAN))
-            },
-            t => if let Some(p) = value_token(t.clone()) { 
-                step!(code); (Noun, p)
-            } else {return None}
-        };
-        if *morphemes > 1 { if let Some(Tok::VarAv2(n)) = code.first() {
-            *morphemes -= 1;
-            step!(code);
+    let Some(t) = code.first() else {return None};
+    let (rol, val) = match t {
+        Tok::Stmt(c) => { step!(code); (Verb, Expr::Var(smallvec![*c])) },
+        Tok::VarSet(v) => { step!(code); (Verb, Expr::SetVar(v.clone())) },
+        Tok::VarAv1(name) => { step!(code);
             let word = word(code, morphemes);
-            return Some((Verb, Expr::Aav2{
-                f: Box::new(val),
-                v: n.clone(),
-                g: Box::new(word.map(|x| x.1).unwrap_or(NAN)),
-            }))
-        }}
-        Some((rol, val))
-    } else {None}
+            (Verb, Expr::Aav1{
+                v: name.clone(),
+                g: Box::new(word.map(|x| x.1).unwrap_or(NAN))
+            })
+        },
+        #[allow(const_item_mutation)]
+        Tok::Just(b!('┘')) => { step!(code);
+            let a = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+            let f = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+            let b = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+            (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
+        },
+        #[allow(const_item_mutation)]
+        Tok::Just(b!('└')) => { step!(code);
+            let a = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+            let f = word(code, &mut usize::MAX).map(|x| x.1).unwrap_or(NAN);
+            let b = word(code, &mut 1         ).map(|x| x.1).unwrap_or(NAN);
+            (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
+        },
+        Tok::Just(b'{') => { step!(code);
+            let s = block(code);
+            let mut vars = HashSet::new();
+            for i in &s { i.capture(&mut vars) }
+            if let Some(Tok::Just(b'}')) = code.first() { step!(code); }
+            (Verb, Expr::Dfn {s, cap: vars})
+        },
+        Tok::VarFun(v) | Tok::VarAv2(v) => {step!(code); (Verb, Expr::Var(v.clone()))},
+        Tok::Just(b'(') => { step!(code);
+            let expr = phrase_to_expr(phrase(code)).unwrap_or(Expr::Snd(vec![]));
+            if let Some(Tok::Just(b')')) = code.first() { step!(code); }
+            (Noun, expr)
+        },
+        Tok::Just(b!('♪')) => { step!(code);
+            #[allow(const_item_mutation)]
+            let (rol, arg) = word(code, &mut usize::MAX).unwrap_or((Noun, NAN));
+            (Noun, match rol {
+                Noun => Expr::Snd(vec![arg]),
+                Verb => arg
+            })
+        },
+        Tok::Just(s @ b!('┐''┤''╡''╢''╣')) => { step!(code);
+            let p = phrase_by_words(code, match s {
+                b!('┐')=>2, b!('┤')=>3, b!('╡')=>4, b!('╢')=>5, b!('╣')=>6,
+            _ => unreachable!()});
+            let e = phrase_to_expr(p);
+            (Noun, e.unwrap_or(NAN))
+        },
+        Tok::Just(s @ b!('│''┌''├''╞''╟''╠')) => { step!(code);
+            let p = phrase_by_morphemes(code, match s {
+                b!('│')=>1, b!('┌')=>2, b!('├')=>3, b!('╞')=>4, b!('╟')=>5, b!('╠')=>6,
+            _ => unreachable!()});
+            let e = phrase_to_expr(p);
+            (Noun, e.unwrap_or(NAN))
+        },
+        t => if let Some(p) = value_token(t.clone()) { 
+            step!(code); (Noun, p)
+        } else {return None}
+    };
+    if *morphemes > 1 { if let Some(Tok::VarAv2(n)) = code.first() {
+        *morphemes -= 1;
+        step!(code);
+        let word = word(code, morphemes);
+        return Some((Verb, Expr::Aav2{
+            f: Box::new(val),
+            v: n.clone(),
+            g: Box::new(word.map(|x| x.1).unwrap_or(NAN)),
+        }))
+    }}
+    Some((rol, val))
 }
 
 pub fn phrase_by_morphemes(code: &mut&[Tok], mut morphemes: usize) -> Vec<(Role, Expr)> {
@@ -316,18 +315,15 @@ pub fn block(code: &mut&[Tok]) -> Vec<Expr> {
     let mut exps = Vec::new();
     loop {
         while let Some(Tok::Just(b!('·'))) = code.first() { step!(code); }
-        let phrase = phrase(code);
-        let ev = phrase_to_expr(phrase);
-        if let Some(mut ev) = ev {
-            match code.first() {
-                Some(Tok::Stmt(c)) => { step!(code); 
-                    ev = Expr::Afn1{a: Box::new(ev), f: Box::new(Expr::Var(smallvec![*c]))}; },
-                Some(Tok::VarSet(v)) => { step!(code); 
-                    ev = Expr::Afn1{a: Box::new(ev), f: Box::new(Expr::SetVar(v.clone()))} },
-                _ => ()
-            }
-            exps.push(ev);
-        } else { break }
+        let Some(mut ev) = phrase_to_expr(phrase(code)) else { break };
+        match code.first() {
+            Some(Tok::Stmt(c)) => { step!(code); 
+                ev = Expr::Afn1{a: Box::new(ev), f: Box::new(Expr::Var(smallvec![*c]))}; },
+            Some(Tok::VarSet(v)) => { step!(code); 
+                ev = Expr::Afn1{a: Box::new(ev), f: Box::new(Expr::SetVar(v.clone()))} },
+            _ => ()
+        }
+        exps.push(ev);
     }
     while let Some(Tok::Just(b!('·'))) = code.first() { step!(code); }
     exps

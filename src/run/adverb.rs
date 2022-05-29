@@ -80,33 +80,81 @@ pub fn scal(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
 
 pub fn scan(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
     if a.len() == 0 { return b.cloned().unwrap_or(NAN) }
-    if let Some(mut iter) = a.iterf() {
-        let mut values = Vec::with_capacity(a.len());
-        let start = iter.next().unwrap();
-        let mut val = match b {
-            Some(b) => g.dyad(env, b, start),
-            None => start.clone(),
-        };
+    let Some(mut iter) = a.iterf() else {return NAN};
+    let mut values = Vec::with_capacity(a.len());
+    let start = iter.next().unwrap();
+    let mut val = match b {
+        Some(b) => g.dyad(env, b, start),
+        None => start.clone(),
+    };
+    values.push(val.clone());
+    for i in iter {
+        val = g.dyad(env, &val, i);
         values.push(val.clone());
-        for i in iter {
-            val = g.dyad(env, &val, i);
-            values.push(val.clone());
-        }
-        values.into_iter().collect()
-    } else {NAN}
+    }
+    values.into_iter().collect()
 }
 
 pub fn reduce(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
     if a.len() == 0 { return b.cloned().unwrap_or(NAN) }
-    if let Some(mut iter) = a.iterf() {
-        let start = iter.next().unwrap();
-        let mut val = match b {
-            Some(b) => g.dyad(env, b, start),
-            None => start.clone(),
-        };
-        for i in iter {
-            val = g.dyad(env, &val, i);
-        }
-        val
-    } else {NAN}
+    let Some(mut iter) = a.iterf() else {return NAN};
+    let start = iter.next().unwrap();
+    let mut val = match b {
+        Some(b) => g.dyad(env, b, start),
+        None => start.clone(),
+    };
+    for i in iter {
+        val = g.dyad(env, &val, i);
+    }
+    val
+}
+
+pub fn until_scan(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
+    let mut values = vec![a.clone()];
+    let mut val = a.clone();
+    loop {
+        let tried = g.call(env, &val, b);
+        if matches!( f.dyad(env, &tried, &val), Num(n) if n != 0. || n.is_nan()) { break }
+        values.push(tried.clone());
+        val = tried;
+    }
+    values.into_iter().collect()
+}
+
+
+pub fn until(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
+    let mut val = a.clone();
+    loop {
+        let tried = g.call(env, &val, b);
+        if matches!( f.dyad(env, &tried, &val), Num(n) if n != 0. || n.is_nan()) { break }
+        val = tried;
+    }
+    val
+}
+
+pub fn power_scan(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
+    let num = match f.call(env, a, b) {
+        Num(n) if n > 0. && !n.is_nan() => n as usize,
+        _ => 0,
+    };
+    let mut values = Vec::with_capacity(num);
+    let mut val = a.clone();
+    for _ in 0..num {
+        val = g.call(env, &val, b);
+        values.push(val.clone());
+    }
+    values.into_iter().collect()
+}
+
+
+pub fn power(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
+    let num = match f.call(env, a, b) {
+        Num(n) if n > 0. && !n.is_nan() => n as usize,
+        _ => 0,
+    };
+    let mut val = a.clone();
+    for _ in 0..num {
+        val = g.call(env, &val, b);
+    }
+    val
 }
