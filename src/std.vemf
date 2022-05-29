@@ -28,7 +28,8 @@
 .inexit→⌂ ·
 
 .inenlist╬.inpair→♫ ·
-.iniota→↕ ·
+
+
 .inravel→▬ ·
 .inconcat→, · │┴♫╬┴,→; · │╧,╬,→, ·
 
@@ -77,6 +78,10 @@
 /2→½ ·
 *2→¼ ·
 
+.iniota→↕ ·
+↕╬┼{β-α|0↕+α}→↕ ·
+┌↕▲╬┼{β-α▲|0↕+α}→↨ ·
+
 .inmax→| · ┌▬╧|╬┼|→| ·
 .inmin→& · ┌▬╧&╬┼&→& ·
 
@@ -98,7 +103,8 @@
 :incycle╬:inreplist→§ ·
 
 ÷╬┐/⌡→÷ ·
-.inleftpad→ù ·
+.inpadleft→ù ·
+.inpadright→ú ·
 §╜ù→¶ ·
 
 .inuntil→╩ ·

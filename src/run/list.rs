@@ -167,17 +167,35 @@ pub fn reshape_iter(a: &mut ValueIter, b: &[usize], fill: &Val) -> Val {
     (0..pre).map(move |_| reshape_iter(a, suf, fill)).collect()
 }
 
-pub fn reshape(env: &mut Env, a: &Val, b: &Val) -> Val {
+pub fn padleft(env: &mut Env, a: &Val, b: &Val) -> Val {
+    let Some(shape) = getshape(a, b) else {return NAN};
+    let mut iter = a.iter(env);
+    reshape_iter(&mut iter, &shape[..], &a.fill())
+}
+
+pub fn padright(env: &mut Env, a: &Val, b: &Val) -> Val {
+    let Some(shape) = getshape(a, b) else {return NAN};
+    let elems = shape.iter().product::<usize>();
+    let bee = if a.len() < elems {
+        std::iter::repeat(a.fill()).take(elems - a.len()).chain(a.iter(env)).collect::<Val>()
+    } else {
+        a.iter(env).skip(a.len() - elems).collect::<Val>()
+    };
+    let mut iter = bee.iter(env);
+    reshape_iter(&mut iter, &shape[..], &a.fill())
+} 
+
+pub fn getshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
     let mut shape = Vec::new();
     let mut spot = None::<usize>;
-    let Some(iter) = b.iterf() else {return NAN};
+    let Some(iter) = b.iterf() else {return None};
     for i in iter { match i {
         Num(n) if n.is_nan() && spot.is_none() => {
             spot = Some(shape.len());
             shape.push(1);
         },
         Num(n) => shape.push(*n as usize),
-        _ => return NAN
+        _ => return None
     }};
     if let Some(index) = spot {
         fn divceil(x: usize, y: usize) -> usize {x / y + usize::from(x % y != 0)}
@@ -185,6 +203,5 @@ pub fn reshape(env: &mut Env, a: &Val, b: &Val) -> Val {
             Val::DCycle(c) => c.len(), e => e.len()
         }, shape.iter().product());
     }
-    let mut iter = a.iter(env);
-    reshape_iter(&mut iter, &shape[..], &a.fill())
+    Some(shape)
 }
