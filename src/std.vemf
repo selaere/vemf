@@ -80,7 +80,7 @@
 .inmax→| · ┌▬╧|╬┼|→| ·
 .inmin→& · ┌▬╧&╬┼&→& ·
 
-.inindex→@ · ┌@1╬@→@ ·
+.inindex→@ · ┌@0╬@→@ ·
 ┌┌~▼╙@╬┴╘@→¡ ·
 
 :ingetfill╬:insetfill→▐ ·
@@ -88,7 +88,7 @@
 .inreverse→♠ ·
 
 ┼:inceil→⌠ ·
-┼:inround→≈ ·
+┼:inround→÷ ·
 ┼:infloor→⌡ ·
 
 .informat→ⁿ ·
@@ -97,7 +97,7 @@
 
 :incycle╬:inreplist→§ ·
 
-/⌡→÷ ·
+÷╬┐/⌡→÷ ·
 .inleftpad→ù ·
 §╜ù→¶ ·
 
@@ -106,7 +106,7 @@
 .inpower→╨ ·
 .inpowerscan→╥ ·
 
-.inmatch→≡ ·
+├~=0╬.inmatch→≡ ·
 ≡¬→≈ ·
 
 '12A'20B'99C'100D'999E'1000F'9999G'10000H'100000I'1000000J

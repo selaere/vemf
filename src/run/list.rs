@@ -181,7 +181,9 @@ pub fn reshape(env: &mut Env, a: &Val, b: &Val) -> Val {
     }};
     if let Some(index) = spot {
         fn divceil(x: usize, y: usize) -> usize {x / y + usize::from(x % y != 0)}
-        shape[index] = divceil(a.len(), shape.iter().product());
+        shape[index] = divceil(match a {
+            Val::DCycle(c) => c.len(), e => e.len()
+        }, shape.iter().product());
     }
     let mut iter = a.iter(env);
     reshape_iter(&mut iter, &shape[..], &a.fill())
