@@ -10,7 +10,7 @@ const STDLIB: &str = include_str!("../std.vemf");
 
 pub const NAN: Val = Num(f64::NAN);
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct Env<'a> {
     pub locals: HashMap<Bstr, Val>,
     pub outer: Option<&'a Env<'a>>,
@@ -44,9 +44,23 @@ pub enum Val {
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
     Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-    Print, Println, Exit, Format, Numfmt, Parse, Leftpad, Replist,
+    Print, Println, Exit, Format, Numfmt, Parse, Leftpad, Replist, Match,
     LoadIntrinsics,
 }
+
+impl PartialEq for Val {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Num(l), Self::Num(r)) => l == r || l.is_nan() && r.is_nan(),
+            (Self::Lis { l: l_l, fill: l_fill }, Self::Lis { l: r_l, fill: r_fill }) => 
+                l_fill == r_fill
+                && l_l.len() == r_l.len()
+                && l_l.iter().zip(r_l.iter()).all(|(x, y)| x == y),
+            _ => false
+        }
+    }
+}
+
 
 impl std::fmt::Display for Val {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

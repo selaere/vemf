@@ -30,7 +30,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
                 Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-                Print, Println, Exit, Format, Numfmt, Parse, Leftpad, Replist, Cycle,
+                Print, Println, Exit, Format, Numfmt, Parse, Leftpad, Replist, Cycle, Match,
             ); Num(1.)
         }
 
@@ -172,6 +172,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             Num(a) => l[(*a as usize) % l.len()].clone(),
             _ => NAN,
         },
+        Val::Match => Val::from_bool(a == ba),
     }
 }
 
