@@ -1,6 +1,6 @@
 ϕ:loadintrinsics·
 
-.inleft→◄ ·
+.inleft→◄→Ω ·
 .inright→► ·
 
 .invalences→╬·
@@ -58,7 +58,7 @@
 ┼:inacos╬:inacos╜^→ò ·
 ┼:inatan╬:inatan╜^→à ·
 
-+1→▲ ·
+(+1)→▲→Σ ·
 -1→▼ ·
 
 ┼:inlt→< ·
@@ -107,9 +107,11 @@
 :incycle╬:inreplist→§ ·
 
 ÷╬┐/⌡→÷ ·
-.inpadleft→ù ·
-.inpadright→ú ·
-§╜ù→¶ ·
+.intakeleft→↑ ·
+.intakeright→↓ ·
+§╜↑→¶ ·
+.indropleft→♂ · (♂1)╬♂→♂·
+.indropright→♀ · (♀1)╬♀→♀·
 
 .inuntil→╩ ·
 .inuntilscan→╦ ·

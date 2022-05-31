@@ -30,7 +30,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
                 Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-                Print, Println, Exit, Format, Numfmt, Parse, Padleft, Padright, Replist, Cycle, Match,
+                Print, Println, Exit, Format, Numfmt, Parse, Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match,
             ); Num(1.)
         }
 
@@ -126,8 +126,10 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             _ => NAN 
         }
         Val::Parse => a.display_string().parse::<f64>().map(Num).unwrap_or(NAN),
-        Val::Padleft => super::list::padleft(env, a, ba),
-        Val::Padright => super::list::padright(env, a, ba),
+        Val::Takeleft => super::list::takeleft(env, a, ba),
+        Val::Takeright => super::list::takeright(env, a, ba),
+        Val::Dropleft => match ba {Num(n) => super::list::dropleft(a, *n), _ => NAN}
+        Val::Dropright => match ba {Num(n) => super::list::dropright(a, *n), _ => NAN},
 
         Val::Left => a.clone(),
         Val::Right => ba.clone(),

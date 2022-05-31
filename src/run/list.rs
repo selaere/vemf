@@ -167,13 +167,13 @@ pub fn reshape_iter(a: &mut ValueIter, b: &[usize], fill: &Val) -> Val {
     (0..pre).map(move |_| reshape_iter(a, suf, fill)).collect()
 }
 
-pub fn padleft(env: &mut Env, a: &Val, b: &Val) -> Val {
+pub fn takeleft(env: &mut Env, a: &Val, b: &Val) -> Val {
     let Some(shape) = getshape(a, b) else {return NAN};
     let mut iter = a.iter(env);
     reshape_iter(&mut iter, &shape[..], &a.fill())
 }
 
-pub fn padright(env: &mut Env, a: &Val, b: &Val) -> Val {
+pub fn takeright(env: &mut Env, a: &Val, b: &Val) -> Val {
     let Some(shape) = getshape(a, b) else {return NAN};
     let elems = shape.iter().product::<usize>();
     let bee = if a.len() < elems {
@@ -204,4 +204,18 @@ pub fn getshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
         }, shape.iter().product());
     }
     Some(shape)
+}
+
+pub fn dropleft(a: &Val, b: f64) -> Val {
+    if b < 0. {return dropright(a, -b);}
+    if let Some(iter) = a.iterf() {
+        iter.skip(b as usize).cloned().collect()
+    } else {NAN}
+}
+
+pub fn dropright(a: &Val, b: f64) -> Val {
+    if b < 0. {return dropleft(a, -b);}
+    if let Some(iter) = a.iterf() {
+        iter.rev().skip(b as usize).rev().cloned().collect()
+    } else {NAN}
 }
