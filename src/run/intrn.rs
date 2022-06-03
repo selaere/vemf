@@ -26,7 +26,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 env.locals.insert(name, Val::$name)
             } );* }}
             load!(
-                Swap, Monadic, Each, Scalar, Scan, Reduce, Valences, Over, Overleft, Overright, Until, UntilScan, Power, PowerScan,
+                Swap, Const, Monadic, Each, Scalar, Scan, Reduce, Valences, Over, Overleft, Overright, Until, UntilScan, Power, PowerScan,
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
                 Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
@@ -56,21 +56,23 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             ff.dyad(env, &l, &r)
         }
 
-        Val::Swap      => Val::DSwap     (Rc::new(a.clone())),
-        Val::Monadic   => Val::DMonadic  (Rc::new(a.clone())),
-        Val::Each      => Val::DEach     (Rc::new(a.clone())),
-        Val::Scalar    => Val::DScalar   (Rc::new(a.clone())),
-        Val::Scan      => Val::DScan     (Rc::new(a.clone())),
-        Val::Reduce    => Val::DReduce   (Rc::new(a.clone())),
-        Val::Valences  => Val::DValences (Rc::new(ba.clone()), Rc::new(a.clone())),
-        Val::Over      => Val::DOver     (Rc::new(ba.clone()), Rc::new(a.clone())),
-        Val::Overleft  => Val::DOverleft (Rc::new(ba.clone()), Rc::new(a.clone())),
-        Val::Overright => Val::DOverright(Rc::new(ba.clone()), Rc::new(a.clone())),
-        Val::Until     => Val::DUntil    (Rc::new(ba.clone()), Rc::new(a.clone())),
-        Val::UntilScan => Val::DUntilScan(Rc::new(ba.clone()), Rc::new(a.clone())),
-        Val::Power     => Val::DPower    (Rc::new(ba.clone()), Rc::new(a.clone())),
-        Val::PowerScan => Val::DPowerScan(Rc::new(ba.clone()), Rc::new(a.clone())),
+        Val::Swap      => Val::DSwap     (a.clone().rc()),
+        Val::Const     => Val::DConst    (a.clone().rc()),
+        Val::Monadic   => Val::DMonadic  (a.clone().rc()),
+        Val::Each      => Val::DEach     (a.clone().rc()),
+        Val::Scalar    => Val::DScalar   (a.clone().rc()),
+        Val::Scan      => Val::DScan     (a.clone().rc()),
+        Val::Reduce    => Val::DReduce   (a.clone().rc()),
+        Val::Valences  => Val::DValences (ba.clone().rc(), a.clone().rc()),
+        Val::Over      => Val::DOver     (ba.clone().rc(), a.clone().rc()),
+        Val::Overleft  => Val::DOverleft (ba.clone().rc(), a.clone().rc()),
+        Val::Overright => Val::DOverright(ba.clone().rc(), a.clone().rc()),
+        Val::Until     => Val::DUntil    (ba.clone().rc(), a.clone().rc()),
+        Val::UntilScan => Val::DUntilScan(ba.clone().rc(), a.clone().rc()),
+        Val::Power     => Val::DPower    (ba.clone().rc(), a.clone().rc()),
+        Val::PowerScan => Val::DPowerScan(ba.clone().rc(), a.clone().rc()),
         Val::DSwap(g) => g.dyad(env, ba, a),
+        Val::DConst(g) => (**g).clone(),
         Val::DMonadic(g) => g.monad(env, a),
         Val::DEach(g) =>   super::adverb::each(env, a, b, g),
         Val::DScalar(g) => super::adverb::scal(env, a, b, g),
@@ -142,7 +144,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 }).collect::<Vec<isize>>()),
             Num(n) => if *n == f64::INFINITY {Val::Left} else {
                 super::list::iota_scalar(*n as isize)},
-            _ => Val::Bind{ f: Rc::new(Val::Right), b: Rc::new(NAN) }
+            _ => Val::DConst(NAN.rc()),
         }
         Val::Pair => [a, ba].into_iter().cloned().collect(),
         Val::Enlist => [a].into_iter().cloned().collect(),
@@ -158,7 +160,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             _ => NAN
         },
         Val::SetFill => match a {
-            Lis {l, ..} => Lis {l: Rc::clone(l), fill: Rc::new(ba.clone())},
+            Lis {l, ..} => Lis {l: Rc::clone(l), fill: ba.clone().rc()},
             _ => a.clone(),
         },
         Val::Replist => if a.is_finite() {
@@ -198,4 +200,7 @@ pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
 
 pub fn is_finite(&self) -> bool { matches!(self, Num(_) | Lis {..})}
 
+pub fn is_scalar(&self) -> bool { matches!(self, Num(_))}
+
+pub fn rc(self) -> Rc<Self> { Rc::new(self) }
 }

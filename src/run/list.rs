@@ -57,7 +57,7 @@ impl Val {
                         let slice = index.iter(env).skip(n+1).collect::<Val>();
                         return l.iter().map(|x| x.index_at_depth(env, &slice)).collect::<Val>()
                     }
-                    _ => return Val::Bind{ f: Rc::new(Val::Right), b: Rc::new(NAN) }
+                    _ => return Val::Bind{ f: Val::Right.rc(), b: NAN.rc() }
                 }
             }
             value = value.indexval(env, &i);
@@ -116,7 +116,7 @@ impl<'a, 'v> Iterator for ValueIter<'a, 'v> {
 
 impl FromIterator<Val> for Val {
     fn from_iter<T: IntoIterator<Item = Val>>(iter: T) -> Self {
-        Lis{l: Rc::new(iter.into_iter().collect()), fill: Rc::new(NAN)}
+        Lis{l: Rc::new(iter.into_iter().collect()), fill: NAN.rc()}
     }
 }
 
@@ -130,7 +130,7 @@ pub fn iota(prefix: Vec<isize>, arg: &[isize]) -> Val {
         Box::new((0..arg[0].abs()).rev())
     };
     let lis = iter.map(|i| iota([&prefix[..], &[i]].concat(), &arg[1..])).collect();
-    Lis{l: Rc::new(lis), fill: Rc::new(NAN)}
+    Lis{l: Rc::new(lis), fill: NAN.rc()}
 }
 
 
@@ -141,7 +141,7 @@ pub fn iota_scalar(arg: isize) -> Val {
         Box::new((0..arg.abs()).rev())
     };
     let lis = iter.map(|i| Num(i as f64)).collect();
-    Lis{l: Rc::new(lis), fill: Rc::new(NAN)}
+    Lis{l: Rc::new(lis), fill: NAN.rc()}
 }
 
 pub fn ravel<'a>(arg: &'a Val, list: &mut Vec<&'a Val>) {

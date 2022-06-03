@@ -6,17 +6,17 @@
 .invalences→╬·
 
 ' these could be dfns but it's so easy to make them intrinsics. and its more efficient too probably
+.inconst→╒·
 .inswap→┴·
 .inmonadic→┬·
 .inoverleft→╜·
 .inoverright→╙·
 .inover→╓·
-►→╒·
 
 .ineach→╕·
 
-{{α╕β╙μ}}→╛ ·
-{{β╕α╜μ}}→╘ ·
+{{α╕(╒β)╙μ}}→╛ ·
+{{β╕(╒α)╜μ}}→╘ ·
 
 .inscan→╤·
 .inreduce→╧·
@@ -121,5 +121,7 @@
 ├~=0╬.inmatch→≡ ·
 ≡¬→≈ ·
 
+'3.141592653589793→π ·
+2*π→τ ·
 '12A'20B'99C'100D'999E'1000F'9999G'10000H'100000I'1000000J
 '15K'16L'31M'32N'63O'64P'127Q'128R'255S'256T'512U'1024V'2048W'4096X'32768Y'65536Z

@@ -27,6 +27,7 @@ pub enum Val {
     Trn3{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
     Fork{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
     Swap,      DSwap(Rc<Val>),
+    Const,     DConst(Rc<Val>),
     Monadic,   DMonadic(Rc<Val>),
     Each,      DEach(Rc<Val>),
     Scalar,    DScalar(Rc<Val>),
@@ -111,7 +112,7 @@ impl Env<'_> {
             Expr::Num(n) => Val::Num(*n),
             Expr::Snd(l) => Val::Lis {
                 l: Rc::from(l.iter().map(|x| self.eval(x)).collect::<Vec<_>>()),
-                fill: Rc::new(NAN)
+                fill: NAN.rc()
             },
             Expr::Afn1 { a, f } => {
                 let a = self.eval(a);
@@ -137,24 +138,24 @@ impl Env<'_> {
             Expr::Bind { f, b } => {
                 let f = self.eval(&*f.clone());
                 let b = self.eval(&*b.clone());
-                Val::Bind{f: Rc::new(f), b: Rc::new(b)}
+                Val::Bind{f: f.rc(), b: b.rc()}
             },
             Expr::Trn1 { a, f } => {
                 let a = self.eval(&*a.clone());
                 let f = self.eval(&*f.clone());
-                Val::Trn2{a: Rc::new(a), f: Rc::new(f)}
+                Val::Trn2{a: a.rc(), f: f.rc()}
             },
             Expr::Trn2 { a, f, b } => {
                 let a = self.eval(&*a.clone());
                 let f = self.eval(&*f.clone());
                 let b = self.eval(&*b.clone());
-                Val::Trn3{a: Rc::new(a), f: Rc::new(f), b: Rc::new(b)}
+                Val::Trn3{a: a.rc(), f: f.rc(), b: b.rc()}
             },
             Expr::Fork { a, f, b } => {
                 let a = self.eval(&*a.clone());
                 let f = self.eval(&*f.clone());
                 let b = self.eval(&*b.clone());
-                Val::Fork{a: Rc::new(a), f: Rc::new(f), b: Rc::new(b)}
+                Val::Fork{a: a.rc(), f: f.rc(), b: b.rc()}
             },
             Expr::Dfn { s, cap } => {
                 let mut locals = HashMap::with_capacity(cap.len());

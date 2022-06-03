@@ -134,7 +134,7 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
                 b!('│')=>1, b!('┌')=>2, b!('├')=>3, b!('╞')=>4, b!('╟')=>5, b!('╠')=>6,
             _ => unreachable!()});
             let e = phrase_to_expr(p);
-            (Noun, e.unwrap_or(NAN))
+            (Verb, e.unwrap_or(NAN))
         },
         t => if let Some(p) = value_token(t.clone()) { 
             step!(code); (Noun, p)
@@ -191,7 +191,7 @@ pub fn phrase_by_words(code: &mut&[Tok], words: usize) -> Vec<(Role, Expr)> {
             let word = word(code, &mut usize::MAX);
             if let Some(word) = word { phrase.push(word); } else { break }
             if phrase.len() >= words { break }
-            if let Some(Tok::Just(b!('·'))) = code.first() {
+            if let Some(Tok::Just(b!('·'))) | None = code.first() {
                 *code = ptr; phrase.pop(); break;
             }
             backtrack = Some(ptr);
