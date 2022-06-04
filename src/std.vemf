@@ -29,15 +29,23 @@
 
 .inenlist╬.inpair→♫ ·
 
+:incycle╬:inreplist→§ ·
 
-.inravel→▬ ·
+.intakeleft→↑ ·
+.intakeright→↓ ·
+.inravel╬§╜↑→¶ ·
+.indropleft→♂ · (♂1)╬♂→♂·
+.indropright→♀ · (♀1)╬♀→♀·
+
+.inshape→▬ · ▬╬▬╜↑→▬ ·
+
 .inconcat→, · │┴♫╬┴,→; · │╧,╬,→, ·
 
-:inadd→+ · ┌▬╧+╬┼+→+ ·
+:inadd→+ · ┌¶╧+╬┼+→+ ·
 
 ┼:inneg╬:insub→- ·
 
-:inmul→* · ┌▬╧*╬┼*→* ·
+:inmul→* · ┌¶╧*╬┼*→* ·
 
 .indiv→/ ·
 ┼└1/►╬/→/ ·
@@ -62,7 +70,7 @@
 -1→▼ ·
 
 ┼:inlt→< ·
-┼:ineq→= ·
+(▬:inlen)╬┼:ineq→= ·
 ┼:ingt→> ·
 
 =0→¬ ·
@@ -82,8 +90,8 @@
 ↕╬┼{β-α|0↕+α}→↕ ·
 ┌↕▲╬┼{β-α▲|0↕+α}→↨ ·
 
-.inmax→| · ┌▬╧|╬┼|→| ·
-.inmin→& · ┌▬╧&╬┼&→& ·
+.inmax→| · ┌¶╧|╬┼|→| ·
+.inmin→& · ┌¶╧&╬┼&→& ·
 
 .inabs→¢·
 ┼┌┘>-<0╬┐-¢→±·
@@ -104,14 +112,7 @@
 .inparse→º ·
 ┼:innumfmt→ª ·
 
-:incycle╬:inreplist→§ ·
-
 ÷╬┐/⌡→÷ ·
-.intakeleft→↑ ·
-.intakeright→↓ ·
-§╜↑→¶ ·
-.indropleft→♂ · (♂1)╬♂→♂·
-.indropright→♀ · (♀1)╬♀→♀·
 
 .inuntil→╩ ·
 .inuntilscan→╦ ·
@@ -123,5 +124,9 @@
 
 '3.141592653589793→π ·
 2*π→τ ·
+┌*(π/'180)╬┼.inatanb→° ·
+*┤'180/π→å ·
+
+
 '12A'20B'99C'100D'999E'1000F'9999G'10000H'100000I'1000000J
 '15K'16L'31M'32N'63O'64P'127Q'128R'255S'256T'512U'1024V'2048W'4096X'32768Y'65536Z

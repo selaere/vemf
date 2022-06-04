@@ -42,9 +42,9 @@ pub enum Val {
     Power,     DPower(Rc<Val>, Rc<Val>),
     PowerScan, DPowerScan(Rc<Val>, Rc<Val>),
     Cycle,     DCycle(Rc<[Val]>),
-    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min,
+    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-    Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
+    Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
     Print, Println, Exit, Format, Numfmt, Parse, Takeleft, Takeright, Dropleft, Dropright, Replist, Match,
     LoadIntrinsics,
 }

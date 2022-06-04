@@ -27,9 +27,9 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             } );* }}
             load!(
                 Swap, Const, Monadic, Each, Scalar, Scan, Reduce, Valences, Over, Overleft, Overright, Until, UntilScan, Power, PowerScan,
-                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min,
+                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
-                Left, Right, Len, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
+                Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse, Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match,
             ); Num(1.)
         }
@@ -100,6 +100,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Gt   => match (a, b) {(Num(a), Some(Num(b))) => Val::from_bool(a > b), _ => NAN },
         Val::Max  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.max(*b)), _ => NAN },
         Val::Min  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.min(*b)), _ => NAN },
+        Val::Atanb=> match (a, b) {(Num(a), Some(Num(b))) => Num(a.atan2(*b)), _ => NAN },
         Val::Isnan=> match a { Num(a) => Val::from_bool(a.is_nan()), _ => NAN },
         Val::Abs  => match a { Num(a) => Num(a.abs()  ), _ => NAN },
         Val::Neg  => match a { Num(a) => Num(-a       ), _ => NAN },
@@ -165,19 +166,20 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         },
         Val::Replist => if a.is_finite() {
             let num = match ba {Num(n) => *n as usize, _ => return NAN};
-            let mut list = Vec::new();
-            for _ in 0..num {list.extend(a.iterf().unwrap().cloned())};
-            list.into_iter().collect()
+            (0..num).flat_map(|_| a.iterf().cloned()).collect()
         } else {a.clone()},
-        Val::Cycle => match a.iterf() {
-            Some(i) => Val::DCycle(Rc::from(&i.cloned().collect::<Vec<_>>()[..])),
-            None => a.clone()
-        },
+        Val::Cycle => if a.is_finite() {
+            Val::DCycle(Rc::from(&a.iterf().cloned().collect::<Vec<_>>()[..]))
+        } else {a.clone()},
         Val::DCycle(l) => match a {
             Num(a) => l[(*a as usize) % l.len()].clone(),
             _ => NAN,
         },
         Val::Match => Val::from_bool(a == ba),
+        Val::Shape => { Lis {
+            l: Rc::new(super::list::shape(a).iter().map(|x| Num(*x as f64)).collect::<Vec<_>>()),
+            fill: Num(1.).rc(),
+        } }
     }
 }
 

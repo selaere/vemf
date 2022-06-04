@@ -54,10 +54,10 @@ impl Val {
                 if n+1 == index.len() {return value}
                 match value {
                     Lis {l, ..} => {
-                        let slice = index.iter(env).skip(n+1).collect::<Val>();
+                        let slice = index.iterinf(env).skip(n+1).collect::<Val>();
                         return l.iter().map(|x| x.index_at_depth(env, &slice)).collect::<Val>()
                     }
-                    _ => return Val::Bind{ f: Val::Right.rc(), b: NAN.rc() }
+                    _ => return Val::DConst(NAN.rc())
                 }
             }
             value = value.indexval(env, &i);
@@ -65,19 +65,19 @@ impl Val {
         value
     }
 
-    pub fn iter<'a: 'v, 'v>(&'v self, env: &'v mut Env<'a>) -> ValueIter<'a, 'v> {
+    pub fn iterinf<'a: 'v, 'v>(&'v self, env: &'v mut Env<'a>) -> ValueIter<'a, 'v> {
         ValueIter {
             i: 0, value: self, env
         }
     }
 
-    // create a finite iterator of `&Val`s. this returns None for functions, so it will never be 
-    // infinite AND it doesnt need a &mut env which is more convenient most of the time
-    pub fn iterf<'v>(&'v self) -> Option<Box<dyn Iterf<'v> + 'v>> {
-        match self {
-            Lis{l, ..} => Some(Box::new(l.iter())),
-            Num(_) => Some(Box::new(std::iter::once(self))),
-            _ => None
+    // create a finite iterator of `&Val`s. this returns a single item for functions, so it will 
+    // never be infinite AND it doesnt need a &mut env which is more convenient most of the time
+    pub fn iterf<'v>(&'v self) -> Box<dyn Iterf<'v> + 'v> {
+        if let Lis{l, ..} = self {
+            Box::new(l.iter())
+        } else {
+            Box::new(std::iter::once(self))
         }
     }
 }
@@ -153,12 +153,12 @@ pub fn ravel<'a>(arg: &'a Val, list: &mut Vec<&'a Val>) {
 
 pub fn concat(a: &Val, b: &Val) -> Val {
     if !(a.is_finite() && b.is_finite()) { return NAN }
-    a.iterf().unwrap().chain(b.iterf().unwrap()).cloned().collect()
+    a.iterf().chain(b.iterf()).cloned().collect()
 }
 
 pub fn reverse(a: &Val) -> Val {
-    if !a.is_finite() { return NAN }
-    a.iterf().unwrap().rev().cloned().collect()
+    if !a.is_finite() { return Val::DConst(NAN.rc()) }
+    a.iterf().rev().cloned().collect()
 }
 
 pub fn reshape_iter(a: &mut ValueIter, b: &[usize], fill: &Val) -> Val {
@@ -168,28 +168,28 @@ pub fn reshape_iter(a: &mut ValueIter, b: &[usize], fill: &Val) -> Val {
 }
 
 pub fn takeleft(env: &mut Env, a: &Val, b: &Val) -> Val {
-    let Some(shape) = getshape(a, b) else {return NAN};
-    let mut iter = a.iter(env);
+    let Some(shape) = fillreshape(a, b) else {return NAN};
+    let mut iter = a.iterinf(env);
     reshape_iter(&mut iter, &shape[..], &a.fill())
 }
 
 pub fn takeright(env: &mut Env, a: &Val, b: &Val) -> Val {
-    let Some(shape) = getshape(a, b) else {return NAN};
+    let Some(shape) = fillreshape(a, b) else {return NAN};
     let elems = shape.iter().product::<usize>();
     let bee = if a.len() < elems {
-        std::iter::repeat(a.fill()).take(elems - a.len()).chain(a.iter(env)).collect::<Val>()
+        std::iter::repeat(a.fill()).take(elems - a.len()).chain(a.iterinf(env)).collect::<Val>()
     } else {
-        a.iter(env).skip(a.len() - elems).collect::<Val>()
+        a.iterinf(env).skip(a.len() - elems).collect::<Val>()
     };
-    let mut iter = bee.iter(env);
+    let mut iter = bee.iterinf(env);
     reshape_iter(&mut iter, &shape[..], &a.fill())
 } 
 
-pub fn getshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
+pub fn fillreshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
+    if !b.is_finite() { return None };
     let mut shape = Vec::new();
     let mut spot = None::<usize>;
-    let Some(iter) = b.iterf() else {return None};
-    for i in iter { match i {
+    for i in b.iterf() { match i {
         Num(n) if n.is_nan() && spot.is_none() => {
             spot = Some(shape.len());
             shape.push(1);
@@ -207,15 +207,27 @@ pub fn getshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
 }
 
 pub fn dropleft(a: &Val, b: f64) -> Val {
-    if b < 0. {return dropright(a, -b);}
-    if let Some(iter) = a.iterf() {
-        iter.skip(b as usize).cloned().collect()
-    } else {NAN}
+    if b < 0. {return dropright(a, -b); }
+    if !a.is_finite() { return a.clone(); }
+    a.iterf().skip(b as usize).cloned().collect()
 }
 
 pub fn dropright(a: &Val, b: f64) -> Val {
-    if b < 0. {return dropleft(a, -b);}
-    if let Some(iter) = a.iterf() {
-        iter.rev().skip(b as usize).rev().cloned().collect()
-    } else {NAN}
+    if b < 0. { return dropleft(a, -b); }
+    if !a.is_finite() { return NAN; }
+    a.iterf().rev().skip(b as usize).rev().cloned().collect()
+}
+
+pub fn shape(a: &Val) -> Vec<usize> {
+    if let Lis { l, .. } = a {
+        let mut shp = vec![l.len()];
+        for v in &**l {
+            let inr = shape(v);
+            if inr.len() + 1 > shp.len() { shp.resize(inr.len() + 1, 0); }
+            for (n, &i) in inr.iter().enumerate() {
+                if shp[n+1] < i { shp[n+1] = i; };
+            }
+        }
+        shp
+    } else { return vec![] }
 }
