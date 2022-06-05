@@ -22,8 +22,11 @@ fn main() {
             let _ = std::io::Write::flush(&mut std::io::stdout());
             let mut code = String::new();
             std::io::stdin().read_line(&mut code).expect("error while reading from stdin");
+            if code.trim_start().starts_with(')') {
+                state.include_string(&format!("__ⁿ({})☻", &code[1..])); continue;
+            }
             let val = state.include_string(&code);
-            if code.trim_end().ends_with('·') { continue }
+            if code.trim_end().ends_with(['·', '☻']) { continue }
             println!("{}", val);
             state.locals.insert(Bstr::from(&b"__"[..]), val);
         }

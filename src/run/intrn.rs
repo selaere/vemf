@@ -92,7 +92,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Sub  => match (a, b) {(Num(a), Some(Num(b))) => Num(a - b), _ => NAN },
         Val::Mul  => match (a, b) {(Num(a), Some(Num(b))) => Num(a * b), _ => NAN },
         Val::Div  => match (a, b) {(Num(a), Some(Num(b))) => Num(a / b), _ => NAN },
-        Val::Mod  => match (a, b) {(Num(a), Some(Num(b))) => Num(a % b), _ => NAN },
+        Val::Mod  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.rem_euclid(*b)), _ => NAN },
         Val::Pow  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.powf(*b)), _ => NAN },
         Val::Log  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.log(*b)), _ => NAN },
         Val::Lt   => match (a, b) {(Num(a), Some(Num(b))) => Val::from_bool(a < b), _ => NAN },
@@ -123,7 +123,10 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             Num(n) => std::process::exit(*n as i32),
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
         }
-        Val::Format => format!("{}", a).chars().map(|x| Num(x as u32 as f64)).collect(),
+        Val::Format => super::disp::format(a, &b
+            .map(|x| x.iterf().cloned().collect::<Vec<_>>())
+            .unwrap_or_else(Vec::new)
+        ).chars().map(|x| Num(x as u32 as f64)).collect(),
         Val::Numfmt => match a { // TODO support more bases and stuff
             Num(a) => format!("{}", a).chars().map(|x| Num(x as u32 as f64)).collect(),
             _ => NAN 
@@ -185,18 +188,6 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
 
 
 fn from_bool(b: bool) -> Val { Num(f64::from(u8::from(b))) }
-
-
-fn display_string(&self) -> String {
-    match self {
-        Num(n) => format!("{}", n),
-        Lis { l, .. } => l.iter().flat_map(|x| match x {
-            Num(n) => char::from_u32(*n as i32 as u32),
-            _ => None
-        }).collect(),
-        otherwise => format!("{}", otherwise),
-    }
-}
 
 pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
 

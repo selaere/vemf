@@ -1,6 +1,7 @@
 mod intrn;
 mod list;
 mod adverb;
+mod disp;
 
 use crate::parse::{Expr};
 use crate::Bstr;
@@ -62,24 +63,6 @@ impl PartialEq for Val {
     }
 }
 
-
-impl std::fmt::Display for Val {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Num(n) => write!(f, "{}", n),
-            Lis { l, .. } => {
-                let mut iter = l.iter();
-                write!(f, "(")?;
-                if let Some(i) = iter.next() { write!(f, "{}", i)?; }
-                for i in iter { write!(f, " {}", i)?; }
-                write!(f, ")")?;
-                Ok(())
-            },
-            Val::FSet(x) => write!(f, "→{}", crate::codepage::tochars(x)),
-            z => write!(f, "<function {:?}>", z),
-        }
-    }
-}
 
 use Val::{Num, Lis};
 impl Default for Val {
