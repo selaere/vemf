@@ -229,5 +229,5 @@ pub fn shape(a: &Val) -> Vec<usize> {
             }
         }
         shp
-    } else { return vec![] }
+    } else { vec![] }
 }

@@ -3,7 +3,7 @@ use smallvec::smallvec;
 
 #[derive(Debug, Clone)]
 pub enum Tok {
-    Just(u8), Stmt(u8),
+    Just(u8), Conj(u8),
     VarVal(Bstr), VarFun(Bstr), VarAv1(Bstr), VarAv2(Bstr), VarSet(Bstr),
     Chr(u8), Chr2(u8, u8), Num2(u8, u8), Num3(u8, u8, u8),
     Num(Bstr), HNum(Bstr), Str(Bstr),
@@ -101,7 +101,7 @@ pub fn tokenize(bytes: &[u8]) -> Vec<Tok> {
         Some(c @ b!('┼''╪''┴''┬''╧''╤''╕''╒''╛''╘'))       => Tok::VarAv1(smallvec![c]),
         Some(c @ b!('╝''╚''╩''╦''╨''╥''╖''╓''╜''╙''╬''╫')) => Tok::VarAv2(smallvec![c]),
         Some(c @ b'A'..=b'Z') => Tok::VarSet(smallvec![c + 32]),
-        Some(c @ b!('☺''☻''⌂')) => Tok::Stmt(c),
+        Some(c @ b!('☺''☻''⌂')) => Tok::Conj(c),
         Some(c @ (b'a'..=b'z' | b!('α''β''π''τ''Ω''Σ'))) => Tok::VarVal(smallvec![c]),
         Some(b!('σ')) => Tok::VarVal(smallvec![b!('■'), b!('α')]),
         Some(b!('μ')) => Tok::VarVal(smallvec![b!('■'), b!('β')]),

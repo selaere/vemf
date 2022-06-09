@@ -86,7 +86,7 @@ pub fn format(val: &Val, slice: &[Val]) -> String {
                             for (n, j) in l.iter().enumerate() {
                                 let _ = write!(string, "{: >width$}", j, width=col_lens[n]);
                                 if n != l.len()-1 {string.push(' ')}
-                            }; string.push(')')
+                            }; string.push(')');
                         }
                         Err(v) => string.push_str(&indent(v, 1))
                     }
@@ -116,7 +116,7 @@ impl Val {
     pub fn display_string(&self) -> String {
         match self {
             Num(n) => format!("{}", n),
-            Lis { l, .. } => l.iter().flat_map(|x| match x {
+            Lis { l, .. } => l.iter().filter_map(|x| match x {
                 Num(n) => char::from_u32(*n as i32 as u32),
                 _ => None
             }).collect(),

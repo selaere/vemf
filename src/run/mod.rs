@@ -3,7 +3,7 @@ mod list;
 mod adverb;
 mod disp;
 
-use crate::parse::{Expr};
+use crate::parse::{Expr, Stmt};
 use crate::Bstr;
 use std::{collections::HashMap, rc::Rc};
 
@@ -22,7 +22,7 @@ pub enum Val {
     Num(f64),
     Lis { l: Rc<Vec<Val>>, fill: Rc<Val> },
     FSet(Bstr),
-    Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Expr]> },
+    Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Stmt]> },
     Bind{ f: Rc<Val>, b: Rc<Val> },
     Trn2{ a: Rc<Val>, f: Rc<Val> },
     Trn3{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
@@ -152,19 +152,30 @@ impl Env<'_> {
         }
     }
 
-    pub fn eval_block(&mut self, block: &[Expr]) -> Val {
-        let mut v = NAN;
-        for expr in block.iter() {
-            v = self.eval(expr);
+    pub fn eval_block(&mut self, block: &[Stmt]) -> Val {
+        for stmt in block.iter() { 
+            #[allow(clippy::needless_borrow)] /*clippy bug i think*/
+            match stmt {
+                Stmt::Discard(expr) => { let _ = self.eval(&expr); },
+                Stmt::Conj(a, v) => {
+                    let a = self.eval(&a);
+                    self.locals.get(&v[..]).cloned().unwrap_or_default().monad(self, &a);
+                },
+                Stmt::Set(a, v) => {
+                    let a = self.eval(&a);
+                    self.locals.insert(v.clone(), a);
+                },
+                Stmt::Return(expr) => { return self.eval(&expr); }
+            }
         }
-        v
+        NAN
     }
-    pub fn include_string(&mut self, code: &str) -> Val{
+    pub fn include_string(&mut self, code: &str) -> Val {
         use crate::{token, parse, codepage};
         let tokens = token::tokenize(&codepage::tobytes(code).unwrap());
         //println!("{:?}", tokens);
         let parsed = parse::parse(&tokens);
-        //for i in &parsed { println!("parsed: {}", i); }
+        for i in &parsed { println!("parsed: {}", i); }
         self.eval_block(&parsed)
     }
 

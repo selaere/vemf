@@ -1,5 +1,6 @@
 #![feature(let_else)]
-
+#![warn(clippy::map_unwrap_or)]
+#![warn(clippy::semicolon_if_nothing_returned)]
 #[macro_use] mod codepage;
 mod test;
 mod token;
@@ -26,7 +27,7 @@ fn main() {
                 state.include_string(&format!("__ⁿ({})☻", &code[1..])); continue;
             }
             let val = state.include_string(&code);
-            if code.trim_end().ends_with(['·', '☻']) { continue }
+            //if code.trim_end().ends_with(['·', '☻']) { continue }
             println!("{}", val);
             state.locals.insert(Bstr::from(&b"__"[..]), val);
         }

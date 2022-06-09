@@ -20,6 +20,6 @@ fn test() -> Result<(), String> {
     }
     println!("failed {}/{} tests", failed, tested);
     if failed != 0 {
-        return Err(format!("failed {}/{} tests", failed, tested))
+        Err(format!("failed {}/{} tests", failed, tested))
     } else {Ok(())}
 }

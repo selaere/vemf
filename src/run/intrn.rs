@@ -123,9 +123,8 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             Num(n) => std::process::exit(*n as i32),
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
         }
-        Val::Format => super::disp::format(a, &b
-            .map(|x| x.iterf().cloned().collect::<Vec<_>>())
-            .unwrap_or_else(Vec::new)
+        Val::Format => super::disp::format(a, &b.map_or_else(Vec::new, 
+            |x| x.iterf().cloned().collect::<Vec<_>>())
         ).chars().map(|x| Num(x as u32 as f64)).collect(),
         Val::Numfmt => match a { // TODO support more bases and stuff
             Num(a) => format!("{}", a).chars().map(|x| Num(x as u32 as f64)).collect(),
