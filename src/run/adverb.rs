@@ -1,6 +1,43 @@
 use super::{Val::{self, Num, Lis}, Env, NAN};
 use std::{rc::Rc, ops::Range};
 
+#[derive(Copy, Clone, Debug)]
+pub enum AvT {
+    Swap, Const, Monadic,
+    Each, EachLeft, Conform, Extend,
+    Scan, ScanPairs, Reduce, Stencil, Valences,
+    Overleft, Overright, Over,
+    Until, UntilScan, Power, PowerScan,
+}
+
+impl AvT {
+pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>, f: Option<&Rc<Val>>, g: &Rc<Val>) -> Val {
+    let ba = b.unwrap_or(a);
+    let fg = f.unwrap_or(g);
+    match self {
+        Self::Swap =>      g.dyad(env, ba, a),
+        Self::Const =>     (**g).clone(),
+        Self::Monadic =>   g.monad(env, a),
+        Self::Each =>      each(env, a, b, g),
+        Self::EachLeft =>  each_left(env, a, b, g),
+        Self::Conform =>   conform(env, a, b, g),
+        Self::Extend =>    extend(env, a, b, g),
+        Self::Scan =>      scan(env, a, b, g),
+        Self::ScanPairs => scan_pairs(env, a, b, g),
+        Self::Reduce =>    reduce(env, a, b, g),
+        Self::Stencil =>   stencil(env, a, b, fg, g),
+        Self::Valences =>  (if b.is_none() {fg} else {g}).call(env, a, b),
+        Self::Over => { let l = fg.monad(env, a); let r = fg.monad(env, ba); g.dyad(env, &l, &r) },
+        Self::Overleft =>  {let x = fg.monad(env, a); g.dyad(env, &x, ba)},
+        Self::Overright => {let x = fg.monad(env, ba); g.dyad(env, a, &x)},
+        Self::Until =>     until(env, a, b, fg, g),
+        Self::UntilScan => until_scan(env, a, b, fg, g),
+        Self::Power =>     power(env, a, b, fg, g),
+        Self::PowerScan => power_scan(env, a, b, fg, g),
+    }
+}
+}
+
 pub fn each(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
     if let (Num(_), Some(Num(_)) | None) = (a, b) {
         g.call(env, a, b)
@@ -9,7 +46,10 @@ pub fn each(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
             let l = a.index(env, n); let r = b.index(env, n); g.dyad(env, &l, &r)
         }).collect());
         if !a.is_finite() && !b.is_finite() { 
-            Val::Fork { a: a.clone().rc(), f: Val::DConform(Rc::clone(g)).rc(), b: b.clone().rc() }
+            Val::Fork {
+                a: a.clone().rc(),
+                f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(),
+                b: b.clone().rc() }
         } else if a.is_scalar() { Lis { l: collect_range(0..b.len()), fill: b.fill().rc() }
         } else if b.is_scalar() { Lis { l: collect_range(0..a.len()), fill: a.fill().rc() }
         } else { Lis { l: collect_range(0..usize::min(a.len(), b.len())), fill: a.fill().rc() }
@@ -41,7 +81,7 @@ pub fn conform(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
             let l = a.index(env, n); let r = b.index(env, n); conform(env, &l, Some(&r), g)
         }).collect());
         if !a.is_finite() && !b.is_finite() { 
-            Val::Fork { a: a.clone().rc(), f: Val::DConform(Rc::clone(g)).rc(), b: b.clone().rc() }
+            Val::Fork { a: a.clone().rc(), f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(), b: b.clone().rc() }
         } else if a.is_scalar() { Lis { l: collect_range(0..b.len()), fill: b.fill().rc() }
         } else if b.is_scalar() { Lis { l: collect_range(0..a.len()), fill: a.fill().rc() }
         } else { Lis { l: collect_range(0..usize::min(a.len(), b.len())), fill: a.fill().rc() }}
@@ -52,9 +92,9 @@ pub fn extend(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
     if let (Num(_), Some(Num(_)) | None) = (a, b) {
         g.call(env, a, b)
     } else if !a.is_finite() { if let Some(b) = b {
-        Val::Fork { a: a.clone().rc(), f: Val::DConform(Rc::clone(g)).rc(), b: b.clone().rc() }
+        Val::Fork { a: a.clone().rc(), f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(), b: b.clone().rc() }
     } else {
-        Val::Trn2 { a: a.clone().rc(), f: Val::DConform(Rc::clone(g)).rc() }
+        Val::Trn2 { a: a.clone().rc(), f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc() }
     }} else { Lis {
         l: Rc::new((0..a.len()).map(|n| {
             let l = a.index(env, n); extend(env, &l, b, g)

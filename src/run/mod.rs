@@ -6,6 +6,7 @@ mod disp;
 use crate::parse::{Expr, Stmt};
 use crate::Bstr;
 use std::{collections::HashMap, rc::Rc};
+use adverb::AvT;
 
 const STDLIB: &str = include_str!("../std.vemf");
 
@@ -27,25 +28,8 @@ pub enum Val {
     Trn2{ a: Rc<Val>, f: Rc<Val> },
     Trn3{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
     Fork{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
-    Swap,      DSwap(Rc<Val>),
-    Const,     DConst(Rc<Val>),
-    Monadic,   DMonadic(Rc<Val>),
-    Each,      DEach(Rc<Val>),
-    EachLeft,  DEachLeft(Rc<Val>),
-    Conform,   DConform(Rc<Val>),
-    Extend,    DExtend(Rc<Val>),
-    Scan,      DScan(Rc<Val>),
-    ScanPairs, DScanPairs(Rc<Val>),
-    Reduce,    DReduce(Rc<Val>),
-    Stencil,   DStencil(Rc<Val>, Rc<Val>),
-    Valences,  DValences(Rc<Val>, Rc<Val>),
-    Overleft,  DOverleft(Rc<Val>, Rc<Val>),
-    Overright, DOverright(Rc<Val>, Rc<Val>),
-    Over,      DOver(Rc<Val>, Rc<Val>),
-    Until,     DUntil(Rc<Val>, Rc<Val>),
-    UntilScan, DUntilScan(Rc<Val>, Rc<Val>),
-    Power,     DPower(Rc<Val>, Rc<Val>),
-    PowerScan, DPowerScan(Rc<Val>, Rc<Val>),
+    Av(AvT, Option<Rc<Val>>, Rc<Val>),
+    AvBuilder(AvT),
     Cycle,     DCycle(Rc<[Val]>),
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
@@ -53,6 +37,7 @@ pub enum Val {
     Print, Println, Exit, Format, Numfmt, Parse, Takeleft, Takeright, Dropleft, Dropright, Replist, Match,
     LoadIntrinsics,
 }
+
 
 impl PartialEq for Val {
     fn eq(&self, other: &Self) -> bool {

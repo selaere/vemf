@@ -57,7 +57,7 @@ impl Val {
                         let slice = index.iterinf(env).skip(n+1).collect::<Val>();
                         return l.iter().map(|x| x.index_at_depth(env, &slice)).collect::<Val>()
                     }
-                    _ => return Val::DConst(NAN.rc())
+                    _ => return std::iter::empty::<Val>().collect()
                 }
             }
             value = value.indexval(env, &i);
@@ -157,7 +157,7 @@ pub fn concat(a: &Val, b: &Val) -> Val {
 }
 
 pub fn reverse(a: &Val) -> Val {
-    if !a.is_finite() { return Val::DConst(NAN.rc()) }
+    if !a.is_finite() { return std::iter::empty::<Val>().collect() }
     a.iterf().rev().cloned().collect()
 }
 

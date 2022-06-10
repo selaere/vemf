@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use crate::{Bstr, b};
 use super::{Val, Env, NAN};
+use super::adverb::AvT;
 use smallvec::smallvec;
 use Val::{Num, Lis};
 
@@ -26,11 +27,22 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 env.locals.insert(name, Val::$name)
             } );* }}
             load!(
-                Swap, Const, Monadic, Each, Conform, Scan, Reduce, Valences, Over, Overleft, Overright, Until, UntilScan, Power, PowerScan, ScanPairs, Stencil, EachLeft, Extend,
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse, Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match,
+            );
+            macro_rules! load_av {($($name:ident,)*) => { $( {
+                let mut name = Bstr::from(&b"in"[..]);
+                name.extend(stringify!($name).to_ascii_lowercase().bytes());
+                env.locals.insert(name, Val::AvBuilder(AvT::$name))
+            } );* }}
+            load_av!(
+                Swap, Const, Monadic,
+                Each, EachLeft, Conform, Extend,
+                Scan, ScanPairs, Reduce, Stencil, Valences,
+                Overleft, Overright, Over,
+                Until, UntilScan, Power, PowerScan,
             ); Num(1.)
         }
 
@@ -56,46 +68,8 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             ff.dyad(env, &l, &r)
         }
 
-        Val::Swap      => Val::DSwap     (a.clone().rc()),
-        Val::Const     => Val::DConst    (a.clone().rc()),
-        Val::Monadic   => Val::DMonadic  (a.clone().rc()),
-        Val::Each      => Val::DEach     (a.clone().rc()),
-        Val::EachLeft  => Val::DEachLeft (a.clone().rc()),
-        Val::Conform   => Val::DConform  (a.clone().rc()),
-        Val::Extend    => Val::DExtend   (a.clone().rc()),
-        Val::Reduce    => Val::DReduce   (a.clone().rc()),
-        Val::Scan      => Val::DScan     (a.clone().rc()),
-        Val::ScanPairs => Val::DScanPairs(a.clone().rc()),
-        Val::Stencil   => Val::DStencil  (ba.clone().rc(), a.clone().rc()),
-        Val::Valences  => Val::DValences (ba.clone().rc(), a.clone().rc()),
-        Val::Over      => Val::DOver     (ba.clone().rc(), a.clone().rc()),
-        Val::Overleft  => Val::DOverleft (ba.clone().rc(), a.clone().rc()),
-        Val::Overright => Val::DOverright(ba.clone().rc(), a.clone().rc()),
-        Val::Until     => Val::DUntil    (ba.clone().rc(), a.clone().rc()),
-        Val::UntilScan => Val::DUntilScan(ba.clone().rc(), a.clone().rc()),
-        Val::Power     => Val::DPower    (ba.clone().rc(), a.clone().rc()),
-        Val::PowerScan => Val::DPowerScan(ba.clone().rc(), a.clone().rc()),
-        Val::DSwap(g) => g.dyad(env, ba, a),
-        Val::DConst(g) => (**g).clone(),
-        Val::DMonadic(g) => g.monad(env, a),
-        Val::DEach(g) =>         super::adverb::each(env, a, b, g),
-        Val::DEachLeft(g) =>     super::adverb::each_left(env, a, b, g),
-        Val::DConform(g) =>      super::adverb::conform(env, a, b, g),
-        Val::DExtend(g) =>       super::adverb::extend(env, a, b, g),
-        Val::DScan(g) =>         super::adverb::scan(env, a, b, g),
-        Val::DScanPairs(g) =>    super::adverb::scan_pairs(env, a, b, g),
-        Val::DReduce(g) =>       super::adverb::reduce(env, a, b, g),
-        Val::DStencil(f, g) =>   super::adverb::stencil(env, a, b, f, g),
-        Val::DUntil(f, g) =>     super::adverb::until(env, a, b, f, g),
-        Val::DUntilScan(f, g) => super::adverb::until_scan(env, a, b, f, g),
-        Val::DPower(f, g) =>     super::adverb::power(env, a, b, f, g),
-        Val::DPowerScan(f, g) => super::adverb::power_scan(env, a, b, f, g),
-        Val::DValences(f, g) => (if b.is_none() {f} else {g}).call(env, a, b),
-        Val::DOver(f, g) => {
-            let l = f.monad(env, a); let r = f.monad(env, ba); g.dyad(env, &l, &r)
-        },
-        Val::DOverleft(f, g) => {let x = f.monad(env, a); g.dyad(env, &x, ba)},
-        Val::DOverright(f, g) => {let x = f.monad(env, ba); g.dyad(env, a, &x)},
+        Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.clone().rc()), a.clone().rc()),
+        Val::Av(t, f, g) => t.call(env, a, b, f.as_ref(), g),
         Val::Add  => match (a, b) {(Num(a), Some(Num(b))) => Num(a + b), _ => NAN },
         Val::Sub  => match (a, b) {(Num(a), Some(Num(b))) => Num(a - b), _ => NAN },
         Val::Mul  => match (a, b) {(Num(a), Some(Num(b))) => Num(a * b), _ => NAN },
@@ -155,7 +129,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 }).collect::<Vec<isize>>()),
             Num(n) => if *n == f64::INFINITY {Val::Left} else {
                 super::list::iota_scalar(*n as isize)},
-            _ => Val::DConst(NAN.rc()),
+            _ => Val::Av(AvT::Const, None, NAN.rc()),
         }
         Val::Pair => [a, ba].into_iter().cloned().collect(),
         Val::Enlist => [a].into_iter().cloned().collect(),
