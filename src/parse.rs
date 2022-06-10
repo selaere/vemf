@@ -34,6 +34,7 @@ pub enum Stmt {
     Return(Expr),
     Set(Expr, Bstr),
     Conj(Expr, Bstr),
+    Cond(Expr, Box<Stmt>),
 }
 
 #[derive(Debug)]
@@ -62,10 +63,10 @@ impl Display for Expr {
             Self::Bind {    f, b } => write!(m, "[{} with {}]", f, b),
             Self::Trn1 { a, f    } => write!(m, "[{} {}]", a, f),
             Self::Trn2 { a, f, b } => write!(m, "[{} {} {}]", a, f, b),
-            Self::Fork { a, f, b } => write!(m, "┼[{} {} {}]", a, f, b),
+            Self::Fork { a, f, b } => write!(m, "└[{} {} {}]", a, f, b),
             Self::Dfn  { s: efs, .. } => {
                 write!(m, "{{ ")?;
-                for v in efs { write!(m, "{}; ", v)?; }
+                for v in efs { write!(m, "{} ", v)?; }
                 write!(m, "}}")?;
                 Ok(())
             },
@@ -80,6 +81,7 @@ impl Display for Stmt {
             Stmt::Return(e) => write!(m, "{}◘", e),
             Stmt::Set(e, f) => write!(m, "{}→{}", e, displayname(f)),
             Stmt::Conj(e, f) => write!(m, "{}{}", e, displayname(f)),
+            Stmt::Cond(i, t) => write!(m, "{}?{}", i, t),
         }
     }
 }
@@ -337,8 +339,30 @@ impl Stmt {
             Stmt::Return(e) => { e.capture(vars); },
             Stmt::Set(e, f) =>  { e.capture(vars); vars.insert(f.clone()); },
             Stmt::Conj(e, v) => { e.capture(vars); vars.insert(v.clone()); },
+            Stmt::Cond(i, t) => { i.capture(vars); t.capture(vars); },
         }
     }
+}
+
+fn parse_stmt(code: &mut&[Tok], ev: Expr) -> Option<Stmt> {
+    Some(match code.first() {
+        Some(Tok::Conj(c)) => { step!(code); 
+            Stmt::Conj(ev, smallvec![*c]) },
+        Some(Tok::VarSet(v)) => { step!(code); 
+            Stmt::Set(ev, v.clone()) },
+        Some(Tok::Just(b!('◘'))) => { step!(code);
+            Stmt::Return(ev) },
+        Some(Tok::Just(b!('·'))) => { step!(code);
+            Stmt::Discard(ev) },
+        Some(Tok::Just(b!('}'))) | None => {
+            Stmt::Return(ev) },
+        Some(Tok::Just(b!('?'))) => { step!(code);
+            let ev2 = phrase_to_expr(phrase(code)).unwrap_or(NAN);
+            let Some(block) = parse_stmt(code, ev2) else {return None};
+            Stmt::Cond(ev, Box::new(block))
+        },
+        _ => return None,
+    })
 }
 
 
@@ -346,23 +370,9 @@ pub fn block(code: &mut&[Tok]) -> Vec<Stmt> {
     let mut exps = Vec::new();
     loop {
         while let Some(Tok::Just(b!('·'))) = code.first() { step!(code); }
-        let Some(ev) = phrase_to_expr(phrase(code)) else { break };
-        let stmt = match code.first() {
-            Some(Tok::Conj(c)) => { step!(code); 
-                Stmt::Conj(ev, smallvec![*c]) },
-            Some(Tok::VarSet(v)) => { step!(code); 
-                Stmt::Set(ev, v.clone()) },
-            Some(Tok::Just(b!('◘'))) => { step!(code);
-                Stmt::Return(ev)
-            },
-            Some(Tok::Just(b!('·'))) => { step!(code);
-                Stmt::Discard(ev)
-            },
-            Some(Tok::Just(b!('}'))) | None => {
-                Stmt::Return(ev)
-            },
-            _ => break, // this should not happen but uhh
-        };
+        if let Some(Tok::Just(b!('}'))) | None = code.first() { break };
+        let ev = phrase_to_expr(phrase(code)).unwrap_or(NAN);
+        let Some(stmt) = parse_stmt(code, ev) else { break };
         exps.push(stmt);
     }
     exps

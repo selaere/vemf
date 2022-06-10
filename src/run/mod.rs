@@ -31,9 +31,13 @@ pub enum Val {
     Const,     DConst(Rc<Val>),
     Monadic,   DMonadic(Rc<Val>),
     Each,      DEach(Rc<Val>),
-    Scalar,    DScalar(Rc<Val>),
+    EachLeft,  DEachLeft(Rc<Val>),
+    Conform,   DConform(Rc<Val>),
+    Extend,    DExtend(Rc<Val>),
     Scan,      DScan(Rc<Val>),
+    ScanPairs, DScanPairs(Rc<Val>),
     Reduce,    DReduce(Rc<Val>),
+    Stencil,   DStencil(Rc<Val>, Rc<Val>),
     Valences,  DValences(Rc<Val>, Rc<Val>),
     Overleft,  DOverleft(Rc<Val>, Rc<Val>),
     Overright, DOverright(Rc<Val>, Rc<Val>),
@@ -152,21 +156,39 @@ impl Env<'_> {
         }
     }
 
+    #[allow(clippy::needless_borrow)] /*clippy bug i think*/
+    pub fn eval_stmt(&mut self, stmt: &Stmt) -> Option<Val> {
+        match stmt {
+            Stmt::Discard(expr) => { let _ = self.eval(&expr); },
+            Stmt::Conj(a, v) => {
+                let a = self.eval(&a);
+                self.locals.get(&v[..]).cloned().unwrap_or_default().monad(self, &a);
+            },
+            Stmt::Set(a, v) => {
+                let a = self.eval(&a);
+                self.locals.insert(v.clone(), a);
+            },
+            Stmt::Return(expr) => { return Some(self.eval(&expr)); },
+            Stmt::Cond(cond, then) => {
+                let cond = self.eval(&cond);
+                let cond = match cond {
+                    Num(n) => n != 0. || n.is_nan(),
+                    otherwise => {
+                        let a = self.locals.get(&[b!('α')][..]).cloned().unwrap_or(NAN);
+                        let b = self.locals.get(&[b!('β')][..]).cloned();
+                        let val = otherwise.call(self, &a, b.as_ref());
+                        matches!(val, Num(n) if n != 0. || n.is_nan())
+                    }
+                };
+                if cond { return self.eval_stmt(then) }
+            }
+        };
+        None
+    }
+
     pub fn eval_block(&mut self, block: &[Stmt]) -> Val {
         for stmt in block.iter() { 
-            #[allow(clippy::needless_borrow)] /*clippy bug i think*/
-            match stmt {
-                Stmt::Discard(expr) => { let _ = self.eval(&expr); },
-                Stmt::Conj(a, v) => {
-                    let a = self.eval(&a);
-                    self.locals.get(&v[..]).cloned().unwrap_or_default().monad(self, &a);
-                },
-                Stmt::Set(a, v) => {
-                    let a = self.eval(&a);
-                    self.locals.insert(v.clone(), a);
-                },
-                Stmt::Return(expr) => { return self.eval(&expr); }
-            }
+            if let Some(val) = self.eval_stmt(stmt) { return val };
         }
         NAN
     }
@@ -175,7 +197,7 @@ impl Env<'_> {
         let tokens = token::tokenize(&codepage::tobytes(code).unwrap());
         //println!("{:?}", tokens);
         let parsed = parse::parse(&tokens);
-        for i in &parsed { println!("parsed: {}", i); }
+        //for i in &parsed { println!("parsed: {}", i); }
         self.eval_block(&parsed)
     }
 

@@ -1,6 +1,7 @@
 #[test]
 fn test() -> Result<(), String> {
     let code: &str = include_str!("test.vemf");
+    println!("doing unit tests...");
     let mut tested = 0;
     let mut failed = 0;
     let mut env = super::run::Env::new();
@@ -14,6 +15,8 @@ fn test() -> Result<(), String> {
             if left != right {
                 println!("test failed line {} ``{i} : {o}``: {left} ≢ {right}", n+1);
                 failed += 1;
+            } else {
+                //println!("test passed line {} ``{i} : {o}``", n+1);
             }
             tested += 1;
         } else {println!("i didnt understand line {}", n)}
