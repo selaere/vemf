@@ -1,7 +1,7 @@
 ϕ:loadintrinsics·
 
-.inleft→◄→Ω ·
-.inright→► ·
+.inleft→◄→Ω·
+.inright→►·
 
 .invalences→╬·
 
@@ -14,8 +14,8 @@
 .inover→╓·
 
 .ineach→╕·
-.ineachleft→╛ ·
-:┴:╛:┴→╘ ·
+.ineachleft→╛·
+:┴:╛:┴→╘·
 
 .inscan→╤·
 .inreduce→╧·
@@ -26,114 +26,118 @@
 .inextend→_╛·
 :┴:_╛:┴→_╘·
 
-.inprint→☺ ·
-.inprintln→☻ ·
-.inexit→⌂ ·
+.inprint→☺·
+.inprintln→☻·
+.inexit→⌂·
 
-.inenlist╬.inpair→♫ ·
+.inenlist╬.inpair→♫·
 
-:incycle╬:inreplist→§ ·
+:incycle╬:inreplist→§·
 
-.intakeleft→↑ ·
-.intakeright→↓ ·
+.intakeleft→↑·
+.intakeright→↓·
 
-.inravel╬§╜↑→¶ ·
-.indropleft→♂ · (♂1)╬♂→♂·
-.indropright→♀ · (♀1)╬♀→♀·
+.inravel╬§╜↑→¶·
+.indropleft→♂·┌♂1╬♂→♂·
+.indropright→♀·┌♀1╬♀→♀·
 
-.inshape→▬ · ▬╬▬╜↑→▬ ·
+.inshape→▬·▬╬▬╜↑→▬·
 
-.inconcat→, · │┴♫╬┴,→; · │╧,╬,→, ·
+.inconcat→,·│┴♫╬┴,→;·│╧,╬,→,·
 
-:inadd→+ · ┌¶╧+╬┼+→+ ·
+:inadd→+·┌¶╧+╬┼+→+·
 
-┼:inneg╬:insub→- ·
+┼:inneg╬:insub→-·
 
-:inmul→* · ┌¶╧*╬┼*→* ·
+:inmul→*·┌¶╧*╬┼*→*·
 
-.indiv→/ ·
-┼└1/►╬/→/ ·
+.indiv→/·
+┼└1/►╬/→/·
 
-┼:inexp╬:inpow→^ ·
+┼:inexp╬:inpow→^·
 
-┼┌2╜^╬:inmod→% ·
+┼┌2╜^╬:inmod→%·
 
-┼:inln╬:inlog→∟ ·
+┼:inln╬:inlog→∟·
 
-┼:insqrt╬/╙^→√ ·
+┼:insqrt╬/╙^→√·
 
-┼:insin╬:insin╜^→í ·
-┼:incos╬:incos╜^→ó ·
-┼:intan╬:intan╜^→á ·
+┼:insin╬:insin╜^→í·
+┼:incos╬:incos╜^→ó·
+┼:intan╬:intan╜^→á·
 
-┼:inasin╬:inasin╜^→ì ·
-┼:inacos╬:inacos╜^→ò ·
-┼:inatan╬:inatan╜^→à ·
+┼:inasin╬:inasin╜^→ì·
+┼:inacos╬:inacos╜^→ò·
+┼:inatan╬:inatan╜^→à·
 
-(+1)→▲→Σ ·
--1→▼ ·
+(+1)→▲→Σ·
+-1→▼·
 
-┼:inlt→< ·
-(▬:inlen)╬┼:ineq→= ·
-┼:ingt→> ·
+┼:inlt→<·
+(▬:inlen)╬┼:ineq→=·
+┼:ingt→>·
 
-=0→¬ ·
-¬¬→⌐ ·
+=0→¬·
+¬¬→⌐·
 
-<¬→≥ ·
-=¬→~ ·
->¬→≤ ·
+<¬→≥·
+=¬→~·
+>¬→≤·
 
-:inlen╬~→~ ·
+:inlen╬~→~·
 
-^2→² ·
-/2→½ ·
-*2→¼ ·
+^2→²·
+/2→½·
+*2→¼·
 
-.iniota→↕ ·
-↕╬┼{β-α|0↕+α}→↕ ·
-┌↕▲╬┼{β-α▲|0↕+α}→↨ ·
+.iniota→↕·
+↕╬┼{β-α|0↕+α}→↕·
+┌↕▲╬┼{β-α▲|0↕+α}→↨·
 
-.inmax→| · ┌¶╧|╬┼|→| ·
-.inmin→& · ┌¶╧&╬┼&→& ·
+.inmax→|·┌¶╧|╬┼|→|·
+.inmin→&·┌¶╧&╬┼&→&·
 
 .inabs→¢·
 ┼┌┘>-<0╬┐-¢→±·
 ¢╬┐²╓+√→¢·
 
-.inindex→@ · ┌@0╬@→@ ·
-┌┌~▼╙@╬┴╘@→¡ ·
+.inindex→@·┌@0╬@→@·
+┌┌~▼╙@╬┴╘@→¡·
 
-:ingetfill╬:insetfill→▐ ·
-┼.inisnan→▄ ·
-.inreverse→♠ ·
+:ingetfill╬:insetfill→▐·
+┼.inisnan→▄·
+.inreverse→♠·
 
-┼:inceil→⌠ ·
-┼:inround→÷ ·
-┼:infloor→⌡ ·
+┼:inceil→⌠·
+┼:inround→÷·
+┼:infloor→⌡·
 
-.informat→ⁿ ·
-.inparse→º ·
-┼:innumfmt→ª ·
+.informat→ⁿ·
+.inparse→º·
+┼:innumfmt→ª·
 
-÷╬┐/⌡→÷ ·
+÷╬┐/⌡→÷·
 
-.inuntil→╩ ·
-.inuntilscan→╦ ·
-.inpower→╨ ·
-.inpowerscan→╥ ·
+.inuntil→╩·
+.inuntilscan→╦·
+.inpower→╨·
+.inpowerscan→╥·
 
-├~=0╬.inmatch→≡ ·
-≡¬→≈ ·
+├~=0╬.inmatch→≡·
+≡¬→≈·
 
-'3.141592653589793→π ·
-2*π→τ ·
-┌*┤π/'180╬┼.inatanb→° ·
-*┤'180/π→å ·
+'3.141592653589793→π·
+2*π→τ·
+┌*┤π/'180╬┼.inatanb→°·
+*┤'180/π→å·
 
+┌├~▲↕╙╘↓╬↓→↓·
+┌├~▲↕╙╘↑╬↑→↑·
 
-
-┌├~▲↕╙╘↓╬↓→↓ ·
+.indeal→♣·┼├♣1@╬♣→♣·
+└◄@┌~♣╬•_╘└~╜♣¡◄→¿·
+┼└◄.insample&→û·
+└┌~û╬~╜û¡◄→ú·
 
 '3486→_¶·
 

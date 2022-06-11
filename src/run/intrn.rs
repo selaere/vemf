@@ -27,7 +27,8 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-                Print, Println, Exit, Format, Numfmt, Parse, Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match,
+                Print, Println, Exit, Format, Numfmt, Parse,
+                Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample,
             );
             macro_rules! load_av {($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
@@ -160,7 +161,25 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Shape => Val::lis_fill(
             super::list::shape(a).iter().map(|x| Num(*x as f64)).collect(),
             Num(1.),
-        )
+        ),
+
+        Val::Deal => match (a, ba) {
+            (Num(a), Num(b)) => {
+                use rand::distributions::{Distribution, Uniform};
+                let a = *a as usize; let b = *b as usize;
+                if a == 0 { return std::iter::repeat(NAN).take(b).collect() }
+                Uniform::from(0..a).sample_iter(rand::thread_rng()).take(b)
+                    .map(|x| Num(x as f64)).collect::<Val>()
+            }, _ => NAN,
+        },
+        Val::Sample => match (a, ba) {
+            (Num(a), Num(b)) => 
+                rand::seq::index::sample(&mut rand::thread_rng(), *a as usize, *b as usize)
+                    .iter()
+                    .map(|x| Num(x as f64))
+                    .collect::<Val>(),
+            _ => NAN,
+        }
     }
 }
 

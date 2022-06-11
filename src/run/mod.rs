@@ -30,7 +30,8 @@ pub enum Val {
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-    Print, Println, Exit, Format, Numfmt, Parse, Takeleft, Takeright, Dropleft, Dropright, Replist, Match,
+    Print, Println, Exit, Format, Numfmt, Parse,
+    Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample,
     LoadIntrinsics,
 }
 

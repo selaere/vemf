@@ -57,7 +57,7 @@ pub fn each(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
 }
 
 pub fn each_left(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
-    if let (Num(_), Some(Num(_)) | None) = (a, b) {
+    if a.is_scalar() {
         g.call(env, a, b)
     } else if !a.is_finite() { if let Some(b) = b {
         Val::Fork { a: a.clone().rc(), f: g.clone(), b: b.clone().rc() }
@@ -89,7 +89,7 @@ pub fn conform(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
 }
 
 pub fn extend(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
-    if let (Num(_), Some(Num(_)) | None) = (a, b) {
+    if a.is_scalar() {
         g.call(env, a, b)
     } else if !a.is_finite() { if let Some(b) = b {
         Val::Fork { a: a.clone().rc(), 
