@@ -1,10 +1,7 @@
 use std::rc::Rc;
-
 use crate::{Bstr, b};
-use super::{Val, Env, NAN};
-use super::adverb::AvT;
+use super::{Val::{self, Num, Lis}, Env, NAN, adverb::AvT};
 use smallvec::smallvec;
-use Val::{Num, Lis};
 
 impl Val {
 
@@ -131,12 +128,12 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 super::list::iota_scalar(*n as isize)},
             _ => Val::Av(AvT::Const, None, NAN.rc()),
         }
-        Val::Pair => [a, ba].into_iter().cloned().collect(),
-        Val::Enlist => [a].into_iter().cloned().collect(),
+        Val::Pair => Val::lis(vec![a.clone(), ba.clone()]),
+        Val::Enlist => Val::lis(vec![a.clone()]),
         Val::Ravel => {
             let mut list = Vec::new();
             super::list::ravel(a, &mut list);
-            list.into_iter().cloned().collect()
+            Val::lis(list)
         },
         Val::Concat => super::list::concat(a, ba),
         Val::Reverse => super::list::reverse(a),
@@ -160,10 +157,10 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             _ => NAN,
         },
         Val::Match => Val::from_bool(a == ba),
-        Val::Shape => { Lis {
-            l: Rc::new(super::list::shape(a).iter().map(|x| Num(*x as f64)).collect::<Vec<_>>()),
-            fill: Num(1.).rc(),
-        } }
+        Val::Shape => Val::lis_fill(
+            super::list::shape(a).iter().map(|x| Num(*x as f64)).collect(),
+            Num(1.),
+        )
     }
 }
 

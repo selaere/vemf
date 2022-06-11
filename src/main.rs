@@ -1,11 +1,9 @@
 #![feature(let_else)]
 #![warn(clippy::map_unwrap_or)]
 #![warn(clippy::semicolon_if_nothing_returned)]
+
 #[macro_use] mod codepage;
-mod test;
-mod token;
-mod parse;
-mod run;
+mod token; mod parse; mod run; mod test;
 
 pub type Bstr = smallvec::SmallVec<[u8; 16]>; // length will be the same as a Vec in 64bit archs
 

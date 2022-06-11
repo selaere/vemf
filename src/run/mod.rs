@@ -1,10 +1,6 @@
-mod intrn;
-mod list;
-mod adverb;
-mod disp;
+mod intrn; mod list; mod adverb; mod disp;
 
-use crate::parse::{Expr, Stmt};
-use crate::Bstr;
+use crate::{parse::{Expr, Stmt}, Bstr};
 use std::{collections::HashMap, rc::Rc};
 use adverb::AvT;
 

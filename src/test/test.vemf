@@ -71,6 +71,7 @@
 "testing"▐`_↑2█ : "test""ing_"
 "testing"▐`_↑█2 : "te""st""in""g_"
 "testing"▐` ↑'21 : "testing              "
+' "testing"↑ : "" "t" "te" "tes" "test" "testi" "testin" "testing"
 
 9↕↓55 : (█████)(█████)(█████)(█0123)(45678)
 9↕↓23 : (345)(678)
@@ -78,6 +79,7 @@
 "testing"▐`_↓2█ : "_tes""ting"
 "testing"▐`_↓█2 : "_t""es""ti""ng"
 "testing"▐` ↓'21 : "              testing"
+' "testing"↓ : "" "g" "ng" "ing" "ting" "sting" "esting" "testing"
 
 2∟^ : 2
 '1000∟Φ : '2.9999999999999996 ' lol

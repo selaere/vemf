@@ -1,8 +1,5 @@
 use std::rc::Rc;
-
-use super::Val::{self, Num, Lis};
-use super::Env;
-use super::NAN;
+use super::{Val::{self, Num, Lis}, Env, NAN};
 
 impl Val {
     
@@ -71,6 +68,14 @@ impl Val {
         }
     }
 
+    pub fn lis(vec: Vec<Val>) -> Val {
+        Self::lis_fill(vec, NAN)
+    }
+
+    pub fn lis_fill(vec: Vec<Val>, fill: Val) -> Val {
+        Lis{l: Rc::new(vec), fill: fill.rc()}
+    }
+
     // create a finite iterator of `&Val`s. this returns a single item for functions, so it will 
     // never be infinite AND it doesnt need a &mut env which is more convenient most of the time
     pub fn iterf<'v>(&'v self) -> Box<dyn Iterf<'v> + 'v> {
@@ -116,7 +121,7 @@ impl<'a, 'v> Iterator for ValueIter<'a, 'v> {
 
 impl FromIterator<Val> for Val {
     fn from_iter<T: IntoIterator<Item = Val>>(iter: T) -> Self {
-        Lis{l: Rc::new(iter.into_iter().collect()), fill: NAN.rc()}
+        Val::lis(iter.into_iter().collect())
     }
 }
 
@@ -130,7 +135,7 @@ pub fn iota(prefix: Vec<isize>, arg: &[isize]) -> Val {
         Box::new((0..arg[0].abs()).rev())
     };
     let lis = iter.map(|i| iota([&prefix[..], &[i]].concat(), &arg[1..])).collect();
-    Lis{l: Rc::new(lis), fill: NAN.rc()}
+    Val::lis(lis)
 }
 
 
@@ -141,13 +146,13 @@ pub fn iota_scalar(arg: isize) -> Val {
         Box::new((0..arg.abs()).rev())
     };
     let lis = iter.map(|i| Num(i as f64)).collect();
-    Lis{l: Rc::new(lis), fill: NAN.rc()}
+    Val::lis(lis)
 }
 
-pub fn ravel<'a>(arg: &'a Val, list: &mut Vec<&'a Val>) {
+pub fn ravel(arg: &Val, list: &mut Vec<Val>) {
     match arg {
         Lis{ l, .. } => for i in l.iter() {ravel(i, list)},
-        _ => list.push(arg)
+        _ => list.push(arg.clone())
     }
 }
 
@@ -208,13 +213,13 @@ pub fn fillreshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
 
 pub fn dropleft(a: &Val, b: f64) -> Val {
     if b < 0. {return dropright(a, -b); }
-    if !a.is_finite() { return a.clone(); }
+    if !a.is_finite() { return NAN; }
     a.iterf().skip(b as usize).cloned().collect()
 }
 
 pub fn dropright(a: &Val, b: f64) -> Val {
     if b < 0. { return dropleft(a, -b); }
-    if !a.is_finite() { return NAN; }
+    if !a.is_finite() { return a.clone(); }
     a.iterf().rev().skip(b as usize).rev().cloned().collect()
 }
 
