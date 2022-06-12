@@ -1,51 +1,47 @@
 use std::rc::Rc;
-use super::{Val::{self, Num, Lis}, Env, NAN};
+use super::{Val::{self, Lis, Comp, Int}, Env, NAN};
 
 impl Val {
-    
-    pub fn lenf(&self) -> f64 { match self {
-        Num(_) => 1.,
-        Lis { l, .. } => l.len() as f64,
-        _ => f64::INFINITY,
-    }}
 
     pub fn len(&self) -> usize { match self {
-        Num(_) => 1,
+        Comp(_) | Int(_) => 1,
         Lis { l, .. } => l.len(),
         _ => usize::MAX,
     }}
 
     pub fn fill(&self) -> Val { match self {
-        Num(n) => Num(*n),
+        Comp(_) | Int(_) => self.clone(),
         Lis { fill, .. } => (**fill).clone(),
         _ => NAN, // good enough
     }}
 
     pub fn indexval(&self, env: &mut Env, index: &Val) -> Val {
         match self {
-            Num(n) => Num(*n), // unchanged
-            Lis { l, fill } => if let &Num(index) = index {
-                if index < 0. || index.is_nan() { return (**fill).clone() }
-                l.get(index as usize).cloned().unwrap_or_else(|| (**fill).clone())
-            } else {(**fill).clone()},
+            Comp(_) | Int(_) => self.clone(), // unchanged
+            Lis { l, fill } => 
+                if index.is_nan() {(**fill).clone()} 
+                else if let Some(index) = index.try_int() {
+                    if index < 0 { return (**fill).clone() }
+                    l.get(index as usize).cloned().unwrap_or_else(|| (**fill).clone())
+                } else {(**fill).clone()},
             x => x.monad(env, index)
         }
     }
 
     pub fn index(&self, env: &mut Env, index: usize) -> Val {
         match self {
-            Num(n) => Num(*n), // unchanged
+            Comp(_) | Int(_) => self.clone(), // unchanged
             Lis { l, fill } => {
                 l.get(index).cloned().unwrap_or_else(|| (**fill).clone())
             },
-            x => x.monad(env, &Num(index as f64))
+            x => x.monad(env, &Int(index as i64))
         }
     }
 
     pub fn index_at_depth(&self, env: &mut Env, index: &Val) -> Val {
         let mut value = self.clone();
         for n in 0..index.len() {
-            if let Num(n) = value { return Num(n); }
+            if value.is_scalar() { return value.clone(); }
             let i = index.index(env, n);
             if i.is_nan() {
                 if n+1 == index.len() {return value}
@@ -102,9 +98,9 @@ impl<'a, 'v> Iterator for ValueIter<'a, 'v> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let val = match self.value {
-            Num(n) => if self.i == 0 {Some(Num(*n))} else {None},
+            Comp(_) | Int(_) => if self.i == 0 {Some(self.value.clone())} else {None},
             Lis{l, ..} => l.get(self.i).cloned(),
-            f => Some(f.monad(self.env, &Num(self.i as f64))),
+            f => Some(f.monad(self.env, &Int(self.i as i64))),
         };
         self.i += 1; 
         val
@@ -112,7 +108,7 @@ impl<'a, 'v> Iterator for ValueIter<'a, 'v> {
 
     fn size_hint(&self) -> (usize, Option<usize>) {
         match self.value {
-            Num(_) => (1, Some(1)),
+            Comp(_) | Int(_) => (1, Some(1)),
             Lis{ l, .. } => (l.len(), Some(l.len())),
             _ => (usize::MAX, None)
         }
@@ -125,28 +121,26 @@ impl FromIterator<Val> for Val {
     }
 }
 
-pub fn iota(prefix: Vec<isize>, arg: &[isize]) -> Val {
+pub fn iota(prefix: Vec<i64>, arg: &[i64]) -> Val {
     if arg.is_empty() {
-        return prefix.into_iter().map(|x| Num(x as f64)).collect()
+        return prefix.into_iter().map(Int).collect()
     }
-    let iter: Box<dyn Iterator<Item=isize>> = if arg[0] > 0 {
+    let iter: Box<dyn Iterator<Item=i64>> = if arg[0] > 0 {
         Box::new(0..arg[0])
     } else {
         Box::new((0..arg[0].abs()).rev())
     };
-    let lis = iter.map(|i| iota([&prefix[..], &[i]].concat(), &arg[1..])).collect();
-    Val::lis(lis)
+    Val::lis(iter.map(|i| iota([&prefix[..], &[i]].concat(), &arg[1..])).collect())
 }
 
 
-pub fn iota_scalar(arg: isize) -> Val {
-    let iter: Box<dyn Iterator<Item=isize>> = if arg > 0 {
+pub fn iota_scalar(arg: i64) -> Val {
+    let iter: Box<dyn Iterator<Item=i64>> = if arg > 0 {
         Box::new(0..arg)
     } else {
         Box::new((0..arg.abs()).rev())
     };
-    let lis = iter.map(|i| Num(i as f64)).collect();
-    Val::lis(lis)
+    Val::lis(iter.map(Int).collect())
 }
 
 pub fn ravel(arg: &Val, list: &mut Vec<Val>) {
@@ -194,14 +188,14 @@ pub fn fillreshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
     if !b.is_finite() { return None };
     let mut shape = Vec::new();
     let mut spot = None::<usize>;
-    for i in b.iterf() { match i {
-        Num(n) if n.is_nan() && spot.is_none() => {
+    for i in b.iterf() { 
+        if i.is_nan() && spot.is_none() {
             spot = Some(shape.len());
             shape.push(1);
-        },
-        Num(n) => shape.push(*n as usize),
-        _ => return None
-    }};
+        } else if let Some(n) = i.try_int() {
+            shape.push(n as usize);
+        } else { return None }
+    }
     if let Some(index) = spot {
         fn divceil(x: usize, y: usize) -> usize {x / y + usize::from(x % y != 0)}
         shape[index] = divceil(match a {
@@ -211,16 +205,16 @@ pub fn fillreshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
     Some(shape)
 }
 
-pub fn dropleft(a: &Val, b: f64) -> Val {
-    if b < 0. {return dropright(a, -b); }
+pub fn dropleft(a: &Val, b: i64) -> Val {
+    if b < 0 {return dropright(a, -b); }
     if !a.is_finite() { return NAN; }
-    a.iterf().skip(b as usize).cloned().collect()
+    a.iterf().skip(b as _).cloned().collect()
 }
 
-pub fn dropright(a: &Val, b: f64) -> Val {
-    if b < 0. { return dropleft(a, -b); }
+pub fn dropright(a: &Val, b: i64) -> Val {
+    if b < 0 { return dropleft(a, -b); }
     if !a.is_finite() { return a.clone(); }
-    a.iterf().rev().skip(b as usize).rev().cloned().collect()
+    a.iterf().rev().skip(b as _).rev().cloned().collect()
 }
 
 pub fn shape(a: &Val) -> Vec<usize> {

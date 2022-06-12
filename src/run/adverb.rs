@@ -1,4 +1,4 @@
-use super::{Val::{self, Num}, Env, NAN};
+use super::{Val, Env, NAN};
 use std::{rc::Rc, ops::Range};
 
 #[derive(Copy, Clone, Debug)]
@@ -39,7 +39,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>, f: Option<&Rc<Val>>,
 }
 
 pub fn each(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
-    if let (Num(_), Some(Num(_)) | None) = (a, b) {
+    if a.is_scalar() && b.map_or(true, |b| b.is_scalar()) {
         g.call(env, a, b)
     } else if let Some(b) = b {
         let mut collect_range = |x: Range<usize>| x.map(|n| {
@@ -71,7 +71,7 @@ pub fn each_left(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
 
 
 pub fn conform(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
-    if let (Num(_), Some(Num(_)) | None) = (a, b) {
+    if a.is_scalar() && b.map_or(true, |b| b.is_scalar()) {
         g.call(env, a, b)
     } else if let Some(b) = b {
         let mut collect_range = |x: Range<usize>| x.map(|n| {
@@ -140,7 +140,7 @@ pub fn until_scan(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<V
     let mut val = a.clone();
     loop {
         let tried = g.call(env, &val, b);
-        if matches!( f.dyad(env, &tried, &val), Num(n) if n != 0. || n.is_nan()) { break }
+        if f.dyad(env, &tried, &val).as_bool() { break }
         values.push(tried.clone());
         val = tried;
     }
@@ -152,17 +152,14 @@ pub fn until(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<Val>) 
     let mut val = a.clone();
     loop {
         let tried = g.call(env, &val, b);
-        if matches!(f.dyad(env, &tried, &val), Num(n) if n != 0. || n.is_nan()) { break }
+        if f.dyad(env, &tried, &val).as_bool() { break }
         val = tried;
     }
     val
 }
 
 pub fn power_scan(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
-    let num = match f.call(env, a, b) {
-        Num(n) if n > 0. && !n.is_nan() => n as usize,
-        _ => 0,
-    };
+    let num = f.call(env, a, b).try_int().map_or(0, |x| x.try_into().unwrap_or(0));
     let mut values = Vec::with_capacity(num);
     let mut val = a.clone();
     for _ in 0..num {
@@ -174,10 +171,7 @@ pub fn power_scan(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<V
 
 
 pub fn power(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
-    let num = match f.call(env, a, b) {
-        Num(n) if n > 0. && !n.is_nan() => n as usize,
-        _ => 0,
-    };
+    let num = f.call(env, a, b).try_int().map_or(0, |x| x.try_into().unwrap_or(0));
     let mut val = a.clone();
     for _ in 0..num {
         val = g.call(env, &val, b);
@@ -199,11 +193,10 @@ pub fn scan_pairs(env: &mut Env, a: &Val, b: Option<&Val>, g: &Rc<Val>) -> Val {
 }
 
 pub fn stencil(env: &mut Env, a: &Val, b: Option<&Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
-    let size: usize = match f.call(env, a, b) {
-        Num(n) => n as usize,
+    let Some(size) = f.call(env, a, b).try_int().map(|x| x as usize) else {
         // we could do something smart here like reshaping the output or using
         // multiple dimensions but uh
-        _ => return Val::lis(Vec::new()),
+        return Val::lis(Vec::new());
     };
     if !a.is_finite() { return Val::lis(Vec::new()); }
     // 1234567 3╫◄ = (123)(234)(345)(456)(567) l-n+1

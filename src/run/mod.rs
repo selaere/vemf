@@ -6,7 +6,10 @@ use adverb::AvT;
 
 const STDLIB: &str = include_str!("../std.vemf");
 
-pub const NAN: Val = Num(f64::NAN);
+use num::complex::Complex64;
+
+pub const CNAN: Complex64 = Complex64::new(f64::NAN, f64::NAN);
+pub const NAN: Val = Comp(CNAN);
 
 #[derive(Debug)]
 pub struct Env<'a> {
@@ -16,7 +19,8 @@ pub struct Env<'a> {
 
 #[derive(Clone, Debug)]
 pub enum Val {
-    Num(f64),
+    Comp(Complex64),
+    Int(i64),
     Lis { l: Rc<Vec<Val>>, fill: Rc<Val> },
     FSet(Bstr),
     Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Stmt]> },
@@ -29,6 +33,7 @@ pub enum Val {
     Cycle,     DCycle(Rc<[Val]>),
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
+    Complex, Cis, Real, Imag, Conj, Arg,
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
     Print, Println, Exit, Format, Numfmt, Parse,
     Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample,
@@ -39,7 +44,10 @@ pub enum Val {
 impl PartialEq for Val {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::Num(l), Self::Num(r)) => l == r || l.is_nan() && r.is_nan(),
+            (Self::Comp(l), Self::Comp(r)) => l == r || l.is_nan() && r.is_nan(),
+            (Self::Int(l),  Self::Int(r))  => l == r,
+            (Self::Comp(l), Self::Int(r))  => l.im == 0. && l.re == *r as f64,
+            (Self::Int(l),  Self::Comp(r)) => r.im == 0. && r.re == *l as f64,
             (Self::Lis { l: l_l, fill: l_fill }, Self::Lis { l: r_l, fill: r_fill }) => 
                 l_fill == r_fill
                 && l_l.len() == r_l.len()
@@ -50,7 +58,7 @@ impl PartialEq for Val {
 }
 
 
-use Val::{Num, Lis};
+use Val::{Lis, Comp, Int};
 impl Default for Val {
     fn default() -> Self { NAN }
 }
@@ -78,20 +86,17 @@ impl Env<'_> {
     pub fn eval(&mut self, expr: &Expr) -> Val {
         match expr {
             Expr::Var(s) => self.get_var(s).unwrap_or_default(),
-            Expr::Num(n) => Val::Num(*n),
-            Expr::Snd(l) => Val::Lis {
+            Expr::Int(n) => Int(*n),
+            Expr::Flt(n) => Comp(comp(*n)),
+            Expr::Snd(l) => Lis {
                 l: Rc::from(l.iter().map(|x| self.eval(x)).collect::<Vec<_>>()),
                 fill: NAN.rc()
             },
             Expr::Afn1 { a, f } => {
-                let a = self.eval(a);
-                let f = self.eval(f);
-                f.monad(self, &a)
+                let a = self.eval(a); let f = self.eval(f); f.monad(self, &a)
             },
             Expr::Afn2 { a, f, b } => {
-                let a = self.eval(a);
-                let f = self.eval(f);
-                let b = self.eval(b);
+                let a = self.eval(a); let f = self.eval(f); let b = self.eval(b);
                 f.dyad(self, &a, &b)
             },
             Expr::SetVar(v) => Val::FSet(v.clone()),
@@ -100,21 +105,18 @@ impl Env<'_> {
                 self.locals.get(&v[..]).cloned().unwrap_or_default().monad(self, &g)
             }
             Expr::Aav2 { f, v, g } => {
-                let f = self.eval(&*f.clone());
-                let g = self.eval(&*g.clone());
+                let f = self.eval(&*f.clone()); let g = self.eval(&*g.clone());
                 self.locals.get(&v[..]).cloned().unwrap_or_default().dyad(self, &g, &f)
             },
             Expr::Bind { f, b } => {
-                let f = self.eval(&*f.clone());
-                let b = self.eval(&*b.clone());
+                let f = self.eval(&*f.clone()); let b = self.eval(&*b.clone());
                 Val::Bind{f: f.rc(), b: b.rc()}
             },
-            Expr::Trn1 { a, f } => {
-                let a = self.eval(&*a.clone());
-                let f = self.eval(&*f.clone());
+            Expr::Trn2 { a, f } => {
+                let a = self.eval(&*a.clone()); let f = self.eval(&*f.clone());
                 Val::Trn2{a: a.rc(), f: f.rc()}
             },
-            Expr::Trn2 { a, f, b } => {
+            Expr::Trn3 { a, f, b } => {
                 let a = self.eval(&*a.clone());
                 let f = self.eval(&*f.clone());
                 let b = self.eval(&*b.clone());
@@ -152,15 +154,11 @@ impl Env<'_> {
             },
             Stmt::Return(expr) => { return Some(self.eval(&expr)); },
             Stmt::Cond(cond, then) => {
-                let cond = self.eval(&cond);
-                let cond = match cond {
-                    Num(n) => n != 0. || n.is_nan(),
-                    otherwise => {
-                        let a = self.locals.get(&[b!('α')][..]).cloned().unwrap_or(NAN);
-                        let b = self.locals.get(&[b!('β')][..]).cloned();
-                        let val = otherwise.call(self, &a, b.as_ref());
-                        matches!(val, Num(n) if n != 0. || n.is_nan())
-                    }
+                let val = self.eval(&cond);
+                let cond = val.is_scalar() && val.as_bool() || {
+                    let a = self.locals.get(&[b!('α')][..]).cloned().unwrap_or(NAN);
+                    let b = self.locals.get(&[b!('β')][..]).cloned();
+                    val.call(self, &a, b.as_ref()).as_bool()
                 };
                 if cond { return self.eval_stmt(then) }
             }
@@ -194,4 +192,18 @@ impl Env<'_> {
         Ok(self.include_string(&code))
     }
 
+}
+
+fn cmp(a: Complex64, b: Complex64) -> std::cmp::Ordering {
+    use std::cmp::Ordering::{Equal, Greater, Less};
+    match (a.is_nan(), b.is_nan()) {
+        (true, true) => Equal,
+        (true, false) => Less,
+        (false, true) => Greater,
+        (false, false) => a.re.total_cmp(&b.re).then_with(|| a.im.total_cmp(&b.im))
+    }
+}
+
+fn comp(n: f64) -> Complex64 {
+    Complex64::new(n, 0.)
 }

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::{Bstr, b};
-use super::{Val::{self, Num, Lis}, Env, NAN, adverb::AvT};
+use super::{Val::{self, Lis, Comp, Int}, Env, NAN, adverb::AvT, Complex64, CNAN, cmp, comp};
 use smallvec::smallvec;
 
 impl Val {
@@ -26,6 +26,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             load!(
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
+                Complex, Real, Imag, Conj, Arg, Cis,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse,
                 Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample,
@@ -41,10 +42,10 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
                 Scan, ScanPairs, Reduce, Stencil, Valences,
                 Overleft, Overright, Over,
                 Until, UntilScan, Power, PowerScan,
-            ); Num(1.)
+            ); Int(1)
         }
 
-        Num(_) | Lis { .. } => self.clone(),
+        Lis { .. } | Comp(_) | Int(_) => self.clone(),
         Val::FSet(name) => {
             env.locals.insert(name.clone(), a.clone());
             a.clone()
@@ -68,65 +69,107 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
 
         Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.clone().rc()), a.clone().rc()),
         Val::Av(t, f, g) => t.call(env, a, b, f.as_ref(), g),
-        Val::Add  => match (a, b) {(Num(a), Some(Num(b))) => Num(a + b), _ => NAN },
-        Val::Sub  => match (a, b) {(Num(a), Some(Num(b))) => Num(a - b), _ => NAN },
-        Val::Mul  => match (a, b) {(Num(a), Some(Num(b))) => Num(a * b), _ => NAN },
-        Val::Div  => match (a, b) {(Num(a), Some(Num(b))) => Num(a / b), _ => NAN },
-        Val::Mod  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.rem_euclid(*b)), _ => NAN },
-        Val::Pow  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.powf(*b)), _ => NAN },
-        Val::Log  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.log(*b)), _ => NAN },
-        Val::Lt   => match (a, b) {(Num(a), Some(Num(b))) => Val::from_bool(a < b), _ => NAN },
-        Val::Eq   => match (a, b) {(Num(a), Some(Num(b))) => Val::from_bool(a == b), _ => NAN },
-        Val::Gt   => match (a, b) {(Num(a), Some(Num(b))) => Val::from_bool(a > b), _ => NAN },
-        Val::Max  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.max(*b)), _ => NAN },
-        Val::Min  => match (a, b) {(Num(a), Some(Num(b))) => Num(a.min(*b)), _ => NAN },
-        Val::Atanb=> match (a, b) {(Num(a), Some(Num(b))) => Num(a.atan2(*b)), _ => NAN },
-        Val::Isnan=> match a { Num(a) => Val::from_bool(a.is_nan()), _ => NAN },
-        Val::Abs  => match a { Num(a) => Num(a.abs()  ), _ => NAN },
-        Val::Neg  => match a { Num(a) => Num(-a       ), _ => NAN },
-        Val::Ln   => match a { Num(a) => Num(a.ln()   ), _ => NAN },
-        Val::Exp  => match a { Num(a) => Num(a.exp()  ), _ => NAN },
-        Val::Sin  => match a { Num(a) => Num(a.sin()  ), _ => NAN },
-        Val::Asin => match a { Num(a) => Num(a.asin() ), _ => NAN },
-        Val::Cos  => match a { Num(a) => Num(a.cos()  ), _ => NAN },
-        Val::Acos => match a { Num(a) => Num(a.acos() ), _ => NAN },
-        Val::Tan  => match a { Num(a) => Num(a.tan()  ), _ => NAN },
-        Val::Atan => match a { Num(a) => Num(a.atan() ), _ => NAN },
-        Val::Sqrt => match a { Num(a) => Num(a.sqrt() ), _ => NAN },
-        Val::Round=> match a { Num(a) => Num(a.round()), _ => NAN },
-        Val::Ceil => match a { Num(a) => Num(a.ceil() ), _ => NAN },
-        Val::Floor=> match a { Num(a) => Num(a.floor()), _ => NAN },
+        Val::Add => match (a, ba) {
+            (Int(a), Int(b)) => Int(a.saturating_add(*b)),
+            _ => Comp(a.as_c() + ba.as_c()),
+        }
+        Val::Sub => match (a, ba) {
+            (Int(a), Int(b)) => Int(a.saturating_sub(*b)),
+            _ => Comp(a.as_c() - ba.as_c()),
+        }
+        Val::Mul => match (a, ba) {
+            (Int(a), Int(b)) => Int(a.saturating_mul(*b)),
+            _ => Comp(a.as_c() * ba.as_c()),
+        }
+        Val::Div => Comp(a.as_c().fdiv(ba.as_c())),
+        Val::Mod => match (a, ba) {
+            (Int(a), Int(b)) => Int(a.rem_euclid(*b)),
+            _ => Comp(a.as_c() % ba.as_c()),
+        }
+        Val::Pow => match (a, ba) {
+            (Int(a), Int(b)) if *b >= 0 => Int(a.saturating_pow(*b as u32)),
+            _ => Comp(a.as_c().powc(ba.as_c())),
+        },
+        Val::Log => Comp(a.as_c().log(ba.as_c().norm())),
+        Val::Lt => match (a, ba) {
+            (Int(a), Int(b)) => Val::bool(a < b),
+            _ => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(cmp(a, b).is_lt()))
+        },
+        Val::Eq => match (a, ba) {
+            (Int(a), Int(b)) => Val::bool(a == b),
+            _ => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(a == b))
+        },
+        Val::Gt => match (a, ba) {
+            (Int(a), Int(b)) => Val::bool(a > b),
+            _ => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(cmp(a, b).is_gt()))
+        },
+        Val::Max => match (a, ba) {
+            (Int(a), Int(b)) => Int(*a.max(b)),
+            _ => if cmp(a.as_c(), ba.as_c()).is_gt() {a.clone()} else {ba.clone()}
+        },
+        Val::Min => match (a, ba) {
+            (Int(a), Int(b)) => Int(*a.min(b)),
+            _ => if cmp(a.as_c(), ba.as_c()).is_lt() {a.clone()} else {ba.clone()}
+        },
+        Val::Atanb=> {
+            let (y, x) = (a.as_c(), ba.as_c());
+            Comp(comp(f64::atan2(y.re + x.im, x.re - y.im)))
+        },
+        Val::Isnan=> Val::bool(a.is_nan()),
+        Val::Abs  => match a { Int(a) => Int(a.abs()), Comp(a) => Comp(comp(a.norm())), _ => NAN },
+        Val::Neg  => match a { Int(a) => Int(-a),      Comp(a) => Comp(-a), _ => NAN },
+        Val::Ln   => a.try_c().map_or(NAN, |a| Comp(a.ln()   )),
+        Val::Exp  => a.try_c().map_or(NAN, |a| Comp(a.exp()  )),
+        Val::Sin  => a.try_c().map_or(NAN, |a| Comp(a.sin()  )),
+        Val::Asin => a.try_c().map_or(NAN, |a| Comp(a.asin() )),
+        Val::Cos  => a.try_c().map_or(NAN, |a| Comp(a.cos()  )),
+        Val::Acos => a.try_c().map_or(NAN, |a| Comp(a.acos() )),
+        Val::Tan  => a.try_c().map_or(NAN, |a| Comp(a.tan()  )),
+        Val::Atan => a.try_c().map_or(NAN, |a| Comp(a.atan() )),
+        Val::Sqrt => a.try_c().map_or(NAN, |a| Comp(a.sqrt() )),
+        Val::Round=> match a { Int(a) => Int(*a), Comp(a) => Comp(comp(a.re.round()) ), _ => NAN },
+        Val::Ceil => match a { Int(a) => Int(*a), Comp(a) => Comp(comp(a.re.ceil()) ), _ => NAN },
+        Val::Floor=> match a { Int(a) => Int(*a), Comp(a) => Comp(comp(a.re.floor())), _ => NAN },
+
+        Val::Complex=> a.try_c().zip(ba.try_c()).map_or(NAN,
+            |(a,b)| Comp(Complex64::new(b.re, a.re))),
+        Val::Cis  => a.try_c().zip(ba.try_c()).map_or(NAN,
+            |(a,b)| Comp(Complex64::from_polar(b.re, a.re))),
+        Val::Real => a.try_c().map_or(NAN,|a| Comp(comp(a.re))),
+        Val::Imag => a.try_c().map_or(NAN,|a| Comp(comp(a.im))),
+        Val::Conj => a.try_c().map_or(NAN,|a| Comp(a.conj())),
+        Val::Arg  => a.try_c().map_or(NAN,|a| Comp(comp(a.arg()))),
 
         Val::Print   => { print  !("{}", a.display_string()); a.clone() },
         Val::Println => { println!("{}", a.display_string()); a.clone() },
-        Val::Exit => match a {
-            Num(n) => std::process::exit(*n as i32),
+        Val::Exit => match a.try_int() {
+            Some(n) => std::process::exit(n as i32),
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
         }
         Val::Format => super::disp::format(a, &b.map_or_else(Vec::new, 
             |x| x.iterf().cloned().collect::<Vec<_>>())
-        ).chars().map(|x| Num(x as u32 as f64)).collect(),
-        Val::Numfmt => match a { // TODO support more bases and stuff
-            Num(a) => format!("{}", a).chars().map(|x| Num(x as u32 as f64)).collect(),
-            _ => NAN 
-        }
-        Val::Parse => a.display_string().parse::<f64>().map(Num).unwrap_or(NAN),
+        ).chars().map(|x| Int(x as i64)).collect(),
+        Val::Numfmt => if !a.is_scalar() {NAN} else {
+            format!("{a}").chars().map(|x| Int(x as i64)).collect() }
+        Val::Parse => a.display_string().parse::<Complex64>().map(Comp).unwrap_or(NAN),
         Val::Takeleft => super::list::takeleft(env, a, ba),
         Val::Takeright => super::list::takeright(env, a, ba),
-        Val::Dropleft => match ba {Num(n) => super::list::dropleft(a, *n), _ => NAN}
-        Val::Dropright => match ba {Num(n) => super::list::dropright(a, *n), _ => NAN},
+        Val::Dropleft =>  ba.try_int().map_or(NAN, |b| super::list::dropleft(a, b)),
+        Val::Dropright => ba.try_int().map_or(NAN, |b| super::list::dropright(a, b)),
 
         Val::Left => a.clone(),
         Val::Right => ba.clone(),
-        Val::Len => Num(a.lenf()),
+        Val::Len => match a {
+            Comp(_) | Int(_) => Int(1),
+            Lis { l, .. } => Int(l.len() as i64),
+            _ => Comp(comp(f64::INFINITY)),
+        },
         Val::Index => a.index_at_depth(env, ba),
         Val::Iota => match a {
             Lis{l, ..} => super::list::iota(
-                Vec::new(), &l.iter().cloned().filter_map(|x| match x {
-                    Num(b) => Some(b as isize), _ => None
-                }).collect::<Vec<isize>>()),
-            Num(n) => if *n == f64::INFINITY {Val::Left} else {
-                super::list::iota_scalar(*n as isize)},
+                Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>()),
+            Comp(n) => if !n.is_finite() {Val::Left} else {super::list::iota_scalar(n.re as i64)},
+            Int(n) => super::list::iota_scalar(*n),
             _ => Val::Av(AvT::Const, None, NAN.rc()),
         }
         Val::Pair => Val::lis(vec![a.clone(), ba.clone()]),
@@ -147,50 +190,73 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             _ => a.clone(),
         },
         Val::Replist => if a.is_finite() {
-            let num = match ba {Num(n) => *n as usize, _ => return NAN};
+            let Some(num) = ba.try_int() else {return NAN};
             (0..num).flat_map(|_| a.iterf().cloned()).collect()
         } else {a.clone()},
         Val::Cycle => if a.is_finite() {
             Val::DCycle(Rc::from(&a.iterf().cloned().collect::<Vec<_>>()[..]))
         } else {a.clone()},
-        Val::DCycle(l) => match a {
-            Num(a) => l[(*a as usize) % l.len()].clone(),
-            _ => NAN,
-        },
-        Val::Match => Val::from_bool(a == ba),
+        Val::DCycle(l) => a.try_int().map_or(NAN, |a| l[(a as usize) % l.len()].clone()),
+        Val::Match => Val::bool(a == ba),
         Val::Shape => Val::lis_fill(
-            super::list::shape(a).iter().map(|x| Num(*x as f64)).collect(),
-            Num(1.),
+            super::list::shape(a).iter().map(|x| Int(*x as i64)).collect(),
+            Int(1),
         ),
 
-        Val::Deal => match (a, ba) {
-            (Num(a), Num(b)) => {
-                use rand::distributions::{Distribution, Uniform};
-                let a = *a as usize; let b = *b as usize;
-                if a == 0 { return std::iter::repeat(NAN).take(b).collect() }
-                Uniform::from(0..a).sample_iter(rand::thread_rng()).take(b)
-                    .map(|x| Num(x as f64)).collect::<Val>()
-            }, _ => NAN,
-        },
-        Val::Sample => match (a, ba) {
-            (Num(a), Num(b)) => 
-                rand::seq::index::sample(&mut rand::thread_rng(), *a as usize, *b as usize)
-                    .iter()
-                    .map(|x| Num(x as f64))
-                    .collect::<Val>(),
-            _ => NAN,
-        }
+        Val::Deal => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| {
+            use rand::distributions::{Distribution, Uniform};
+            if a == 0 { return std::iter::repeat(NAN).take(b as _).collect() }
+            Uniform::from(0..a as _).sample_iter(rand::thread_rng()).take(b as _)
+                .map(|x| Int(i64::from(x))).collect::<Val>()
+        }),
+        Val::Sample => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)|
+            rand::seq::index::sample(&mut rand::thread_rng(), a as _, b as _)
+                .iter()
+                .map(|x| Int(x as i64))
+                .collect::<Val>(),
+        )
     }
 }
 
 
-fn from_bool(b: bool) -> Val { Num(f64::from(u8::from(b))) }
+fn bool(b: bool) -> Val { Int(i64::from(b)) }
 
-pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
+pub fn is_nan(&self) -> bool { match self { Comp(n) => n.is_nan(), _ => false }}
 
-pub fn is_finite(&self) -> bool { matches!(self, Num(_) | Lis {..})}
+pub fn is_finite(&self) -> bool { matches!(self, Int(_) | Comp(_) | Lis {..})}
 
-pub fn is_scalar(&self) -> bool { matches!(self, Num(_))}
+pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Comp(_))}
+
+//pub fn is_int(&self) -> bool { matches!(self, Int(_))}
+//pub fn is_comp(&self) -> bool { matches!(self, Comp(_))}
+
+pub fn as_bool(&self) -> bool {
+    match self {
+        Int(n) => *n != 0,
+        Comp(n) => !n.is_nan() && *n != num::zero::<Complex64>(),
+        _ => false,
+    }
+}
 
 pub fn rc(self) -> Rc<Self> { Rc::new(self) }
+
+pub fn try_c(&self) -> Option<Complex64> {
+    match self {
+        Int(n) => Some(comp(*n as f64)),
+        Comp(n) => Some(*n),
+        _ => None,
+    }
 }
+
+pub fn try_int(&self) -> Option<i64> {
+    match self {
+        Int(n) => Some(*n),
+        Comp(n) => Some(n.re as i64),
+        _ => None
+    }
+}
+
+pub fn as_c(&self) -> Complex64 { self.try_c().unwrap_or(CNAN) }
+}
+
+

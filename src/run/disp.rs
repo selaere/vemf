@@ -1,13 +1,19 @@
 use crate::codepage::tochar;
 use std::fmt::Write;
 
-use super::{Val, Num, Lis};
+use super::{Val, Lis, Comp, Int};
 
 
 impl std::fmt::Display for Val {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Num(n) => write!(f, "{}", n),
+            Comp(n) => {
+                if n.is_nan() { return write!(f, "NaN"); }
+                write!(f, "{}", n.re)?;
+                if n.im != 0. { write!(f, "{:+}i", n.im)? };
+                Ok(())
+            },
+            Int(n) => write!(f, "{}", n),
             Lis { l, .. } => {
                 let mut iter = l.iter();
                 write!(f, "(")?;
@@ -25,31 +31,24 @@ impl std::fmt::Display for Val {
 pub fn format(val: &Val, slice: &[Val]) -> String {
     let Some(first) = slice.first() else {return format!("{}", val)};
     let rest = &slice[1..];
-    match first {
-        &Num(n) => match n as isize {
-            1 => match val { Num(n) => 
-                n.to_string(),
-            _ => format(val, rest) }
-            2 => match val { Num(n) =>
-                format!("{:.0}", n),
-            _ => format(val, rest) }
-            3 => match val { Num(n) =>
-                match char::from_u32(*n as u32) {
+    first.try_int().map_or_else(|| format(val, rest), |n| match n as isize {
+            1 => if val.is_scalar() { format!("{val}")    } else { format(val, rest) }
+            2 => if let Some(n) = val.try_int() { format!("{}", n) } else { format(val, rest) }
+            3 => val.try_int().map_or_else(|| format(val, rest),
+                |n| match char::from_u32(n as u32) {
                     Some('\x00'..='\x19' | '\x7F'..='\u{9F}' | '\\') =>
-                        format!("\\{}", tochar(*n as u8)),
+                        format!("\\{}", tochar(n as u8)),
                     Some(c) => c.to_string(), None => '\u{FFFD}'.to_string(),
-                },
-            _ => format(val, rest) }
+                }),
             4 => match val { Lis{l, ..} => 
                 std::iter::once("\"".to_string())
-                .chain(l.iter().map(|x| match x {
-                    Num(n) => match char::from_u32(*n as u32) {
+                .chain(l.iter().map(|x| x.try_int().map_or('\u{FFFD}'.to_string(),
+                    |n| match char::from_u32(n as u32) {
                         Some('\x00'..='\x19' | '\x7F'..='\u{9F}' | '\\' | '"') =>
-                            format!("\\{}", tochar(*n as u8)),
+                            format!("\\{}", tochar(n as u8)),
                         Some(c) => c.to_string(), None => '\u{FFFD}'.to_string(),
-                    },
-                    _ => '\u{FFFD}'.to_string()
-                }))
+                    }
+                )))
                 .chain(std::iter::once("\"".to_string()))
                 .collect(),
             _ => format(val, rest) }
@@ -97,8 +96,7 @@ pub fn format(val: &Val, slice: &[Val]) -> String {
             }, _ => format(val, rest) }
             _ => format(val, rest)
         },
-        _ => format(val, rest)
-    }
+    )
 }
 
 fn indent(string: &str, indent: usize) -> String {
@@ -114,13 +112,11 @@ fn indent(string: &str, indent: usize) -> String {
 
 impl Val {
     pub fn display_string(&self) -> String {
-        match self {
-            Num(n) => format!("{}", n),
-            Lis { l, .. } => l.iter().filter_map(|x| match x {
-                Num(n) => char::from_u32(*n as i32 as u32),
-                _ => None
-            }).collect(),
+        self.try_int().map_or_else(|| match self {
+            Lis { l, .. } => l.iter().filter_map(
+                |x| x.try_int().and_then(|n| char::from_u32(n as u32))
+            ).collect(),
             otherwise => format!("{}", otherwise),
-        }
+        }, |n| format!("{}", n))
     }
 }
