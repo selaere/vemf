@@ -1,23 +1,23 @@
 use std::rc::Rc;
-use super::{Val::{self, Lis, Comp, Int}, Env, NAN};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN};
 
 impl Val {
 
     pub fn len(&self) -> usize { match self {
-        Comp(_) | Int(_) => 1,
+        Num(_) | Int(_) => 1,
         Lis { l, .. } => l.len(),
         _ => usize::MAX,
     }}
 
     pub fn fill(&self) -> Val { match self {
-        Comp(_) | Int(_) => self.clone(),
+        Num(_) | Int(_) => self.clone(),
         Lis { fill, .. } => (**fill).clone(),
         _ => NAN, // good enough
     }}
 
     pub fn indexval(&self, env: &mut Env, index: &Val) -> Val {
         match self {
-            Comp(_) | Int(_) => self.clone(), // unchanged
+            Num(_) | Int(_) => self.clone(), // unchanged
             Lis { l, fill } => 
                 if index.is_nan() {(**fill).clone()} 
                 else if let Some(index) = index.try_int() {
@@ -30,7 +30,7 @@ impl Val {
 
     pub fn index(&self, env: &mut Env, index: usize) -> Val {
         match self {
-            Comp(_) | Int(_) => self.clone(), // unchanged
+            Num(_) | Int(_) => self.clone(), // unchanged
             Lis { l, fill } => {
                 l.get(index).cloned().unwrap_or_else(|| (**fill).clone())
             },
@@ -98,7 +98,7 @@ impl<'a, 'v> Iterator for ValueIter<'a, 'v> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let val = match self.value {
-            Comp(_) | Int(_) => if self.i == 0 {Some(self.value.clone())} else {None},
+            Num(_) | Int(_) => if self.i == 0 {Some(self.value.clone())} else {None},
             Lis{l, ..} => l.get(self.i).cloned(),
             f => Some(f.monad(self.env, &Int(self.i as i64))),
         };
@@ -108,7 +108,7 @@ impl<'a, 'v> Iterator for ValueIter<'a, 'v> {
 
     fn size_hint(&self) -> (usize, Option<usize>) {
         match self.value {
-            Comp(_) | Int(_) => (1, Some(1)),
+            Num(_) | Int(_) => (1, Some(1)),
             Lis{ l, .. } => (l.len(), Some(l.len())),
             _ => (usize::MAX, None)
         }

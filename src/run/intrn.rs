@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::{Bstr, b};
-use super::{Val::{self, Lis, Comp, Int}, Env, NAN, adverb::AvT, Complex64, CNAN, cmp, comp};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, Complex64, CNAN, cmp, comp};
 use smallvec::smallvec;
 
 impl Val {
@@ -45,7 +45,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             ); Int(1)
         }
 
-        Lis { .. } | Comp(_) | Int(_) => self.clone(),
+        Lis { .. } | Num(_) | Int(_) => self.clone(),
         Val::FSet(name) => {
             env.locals.insert(name.clone(), a.clone());
             a.clone()
@@ -71,26 +71,26 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Av(t, f, g) => t.call(env, a, b, f.as_ref(), g),
         Val::Add => match (a, ba) {
             (Int(a), Int(b)) => Int(a.saturating_add(*b)),
-            _ => Comp(a.as_c() + ba.as_c()),
+            _ => Num(a.as_c() + ba.as_c()),
         }
         Val::Sub => match (a, ba) {
             (Int(a), Int(b)) => Int(a.saturating_sub(*b)),
-            _ => Comp(a.as_c() - ba.as_c()),
+            _ => Num(a.as_c() - ba.as_c()),
         }
         Val::Mul => match (a, ba) {
             (Int(a), Int(b)) => Int(a.saturating_mul(*b)),
-            _ => Comp(a.as_c() * ba.as_c()),
+            _ => Num(a.as_c() * ba.as_c()),
         }
-        Val::Div => Comp(a.as_c().fdiv(ba.as_c())),
+        Val::Div => Num(a.as_c().fdiv(ba.as_c())),
         Val::Mod => match (a, ba) {
             (Int(a), Int(b)) => Int(a.rem_euclid(*b)),
-            _ => Comp(a.as_c() % ba.as_c()),
+            _ => Num(a.as_c() % ba.as_c()),
         }
         Val::Pow => match (a, ba) {
             (Int(a), Int(b)) if *b >= 0 => Int(a.saturating_pow(*b as u32)),
-            _ => Comp(a.as_c().powc(ba.as_c())),
+            _ => Num(a.as_c().powc(ba.as_c())),
         },
-        Val::Log => Comp(a.as_c().log(ba.as_c().norm())),
+        Val::Log => Num(a.as_c().log(ba.as_c().norm())),
         Val::Lt => match (a, ba) {
             (Int(a), Int(b)) => Val::bool(a < b),
             _ => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(cmp(a, b).is_lt()))
@@ -113,32 +113,32 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         },
         Val::Atanb=> {
             let (y, x) = (a.as_c(), ba.as_c());
-            Comp(comp(f64::atan2(y.re + x.im, x.re - y.im)))
+            Val::f64(f64::atan2(y.re + x.im, x.re - y.im))
         },
         Val::Isnan=> Val::bool(a.is_nan()),
-        Val::Abs  => match a { Int(a) => Int(a.abs()), Comp(a) => Comp(comp(a.norm())), _ => NAN },
-        Val::Neg  => match a { Int(a) => Int(-a),      Comp(a) => Comp(-a), _ => NAN },
-        Val::Ln   => a.try_c().map_or(NAN, |a| Comp(a.ln()   )),
-        Val::Exp  => a.try_c().map_or(NAN, |a| Comp(a.exp()  )),
-        Val::Sin  => a.try_c().map_or(NAN, |a| Comp(a.sin()  )),
-        Val::Asin => a.try_c().map_or(NAN, |a| Comp(a.asin() )),
-        Val::Cos  => a.try_c().map_or(NAN, |a| Comp(a.cos()  )),
-        Val::Acos => a.try_c().map_or(NAN, |a| Comp(a.acos() )),
-        Val::Tan  => a.try_c().map_or(NAN, |a| Comp(a.tan()  )),
-        Val::Atan => a.try_c().map_or(NAN, |a| Comp(a.atan() )),
-        Val::Sqrt => a.try_c().map_or(NAN, |a| Comp(a.sqrt() )),
-        Val::Round=> match a { Int(a) => Int(*a), Comp(a) => Comp(comp(a.re.round()) ), _ => NAN },
-        Val::Ceil => match a { Int(a) => Int(*a), Comp(a) => Comp(comp(a.re.ceil()) ), _ => NAN },
-        Val::Floor=> match a { Int(a) => Int(*a), Comp(a) => Comp(comp(a.re.floor())), _ => NAN },
+        Val::Abs  => match a { Int(a) => Int(a.abs()), Num(a) => Val::f64(a.norm()), _ => NAN },
+        Val::Neg  => match a { Int(a) => Int(-a),      Num(a) => Num(-a), _ => NAN },
+        Val::Ln   => a.try_c().map_or(NAN, |a| Num(a.ln()  )),
+        Val::Exp  => a.try_c().map_or(NAN, |a| Num(a.exp() )),
+        Val::Sin  => a.try_c().map_or(NAN, |a| Num(a.sin() )),
+        Val::Asin => a.try_c().map_or(NAN, |a| Num(a.asin())),
+        Val::Cos  => a.try_c().map_or(NAN, |a| Num(a.cos() )),
+        Val::Acos => a.try_c().map_or(NAN, |a| Num(a.acos())),
+        Val::Tan  => a.try_c().map_or(NAN, |a| Num(a.tan() )),
+        Val::Atan => a.try_c().map_or(NAN, |a| Num(a.atan())),
+        Val::Sqrt => a.try_c().map_or(NAN, |a| Num(a.sqrt())),
+        Val::Round=> match a { Int(a) => Int(*a), Num(a) => Val::f64(a.re.round()) , _ => NAN },
+        Val::Ceil => match a { Int(a) => Int(*a), Num(a) => Val::f64(a.re.ceil()) , _ => NAN },
+        Val::Floor=> match a { Int(a) => Int(*a), Num(a) => Val::f64(a.re.floor()), _ => NAN },
 
         Val::Complex=> a.try_c().zip(ba.try_c()).map_or(NAN,
-            |(a,b)| Comp(Complex64::new(b.re, a.re))),
+            |(a,b)| Num(Complex64::new(b.re, a.re))),
         Val::Cis  => a.try_c().zip(ba.try_c()).map_or(NAN,
-            |(a,b)| Comp(Complex64::from_polar(b.re, a.re))),
-        Val::Real => a.try_c().map_or(NAN,|a| Comp(comp(a.re))),
-        Val::Imag => a.try_c().map_or(NAN,|a| Comp(comp(a.im))),
-        Val::Conj => a.try_c().map_or(NAN,|a| Comp(a.conj())),
-        Val::Arg  => a.try_c().map_or(NAN,|a| Comp(comp(a.arg()))),
+            |(a,b)| Num(Complex64::from_polar(b.re, a.re))),
+        Val::Real => a.try_c().map_or(NAN,|a| Val::f64(a.re)),
+        Val::Imag => a.try_c().map_or(NAN,|a| Val::f64(a.im)),
+        Val::Conj => a.try_c().map_or(NAN,|a| Num(a.conj())),
+        Val::Arg  => a.try_c().map_or(NAN,|a| Val::f64(a.arg())),
 
         Val::Print   => { print  !("{}", a.display_string()); a.clone() },
         Val::Println => { println!("{}", a.display_string()); a.clone() },
@@ -151,7 +151,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         ).chars().map(|x| Int(x as i64)).collect(),
         Val::Numfmt => if !a.is_scalar() {NAN} else {
             format!("{a}").chars().map(|x| Int(x as i64)).collect() }
-        Val::Parse => a.display_string().parse::<Complex64>().map(Comp).unwrap_or(NAN),
+        Val::Parse => a.display_string().parse::<Complex64>().map(Num).unwrap_or(NAN),
         Val::Takeleft => super::list::takeleft(env, a, ba),
         Val::Takeright => super::list::takeright(env, a, ba),
         Val::Dropleft =>  ba.try_int().map_or(NAN, |b| super::list::dropleft(a, b)),
@@ -160,15 +160,15 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Left => a.clone(),
         Val::Right => ba.clone(),
         Val::Len => match a {
-            Comp(_) | Int(_) => Int(1),
+            Num(_) | Int(_) => Int(1),
             Lis { l, .. } => Int(l.len() as i64),
-            _ => Comp(comp(f64::INFINITY)),
+            _ => Val::f64(f64::INFINITY),
         },
         Val::Index => a.index_at_depth(env, ba),
         Val::Iota => match a {
             Lis{l, ..} => super::list::iota(
                 Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>()),
-            Comp(n) => if !n.is_finite() {Val::Left} else {super::list::iota_scalar(n.re as i64)},
+            Num(n) => if !n.is_finite() {Val::Left} else {super::list::iota_scalar(n.re as i64)},
             Int(n) => super::list::iota_scalar(*n),
             _ => Val::Av(AvT::Const, None, NAN.rc()),
         }
@@ -221,19 +221,19 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
 
 fn bool(b: bool) -> Val { Int(i64::from(b)) }
 
-pub fn is_nan(&self) -> bool { match self { Comp(n) => n.is_nan(), _ => false }}
+pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
 
-pub fn is_finite(&self) -> bool { matches!(self, Int(_) | Comp(_) | Lis {..})}
+pub fn is_finite(&self) -> bool { matches!(self, Int(_) | Num(_) | Lis {..})}
 
-pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Comp(_))}
+pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Num(_))}
 
 //pub fn is_int(&self) -> bool { matches!(self, Int(_))}
-//pub fn is_comp(&self) -> bool { matches!(self, Comp(_))}
+//pub fn is_num(&self) -> bool { matches!(self, Num(_))}
 
 pub fn as_bool(&self) -> bool {
     match self {
         Int(n) => *n != 0,
-        Comp(n) => !n.is_nan() && *n != num::zero::<Complex64>(),
+        Num(n) => !n.is_nan() && *n != num::zero::<Complex64>(),
         _ => false,
     }
 }
@@ -243,7 +243,7 @@ pub fn rc(self) -> Rc<Self> { Rc::new(self) }
 pub fn try_c(&self) -> Option<Complex64> {
     match self {
         Int(n) => Some(comp(*n as f64)),
-        Comp(n) => Some(*n),
+        Num(n) => Some(*n),
         _ => None,
     }
 }
@@ -251,12 +251,14 @@ pub fn try_c(&self) -> Option<Complex64> {
 pub fn try_int(&self) -> Option<i64> {
     match self {
         Int(n) => Some(*n),
-        Comp(n) => Some(n.re as i64),
+        Num(n) => Some(n.re as i64),
         _ => None
     }
 }
 
 pub fn as_c(&self) -> Complex64 { self.try_c().unwrap_or(CNAN) }
+
+pub fn f64(n: f64) -> Val { Num(comp(n)) }
 }
 
 

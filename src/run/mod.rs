@@ -9,7 +9,7 @@ const STDLIB: &str = include_str!("../std.vemf");
 use num::complex::Complex64;
 
 pub const CNAN: Complex64 = Complex64::new(f64::NAN, f64::NAN);
-pub const NAN: Val = Comp(CNAN);
+pub const NAN: Val = Num(CNAN);
 
 #[derive(Debug)]
 pub struct Env<'a> {
@@ -19,7 +19,7 @@ pub struct Env<'a> {
 
 #[derive(Clone, Debug)]
 pub enum Val {
-    Comp(Complex64),
+    Num(Complex64),
     Int(i64),
     Lis { l: Rc<Vec<Val>>, fill: Rc<Val> },
     FSet(Bstr),
@@ -44,10 +44,10 @@ pub enum Val {
 impl PartialEq for Val {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (Self::Comp(l), Self::Comp(r)) => l == r || l.is_nan() && r.is_nan(),
+            (Self::Num(l), Self::Num(r)) => l == r || l.is_nan() && r.is_nan(),
             (Self::Int(l),  Self::Int(r))  => l == r,
-            (Self::Comp(l), Self::Int(r))  => l.im == 0. && l.re == *r as f64,
-            (Self::Int(l),  Self::Comp(r)) => r.im == 0. && r.re == *l as f64,
+            (Self::Num(l), Self::Int(r))  => l.im == 0. && l.re == *r as f64,
+            (Self::Int(l),  Self::Num(r)) => r.im == 0. && r.re == *l as f64,
             (Self::Lis { l: l_l, fill: l_fill }, Self::Lis { l: r_l, fill: r_fill }) => 
                 l_fill == r_fill
                 && l_l.len() == r_l.len()
@@ -58,7 +58,7 @@ impl PartialEq for Val {
 }
 
 
-use Val::{Lis, Comp, Int};
+use Val::{Lis, Num, Int};
 impl Default for Val {
     fn default() -> Self { NAN }
 }
@@ -87,7 +87,7 @@ impl Env<'_> {
         match expr {
             Expr::Var(s) => self.get_var(s).unwrap_or_default(),
             Expr::Int(n) => Int(*n),
-            Expr::Flt(n) => Comp(comp(*n)),
+            Expr::Flt(n) => Val::f64(*n),
             Expr::Snd(l) => Lis {
                 l: Rc::from(l.iter().map(|x| self.eval(x)).collect::<Vec<_>>()),
                 fill: NAN.rc()

@@ -1,13 +1,13 @@
 use crate::codepage::tochar;
 use std::fmt::Write;
 
-use super::{Val, Lis, Comp, Int};
+use super::{Val, Lis, Num, Int};
 
 
 impl std::fmt::Display for Val {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Comp(n) => {
+            Num(n) => {
                 if n.is_nan() { return write!(f, "NaN"); }
                 write!(f, "{}", n.re)?;
                 if n.im != 0. { write!(f, "{:+}i", n.im)? };
