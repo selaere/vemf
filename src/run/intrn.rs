@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::{Bstr, b};
-use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, Complex64, CNAN, cmp, comp};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, CNAN, cmp, from_real};
 use smallvec::smallvec;
 
 impl Val {
@@ -132,9 +132,9 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Floor=> match a { Int(a) => Int(*a), Num(a) => Val::f64(a.re.floor()), _ => NAN },
 
         Val::Complex=> a.try_c().zip(ba.try_c()).map_or(NAN,
-            |(a,b)| Num(Complex64::new(b.re, a.re))),
+            |(a,b)| Num(c64::new(b.re, a.re))),
         Val::Cis  => a.try_c().zip(ba.try_c()).map_or(NAN,
-            |(a,b)| Num(Complex64::from_polar(b.re, a.re))),
+            |(a,b)| Num(c64::from_polar(b.re, a.re))),
         Val::Real => a.try_c().map_or(NAN,|a| Val::f64(a.re)),
         Val::Imag => a.try_c().map_or(NAN,|a| Val::f64(a.im)),
         Val::Conj => a.try_c().map_or(NAN,|a| Num(a.conj())),
@@ -151,7 +151,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         ).chars().map(|x| Int(x as i64)).collect(),
         Val::Numfmt => if !a.is_scalar() {NAN} else {
             format!("{a}").chars().map(|x| Int(x as i64)).collect() }
-        Val::Parse => a.display_string().parse::<Complex64>().map(Num).unwrap_or(NAN),
+        Val::Parse => a.display_string().parse::<c64>().map(Num).unwrap_or(NAN),
         Val::Takeleft => super::list::takeleft(env, a, ba),
         Val::Takeright => super::list::takeright(env, a, ba),
         Val::Dropleft =>  ba.try_int().map_or(NAN, |b| super::list::dropleft(a, b)),
@@ -186,7 +186,7 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             _ => NAN
         },
         Val::SetFill => match a {
-            Lis {l, ..} => Lis {l: Rc::clone(l), fill: ba.clone().rc()},
+            Lis {l, ..} => Lis {l: l.clone(), fill: ba.clone().rc()},
             _ => a.clone(),
         },
         Val::Replist => if a.is_finite() {
@@ -233,16 +233,16 @@ pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Num(_))}
 pub fn as_bool(&self) -> bool {
     match self {
         Int(n) => *n != 0,
-        Num(n) => !n.is_nan() && *n != num::zero::<Complex64>(),
+        Num(n) => !n.is_nan() && *n != num::zero::<c64>(),
         _ => false,
     }
 }
 
 pub fn rc(self) -> Rc<Self> { Rc::new(self) }
 
-pub fn try_c(&self) -> Option<Complex64> {
+pub fn try_c(&self) -> Option<c64> {
     match self {
-        Int(n) => Some(comp(*n as f64)),
+        Int(n) => Some(from_real(*n as f64)),
         Num(n) => Some(*n),
         _ => None,
     }
@@ -256,9 +256,9 @@ pub fn try_int(&self) -> Option<i64> {
     }
 }
 
-pub fn as_c(&self) -> Complex64 { self.try_c().unwrap_or(CNAN) }
+pub fn as_c(&self) -> c64 { self.try_c().unwrap_or(CNAN) }
 
-pub fn f64(n: f64) -> Val { Num(comp(n)) }
+pub fn f64(n: f64) -> Val { Num(from_real(n)) }
 }
 
 

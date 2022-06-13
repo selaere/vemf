@@ -32,71 +32,70 @@ pub fn format(val: &Val, slice: &[Val]) -> String {
     let Some(first) = slice.first() else {return format!("{}", val)};
     let rest = &slice[1..];
     first.try_int().map_or_else(|| format(val, rest), |n| match n as isize {
-            1 => if val.is_scalar() { format!("{val}")    } else { format(val, rest) }
-            2 => if let Some(n) = val.try_int() { format!("{}", n) } else { format(val, rest) }
-            3 => val.try_int().map_or_else(|| format(val, rest),
+        1 => if val.is_scalar() { format!("{val}")    } else { format(val, rest) }
+        2 => if let Some(n) = val.try_int() { format!("{}", n) } else { format(val, rest) }
+        3 => val.try_int().map_or_else(|| format(val, rest),
+            |n| match char::from_u32(n as u32) {
+                Some('\x00'..='\x19' | '\x7F'..='\u{9F}' | '\\') =>
+                    format!("\\{}", tochar(n as u8)),
+                Some(c) => c.to_string(), None => '\u{FFFD}'.to_string(),
+            }),
+        4 => match val { Lis{l, ..} => 
+            std::iter::once("\"".to_string())
+            .chain(l.iter().map(|x| x.try_int().map_or('\u{FFFD}'.to_string(),
                 |n| match char::from_u32(n as u32) {
-                    Some('\x00'..='\x19' | '\x7F'..='\u{9F}' | '\\') =>
+                    Some('\x00'..='\x19' | '\x7F'..='\u{9F}' | '\\' | '"') =>
                         format!("\\{}", tochar(n as u8)),
                     Some(c) => c.to_string(), None => '\u{FFFD}'.to_string(),
-                }),
-            4 => match val { Lis{l, ..} => 
-                std::iter::once("\"".to_string())
-                .chain(l.iter().map(|x| x.try_int().map_or('\u{FFFD}'.to_string(),
-                    |n| match char::from_u32(n as u32) {
-                        Some('\x00'..='\x19' | '\x7F'..='\u{9F}' | '\\' | '"') =>
-                            format!("\\{}", tochar(n as u8)),
-                        Some(c) => c.to_string(), None => '\u{FFFD}'.to_string(),
-                    }
-                )))
-                .chain(std::iter::once("\"".to_string()))
-                .collect(),
-            _ => format(val, rest) }
-            7 => match val { Lis{l, ..} =>
-                  "(".to_string() 
-                + &l.iter().map(|x| format(x, rest)).collect::<Vec<_>>().join(" ") 
-                + ")",
-            _ => format(val, rest) }
-            8 => match val { Lis{l, ..} => 
-                  "(".to_string() 
-                + &l.iter().map(|x| indent(&format(x, rest), 1)).collect::<Vec<_>>().join("\n ")
-                + ")",
-            _ => format(val, rest) }
-            9 => match val { Lis{l, ..} => {
-                //let mut columns = 0;
-                let mut col_lens = Vec::new();
-                let list: Vec<Result<Vec<String>, String>> = l.iter().map(|i| match i {
-                    Lis{l, ..} => Ok(l.iter().enumerate().map(|(n, j)| {
-                        let f = format(j, rest);
-                        if l.len() + 1 > col_lens.len() { col_lens.resize(l.len() + 1, 0); }
-                        if col_lens[n] < f.len() { col_lens[n] = f.len(); };
-                        f
-                    }).collect()),
-                    #[allow(clippy::needless_borrow)] /*clippy bug i think*/
-                    _ => Err(format(&i, rest))
-                }).collect();
-
-                let mut string = String::new();
-                string.push('(');
-                for (n, i) in list.iter().enumerate() {
-                    match i {
-                        Ok(l) => {
-                            string.push('(');
-                            for (n, j) in l.iter().enumerate() {
-                                let _ = write!(string, "{: >width$}", j, width=col_lens[n]);
-                                if n != l.len()-1 {string.push(' ')}
-                            }; string.push(')');
-                        }
-                        Err(v) => string.push_str(&indent(v, 1))
-                    }
-                    if n != l.len()-1 {string.push_str("\n ");}
                 }
-                string.push(')');
-                string
-            }, _ => format(val, rest) }
-            _ => format(val, rest)
-        },
-    )
+            )))
+            .chain(std::iter::once("\"".to_string()))
+            .collect(),
+        _ => format(val, rest) }
+        7 => match val { Lis{l, ..} =>
+                "(".to_string() 
+            + &l.iter().map(|x| format(x, rest)).collect::<Vec<_>>().join(" ") 
+            + ")",
+        _ => format(val, rest) }
+        8 => match val { Lis{l, ..} => 
+                "(".to_string() 
+            + &l.iter().map(|x| indent(&format(x, rest), 1)).collect::<Vec<_>>().join("\n ")
+            + ")",
+        _ => format(val, rest) }
+        9 => match val { Lis{l, ..} => {
+            //let mut columns = 0;
+            let mut col_lens = Vec::new();
+            let list: Vec<Result<Vec<String>, String>> = l.iter().map(|i| match i {
+                Lis{l, ..} => Ok(l.iter().enumerate().map(|(n, j)| {
+                    let f = format(j, rest);
+                    if l.len() + 1 > col_lens.len() { col_lens.resize(l.len() + 1, 0); }
+                    if col_lens[n] < f.len() { col_lens[n] = f.len(); };
+                    f
+                }).collect()),
+                #[allow(clippy::needless_borrow)] /*clippy bug i think*/
+                _ => Err(format(&i, rest))
+            }).collect();
+
+            let mut string = String::new();
+            string.push('(');
+            for (n, i) in list.iter().enumerate() {
+                match i {
+                    Ok(l) => {
+                        string.push('(');
+                        for (n, j) in l.iter().enumerate() {
+                            let _ = write!(string, "{: >width$}", j, width=col_lens[n]);
+                            if n != l.len()-1 {string.push(' ')}
+                        }; string.push(')');
+                    }
+                    Err(v) => string.push_str(&indent(v, 1))
+                }
+                if n != l.len()-1 {string.push_str("\n ");}
+            }
+            string.push(')');
+            string
+        }, _ => format(val, rest) }
+        _ => format(val, rest)
+    })
 }
 
 fn indent(string: &str, indent: usize) -> String {

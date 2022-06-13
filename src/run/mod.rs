@@ -6,9 +6,9 @@ use adverb::AvT;
 
 const STDLIB: &str = include_str!("../std.vemf");
 
-use num::complex::Complex64;
+use num::complex::Complex64 as c64;
 
-pub const CNAN: Complex64 = Complex64::new(f64::NAN, f64::NAN);
+pub const CNAN: c64 = c64::new(f64::NAN, f64::NAN);
 pub const NAN: Val = Num(CNAN);
 
 #[derive(Debug)]
@@ -19,7 +19,7 @@ pub struct Env<'a> {
 
 #[derive(Clone, Debug)]
 pub enum Val {
-    Num(Complex64),
+    Num(c64),
     Int(i64),
     Lis { l: Rc<Vec<Val>>, fill: Rc<Val> },
     FSet(Bstr),
@@ -93,7 +93,8 @@ impl Env<'_> {
                 fill: NAN.rc()
             },
             Expr::Afn1 { a, f } => {
-                let a = self.eval(a); let f = self.eval(f); f.monad(self, &a)
+                let a = self.eval(a); let f = self.eval(f);
+                f.monad(self, &a)
             },
             Expr::Afn2 { a, f, b } => {
                 let a = self.eval(a); let f = self.eval(f); let b = self.eval(b);
@@ -194,7 +195,7 @@ impl Env<'_> {
 
 }
 
-fn cmp(a: Complex64, b: Complex64) -> std::cmp::Ordering {
+fn cmp(a: c64, b: c64) -> std::cmp::Ordering {
     use std::cmp::Ordering::{Equal, Greater, Less};
     match (a.is_nan(), b.is_nan()) {
         (true, true) => Equal,
@@ -204,6 +205,6 @@ fn cmp(a: Complex64, b: Complex64) -> std::cmp::Ordering {
     }
 }
 
-fn comp(n: f64) -> Complex64 {
-    Complex64::new(n, 0.)
+fn from_real(n: f64) -> c64 {
+    c64::new(n, 0.)
 }
