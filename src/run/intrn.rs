@@ -5,29 +5,15 @@ use smallvec::smallvec;
 
 impl Val {
 
-pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val { 
-    self.call_r(env, a.clone(), b.cloned())
-}
-
-pub fn monad(&self, env: &mut Env, a: &Val) -> Val { 
+pub fn monad(&self, env: &mut Env, a: Val) -> Val { 
     self.call(env, a, None)
 }
 
-pub fn dyad(&self, env: &mut Env, a: &Val, b: &Val) -> Val {
+pub fn dyad(&self, env: &mut Env, a: Val, b: Val) -> Val {
     self.call(env, a, Some(b))
 }
 
-
-pub fn monad_r(&self, env: &mut Env, a: Val) -> Val { 
-    self.call_r(env, a, None)
-}
-
-pub fn dyad_r(&self, env: &mut Env, a: Val, b: Val) -> Val {
-    self.call_r(env, a, Some(b))
-}
-
-
-pub fn call_r(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val { 
+pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val { 
     let ba = b.as_ref().cloned().unwrap_or_else(|| a.clone());
     match self {
 
@@ -72,13 +58,13 @@ pub fn call_r(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             inner.eval_block(s)
         },
 
-        Val::Bind { f: aa, b: bb } => aa.dyad(env, &a, bb),
-        Val::Trn2 { a: aa, f: ff }        => { let x = aa.call_r(env, a, b); ff.monad_r(env, x) },
-        Val::Trn3 { a: aa, f: ff, b: bb } => { let x = aa.call_r(env, a, b); ff.dyad_r(env, x, (**bb).clone()) },
+        Val::Bind { f: aa, b: bb } => aa.dyad(env, a, (**bb).clone()),
+        Val::Trn2 { a: aa, f: ff }        => { let x = aa.call(env, a, b); ff.monad(env, x) },
+        Val::Trn3 { a: aa, f: ff, b: bb } => { let x = aa.call(env, a, b); ff.dyad(env, x, (**bb).clone()) },
         Val::Fork { a: aa, f: ff, b: bb } => {
-            let l = aa.call_r(env, a.clone(), b.clone());
-            let r = bb.call_r(env, a, b);
-            ff.dyad(env, &l, &r)
+            let l = aa.call(env, a.clone(), b.clone());
+            let r = bb.call(env, a, b);
+            ff.dyad(env, l, r)
         }
 
         Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.rc()), a.clone().rc()),

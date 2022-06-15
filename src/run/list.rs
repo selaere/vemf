@@ -15,7 +15,7 @@ impl Val {
         _ => NAN, // good enough
     }}
 
-    pub fn indexval(&self, env: &mut Env, index: &Val) -> Val {
+    pub fn indexval(&self, env: &mut Env, index: Val) -> Val {
         match self {
             Num(_) | Int(_) => self.clone(), // unchanged
             Lis { l, fill } => 
@@ -34,7 +34,7 @@ impl Val {
             Lis { l, fill } => {
                 l.get(index).cloned().unwrap_or_else(|| (**fill).clone())
             },
-            x => x.monad(env, &Int(index as i64))
+            x => x.monad(env, Int(index as i64))
         }
     }
 
@@ -53,14 +53,14 @@ impl Val {
                     _ => return std::iter::empty::<Val>().collect()
                 }
             }
-            value = value.indexval(env, &i);
+            value = value.indexval(env, i);
         }
         value
     }
 
-    pub fn iterinf<'a: 'v, 'v>(&'v self, env: &'v mut Env<'a>) -> ValueIter<'a, 'v> {
-        ValueIter {
-            i: 0, value: self, env
+    pub fn iterinf<'a: 'v, 'v>(&'_ self, env: &'v mut Env<'a>) -> InfIter<'a, 'v> {
+        InfIter {
+            i: 0, value: self.clone(), env
         }
     }
 
@@ -97,32 +97,21 @@ impl Val {
 pub trait GoodIter<V>: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator {}
 impl<F, V> GoodIter<V> for F where F: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator {}
 
-pub struct ValueIter<'a: 'v, 'v> {
+//pub trait InconvenientIter<V, 'a, 'v>: 
+
+pub struct InfIter<'a: 'v, 'v> {
     i: usize,
-    value: &'v Val,
+    value: Val,
     env: &'v mut Env<'a>,
 }
 
-impl<'a, 'v> Iterator for ValueIter<'a, 'v> {
+impl<'a, 'v> Iterator for InfIter<'a, 'v> {
     type Item = Val;
-
     fn next(&mut self) -> Option<Self::Item> {
-        let val = match self.value {
-            Num(_) | Int(_) => if self.i == 0 {Some(self.value.clone())} else {None},
-            Lis{l, ..} => l.get(self.i).cloned(),
-            f => Some(f.monad(self.env, &Int(self.i as i64))),
-        };
-        self.i += 1; 
-        val
+        let val = Some(self.value.monad(self.env, Int(self.i as i64)));
+        self.i += 1; val
     }
-
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        match self.value {
-            Num(_) | Int(_) => (1, Some(1)),
-            Lis{ l, .. } => (l.len(), Some(l.len())),
-            _ => (usize::MAX, None)
-        }
-    }
+    fn size_hint(&self) -> (usize, Option<usize>) { (usize::MAX, None) }
 }
 
 impl FromIterator<Val> for Val {
@@ -181,7 +170,7 @@ pub fn reverse(a: Val) -> Val {
     a.into_iterf().rev().collect()
 }
 
-pub fn reshape_iter(a: &mut ValueIter, b: &[usize], fill: &Val) -> Val {
+pub fn reshape_iter(a: &mut InfIter, b: &[usize], fill: &Val) -> Val {
     if b.is_empty() {return a.next().unwrap_or_else(|| fill.clone())}
     let (pre, suf) = (b[0], &b[1..]);
     (0..pre).map(move |_| reshape_iter(a, suf, fill)).collect()
