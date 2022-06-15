@@ -30,7 +30,7 @@ pub enum Val {
     Fork{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
     Av(AvT, Option<Rc<Val>>, Rc<Val>),
     AvBuilder(AvT),
-    Cycle,     DCycle(Rc<[Val]>),
+    Cycle,     DCycle(Rc<Vec<Val>>),
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
     Complex, Cis, Real, Imag, Conj, Arg,
@@ -94,11 +94,11 @@ impl Env<'_> {
             },
             Expr::Afn1 { a, f } => {
                 let a = self.eval(a); let f = self.eval(f);
-                f.monad(self, &a)
+                f.monad_r(self, a)
             },
             Expr::Afn2 { a, f, b } => {
                 let a = self.eval(a); let f = self.eval(f); let b = self.eval(b);
-                f.dyad(self, &a, &b)
+                f.dyad_r(self, a, b)
             },
             Expr::SetVar(v) => Val::FSet(v.clone()),
             Expr::Aav1 { v, g } => {
@@ -159,7 +159,7 @@ impl Env<'_> {
                 let cond = val.is_scalar() && val.as_bool() || {
                     let a = self.locals.get(&[b!('α')][..]).cloned().unwrap_or(NAN);
                     let b = self.locals.get(&[b!('β')][..]).cloned();
-                    val.call(self, &a, b.as_ref()).as_bool()
+                    val.call_r(self, a, b).as_bool()
                 };
                 if cond { return self.eval_stmt(then) }
             }

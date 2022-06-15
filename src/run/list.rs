@@ -74,18 +74,28 @@ impl Val {
 
     // create a finite iterator of `&Val`s. this returns a single item for functions, so it will 
     // never be infinite AND it doesnt need a &mut env which is more convenient most of the time
-    pub fn iterf<'v>(&'v self) -> Box<dyn Iterf<'v> + 'v> {
+    pub fn iterf<'v>(&'v self) -> Box<dyn GoodIter<&'v Val> + 'v> {
         if let Lis{l, ..} = self {
             Box::new(l.iter())
         } else {
             Box::new(std::iter::once(self))
         }
     }
+
+    // like iterf but it clones its values EXCEPT if the vec has 1 ref then it drains them
+    pub fn into_iterf(self) -> Box<dyn GoodIter<Val>> {
+        if let Lis{l, ..} = self {
+            match Rc::try_unwrap(l) {
+                Ok(l) => Box::new(l.into_iter()),
+                // https://smallcultfollowing.com/babysteps/blog/2018/09/02/rust-pattern-iterating-an-over-a-rc-vec-t/
+                Err(l) => Box::new((0..l.len()).map(move |x| l[x].clone()))
+            }
+        } else { Box::new(std::iter::once(self)) }
+    }
 }
 
-pub trait Iterf<'v>: Iterator<Item=&'v Val> + ExactSizeIterator + DoubleEndedIterator {}
-impl<'v> Iterf<'v> for std::iter::Once<&'v Val> {}
-impl<'v> Iterf<'v> for std::slice::Iter<'v, Val> {}
+pub trait GoodIter<V>: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator {}
+impl<F, V> GoodIter<V> for F where F: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator {}
 
 pub struct ValueIter<'a: 'v, 'v> {
     i: usize,
@@ -143,21 +153,32 @@ pub fn iota_scalar(arg: i64) -> Val {
     Val::lis(iter.map(Int).collect())
 }
 
-pub fn ravel(arg: &Val, list: &mut Vec<Val>) {
+pub fn ravel(arg: Val, list: &mut Vec<Val>) {
     match arg {
-        Lis{ l, .. } => for i in l.iter() {ravel(i, list)},
-        _ => list.push(arg.clone())
+        l @ Lis{ .. } => for i in l.into_iterf() {ravel(i, list)},
+        _ => list.push(arg)
     }
 }
 
-pub fn concat(a: &Val, b: &Val) -> Val {
+pub fn concat(a: Val, b: Val) -> Val {
     if !(a.is_finite() && b.is_finite()) { return NAN }
-    a.iterf().chain(b.iterf()).cloned().collect()
+    if let Lis{l, ..} = a {
+        println!("{}", Rc::strong_count(&l));
+        return match Rc::try_unwrap(l) {
+            Ok(mut l) => {
+                println!("efficient!!!");
+                l.extend(b.iterf().cloned());
+                Val::lis(l)
+            },
+            Err(l) => l.iter().cloned().chain(b.into_iterf()).collect()
+        }
+    }
+    a.into_iterf().chain(b.into_iterf()).collect()
 }
 
-pub fn reverse(a: &Val) -> Val {
+pub fn reverse(a: Val) -> Val {
     if !a.is_finite() { return std::iter::empty::<Val>().collect() }
-    a.iterf().rev().cloned().collect()
+    a.into_iterf().rev().collect()
 }
 
 pub fn reshape_iter(a: &mut ValueIter, b: &[usize], fill: &Val) -> Val {
@@ -205,16 +226,16 @@ pub fn fillreshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
     Some(shape)
 }
 
-pub fn dropleft(a: &Val, b: i64) -> Val {
+pub fn dropleft(a: Val, b: i64) -> Val {
     if b < 0 {return dropright(a, -b); }
     if !a.is_finite() { return NAN; }
-    a.iterf().skip(b as _).cloned().collect()
+    a.into_iterf().skip(b as _).collect()
 }
 
-pub fn dropright(a: &Val, b: i64) -> Val {
+pub fn dropright(a: Val, b: i64) -> Val {
     if b < 0 { return dropleft(a, -b); }
-    if !a.is_finite() { return a.clone(); }
-    a.iterf().rev().skip(b as _).rev().cloned().collect()
+    if !a.is_finite() { return a; }
+    a.into_iterf().rev().skip(b as _).rev().collect()
 }
 
 pub fn shape(a: &Val) -> Vec<usize> {

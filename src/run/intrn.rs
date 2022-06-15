@@ -5,6 +5,10 @@ use smallvec::smallvec;
 
 impl Val {
 
+pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val { 
+    self.call_r(env, a.clone(), b.cloned())
+}
+
 pub fn monad(&self, env: &mut Env, a: &Val) -> Val { 
     self.call(env, a, None)
 }
@@ -13,8 +17,18 @@ pub fn dyad(&self, env: &mut Env, a: &Val, b: &Val) -> Val {
     self.call(env, a, Some(b))
 }
 
-pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val { 
-    let ba = b.unwrap_or(a);
+
+pub fn monad_r(&self, env: &mut Env, a: Val) -> Val { 
+    self.call_r(env, a, None)
+}
+
+pub fn dyad_r(&self, env: &mut Env, a: Val, b: Val) -> Val {
+    self.call_r(env, a, Some(b))
+}
+
+
+pub fn call_r(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val { 
+    let ba = b.as_ref().cloned().unwrap_or_else(|| a.clone());
     match self {
 
         Val::LoadIntrinsics => {
@@ -58,65 +72,65 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             inner.eval_block(s)
         },
 
-        Val::Bind { f: aa, b: bb } => aa.dyad(env, a, bb),
-        Val::Trn2 { a: aa, f: ff }        => { let x = aa.call(env, a, b); ff.monad(env, &x) },
-        Val::Trn3 { a: aa, f: ff, b: bb } => { let x = aa.call(env, a, b); ff.dyad(env, &x, bb) },
+        Val::Bind { f: aa, b: bb } => aa.dyad(env, &a, bb),
+        Val::Trn2 { a: aa, f: ff }        => { let x = aa.call_r(env, a, b); ff.monad_r(env, x) },
+        Val::Trn3 { a: aa, f: ff, b: bb } => { let x = aa.call_r(env, a, b); ff.dyad_r(env, x, (**bb).clone()) },
         Val::Fork { a: aa, f: ff, b: bb } => {
-            let l = aa.call(env, a, b);
-            let r = bb.call(env, a, b);
+            let l = aa.call_r(env, a.clone(), b.clone());
+            let r = bb.call_r(env, a, b);
             ff.dyad(env, &l, &r)
         }
 
-        Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.clone().rc()), a.clone().rc()),
+        Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.rc()), a.clone().rc()),
         Val::Av(t, f, g) => t.call(env, a, b, f.as_ref(), g),
         Val::Add => match (a, ba) {
-            (Int(a), Int(b)) => Int(a.saturating_add(*b)),
-            _ => Num(a.as_c() + ba.as_c()),
+            (Int(a), Int(b)) => Int(a.saturating_add(b)),
+            (a, ba) => Num(a.as_c() + ba.as_c()),
         }
         Val::Sub => match (a, ba) {
-            (Int(a), Int(b)) => Int(a.saturating_sub(*b)),
-            _ => Num(a.as_c() - ba.as_c()),
+            (Int(a), Int(b)) => Int(a.saturating_sub(b)),
+            (a, ba) => Num(a.as_c() - ba.as_c()),
         }
         Val::Mul => match (a, ba) {
-            (Int(a), Int(b)) => Int(a.saturating_mul(*b)),
-            _ => Num(a.as_c() * ba.as_c()),
+            (Int(a), Int(b)) => Int(a.saturating_mul(b)),
+            (a, ba) => Num(a.as_c() * ba.as_c()),
         }
         Val::Div => Num(a.as_c().fdiv(ba.as_c())),
         Val::Mod => match (a, ba) {
-            (Int(a), Int(b)) => Int(a.rem_euclid(*b)),
-            _ => Num(a.as_c() % ba.as_c()),
+            (Int(a), Int(b)) => Int(a.rem_euclid(b)),
+            (a, ba) => Num(a.as_c() % ba.as_c()),
         }
         Val::Pow => match (a, ba) {
-            (Int(a), Int(b)) if *b >= 0 => Int(a.saturating_pow(*b as u32)),
-            _ => Num(a.as_c().powc(ba.as_c())),
+            (Int(a), Int(b)) if b >= 0 => Int(a.saturating_pow(b as u32)),
+            (a, ba) => Num(a.as_c().powc(ba.as_c())),
         },
         Val::Log => Num(a.as_c().log(ba.as_c().norm())),
         Val::Lt => match (a, ba) {
             (Int(a), Int(b)) => Val::bool(a < b),
-            _ => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(cmp(a, b).is_lt()))
+            (a, ba) => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(cmp(a, b).is_lt()))
         },
         Val::Eq => match (a, ba) {
             (Int(a), Int(b)) => Val::bool(a == b),
-            _ => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(a == b))
+            (a, ba) => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(a == b))
         },
         Val::Gt => match (a, ba) {
             (Int(a), Int(b)) => Val::bool(a > b),
-            _ => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(cmp(a, b).is_gt()))
+            (a, ba) => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(cmp(a, b).is_gt()))
         },
         Val::Max => match (a, ba) {
-            (Int(a), Int(b)) => Int(*a.max(b)),
-            _ => if cmp(a.as_c(), ba.as_c()).is_gt() {a.clone()} else {ba.clone()}
+            (Int(a), Int(b)) => Int(a.max(b)),
+            (a, ba) => if cmp(a.as_c(), ba.as_c()).is_gt() {a} else {ba}
         },
         Val::Min => match (a, ba) {
-            (Int(a), Int(b)) => Int(*a.min(b)),
-            _ => if cmp(a.as_c(), ba.as_c()).is_lt() {a.clone()} else {ba.clone()}
+            (Int(a), Int(b)) => Int(a.min(b)),
+            (a, ba) => if cmp(a.as_c(), ba.as_c()).is_lt() {a} else {ba}
         },
         Val::Atanb=> {
             let (y, x) = (a.as_c(), ba.as_c());
             Val::f64(f64::atan2(y.re + x.im, x.re - y.im))
         },
         Val::Isnan=> Val::bool(a.is_nan()),
-        Val::Abs  => match a { Int(a) => Int(a.abs()), Num(a) => Val::f64(a.norm()), _ => NAN },
+        Val::Abs  => match a { Int(a) => Int(a.abs()), Num(x) => Val::f64(x.norm()), _ => NAN },
         Val::Neg  => match a { Int(a) => Int(-a),      Num(a) => Num(-a), _ => NAN },
         Val::Ln   => a.try_c().map_or(NAN, |a| Num(a.ln()  )),
         Val::Exp  => a.try_c().map_or(NAN, |a| Num(a.exp() )),
@@ -127,14 +141,12 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
         Val::Tan  => a.try_c().map_or(NAN, |a| Num(a.tan() )),
         Val::Atan => a.try_c().map_or(NAN, |a| Num(a.atan())),
         Val::Sqrt => a.try_c().map_or(NAN, |a| Num(a.sqrt())),
-        Val::Round=> match a { Int(a) => Int(*a), Num(a) => Val::f64(a.re.round()) , _ => NAN },
-        Val::Ceil => match a { Int(a) => Int(*a), Num(a) => Val::f64(a.re.ceil()) , _ => NAN },
-        Val::Floor=> match a { Int(a) => Int(*a), Num(a) => Val::f64(a.re.floor()), _ => NAN },
+        Val::Round=> match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.round()) , _ => NAN },
+        Val::Ceil => match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.ceil()) , _ => NAN },
+        Val::Floor=> match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.floor()), _ => NAN },
 
-        Val::Complex=> a.try_c().zip(ba.try_c()).map_or(NAN,
-            |(a,b)| Num(c64::new(b.re, a.re))),
-        Val::Cis  => a.try_c().zip(ba.try_c()).map_or(NAN,
-            |(a,b)| Num(c64::from_polar(b.re, a.re))),
+        Val::Complex=> a.try_c().zip(ba.try_c()).map_or(NAN, |(a,b)| Num(c64::new(b.re, a.re))),
+        Val::Cis  => a.try_c().zip(ba.try_c()).map_or(NAN, |(a,b)| Num(c64::from_polar(b.re, a.re))),
         Val::Real => a.try_c().map_or(NAN,|a| Val::f64(a.re)),
         Val::Imag => a.try_c().map_or(NAN,|a| Val::f64(a.im)),
         Val::Conj => a.try_c().map_or(NAN,|a| Num(a.conj())),
@@ -146,14 +158,14 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             Some(n) => std::process::exit(n as i32),
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
         }
-        Val::Format => super::disp::format(a, &b.map_or_else(Vec::new, 
+        Val::Format => super::disp::format(&a, &b.as_ref().map_or_else(Vec::new,
             |x| x.iterf().cloned().collect::<Vec<_>>())
         ).chars().map(|x| Int(x as i64)).collect(),
         Val::Numfmt => if !a.is_scalar() {NAN} else {
             format!("{a}").chars().map(|x| Int(x as i64)).collect() }
         Val::Parse => a.display_string().parse::<c64>().map(Num).unwrap_or(NAN),
-        Val::Takeleft => super::list::takeleft(env, a, ba),
-        Val::Takeright => super::list::takeright(env, a, ba),
+        Val::Takeleft => super::list::takeleft(env, &a, &ba),
+        Val::Takeright => super::list::takeright(env, &a, &ba),
         Val::Dropleft =>  ba.try_int().map_or(NAN, |b| super::list::dropleft(a, b)),
         Val::Dropright => ba.try_int().map_or(NAN, |b| super::list::dropright(a, b)),
 
@@ -164,42 +176,42 @@ pub fn call(&self, env: &mut Env, a: &Val, b: Option<&Val>) -> Val {
             Lis { l, .. } => Int(l.len() as i64),
             _ => Val::f64(f64::INFINITY),
         },
-        Val::Index => a.index_at_depth(env, ba),
+        Val::Index => a.index_at_depth(env, &ba),
         Val::Iota => match a {
             Lis{l, ..} => super::list::iota(
                 Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>()),
             Num(n) => if !n.is_finite() {Val::Left} else {super::list::iota_scalar(n.re as i64)},
-            Int(n) => super::list::iota_scalar(*n),
+            Int(n) => super::list::iota_scalar(n),
             _ => Val::Av(AvT::Const, None, NAN.rc()),
         }
         Val::Pair => Val::lis(vec![a.clone(), ba.clone()]),
         Val::Enlist => Val::lis(vec![a.clone()]),
         Val::Ravel => {
-            let mut list = Vec::new();
-            super::list::ravel(a, &mut list);
-            Val::lis(list)
+            let mut list = Vec::new(); super::list::ravel(a, &mut list); Val::lis(list)
         },
         Val::Concat => super::list::concat(a, ba),
         Val::Reverse => super::list::reverse(a),
         Val::GetFill => match a {
-            Lis {fill, ..} => (**fill).clone(),
+            Lis {fill, ..} => (*fill).clone(),
             _ => NAN
         },
         Val::SetFill => match a {
-            Lis {l, ..} => Lis {l: l.clone(), fill: ba.clone().rc()},
-            _ => a.clone(),
+            Lis {l, ..} => Lis {l, fill: ba.rc()},
+            a => a,
         },
         Val::Replist => if a.is_finite() {
             let Some(num) = ba.try_int() else {return NAN};
             (0..num).flat_map(|_| a.iterf().cloned()).collect()
-        } else {a.clone()},
-        Val::Cycle => if a.is_finite() {
-            Val::DCycle(Rc::from(&a.iterf().cloned().collect::<Vec<_>>()[..]))
-        } else {a.clone()},
+        } else {a},
+        Val::Cycle => match a {
+            Lis{l, ..} => Val::DCycle(l),
+            Num(_) | Int(_) => Val::DCycle(Rc::new(vec![a])),
+            _ => a
+        },
         Val::DCycle(l) => a.try_int().map_or(NAN, |a| l[(a as usize) % l.len()].clone()),
         Val::Match => Val::bool(a == ba),
         Val::Shape => Val::lis_fill(
-            super::list::shape(a).iter().map(|x| Int(*x as i64)).collect(),
+            super::list::shape(&a).iter().map(|x| Int(*x as i64)).collect(),
             Int(1),
         ),
 
