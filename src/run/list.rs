@@ -38,30 +38,38 @@ impl Val {
         }
     }
 
-    pub fn index_at_depth(&self, env: &mut Env, index: &Val) -> Val {
+    pub fn index_at_depth(&self, env: &mut Env, index: Val) -> Val {
         let mut value = self.clone();
         for n in 0..index.len() {
             if value.is_scalar() { return value.clone(); }
             let i = index.index(env, n);
             if i.is_nan() {
                 if n+1 == index.len() {return value}
-                match value {
+                return match value {
                     Lis {l, ..} => {
                         let slice = index.iterinf(env).skip(n+1).collect::<Val>();
-                        return l.iter().map(|x| x.index_at_depth(env, &slice)).collect::<Val>()
+                        l.iter().map(|x| x.index_at_depth(env, slice.clone())).collect::<Val>()
                     }
-                    _ => return std::iter::empty::<Val>().collect()
-                }
+                    _ => std::iter::empty::<Val>().collect()
+                };
             }
             value = value.indexval(env, i);
         }
         value
     }
 
-    pub fn iterinf<'a: 'v, 'v>(&'_ self, env: &'v mut Env<'a>) -> InfIter<'a, 'v> {
-        InfIter {
-            i: 0, value: self.clone(), env
-        }
+    pub fn iterinf<'r, 'e>(self, env: &'r mut Env<'e>) -> Box<dyn InconvenientIter<'r, 'e> + 'r> {
+        if self.is_finite() {
+            if let Lis{l, ..} = self {
+                match Rc::try_unwrap(l) {
+                    Ok(l) => Box::new(l.into_iter()),
+                    // https://smallcultfollowing.com/babysteps/blog/2018/09/02/rust-pattern-iterating-an-over-a-rc-vec-t/
+                    Err(l) => Box::new((0..l.len()).map(move |x| l[x].clone()))
+                }
+            } else { Box::new(std::iter::once(self)) }
+        } else { Box::new(InfIter {
+            i: 0, value: self, env
+        }) }
     }
 
     pub fn lis(vec: Vec<Val>) -> Val {
@@ -97,18 +105,20 @@ impl Val {
 pub trait GoodIter<V>: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator {}
 impl<F, V> GoodIter<V> for F where F: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator {}
 
-//pub trait InconvenientIter<V, 'a, 'v>: 
+pub trait InconvenientIter<'r, 'e>: Iterator<Item=Val> {}
+impl<'r, 'e> InconvenientIter<'r, 'e> for InfIter<'r, 'e> {}
+impl<'r, 'e, F> InconvenientIter<'r, 'e> for F where F: GoodIter<Val> {}
 
-pub struct InfIter<'a: 'v, 'v> {
-    i: usize,
+pub struct InfIter<'r, 'e> {
+    i: i64,
     value: Val,
-    env: &'v mut Env<'a>,
+    env: &'r mut Env<'e>,
 }
 
-impl<'a, 'v> Iterator for InfIter<'a, 'v> {
+impl<'r, 'e> Iterator for InfIter<'r, 'e> {
     type Item = Val;
     fn next(&mut self) -> Option<Self::Item> {
-        let val = Some(self.value.monad(self.env, Int(self.i as i64)));
+        let val = Some(self.value.monad(self.env, Int(self.i)));
         self.i += 1; val
     }
     fn size_hint(&self) -> (usize, Option<usize>) { (usize::MAX, None) }
@@ -170,28 +180,31 @@ pub fn reverse(a: Val) -> Val {
     a.into_iterf().rev().collect()
 }
 
-pub fn reshape_iter(a: &mut InfIter, b: &[usize], fill: &Val) -> Val {
+pub fn reshape_iter(a: &mut dyn Iterator<Item=Val>, b: &[usize], fill: &Val) -> Val {
     if b.is_empty() {return a.next().unwrap_or_else(|| fill.clone())}
     let (pre, suf) = (b[0], &b[1..]);
     (0..pre).map(move |_| reshape_iter(a, suf, fill)).collect()
 }
 
-pub fn takeleft(env: &mut Env, a: &Val, b: &Val) -> Val {
-    let Some(shape) = fillreshape(a, b) else {return NAN};
+pub fn takeleft(env: &mut Env, a: Val, b: Val) -> Val {
+    let Some(shape) = fillreshape(&a, &b) else {return NAN};
+    let fill = a.fill();
     let mut iter = a.iterinf(env);
-    reshape_iter(&mut iter, &shape[..], &a.fill())
+    reshape_iter(&mut iter, &shape[..], &fill)
 }
 
-pub fn takeright(env: &mut Env, a: &Val, b: &Val) -> Val {
-    let Some(shape) = fillreshape(a, b) else {return NAN};
+pub fn takeright(env: &mut Env, a: Val, b: Val) -> Val {
+    let Some(shape) = fillreshape(&a, &b) else {return NAN};
     let elems = shape.iter().product::<usize>();
+    let fill = a.fill();
     let bee = if a.len() < elems {
         std::iter::repeat(a.fill()).take(elems - a.len()).chain(a.iterinf(env)).collect::<Val>()
     } else {
-        a.iterinf(env).skip(a.len() - elems).collect::<Val>()
+        let len = a.len() - elems;
+        a.iterinf(env).skip(len).collect::<Val>()
     };
     let mut iter = bee.iterinf(env);
-    reshape_iter(&mut iter, &shape[..], &a.fill())
+    reshape_iter(&mut iter, &shape[..], &fill)
 } 
 
 pub fn fillreshape(a: &Val, b: &Val) -> Option<Vec<usize>> {

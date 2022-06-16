@@ -48,12 +48,12 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Lis { .. } | Num(_) | Int(_) => self.clone(),
         Val::FSet(name) => {
             env.locals.insert(name.clone(), a.clone());
-            a.clone()
+            a
         },
         Val::Dfn { s, loc } => {
             let mut inner = Env { locals: (**loc).clone(), outer: Some(env) };
-            inner.locals.insert(smallvec![b!('α')], a.clone());
-            inner.locals.insert(smallvec![b!('β')], ba.clone());
+            inner.locals.insert(smallvec![b!('α')], a);
+            inner.locals.insert(smallvec![b!('β')], ba);
             inner.locals.insert(smallvec![b!('ƒ')], self.clone());
             inner.eval_block(s)
         },
@@ -67,7 +67,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             ff.dyad(env, l, r)
         }
 
-        Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.rc()), a.clone().rc()),
+        Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.rc()), a.rc()),
         Val::Av(t, f, g) => t.call(env, a, b, f.as_ref(), g),
         Val::Add => match (a, ba) {
             (Int(a), Int(b)) => Int(a.saturating_add(b)),
@@ -138,8 +138,8 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Conj => a.try_c().map_or(NAN,|a| Num(a.conj())),
         Val::Arg  => a.try_c().map_or(NAN,|a| Val::f64(a.arg())),
 
-        Val::Print   => { print  !("{}", a.display_string()); a.clone() },
-        Val::Println => { println!("{}", a.display_string()); a.clone() },
+        Val::Print   => { print  !("{}", a.display_string()); a },
+        Val::Println => { println!("{}", a.display_string()); a },
         Val::Exit => match a.try_int() {
             Some(n) => std::process::exit(n as i32),
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
@@ -150,19 +150,18 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Numfmt => if !a.is_scalar() {NAN} else {
             format!("{a}").chars().map(|x| Int(x as i64)).collect() }
         Val::Parse => a.display_string().parse::<c64>().map(Num).unwrap_or(NAN),
-        Val::Takeleft => super::list::takeleft(env, &a, &ba),
-        Val::Takeright => super::list::takeright(env, &a, &ba),
+        Val::Takeleft => super::list::takeleft(env, a, ba),
+        Val::Takeright => super::list::takeright(env, a, ba),
         Val::Dropleft =>  ba.try_int().map_or(NAN, |b| super::list::dropleft(a, b)),
         Val::Dropright => ba.try_int().map_or(NAN, |b| super::list::dropright(a, b)),
 
-        Val::Left => a.clone(),
-        Val::Right => ba.clone(),
+        Val::Left => a, Val::Right => ba,
         Val::Len => match a {
             Num(_) | Int(_) => Int(1),
             Lis { l, .. } => Int(l.len() as i64),
             _ => Val::f64(f64::INFINITY),
         },
-        Val::Index => a.index_at_depth(env, &ba),
+        Val::Index => a.index_at_depth(env, ba),
         Val::Iota => match a {
             Lis{l, ..} => super::list::iota(
                 Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>()),
@@ -170,8 +169,8 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             Int(n) => super::list::iota_scalar(n),
             _ => Val::Av(AvT::Const, None, NAN.rc()),
         }
-        Val::Pair => Val::lis(vec![a.clone(), ba.clone()]),
-        Val::Enlist => Val::lis(vec![a.clone()]),
+        Val::Pair => Val::lis(vec![a, ba]),
+        Val::Enlist => Val::lis(vec![a]),
         Val::Ravel => {
             let mut list = Vec::new(); super::list::ravel(a, &mut list); Val::lis(list)
         },
