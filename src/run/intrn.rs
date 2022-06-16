@@ -24,8 +24,8 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 env.locals.insert(name, Val::$name)
             } );* }}
             load!(
-                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb,
-                Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
+                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb, Approx,
+                Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign,
                 Complex, Real, Imag, Conj, Arg, Cis,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse,
@@ -115,6 +115,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             let (y, x) = (a.as_c(), ba.as_c());
             Val::f64(f64::atan2(y.re + x.im, x.re - y.im))
         },
+        Val::Approx=> Val::bool(Val::approx(&a, &ba)),
         Val::Isnan=> Val::bool(a.is_nan()),
         Val::Abs  => match a { Int(a) => Int(a.abs()), Num(x) => Val::f64(x.norm()), _ => NAN },
         Val::Neg  => match a { Int(a) => Int(-a),      Num(a) => Num(-a), _ => NAN },
@@ -130,13 +131,18 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Round=> match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.round()) , _ => NAN },
         Val::Ceil => match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.ceil()) , _ => NAN },
         Val::Floor=> match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.floor()), _ => NAN },
+        Val::Sign => match a { Int(a) => Int(a.signum()), Num(a) => {
+            if a == c64::new(0., 0.) { Int(0) } 
+            else if a.im == 0. { Int(a.re.signum() as i64) }
+            else { Num(c64::from_polar(1., a.arg())) }
+        }, _ => NAN },
 
         Val::Complex=> a.try_c().zip(ba.try_c()).map_or(NAN, |(a,b)| Num(c64::new(b.re, a.re))),
         Val::Cis  => a.try_c().zip(ba.try_c()).map_or(NAN, |(a,b)| Num(c64::from_polar(b.re, a.re))),
-        Val::Real => a.try_c().map_or(NAN,|a| Val::f64(a.re)),
-        Val::Imag => a.try_c().map_or(NAN,|a| Val::f64(a.im)),
-        Val::Conj => a.try_c().map_or(NAN,|a| Num(a.conj())),
-        Val::Arg  => a.try_c().map_or(NAN,|a| Val::f64(a.arg())),
+        Val::Real => a.try_c().map_or(NAN, |a| Val::f64(a.re)),
+        Val::Imag => a.try_c().map_or(NAN, |a| Val::f64(a.im)),
+        Val::Conj => a.try_c().map_or(NAN, |a| Num(a.conj())),
+        Val::Arg  => a.try_c().map_or(NAN, |a| Val::f64(a.arg())),
 
         Val::Print   => { print  !("{}", a.display_string()); a },
         Val::Println => { println!("{}", a.display_string()); a },
@@ -201,13 +207,17 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         ),
 
         Val::Deal => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| {
-            use rand::distributions::{Distribution, Uniform};
-            if a == 0 { return std::iter::repeat(NAN).take(b as _).collect() }
-            Uniform::from(0..a as _).sample_iter(rand::thread_rng()).take(b as _)
-                .map(|x| Int(i64::from(x))).collect::<Val>()
+            use rand::distributions::{Distribution, Uniform, Standard};
+            if a <= 0 { 
+                Standard.sample_iter(rand::thread_rng()).take(b as _).map(Val::f64).collect()
+            } else {
+                Uniform::from(0..a as _).sample_iter(rand::thread_rng())
+                    .take(b as usize)
+                    .map(|x| Int(i64::from(x))).collect::<Val>()
+            }
         }),
         Val::Sample => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)|
-            rand::seq::index::sample(&mut rand::thread_rng(), a as _, b as _)
+            rand::seq::index::sample(&mut rand::thread_rng(), a as _, isize::min(a as _, b as _) as _)
                 .iter()
                 .map(|x| Int(x as i64))
                 .collect::<Val>(),
@@ -230,7 +240,7 @@ pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Num(_))}
 pub fn as_bool(&self) -> bool {
     match self {
         Int(n) => *n != 0,
-        Num(n) => !n.is_nan() && *n != num::zero::<c64>(),
+        Num(n) => !n.is_nan() && *n != c64::new(0., 0.),
         _ => false,
     }
 }
@@ -256,6 +266,26 @@ pub fn try_int(&self) -> Option<i64> {
 pub fn as_c(&self) -> c64 { self.try_c().unwrap_or(CNAN) }
 
 pub fn f64(n: f64) -> Val { Num(from_real(n)) }
-}
 
+pub fn approx(&self, other: &Val) -> bool {
+    const TOLERANCE: f64 = 0.00000000023283064365386963; // $2^{-32}$
+    fn close(a: c64, b: c64) -> bool {
+        let d = (a - b).norm();
+        d <= TOLERANCE
+        || d / a.norm() <= TOLERANCE
+        || d / b.norm() <= TOLERANCE
+    }
+    match (self, other) {
+        (Self::Num(l), Self::Num(r)) => close(*l, *r) || l.is_nan() && r.is_nan(),
+        (Self::Int(l), Self::Int(r)) => l == r,
+        (Self::Num(l), Self::Int(r)) => close(*l, c64::new(*r as f64, 0.)),
+        (Self::Int(l), Self::Num(r)) => close(*r, c64::new(*l as f64, 0.)),
+        (Self::Lis { l: l_l, fill: l_fill }, Self::Lis { l: r_l, fill: r_fill }) => 
+            l_fill == r_fill
+            && l_l.len() == r_l.len()
+            && l_l.iter().zip(r_l.iter()).all(|(x, y)| Val::approx(x, y)),
+        _ => false
+    }
+}
+}
 

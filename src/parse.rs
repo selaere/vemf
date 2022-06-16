@@ -6,6 +6,8 @@ use crate::{b, Bstr};
 use crate::codepage::tochars;
 use crate::token::Tok;
 
+use num_complex::Complex64 as c64;
+
 macro_rules! step {
     ($code:ident) => { *$code = &$code[1..]; };
 }
@@ -15,7 +17,7 @@ macro_rules! step {
 pub enum Expr {
     Var(Bstr),
     Int(i64),
-    Flt(f64),
+    Flt(c64),
     Snd(Vec<Expr>),  // strand
     Afn1 { a: Box<Expr>, f: Box<Expr>               },  // apply monadic function
     Afn2 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> },  // apply dyadic  function 
@@ -43,7 +45,7 @@ pub enum Role {
     Noun, Verb
 }
 use Role::{Noun, Verb};
-const NAN: Expr = Expr::Flt(f64::NAN);
+const NAN: Expr = Expr::Flt(c64::new(f64::NAN, f64::NAN));
 
 impl Display for Expr {
     fn fmt(&self, m: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -287,7 +289,8 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Tok::Just(c @ b'0'..=b'9') => Expr::Int(i64::from(c - b'0')),
         Tok::Just(b!('Φ')) => Expr::Int(10),
         Tok::Just(b!('Θ')) => Expr::Int(-1),
-        Tok::Just(b!('∞')) => Expr::Flt(f64::INFINITY),
+        Tok::Just(b!('∞')) => Expr::Flt(c64::new(f64::INFINITY, 0.)),
+        Tok::Just(b!('Γ')) => Expr::Flt(c64::i()),
         Tok::Just(b!('█')) => NAN,
         Tok::Just(b!('ϕ')) => Expr::Snd(Vec::new()),
         Tok::VarVal(x) => Expr::Var(x),
@@ -306,7 +309,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
         }
         Tok::HNum(x) => unsafe {
             // safety: HNums have only [0-9.]+, all are ascii characters
-            Expr::Flt(std::str::from_utf8_unchecked(&x).parse::<f64>().unwrap())
+            Expr::Flt(c64::new(std::str::from_utf8_unchecked(&x).parse::<f64>().unwrap(), 0.))
         },
         Tok::Str(x) =>
             Expr::Snd(x.iter().map(|&x| Expr::Int(i64::from(x))).collect()),

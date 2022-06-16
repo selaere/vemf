@@ -19,6 +19,14 @@ fn test() -> Result<(), String> {
                 //println!("test passed line {} ``{i} : {o}``", n+1);
             }
             tested += 1;
+        } else if let Some((i, o)) = line.split_once(" ± ") {
+            let left = env.include_string(i);
+            let right = env.include_string(o);
+            if !left.approx(&right) {
+                println!("test failed line {} ``{i} ± {o}``: {left} ≢ {right}", n+1);
+                failed += 1;
+            }
+            tested += 1;
         } else {println!("i didnt understand line {}", n)}
     }
     println!("failed {}/{} tests", failed, tested);

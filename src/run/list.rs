@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::{rc::Rc, iter::FusedIterator};
 use super::{Val::{self, Lis, Num, Int}, Env, NAN};
 
 impl Val {
@@ -102,8 +102,10 @@ impl Val {
     }
 }
 
-pub trait GoodIter<V>: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator {}
-impl<F, V> GoodIter<V> for F where F: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator {}
+pub trait GoodIter<V>: Iterator<Item=V>
+    + ExactSizeIterator + DoubleEndedIterator + FusedIterator + ExactSizeIterator {}
+impl<F, V> GoodIter<V> for F where F: Iterator<Item=V>
+    + ExactSizeIterator + DoubleEndedIterator + FusedIterator + ExactSizeIterator {}
 
 pub trait InconvenientIter<'r, 'e>: Iterator<Item=Val> {}
 impl<'r, 'e> InconvenientIter<'r, 'e> for InfIter<'r, 'e> {}
@@ -162,10 +164,9 @@ pub fn ravel(arg: Val, list: &mut Vec<Val>) {
 pub fn concat(a: Val, b: Val) -> Val {
     if !(a.is_finite() && b.is_finite()) { return NAN }
     if let Lis{l, ..} = a {
-        println!("{}", Rc::strong_count(&l));
         return match Rc::try_unwrap(l) {
             Ok(mut l) => {
-                println!("efficient!!!");
+                // println!("efficient!!!");
                 l.extend(b.iterf().cloned());
                 Val::lis(l)
             },

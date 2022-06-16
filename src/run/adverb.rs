@@ -1,5 +1,5 @@
 use super::{Val, Env, NAN};
-use std::{rc::Rc, ops::Range};
+use std::rc::Rc;
 
 #[derive(Copy, Clone, Debug)]
 pub enum AvT {
@@ -49,16 +49,18 @@ pub fn each(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.is_scalar() && b.iter().all(|x| x.is_scalar()) {
         g.call(env, a, b)
     } else if let Some(b) = b {
-        let mut collect_range = |x: Range<usize>| x.map(|n| {
-            let l = a.index(env, n); let r = b.index(env, n); g.dyad(env, l, r)
-        }).collect();
-        if !a.is_finite() && !b.is_finite() { 
-            Val::Fork { a: a.clone().rc(), 
+        if a.is_scalar() {
+            b.into_iterf().map(|x| g.dyad(env, a.clone(), x)).collect()
+        } else if b.is_scalar() {
+            a.into_iterf().map(|x| g.dyad(env, x, b.clone())).collect()
+        } else if !a.is_finite() && !b.is_finite() { 
+            Val::Fork { a: a.rc(), 
                         f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(), 
-                        b: b.clone().rc() }
-        } else if a.is_scalar() { Val::lis_fill(collect_range(0..b.len()), b.fill())
-        } else if b.is_scalar() { Val::lis_fill(collect_range(0..a.len()), a.fill())
-        } else { Val::lis_fill(collect_range(0..usize::min(a.len(), b.len())), a.fill())
+                        b: b.rc() }
+        } else {
+            let len = usize::min(a.len(), b.len());
+            itertake(env, a, len).zip(itertake(env, b, len))
+                .map(|(a, b)| g.dyad(env, a, b)).collect()
         }
     } else { each_left(env, a, None, g) }
 }
@@ -70,27 +72,34 @@ pub fn each_left(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
         Val::Fork { a: a.rc(), f: Rc::clone(g), b: b.rc() }
     } else {
         Val::Trn2 { a: a.rc(), f: Rc::clone(g) }
-    }} else { Val::lis_fill(
-        (0..a.len()).map(|n| { let l = a.index(env, n); g.call(env, l, b.clone()) }).collect(),
-        a.fill(),
-    )}
+    }} else { a.into_iterf().map(|x| g.call(env, x, b.clone())).collect() }
 }
 
+fn itertake(env: &mut Env, a: Val, len: usize) -> Box<dyn super::list::GoodIter<Val>> {
+    if a.is_finite() {
+        Box::new(a.into_iterf().take(len))
+    } else {
+        Box::new(a.iterinf(env).take(len).collect::<Vec<_>>().into_iter())
+    }
+}
 
 pub fn conform(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.is_scalar() && b.iter().all(|x| x.is_scalar()) {
         g.call(env, a, b)
     } else if let Some(b) = b {
-        let mut collect_range = |x: Range<usize>| x.map(|n| {
-            let l = a.index(env, n); let r = b.index(env, n); conform(env, l, Some(r), g)
-        }).collect();
-        if !a.is_finite() && !b.is_finite() { 
-            Val::Fork { a: a.clone().rc(), 
+        if a.is_scalar() {
+            b.into_iterf().map(|x| conform(env, a.clone(), Some(x), g)).collect()
+        } else if b.is_scalar() {
+            a.into_iterf().map(|x| conform(env, x, Some(b.clone()), g)).collect()
+        } else if !a.is_finite() && !b.is_finite() { 
+            Val::Fork { a: a.rc(), 
                         f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(), 
-                        b: b.clone().rc() }
-        } else if a.is_scalar() { Val::lis_fill(collect_range(0..b.len()), b.fill())
-        } else if b.is_scalar() { Val::lis_fill(collect_range(0..a.len()), a.fill())
-        } else { Val::lis_fill(collect_range(0..usize::min(a.len(), b.len())), a.fill())
+                        b: b.rc() }
+        } else {
+            let len = usize::min(a.len(), b.len());
+            itertake(env, a, len).zip(itertake(env, b, len))
+                .map(|(a, b)| conform(env, a, Some(b), g))
+                .collect()
         }
     } else { extend(env, a, None, g) }
 }
@@ -102,10 +111,7 @@ pub fn extend(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
         Val::Fork { a: a.rc(), f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(), b: b.rc() }
     } else {
         Val::Trn2 { a: a.rc(), f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc() }
-    }} else { Val::lis_fill(
-        (0..a.len()).map(|n| { let l = a.index(env, n); extend(env, l, b.clone(), g) }).collect(),
-        a.fill(),
-    )}
+    }} else { a.into_iterf().map(|x| extend(env, x, b.clone(), g)).collect()}
 }
 
 

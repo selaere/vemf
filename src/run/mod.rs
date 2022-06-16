@@ -6,7 +6,7 @@ use adverb::AvT;
 
 const STDLIB: &str = include_str!("../std.vemf");
 
-use num::complex::Complex64 as c64;
+use num_complex::Complex64 as c64;
 
 pub const CNAN: c64 = c64::new(f64::NAN, f64::NAN);
 pub const NAN: Val = Num(CNAN);
@@ -31,8 +31,8 @@ pub enum Val {
     Av(AvT, Option<Rc<Val>>, Rc<Val>),
     AvBuilder(AvT),
     Cycle,     DCycle(Rc<Vec<Val>>),
-    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb,
-    Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan,
+    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb, Approx,
+    Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign,
     Complex, Cis, Real, Imag, Conj, Arg,
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
     Print, Println, Exit, Format, Numfmt, Parse,
@@ -87,7 +87,7 @@ impl Env<'_> {
         match expr {
             Expr::Var(s) => self.get_var(s).unwrap_or_default(),
             Expr::Int(n) => Int(*n),
-            Expr::Flt(n) => Val::f64(*n),
+            Expr::Flt(n) => Num(*n),
             Expr::Snd(l) => Lis {
                 l: Rc::from(l.iter().map(|x| self.eval(x)).collect::<Vec<_>>()),
                 fill: NAN.rc()

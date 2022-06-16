@@ -52,6 +52,12 @@ pub fn format(val: &Val, slice: &[Val]) -> String {
             .chain(std::iter::once("\"".to_string()))
             .collect(),
         _ => format(val, rest) }
+        5 => match val { Lis{l, ..} => 
+            l.iter().map(|x| x.try_int().map_or('\u{FFFD}',
+                |n| n.try_into().map_or('\u{FFFD}', tochar)
+            ))
+            .collect(),
+        _ => format(val, rest) }
         7 => match val { Lis{l, ..} =>
                 "(".to_string() 
             + &l.iter().map(|x| format(x, rest)).collect::<Vec<_>>().join(" ") 
