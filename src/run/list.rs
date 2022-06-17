@@ -100,12 +100,19 @@ impl Val {
             }
         } else { Box::new(std::iter::once(self)) }
     }
+
+    pub fn itertake(self, env: &mut Env, len: usize) -> Box<dyn GoodIter<Val>> {
+        if self.is_finite() {
+            Box::new(self.into_iterf().take(len))
+        } else {
+            Box::new(self.iterinf(env).take(len).collect::<Vec<_>>().into_iter())
+        }
+    }
+
 }
 
-pub trait GoodIter<V>: Iterator<Item=V>
-    + ExactSizeIterator + DoubleEndedIterator + FusedIterator + ExactSizeIterator {}
-impl<F, V> GoodIter<V> for F where F: Iterator<Item=V>
-    + ExactSizeIterator + DoubleEndedIterator + FusedIterator + ExactSizeIterator {}
+pub trait GoodIter<V>: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator + FusedIterator {}
+impl<F, V> GoodIter<V> for F where F: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator + FusedIterator {}
 
 pub trait InconvenientIter<'r, 'e>: Iterator<Item=Val> {}
 impl<'r, 'e> InconvenientIter<'r, 'e> for InfIter<'r, 'e> {}
@@ -253,4 +260,24 @@ pub fn shape(a: &Val) -> Vec<usize> {
         }
         shp
     } else { vec![] }
+}
+
+
+// 0123(123)5‼3010(45)0 -> 0002(111122222)4
+
+pub fn replicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
+    let mut lis = Vec::new();
+    let (afill, bfill, len) = (a.fill(), b.fill(), a.len());
+    for (l,r) in a.into_iterf().zip(b.itertake(env, len).chain(std::iter::repeat(bfill))) {
+        if let Some(n) = r.try_int() {
+            if n != 0 {
+                let val = if n > 0 {l} else {afill.clone()};
+                for _ in 0..(n.abs() - 1) { lis.push(val.clone()); }
+                lis.push(val);
+            }
+        } else {
+            lis.extend(replicate(env, l, r).into_iter());
+        }
+    }
+    lis
 }

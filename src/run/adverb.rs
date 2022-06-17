@@ -59,7 +59,7 @@ pub fn each(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
                         b: b.rc() }
         } else {
             let len = usize::min(a.len(), b.len());
-            itertake(env, a, len).zip(itertake(env, b, len))
+            a.itertake(env, len).zip(b.itertake(env, len))
                 .map(|(a, b)| g.dyad(env, a, b)).collect()
         }
     } else { each_left(env, a, None, g) }
@@ -73,14 +73,6 @@ pub fn each_left(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     } else {
         Val::Trn2 { a: a.rc(), f: Rc::clone(g) }
     }} else { a.into_iterf().map(|x| g.call(env, x, b.clone())).collect() }
-}
-
-fn itertake(env: &mut Env, a: Val, len: usize) -> Box<dyn super::list::GoodIter<Val>> {
-    if a.is_finite() {
-        Box::new(a.into_iterf().take(len))
-    } else {
-        Box::new(a.iterinf(env).take(len).collect::<Vec<_>>().into_iter())
-    }
 }
 
 pub fn conform(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
@@ -97,7 +89,7 @@ pub fn conform(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
                         b: b.rc() }
         } else {
             let len = usize::min(a.len(), b.len());
-            itertake(env, a, len).zip(itertake(env, b, len))
+            a.itertake(env, len).zip(b.itertake(env, len))
                 .map(|(a, b)| conform(env, a, Some(b), g))
                 .collect()
         }

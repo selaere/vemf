@@ -36,7 +36,7 @@ pub enum Val {
     Complex, Cis, Real, Imag, Conj, Arg,
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
     Print, Println, Exit, Format, Numfmt, Parse,
-    Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample,
+    Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample, Replicate,
     LoadIntrinsics,
 }
 

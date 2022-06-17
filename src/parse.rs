@@ -22,8 +22,8 @@ pub enum Expr {
     Afn1 { a: Box<Expr>, f: Box<Expr>               },  // apply monadic function
     Afn2 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> },  // apply dyadic  function 
     SetVar(Bstr),
-    Aav1 {               v: Bstr     , g: Box<Expr> }, //     apply monadic adverb
-    Aav2 { f: Box<Expr>, v: Bstr     , g: Box<Expr> }, //     apply dyadic  adverb
+    Aav1 {               v: Bstr     , g: Box<Expr> }, // apply monadic adverb
+    Aav2 { f: Box<Expr>, v: Bstr     , g: Box<Expr> }, // apply dyadic  adverb
     Bind {               f: Box<Expr>, b: Box<Expr> }, // +1
     Trn2 { a: Box<Expr>, f: Box<Expr>               }, // +/
     Trn3 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> }, // +/2

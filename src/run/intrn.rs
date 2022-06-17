@@ -29,7 +29,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Complex, Real, Imag, Conj, Arg, Cis,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse,
-                Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample,
+                Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample, Replicate,
             );
             macro_rules! load_av {($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
@@ -221,7 +221,11 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 .iter()
                 .map(|x| Int(x as i64))
                 .collect::<Val>(),
-        )
+        ),
+        Val::Replicate => {
+            let fill = a.fill();
+            Val::lis_fill(super::list::replicate(env, a, ba), fill)
+        }
     }
 }
 
