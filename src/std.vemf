@@ -73,18 +73,16 @@
 (+1)→▲→Σ·
 -1→▼·
 
-┼:inlt→<·
+.ingradedown╬┼:inlt→<·
 (▬:inlen)╬┼:ineq→=·
-┼:ingt→>·
+.ingradeup╬┼:ingt→>·
 
 =0→¬·
 ¬¬→⌐·
 
-<¬→≥·
-=¬→~·
->¬→≤·
-
-:inlen╬~→~·
+.insortup  ╬┌<¬→≥·
+.inlen     ╬┌=¬→~·
+.insortdown╬┌>¬→≤·
 
 ^2→²·
 /2→½·
@@ -99,7 +97,7 @@
 
 .inabs→¢·
 ┼:insign╬:inapprox→±·
-¢╬┐²╓+√→¢·
+┼¢╬┐²╓+√→¢·
 
 .inindex→@·┌@0╬@→@·
 ┌┌~▼╙@╬┴╘@→¡·

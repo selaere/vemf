@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::{Bstr, b};
-use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, CNAN, cmp, from_real};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, CNAN, complexcmp, from_real};
 use smallvec::smallvec;
 
 impl Val {
@@ -29,7 +29,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Complex, Real, Imag, Conj, Arg, Cis,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse,
-                Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample, Replicate,
+                Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample, Replicate, GradeUp, GradeDown, SortUp, SortDown,
             );
             macro_rules! load_av {($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
@@ -93,7 +93,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Log => Num(a.as_c().log(ba.as_c().norm())),
         Val::Lt => match (a, ba) {
             (Int(a), Int(b)) => Val::bool(a < b),
-            (a, ba) => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(cmp(a, b).is_lt()))
+            (a, ba) => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(complexcmp(a, b).is_lt()))
         },
         Val::Eq => match (a, ba) {
             (Int(a), Int(b)) => Val::bool(a == b),
@@ -101,15 +101,15 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         },
         Val::Gt => match (a, ba) {
             (Int(a), Int(b)) => Val::bool(a > b),
-            (a, ba) => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(cmp(a, b).is_gt()))
+            (a, ba) => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(complexcmp(a, b).is_gt()))
         },
         Val::Max => match (a, ba) {
             (Int(a), Int(b)) => Int(a.max(b)),
-            (a, ba) => if cmp(a.as_c(), ba.as_c()).is_gt() {a} else {ba}
+            (a, ba) => if complexcmp(a.as_c(), ba.as_c()).is_gt() {a} else {ba}
         },
         Val::Min => match (a, ba) {
             (Int(a), Int(b)) => Int(a.min(b)),
-            (a, ba) => if cmp(a.as_c(), ba.as_c()).is_lt() {a} else {ba}
+            (a, ba) => if complexcmp(a.as_c(), ba.as_c()).is_lt() {a} else {ba}
         },
         Val::Atanb=> {
             let (y, x) = (a.as_c(), ba.as_c());
@@ -226,6 +226,11 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             let fill = a.fill();
             Val::lis_fill(super::list::replicate(env, a, ba), fill)
         }
+
+        Val::GradeUp   => super::list::grade_up(a),
+        Val::GradeDown => super::list::grade_down(a),
+        Val::SortUp    => super::list::sort_up(a),
+        Val::SortDown  => super::list::sort_down(a),
     }
 }
 
@@ -291,5 +296,20 @@ pub fn approx(&self, other: &Val) -> bool {
         _ => false
     }
 }
+
+pub fn cmpval(&self, other: &Val) -> std::cmp::Ordering {
+    use std::cmp::Ordering::{Greater, Less};
+    match (self, other) {
+        (Int(m), Int(n)) => m.cmp(n),
+        (a, b) => match (a.try_c(), b.try_c()) {
+            (Some(m), Some(n)) => complexcmp(m, n),
+            (None, Some(_)) => Greater,
+            (Some(_), None) => Less,
+            (None, None) => Less,
+        }
+    }
+}
+
+
 }
 

@@ -281,3 +281,37 @@ pub fn replicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
     }
     lis
 }
+
+pub fn grade_up(a: Val) -> Val {
+    if let Lis {l, ..} = a {
+        let mut lis = (0..l.len()).collect::<Vec<_>>();
+        lis.sort_by(|a, b| l[*a].cmpval(&l[*b]));
+        Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
+    } else {
+        Val::lis(vec![Int(0)])
+    }
+}
+
+pub fn grade_down(a: Val) -> Val {
+    if let Lis {l, ..} = a {
+        let mut lis = (0..l.len()).collect::<Vec<_>>();
+        lis.sort_by(|a, b| l[*a].cmpval(&l[*b]).reverse());
+        Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
+    } else { Val::lis(vec![Int(0)]) }
+}
+
+pub fn sort_up(a: Val) -> Val {
+    if let Lis {l, ..} = a {
+        let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).clone());
+        list.sort_by(|a, b| a.cmpval(b));
+        Val::lis(list)
+    } else { Val::lis(vec![a]) }
+}
+
+pub fn sort_down(a: Val) -> Val {
+    if let Lis {l, ..} = a {
+        let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).clone());
+        list.sort_by(|a, b| a.cmpval(b).reverse());
+        Val::lis(list)
+    } else { Val::lis(vec![a]) }
+}
