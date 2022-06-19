@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::{Bstr, b};
-use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, CNAN, complexcmp, from_real};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, CNAN, complexcmp};
 use smallvec::smallvec;
 
 impl Val {
@@ -24,12 +24,13 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 env.locals.insert(name, Val::$name)
             } );* }}
             load!(
-                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb, Approx,
-                Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign,
+                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb, Approx, BAnd, BOr, BXor,
+                Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
                 Complex, Real, Imag, Conj, Arg, Cis,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse,
-                Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample, Replicate, GradeUp, GradeDown, SortUp, SortDown,
+                Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample, Replicate,
+                GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown,
             );
             macro_rules! load_av {($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
@@ -59,8 +60,14 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         },
 
         Val::Bind { f: aa, b: bb } => aa.dyad(env, a, (**bb).clone()),
-        Val::Trn2 { a: aa, f: ff }        => { let x = aa.call(env, a, b); ff.monad(env, x) },
-        Val::Trn3 { a: aa, f: ff, b: bb } => { let x = aa.call(env, a, b); ff.dyad(env, x, (**bb).clone()) },
+        Val::Trn2 { a: aa, f: ff } => {
+            let x = aa.call(env, a, b);
+            ff.monad(env, x)
+        },
+        Val::Trn3 { a: aa, f: ff, b: bb } => {
+            let x = aa.call(env, a, b);
+            ff.dyad(env, x, (**bb).clone())
+        },
         Val::Fork { a: aa, f: ff, b: bb } => {
             let l = aa.call(env, a.clone(), b.clone());
             let r = bb.call(env, a, b);
@@ -117,6 +124,16 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         },
         Val::Approx=> Val::bool(Val::approx(&a, &ba)),
         Val::Isnan=> Val::bool(a.is_nan()),
+        Val::BAnd => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(a & b)),
+        Val::BOr  => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(a | b)),
+        Val::BXor => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(a ^ b)),
+        Val::BNot => a.try_int().map_or(NAN, |a| Int(!a)),
+        Val::BRepr => a.try_int().map_or(NAN, |n| 
+            n.to_be_bytes()
+            .into_iter()
+            .flat_map(|x| (0..8).rev().map(move |y| Val::bool(x & (1 << y) != 0)))
+            .collect()
+        ),
         Val::Abs  => match a { Int(a) => Int(a.abs()), Num(x) => Val::f64(x.norm()), _ => NAN },
         Val::Neg  => match a { Int(a) => Int(-a),      Num(a) => Num(-a), _ => NAN },
         Val::Ln   => a.try_c().map_or(NAN, |a| Num(a.ln()  )),
@@ -128,7 +145,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Tan  => a.try_c().map_or(NAN, |a| Num(a.tan() )),
         Val::Atan => a.try_c().map_or(NAN, |a| Num(a.atan())),
         Val::Sqrt => a.try_c().map_or(NAN, |a| Num(a.sqrt())),
-        Val::Round=> match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.round()) , _ => NAN },
+        Val::Round=> match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.round()), _ => NAN },
         Val::Ceil => match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.ceil()) , _ => NAN },
         Val::Floor=> match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.floor()), _ => NAN },
         Val::Sign => match a { Int(a) => Int(a.signum()), Num(a) => {
@@ -231,6 +248,8 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::GradeDown => super::list::grade_down(a),
         Val::SortUp    => super::list::sort_up(a),
         Val::SortDown  => super::list::sort_down(a),
+        Val::BinsUp    => super::list::bins_up(&a, &ba),
+        Val::BinsDown  => super::list::bins_down(&a, &ba),
     }
 }
 
@@ -242,9 +261,6 @@ pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
 pub fn is_finite(&self) -> bool { matches!(self, Int(_) | Num(_) | Lis {..})}
 
 pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Num(_))}
-
-//pub fn is_int(&self) -> bool { matches!(self, Int(_))}
-//pub fn is_num(&self) -> bool { matches!(self, Num(_))}
 
 pub fn as_bool(&self) -> bool {
     match self {
@@ -258,7 +274,7 @@ pub fn rc(self) -> Rc<Self> { Rc::new(self) }
 
 pub fn try_c(&self) -> Option<c64> {
     match self {
-        Int(n) => Some(from_real(*n as f64)),
+        Int(n) => Some(c64::new(*n as f64, 0.)),
         Num(n) => Some(*n),
         _ => None,
     }
@@ -274,7 +290,7 @@ pub fn try_int(&self) -> Option<i64> {
 
 pub fn as_c(&self) -> c64 { self.try_c().unwrap_or(CNAN) }
 
-pub fn f64(n: f64) -> Val { Num(from_real(n)) }
+pub fn f64(n: f64) -> Val { Num(c64::new(n, 0.)) }
 
 pub fn approx(&self, other: &Val) -> bool {
     const TOLERANCE: f64 = 0.00000000023283064365386963; // $2^{-32}$

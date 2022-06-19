@@ -70,11 +70,11 @@
 ┼:inacos╬:inacos╜^→ò·
 ┼:inatan╬:inatan╜^→à·
 
-(+1)→▲→Σ·
--1→▼·
+(┌+1→Σ)╬•_╘.inbinsup→▲·
+┌-1╬•_╘.inbinsdown→▼·
 
 .ingradedown╬┼:inlt→<·
-(▬:inlen)╬┼:ineq→=·
+┌▬:inlen╬┼:ineq→=·
 .ingradeup╬┼:ingt→>·
 
 =0→¬·
@@ -142,7 +142,9 @@
 ┼:inreal→ù·┼:inimag→ú·┼:inconj→ü·
 ┼:inarg╬:inatanb→ë·
 
-.inreplicate→‼·
+.inreplicate→‼·┌┌~↕╜‼╬‼→‼·
+
+├┌├|▲↕╜╛┌=+▐0╬┤≡‼@→#·
 
 '3486→_¶·
 

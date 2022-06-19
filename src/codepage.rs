@@ -99,7 +99,7 @@ pub const fn tobyte(x: char) -> u8 {
 pub fn tobytes(string: &str) -> Option<Bstr> {
     let mut vector = Bstr::with_capacity(string.len() / 2);
     for c in string.chars() {
-        if c == '\r' { continue } // crlf moment
+        if let '\r' | '\u{200E}' | '\u{FE0E}' | '\u{FE0F}' = c { continue } // crlf moment
         match tobyte(c) {
             0 => return None,
             b => vector.push(b),

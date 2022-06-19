@@ -315,3 +315,15 @@ pub fn sort_down(a: Val) -> Val {
         Val::lis(list)
     } else { Val::lis(vec![a]) }
 }
+
+pub fn bins_up(a: &Val, b: &Val) -> Val {
+    if let Lis {l, ..} = a {
+        Int(l.partition_point(|x| x.cmpval(b).is_le()) as i64)
+    } else { Int(0) }
+}
+
+pub fn bins_down(a: &Val, b: &Val) -> Val {
+    if let Lis {l, ..} = a {
+        Int(l.partition_point(|x| x.cmpval(b).is_gt()) as i64)
+    } else { Int(0) }
+}

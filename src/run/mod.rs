@@ -31,12 +31,13 @@ pub enum Val {
     Av(AvT, Option<Rc<Val>>, Rc<Val>),
     AvBuilder(AvT),
     Cycle,     DCycle(Rc<Vec<Val>>),
-    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb, Approx,
-    Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign,
+    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb, Approx, BAnd, BOr, BXor,
+    Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
     Complex, Cis, Real, Imag, Conj, Arg,
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
     Print, Println, Exit, Format, Numfmt, Parse,
-    Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample, Replicate, GradeUp, GradeDown, SortUp, SortDown,
+    Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample, Replicate,
+    GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown,
     LoadIntrinsics,
 }
 
@@ -204,9 +205,4 @@ fn complexcmp(a: c64, b: c64) -> std::cmp::Ordering {
         (false, false) => a.re.total_cmp(&b.re).then_with(|| a.im.total_cmp(&b.im))
     }
 }
-
-fn from_real(n: f64) -> c64 {
-    c64::new(n, 0.)
-}
-
 

@@ -15,10 +15,11 @@ fn main() {
         state.include_stdlib();
         println!("{}", state.include_file(&mut std::fs::File::open(path).unwrap()).unwrap());
     } else {
+        println!("welcome to vemf repl. enjoy your stay");
         let mut state = run::Env::new();
         state.include_stdlib();
         loop {
-            print!("vemf> ");
+            print!("    ");
             let _ = std::io::Write::flush(&mut std::io::stdout());
             let mut code = String::new();
             std::io::stdin().read_line(&mut code).expect("error while reading from stdin");

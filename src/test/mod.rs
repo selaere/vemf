@@ -27,7 +27,7 @@ fn test() -> Result<(), String> {
                 failed += 1;
             }
             tested += 1;
-        } else {println!("i didnt understand line {}", n)}
+        } else {println!("i didnt understand line {}", n+1)}
     }
     println!("failed {}/{} tests", failed, tested);
     if failed != 0 {
