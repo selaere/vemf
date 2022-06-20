@@ -73,12 +73,12 @@ impl Env<'_> {
     }
 
     pub fn get_var(&self, name: &[u8]) -> Option<Val> {
-        self.locals.get(name).cloned().or_else(|| self.outer.and_then(|x| x.get_var(name)))
+        self.locals.get(name).cloned().or_else(|| self.outer.as_ref().and_then(|x| x.get_var(name)))
     }
 
     pub fn get_var_rec(&self, name: &[u8]) -> Option<Val> {
         if let Some(stripped) = name.strip_prefix(&[b!('■')]) {
-            self.outer.and_then(|x| x.get_var_rec(stripped))
+            self.outer.as_ref().and_then(|x| x.get_var_rec(stripped))
         } else {
             self.get_var(name)
         }
@@ -133,9 +133,8 @@ impl Env<'_> {
             Expr::Dfn { s, cap } => {
                 let mut locals = HashMap::with_capacity(cap.len());
                 for var in cap {
-                    Env {
-                        locals: HashMap::new(), outer: Some(self),
-                    }.get_var_rec(var).and_then(|x| locals.insert(var.clone(), x));
+                    let a = if let Some(a) = var.strip_prefix(&[b!('■')]) {a} else {var};
+                    self.get_var_rec(a).and_then(|x| locals.insert(var.clone(), x));
                 }
                 Val::Dfn {s: Rc::from(&s[..]), loc: Rc::new(locals)}
             },

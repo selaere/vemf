@@ -118,8 +118,10 @@ fn indent(string: &str, indent: usize) -> String {
 impl Val {
     pub fn display_string(&self) -> String {
         self.try_int().map_or_else(|| match self {
-            Lis { l, .. } => l.iter().filter_map(
-                |x| x.try_int().and_then(|n| char::from_u32(n as u32))
+            Lis { l, .. } => l.iter().map(
+                |x| x.try_int().map_or_else(
+                    | | x.display_string() + "\n",
+                    |n| char::from_u32(n as u32).into_iter().collect::<String>())
             ).collect(),
             otherwise => format!("{}", otherwise),
         }, |n| format!("{}", n))

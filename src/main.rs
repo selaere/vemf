@@ -13,7 +13,8 @@ fn main() {
     if let Some(path) = std::env::args().nth(1) {
         let mut state = run::Env::new();
         state.include_stdlib();
-        println!("{}", state.include_file(&mut std::fs::File::open(path).unwrap()).unwrap());
+        println!("{}",
+            state.include_file(&mut std::fs::File::open(path).unwrap()).unwrap().display_string());
     } else {
         println!("welcome to vemf repl. enjoy your stay");
         let mut state = run::Env::new();
