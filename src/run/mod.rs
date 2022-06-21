@@ -1,4 +1,4 @@
-mod intrn; mod list; mod adverb; mod disp;
+mod intrn; mod list; mod adverb; mod disp; mod number;
 
 use crate::{parse::{Expr, Stmt}, Bstr};
 use std::{collections::HashMap, rc::Rc};
@@ -6,7 +6,7 @@ use adverb::AvT;
 
 const STDLIB: &str = include_str!("../std.vemf");
 
-use num_complex::Complex64 as c64;
+pub use num_complex::Complex64 as c64;
 
 pub const CNAN: c64 = c64::new(f64::NAN, f64::NAN);
 pub const NAN: Val = Num(CNAN);
@@ -37,25 +37,8 @@ pub enum Val {
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
     Print, Println, Exit, Format, Numfmt, Parse,
     Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample, Replicate,
-    GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown,
+    GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode,
     LoadIntrinsics,
-}
-
-
-impl PartialEq for Val {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (Self::Num(l), Self::Num(r)) => l == r || l.is_nan() && r.is_nan(),
-            (Self::Int(l), Self::Int(r)) => l == r,
-            (Self::Num(l), Self::Int(r)) => l.im == 0. && l.re == *r as f64,
-            (Self::Int(l), Self::Num(r)) => r.im == 0. && r.re == *l as f64,
-            (Self::Lis { l: l_l, fill: l_fill }, Self::Lis { l: r_l, fill: r_fill }) => 
-                l_fill == r_fill
-                && l_l.len() == r_l.len()
-                && l_l.iter().zip(r_l.iter()).all(|(x, y)| x == y),
-            _ => false
-        }
-    }
 }
 
 
@@ -193,15 +176,5 @@ impl Env<'_> {
         Ok(self.include_string(&code))
     }
 
-}
-
-fn complexcmp(a: c64, b: c64) -> std::cmp::Ordering {
-    use std::cmp::Ordering::{Equal, Greater, Less};
-    match (a.is_nan(), b.is_nan()) {
-        (true, true) => Equal,
-        (true, false) => Less,
-        (false, true) => Greater,
-        (false, false) => a.re.total_cmp(&b.re).then_with(|| a.im.total_cmp(&b.im))
-    }
 }
 

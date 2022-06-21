@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::{Bstr, b};
-use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, CNAN, complexcmp};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, CNAN, number::complexcmp};
 use smallvec::smallvec;
 
 impl Val {
@@ -30,7 +30,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse,
                 Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample, Replicate,
-                GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown,
+                GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode,
             );
             macro_rules! load_av {($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
@@ -250,11 +250,12 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::SortDown  => super::list::sort_down(a),
         Val::BinsUp    => super::list::bins_up(&a, &ba),
         Val::BinsDown  => super::list::bins_down(&a, &ba),
+        Val::Encode    => super::number::encode(a, ba),
     }
 }
 
 
-fn bool(b: bool) -> Val { Int(i64::from(b)) }
+pub fn bool(b: bool) -> Val { Int(i64::from(b)) }
 
 pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
 
@@ -262,70 +263,29 @@ pub fn is_finite(&self) -> bool { matches!(self, Int(_) | Num(_) | Lis {..})}
 
 pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Num(_))}
 
-pub fn as_bool(&self) -> bool {
-    match self {
-        Int(n) => *n != 0,
-        Num(n) => !n.is_nan() && *n != c64::new(0., 0.),
-        _ => false,
-    }
-}
+pub fn as_bool(&self) -> bool { match self {
+    Int(n) => *n != 0,
+    Num(n) => !n.is_nan() && *n != c64::new(0., 0.),
+    _ => false,
+}}
 
 pub fn rc(self) -> Rc<Self> { Rc::new(self) }
 
-pub fn try_c(&self) -> Option<c64> {
-    match self {
-        Int(n) => Some(c64::new(*n as f64, 0.)),
-        Num(n) => Some(*n),
-        _ => None,
-    }
-}
+pub fn try_c(&self) -> Option<c64> { match self {
+    Int(n) => Some(c64::new(*n as f64, 0.)),
+    Num(n) => Some(*n),
+    _ => None,
+}}
 
-pub fn try_int(&self) -> Option<i64> {
-    match self {
-        Int(n) => Some(*n),
-        Num(n) => Some(n.re as i64),
-        _ => None
-    }
-}
+pub fn try_int(&self) -> Option<i64> { match self {
+    Int(n) => Some(*n),
+    Num(n) => Some(n.re as i64),
+    _ => None
+}}
 
 pub fn as_c(&self) -> c64 { self.try_c().unwrap_or(CNAN) }
 
 pub fn f64(n: f64) -> Val { Num(c64::new(n, 0.)) }
-
-pub fn approx(&self, other: &Val) -> bool {
-    const TOLERANCE: f64 = 0.00000000023283064365386963; // $2^{-32}$
-    fn close(a: c64, b: c64) -> bool {
-        let d = (a - b).norm();
-        d <= TOLERANCE
-        || d / a.norm() <= TOLERANCE
-        || d / b.norm() <= TOLERANCE
-    }
-    match (self, other) {
-        (Self::Num(l), Self::Num(r)) => close(*l, *r) || l.is_nan() && r.is_nan(),
-        (Self::Int(l), Self::Int(r)) => l == r,
-        (Self::Num(l), Self::Int(r)) => close(*l, c64::new(*r as f64, 0.)),
-        (Self::Int(l), Self::Num(r)) => close(*r, c64::new(*l as f64, 0.)),
-        (Self::Lis { l: l_l, fill: l_fill }, Self::Lis { l: r_l, fill: r_fill }) => 
-            l_fill == r_fill
-            && l_l.len() == r_l.len()
-            && l_l.iter().zip(r_l.iter()).all(|(x, y)| Val::approx(x, y)),
-        _ => false
-    }
-}
-
-pub fn cmpval(&self, other: &Val) -> std::cmp::Ordering {
-    use std::cmp::Ordering::{Greater, Less};
-    match (self, other) {
-        (Int(m), Int(n)) => m.cmp(n),
-        (a, b) => match (a.try_c(), b.try_c()) {
-            (Some(m), Some(n)) => complexcmp(m, n),
-            (None, Some(_)) => Greater,
-            (Some(_), None) => Less,
-            (None, None) => Less,
-        }
-    }
-}
-
 
 }
 

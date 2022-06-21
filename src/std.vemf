@@ -62,13 +62,13 @@
 
 ┼:insqrt╬/╙^→√·
 
-┼:insin╬:insin╜^→í·
-┼:incos╬:incos╜^→ó·
-┼:intan╬:intan╜^→á·
+┼:insin╬:insin╜^→î·
+┼:incos╬:incos╜^→ô·
+┼:intan╬:intan╜^→â·
 
-┼:inasin╬:inasin╜^→ì·
-┼:inacos╬:inacos╜^→ò·
-┼:inatan╬:inatan╜^→à·
+┼:inasin╬:inasin╜^→ï·
+┼:inacos╬:inacos╜^→ö·
+┼:inatan╬:inatan╜^→ä·
 
 (┌+1→Σ)╬•_╘.inbinsup→▲·
 ┌-1╬•_╘.inbinsdown→▼·
@@ -134,16 +134,16 @@
 
 .indeal→♣·┼├♣1@╬♣→♣·
 └◄@┌~♣╬•_╘└~╜♣¡◄→å·
-┼└◄.insample&→â·
-└┌~â╬~╜â¡◄→ä·
+┼└◄.insample&→à·
+└┌~à╬~╜à¡◄→á·
 
-:incomplex→ï·┼┌ï0╬ï→ï·
-:incis→î·┼┌î1╬î→î·
+:incomplex→í·┼┌í0╬í→í·
+:incis→ì·┼┌ì1╬ì→ì·
 ┼:inreal→ù·┼:inimag→ú·┼:inconj→ü·
 ┼:inarg╬:inatanb→ë·
 
 .inreplicate→‼·┌┌~↕╜‼╬‼→‼·
-
+│┼.inbrepr╬•_╛.inencode→ê·
 
 ├┌├|▲↕╜╛┌=+▐0╬┤≡‼@→#·
 

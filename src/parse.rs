@@ -307,9 +307,13 @@ fn value_token(chr: Tok) -> Option<Expr> {
             for i in l { num = num*253 + i64::from(i) }
             Expr::Int(num)
         }
-        Tok::HNum(x) => unsafe {
-            // safety: HNums have only [0-9.]+, all are ascii characters
-            Expr::Flt(c64::new(std::str::from_utf8_unchecked(&x).parse::<f64>().unwrap(), 0.))
+        Tok::HNum(x) => {
+            let num = std::str::from_utf8(&x).unwrap().parse::<f64>().unwrap();
+            if num == num as i64 as f64 {
+                Expr::Int(num as i64)
+            } else {
+                Expr::Flt(c64::new(num, 0.))
+            }
         },
         Tok::Str(x) =>
             Expr::Snd(x.iter().map(|&x| Expr::Int(i64::from(x))).collect()),
