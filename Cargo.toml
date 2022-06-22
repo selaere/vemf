@@ -4,6 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-smallvec = {version = "1.8", features = ["union"]}
+# small byte strings
+smallvec = { version = "1.8", features = ["union"] }
+# random number generation
 rand = "0.8"
+# complex numbers
 num-complex = "0.4"
+# command line argument parsing
+clap = { version = "3.2", features = ["std", "derive", "wrap_help"], default-features = false }

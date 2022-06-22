@@ -175,5 +175,14 @@ impl Env<'_> {
         Ok(self.include_string(&code))
     }
 
+    pub fn include_args(&mut self, args: &[String]) -> Vec<Val> {
+        use smallvec::smallvec;
+        let args: Vec<Val> = args.iter().map(|s| s.chars().map(|x| Int(x as i64)).collect()).collect();
+        args.get(0).map(|x| self.locals.insert(smallvec![b!('α')], x.clone()));
+        args.get(1).map(|x| self.locals.insert(smallvec![b!('β')], x.clone()));
+        self.locals.insert(smallvec![b!('δ')], Val::lis(args.clone()));
+        args
+    }
+
 }
 

@@ -168,7 +168,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             Some(n) => std::process::exit(n as i32),
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
         }
-        Val::Format => super::disp::format(&a, &b.as_ref().map_or_else(Vec::new,
+        Val::Format => a.format(&b.as_ref().map_or_else(Vec::new,
             |x| x.iterf().cloned().collect::<Vec<_>>())
         ).chars().map(|x| Int(x as i64)).collect(),
         Val::Numfmt => if !a.is_scalar() {NAN} else {
