@@ -8,8 +8,7 @@ const STDLIB: &str = include_str!("../std.vemf");
 
 pub use num_complex::Complex64 as c64;
 
-pub const CNAN: c64 = c64::new(f64::NAN, f64::NAN);
-pub const NAN: Val = Num(CNAN);
+pub const NAN: Val = Num(c64::new(f64::NAN, f64::NAN));
 
 #[derive(Debug)]
 pub struct Env<'a> {
@@ -37,7 +36,7 @@ pub enum Val {
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
     Print, Println, Exit, Format, Numfmt, Parse,
     Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample, Replicate,
-    GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode,
+    GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode, FromCp, ToCp,
     LoadIntrinsics,
 }
 

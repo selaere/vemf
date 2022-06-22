@@ -111,8 +111,6 @@
 ┼:infloor→⌡·
 
 .informat→ⁿ·
-.inparse→º·
-┼:innumfmt→ª·
 
 ÷╬┐/⌡→÷·
 
@@ -140,12 +138,23 @@
 :incomplex→í·┼┌í0╬í→í·
 :incis→ì·┼┌ì1╬ì→ì·
 ┼:inreal→ù·┼:inimag→ú·┼:inconj→ü·
-┼:inarg╬:inatanb→ë·
+┼:inarg╬:inatanb→Ä·
 
 .inreplicate→‼·┌┌~↕╜‼╬‼→‼·
-│┼.inbrepr╬•_╛.inencode→ê·
 
-├┌├|▲↕╜╛┌=+▐0╬┤≡‼@→#·
+│┼.intocp╬•_╛.inencode→ê·
+│┼.infromcp╬{α▐0↓(β~▲)*(β♠╤*♠,1)+}→ë·
+(┴╜.^)╙*╧+→è·┌è2╬è→è· ' ?????
+┼.inbrepr╬{α∟β▲|0⌡↕┴^β┴÷α%β▐0}→é·
+
+(┴▲`a`{=1*'32)╙-→Ç·
+(┴▲`A`[=1*'32)╙+→ç·
+
+╞(|▲↕)╜╛┌=+▐0 ╬ ╛┤╘≡‼@→#·
+
+"0123456789abcdefghijklmnopqrstuvwxyz"→base·
+.inparse╬{αç#.base♠èβ}→º·
+┼:innumfmt╬(é♠¡.base)→ª·
 
 '3486→_¶·
 

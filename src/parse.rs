@@ -107,10 +107,11 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
         Tok::VarSet(v) => { step!(code); (Verb, Expr::SetVar(v.clone())) },
         Tok::VarAv1(name) => { step!(code);
             let word = word(code, morphemes);
-            (Verb, Expr::Aav1{
-                v: name.clone(),
-                g: Box::new(word.map_or(NAN, |x| x.1))
-            })
+            if let Some((_role, word)) = word {
+                (Verb, Expr::Aav1{ v: name.clone(), g: Box::new(word) })
+            } else {
+                (Verb, Expr::Var(name.clone()))
+            }
         },
         #[allow(const_item_mutation)]
         Tok::Just(b!('┘')) => { step!(code);
@@ -133,7 +134,7 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
             if let Some(Tok::Just(b'}')) = code.first() { step!(code); }
             (Verb, Expr::Dfn {s, cap: vars})
         },
-        Tok::VarFun(v) | Tok::VarAv2(v) => {step!(code); (Verb, Expr::Var(v.clone()))},
+        Tok::VarFun(v) | Tok::VarAv2(v) => { step!(code); (Verb, Expr::Var(v.clone())) },
         Tok::Just(b'(') => { step!(code);
             let expr = phrase_to_expr(phrase(code)).unwrap_or(Expr::Snd(vec![]));
             if let Some(Tok::Just(b')')) = code.first() { step!(code); }

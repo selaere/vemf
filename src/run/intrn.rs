@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::{Bstr, b};
-use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, CNAN, number::complexcmp};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, number::complexcmp};
 use smallvec::smallvec;
 
 impl Val {
@@ -30,7 +30,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse,
                 Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample, Replicate,
-                GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode,
+                GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode, FromCp, ToCp,
             );
             macro_rules! load_av {($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
@@ -120,7 +120,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         },
         Val::Atanb=> {
             let (y, x) = (a.as_c(), ba.as_c());
-            Val::f64(f64::atan2(y.re + x.im, x.re - y.im))
+            Val::flt(f64::atan2(y.re + x.im, x.re - y.im))
         },
         Val::Approx=> Val::bool(Val::approx(&a, &ba)),
         Val::Isnan=> Val::bool(a.is_nan()),
@@ -128,13 +128,14 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::BOr  => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(a | b)),
         Val::BXor => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(a ^ b)),
         Val::BNot => a.try_int().map_or(NAN, |a| Int(!a)),
-        Val::BRepr => a.try_int().map_or(NAN, |n| 
+        Val::BRepr => a.try_int().map_or(NAN, |n| Val::lis_fill(
             n.to_be_bytes()
-            .into_iter()
-            .flat_map(|x| (0..8).rev().map(move |y| Val::bool(x & (1 << y) != 0)))
-            .collect()
-        ),
-        Val::Abs  => match a { Int(a) => Int(a.abs()), Num(x) => Val::f64(x.norm()), _ => NAN },
+                .into_iter().rev()
+                .flat_map(|x| (0..8).map(move |y| Val::bool(x & (1 << y) != 0)))
+                .collect(),
+            Int(0)
+        )),
+        Val::Abs  => match a { Int(a) => Int(a.abs()), Num(x) => Val::flt(x.norm()), _ => NAN },
         Val::Neg  => match a { Int(a) => Int(-a),      Num(a) => Num(-a), _ => NAN },
         Val::Ln   => a.try_c().map_or(NAN, |a| Num(a.ln()  )),
         Val::Exp  => a.try_c().map_or(NAN, |a| Num(a.exp() )),
@@ -145,9 +146,9 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Tan  => a.try_c().map_or(NAN, |a| Num(a.tan() )),
         Val::Atan => a.try_c().map_or(NAN, |a| Num(a.atan())),
         Val::Sqrt => a.try_c().map_or(NAN, |a| Num(a.sqrt())),
-        Val::Round=> match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.round()), _ => NAN },
-        Val::Ceil => match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.ceil()) , _ => NAN },
-        Val::Floor=> match a { Int(a) => Int(a), Num(a) => Val::f64(a.re.floor()), _ => NAN },
+        Val::Round=> match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.round()), _ => NAN },
+        Val::Ceil => match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.ceil()) , _ => NAN },
+        Val::Floor=> match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.floor()), _ => NAN },
         Val::Sign => match a { Int(a) => Int(a.signum()), Num(a) => {
             if a == c64::new(0., 0.) { Int(0) } 
             else if a.im == 0. { Int(a.re.signum() as i64) }
@@ -156,10 +157,10 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
 
         Val::Complex=> a.try_c().zip(ba.try_c()).map_or(NAN, |(a,b)| Num(c64::new(b.re, a.re))),
         Val::Cis  => a.try_c().zip(ba.try_c()).map_or(NAN, |(a,b)| Num(c64::from_polar(b.re, a.re))),
-        Val::Real => a.try_c().map_or(NAN, |a| Val::f64(a.re)),
-        Val::Imag => a.try_c().map_or(NAN, |a| Val::f64(a.im)),
+        Val::Real => a.try_c().map_or(NAN, |a| Val::flt(a.re)),
+        Val::Imag => a.try_c().map_or(NAN, |a| Val::flt(a.im)),
         Val::Conj => a.try_c().map_or(NAN, |a| Num(a.conj())),
-        Val::Arg  => a.try_c().map_or(NAN, |a| Val::f64(a.arg())),
+        Val::Arg  => a.try_c().map_or(NAN, |a| Val::flt(a.arg())),
 
         Val::Print   => { print  !("{}", a.display_string()); a },
         Val::Println => { println!("{}", a.display_string()); a },
@@ -182,7 +183,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Len => match a {
             Num(_) | Int(_) => Int(1),
             Lis { l, .. } => Int(l.len() as i64),
-            _ => Val::f64(f64::INFINITY),
+            _ => Val::flt(f64::INFINITY),
         },
         Val::Index => a.index_at_depth(env, ba),
         Val::Iota => match a {
@@ -226,7 +227,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Deal => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| {
             use rand::distributions::{Distribution, Uniform, Standard};
             if a <= 0 { 
-                Standard.sample_iter(rand::thread_rng()).take(b as _).map(Val::f64).collect()
+                Standard.sample_iter(rand::thread_rng()).take(b as _).map(Val::flt).collect()
             } else {
                 Uniform::from(0..a as _).sample_iter(rand::thread_rng())
                     .take(b as usize)
@@ -251,41 +252,24 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::BinsUp    => super::list::bins_up(&a, &ba),
         Val::BinsDown  => super::list::bins_down(&a, &ba),
         Val::Encode    => super::number::encode(a, ba),
+        Val::FromCp    => {
+            if a.is_nan() { return NAN; }
+            let Some(a) = a.try_int() else { return NAN };
+            a.try_into().map_or(NAN, |x:u8| Int(crate::codepage::tochar(x) as i64))
+        }
+        Val::ToCp     => {
+            if a.is_nan() { return NAN; }
+            let Some(Ok(a)) = a.try_int().map(u32::try_from) else { return NAN };
+            char::from_u32(a).map_or(NAN, |x:char| crate::codepage::tobyte(x).map_or(NAN, 
+                |x| Int(i64::from(x))
+            ))
+        }
     }
 }
 
 
-pub fn bool(b: bool) -> Val { Int(i64::from(b)) }
-
-pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
-
-pub fn is_finite(&self) -> bool { matches!(self, Int(_) | Num(_) | Lis {..})}
-
-pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Num(_))}
-
-pub fn as_bool(&self) -> bool { match self {
-    Int(n) => *n != 0,
-    Num(n) => !n.is_nan() && *n != c64::new(0., 0.),
-    _ => false,
-}}
-
 pub fn rc(self) -> Rc<Self> { Rc::new(self) }
 
-pub fn try_c(&self) -> Option<c64> { match self {
-    Int(n) => Some(c64::new(*n as f64, 0.)),
-    Num(n) => Some(*n),
-    _ => None,
-}}
-
-pub fn try_int(&self) -> Option<i64> { match self {
-    Int(n) => Some(*n),
-    Num(n) => Some(n.re as i64),
-    _ => None
-}}
-
-pub fn as_c(&self) -> c64 { self.try_c().unwrap_or(CNAN) }
-
-pub fn f64(n: f64) -> Val { Num(c64::new(n, 0.)) }
 
 }
 

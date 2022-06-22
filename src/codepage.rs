@@ -64,8 +64,8 @@ macro_rules! b {
 ($a:tt $($b:tt)+) => {$crate::b!($a) $( | $crate::b!($b))+};
 }
 
-pub const fn tobyte(x: char) -> u8 {
-    match x {
+pub const fn tobyte(x: char) -> Option<u8> {
+    Some(match x {
         '⍁'=>b!('⍁'), '☺'=>b!('☺'), '☻'=>b!('☻'), '♥'=>b!('♥'), '♦'=>b!('♦'), '♣'=>b!('♣'), '♠'=>b!('♠'), '•'=>b!('•'),
         '◘'=>b!('◘'), '○'=>b!('○'), '◙'=>b!('◙'), '♂'=>b!('♂'), '♀'=>b!('♀'), '♪'=>b!('♪'), '♫'=>b!('♫'), '☼'=>b!('☼'),
         '►'=>b!('►'), '◄'=>b!('◄'), '↕'=>b!('↕'), '‼'=>b!('‼'), '¶'=>b!('¶'), '§'=>b!('§'), '▬'=>b!('▬'), '↨'=>b!('↨'),
@@ -92,18 +92,16 @@ pub const fn tobyte(x: char) -> u8 {
         'ß'|'ϐ'=>b!('β'), 'Π'|'∏'|'ϖ'=>b!('π'), '∑'=>b!('Σ'), 'µ'=>b!('μ'), 'θ'|'ϑ'=>b!('Θ'),
         'Ω'=>b!('Ω'), 'ð'|'∂'=>b!('δ'), 'φ'|'ɸ'|'∅'|'Ø'|'ø'=>b!('ϕ'), '∈'|'€'|'ɛ'=>b!('ε'),
         '≢'=>b!('≈'), '∙'|'˙'=>b!('¨'), '⌼'=>b!('◘'), '⍽'=>b!('⎕'),
-        _ => 0
-    }
+        _ => return None
+    })
 }
 
 pub fn tobytes(string: &str) -> Option<Bstr> {
     let mut vector = Bstr::with_capacity(string.len() / 2);
     for c in string.chars() {
         if let '\r' | '\u{200E}' | '\u{FE0E}' | '\u{FE0F}' = c { continue } // crlf moment
-        match tobyte(c) {
-            0 => return None,
-            b => vector.push(b),
-        }
+        let Some(b) = tobyte(c) else {return None};
+        vector.push(b);
     }
     Some(vector)
 }

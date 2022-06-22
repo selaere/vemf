@@ -164,6 +164,7 @@ pub fn until(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) ->
 pub fn power_scan(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
     let num = f.call(env, a.clone(), b.clone()).try_int().map_or(0, |x| x.try_into().unwrap_or(0));
     let mut values = Vec::with_capacity(num);
+    values.push(a.clone());
     let mut val = a;
     for _ in 0..num {
         val = g.call(env, val, b.clone());

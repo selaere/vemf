@@ -1,8 +1,40 @@
 use super::Val::{self, Num, Int, Lis};
-use super::NAN;
-use super::c64;
+use super::{NAN, c64};
 
 impl Val {
+    
+    pub fn bool(b: bool) -> Val { Int(i64::from(b)) }
+
+    //pub fn is_list(&self) -> bool { matches!(self, Lis {..})}
+
+    pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
+
+    pub fn is_finite(&self) -> bool { matches!(self, Int(_) | Num(_) | Lis {..})}
+
+    pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Num(_))}
+
+    pub fn as_bool(&self) -> bool { match self {
+        Int(n) => *n != 0,
+        Num(n) => !n.is_nan() && *n != c64::new(0., 0.),
+        _ => false,
+    }}
+
+    pub fn try_c(&self) -> Option<c64> { match self {
+        Int(n) => Some(c64::new(*n as f64, 0.)),
+        Num(n) => Some(*n),
+        _ => None,
+    }}
+
+    pub fn try_int(&self) -> Option<i64> { match self {
+        Int(n) => Some(*n),
+        Num(n) => Some(n.re as i64),
+        _ => None
+    }}
+
+    pub fn as_c(&self) -> c64 { self.try_c().unwrap_or(c64::new(f64::NAN, f64::NAN)) }
+
+    pub fn flt(n: f64) -> Val { Num(c64::new(n, 0.)) }
+
     pub fn approx(&self, other: &Val) -> bool {
         const TOLERANCE: f64 = 0.00000000023283064365386963; // $2^{-32}$
         fn close(a: c64, b: c64) -> bool {
@@ -88,14 +120,14 @@ fn encode_int(mut a: i64, b: Val) -> Val{
 }
 
 fn encode_flt(mut a: f64, b: Val) -> Val {
-    let mut list = vec![Val::f64(0.); b.len() + 1];
+    let mut list = vec![Val::flt(0.); b.len() + 1];
     for (n, i) in b.into_iterf().enumerate().rev() {
         let Some(c64{re: i, ..}) = i.try_c() else { return NAN };
-        if i == 0. { list[n+1] = Val::f64(a); return Val::lis(list); }
+        if i == 0. { list[n+1] = Val::flt(a); return Val::lis(list); }
         let m; (a, m) = (a.div_euclid(i), a.rem_euclid(i));
-        list[n+1] = Val::f64(m);
+        list[n+1] = Val::flt(m);
         if a == 0. { return Val::lis(list); }
     }
-    list[0] = Val::f64(a);
+    list[0] = Val::flt(a);
     Val::lis(list)
 }
