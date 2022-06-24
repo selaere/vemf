@@ -134,7 +134,7 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
             if let Some(Tok::Just(b'}')) = code.first() { step!(code); }
             (Verb, Expr::Dfn {s, cap: vars})
         },
-        Tok::VarFun(v) | Tok::VarAv2(v) => { step!(code); (Verb, Expr::Var(v.clone())) },
+        Tok::VarVerb(v) | Tok::VarAv2(v) => { step!(code); (Verb, Expr::Var(v.clone())) },
         Tok::Just(b'(') => { step!(code);
             let expr = phrase_to_expr(phrase(code)).unwrap_or(Expr::Snd(vec![]));
             if let Some(Tok::Just(b')')) = code.first() { step!(code); }
@@ -294,7 +294,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Tok::Just(b!('Γ')) => Expr::Flt(c64::i()),
         Tok::Just(b!('█')) => NAN,
         Tok::Just(b!('ϕ')) => Expr::Snd(Vec::new()),
-        Tok::VarVal(x) => Expr::Var(x),
+        Tok::VarNoun(x) => Expr::Var(x),
         Tok::Chr(x) =>
             Expr::Int(if x <= 10 { -i64::from(x) } else { i64::from(x) }),
         Tok::Chr2(x, y) =>

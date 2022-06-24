@@ -24,6 +24,10 @@ pub fn tochar(x: u8) -> char {
     CHARS[x as usize]
 }
 
+pub fn tochars_ln(bytes: &[u8]) -> String {
+    bytes.iter().map(|&x| if x == 10 {'\n'} else {tochar(x)}).collect()
+}
+
 pub fn tochars(bytes: &[u8]) -> String {
     bytes.iter().map(|&x| tochar(x)).collect()
 }
