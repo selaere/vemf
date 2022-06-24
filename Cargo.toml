@@ -12,3 +12,5 @@ rand = "0.8"
 num-complex = "0.4"
 # command line argument parsing
 clap = { version = "3.2", features = ["std", "derive", "wrap_help"], default-features = false }
+# gamma (not complex (i have to look for a better library))
+libm = "0.2"

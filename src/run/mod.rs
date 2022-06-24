@@ -30,7 +30,7 @@ pub enum Val {
     Av(AvT, Option<Rc<Val>>, Rc<Val>),
     AvBuilder(AvT),
     Cycle,     DCycle(Rc<Vec<Val>>),
-    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb, Approx, BAnd, BOr, BXor,
+    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
     Complex, Cis, Real, Imag, Conj, Arg,
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,

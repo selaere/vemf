@@ -24,7 +24,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 env.locals.insert(name, Val::$name)
             } );* }}
             load!(
-                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb, Approx, BAnd, BOr, BXor,
+                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
                 Complex, Real, Imag, Conj, Arg, Cis,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
@@ -146,6 +146,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Tan  => a.try_c().map_or(NAN, |a| Num(a.tan() )),
         Val::Atan => a.try_c().map_or(NAN, |a| Num(a.atan())),
         Val::Sqrt => a.try_c().map_or(NAN, |a| Num(a.sqrt())),
+        Val::Gamma=> a.try_c().map_or(NAN, |a| Val::flt(libm::tgamma(a.re))),
         Val::Round=> match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.round()), _ => NAN },
         Val::Ceil => match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.ceil()) , _ => NAN },
         Val::Floor=> match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.floor()), _ => NAN },
