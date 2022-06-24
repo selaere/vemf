@@ -31,12 +31,14 @@ pub fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
     Some(match first {
         Some(b'"') => {
             let mut buf = Bstr::new();
-            loop {
-                match step(bytes) {
-                    Some(b'"') | None => break,
-                    Some(c) => buf.push(c),
+            loop { match step(bytes) {
+                Some(b'"') | None => break,
+                Some(b'\'') => {
+                    let Some(a) = step(bytes) else { break };
+                    buf.push(do_escape(a, bytes).unwrap_or(a));
                 }
-            }
+                Some(c) => buf.push(c),
+            }}
             Tok::Str(buf)
         }
         Some(b!('■')) => {
@@ -74,14 +76,7 @@ pub fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
                 }
                 Tok::HNum(buf)
             },
-            Some(a) => if let Some(c) = onechar_abbr(a) {
-                return token(Some(c), bytes);
-            } else if let Some(c) = twochar_abbr([a, *bytes.first().unwrap_or(&0u8)]) {
-                step(bytes);
-                return token(Some(c), bytes);
-            } else {
-                return token(step(bytes), bytes);
-            },
+            Some(a) => return token(do_escape(a, bytes).or_else(|| step(bytes)), bytes),
         },
         Some(typ @ b!('.' ':' '•' '○' '→' '¨')) => {
             let variant = match typ {
@@ -114,22 +109,36 @@ pub fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
                     }}
                     buf
                 }
+                Some(b'\'') => {
+                    let a = step(bytes).unwrap_or(b'\'');
+                    smallvec![do_escape(a, bytes).unwrap_or(a)]
+                }
                 Some(chr) => smallvec![chr],
                 None => panic!(),
             })
         }
         Some(c @ (b' ' | b'\n')) => Tok::White(c),
-        Some(c @ short_verb!()) => Tok::VarVerb(smallvec![c]),
-        Some(c @ short_av1!()) => Tok::VarAv1(smallvec![c]),
-        Some(c @ short_av2!()) => Tok::VarAv2(smallvec![c]),
-        Some(c @ b'A'..=b'Z') => Tok::VarSet(smallvec![c + 32]),
-        Some(c @ b!('☺''☻''⌂')) => Tok::Conj(c),
-        Some(c @ short_noun!()) => Tok::VarNoun(smallvec![c]),
+        Some(c @ short_verb!())  => Tok::VarVerb(smallvec![c]),
+        Some(c @ short_av1!())   => Tok::VarAv1(smallvec![c]),
+        Some(c @ short_av2!())   => Tok::VarAv2(smallvec![c]),
+        Some(c @ b'A'..=b'Z')    => Tok::VarSet(smallvec![c + 32]),
+        Some(c @ b!('☺''☻''⌂'))  => Tok::Conj(c),
+        Some(c @ short_noun!())  => Tok::VarNoun(smallvec![c]),
         Some(b!('σ')) => Tok::VarNoun(smallvec![b!('■'), b!('α')]),
         Some(b!('μ')) => Tok::VarNoun(smallvec![b!('■'), b!('β')]),
         Some(x) => Tok::Just(x),
         None => return None,
     })
+}
+
+pub fn do_escape(a: u8, bytes: &mut&[u8]) -> Option<u8> {
+    if let Some(c) = onechar_abbr(a) {
+        Some(c)
+    } else if let Some(c) = twochar_abbr([a, *bytes.first().unwrap_or(&0u8)]) {
+        step(bytes); Some(c)
+    } else {
+        None
+    }
 }
 
 pub fn tokenize(mut bytes: &[u8]) -> Vec<Tok> {
@@ -174,7 +183,14 @@ pub fn rewrite(mut bytes: &[u8]) -> Vec<u8> {
             Tok::Num3(a, b, c) => { out.push(b!('▓')); out.push(a); out.push(b); out.push(c); },
             Tok::Num(n) => { out.push(b!('■')); out.extend(n); out.push(b!('■')); },
             Tok::HNum(n) => { out.push(b!('\'')); out.extend(n); },
-            Tok::Str(s) => { out.push(b!('¨')); out.extend(s); },
+            Tok::Str(s) => {
+                out.push(b!('"'));
+                for i in s { match i { 
+                    b'\'' => out.extend(b"\'\'"),
+                    i => out.push(i),
+                }}
+                out.push(b!('"'));
+            },
         }
     }
     out
@@ -184,7 +200,7 @@ pub fn rewrite(mut bytes: &[u8]) -> Vec<u8> {
 // ¬╕‼¶÷⌐ ◄►┴±♪ •╧○♫≤≡≥☻¡αβ¢δɛƒ↑↓↕↨∟╜μ█ ╨Θ╙στ╩  Φ¥↔←╤→√·◘╘♠╛≈
 fn onechar_abbr(c: u8) -> Option<u8> { Some(match c {
     b'!' =>b!('¬'), b'"' =>b!('╕'), b'#' =>b!('‼'), b'$' =>b!('¶'), b'%' =>b!('÷'), b'&' =>b!('⌐'), 
-    b'\''=>b!(' '), b'(' =>b!('◄'), b')' =>b!('►'), b'*' =>b!('┴'), b'+' =>b!('±'), b',' =>b!('♪'), 
+    b'\''=>b!('\''),b'(' =>b!('◄'), b')' =>b!('►'), b'*' =>b!('┴'), b'+' =>b!('±'), b',' =>b!('♪'), 
     b'.' =>b!('•'), b'/' =>b!('╧'), b':' =>b!('○'), b';' =>b!('♫'), b'<' =>b!('≤'), b'=' =>b!('≡'), 
     b'>' =>b!('≥'), b'?' =>b!('☻'), b'@' =>b!('¡'), b'A' =>b!('α'), b'B' =>b!('β'), b'C' =>b!('¢'), 
     b'D' =>b!('δ'), b'E' =>b!('ε'), b'F' =>b!('ƒ'), b'G' =>b!('↑'), b'H' =>b!('↓'), b'I' =>b!('↕'), 

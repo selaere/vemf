@@ -31,10 +31,10 @@ struct Args {
 
     /// how to format the output. use like dyadic ⁿ. ignored in repl mode.
     #[clap(short, long, default_value = "0")]
-    formatting: String,
+    format: String,
 
     /// if given, prints to stdout the file, rewritten without '⬚ escapes and
-    /// some ambiguities like ``:/``
+    /// some ambiguities like ``:/``. potentially buggy
     #[clap(short, long)]
     rewrite: bool
 }
@@ -67,15 +67,15 @@ fn main() {
             );
         }
         println!("{}", res.format(
-            &args.formatting.chars()
+            &args.format.chars()
             .filter_map(|x| x.is_ascii_digit().then(|| Val::Int(x as i64 - 0x30) ))
             .collect::<Vec<_>>()[..]));
     } else {
-        repl(state);
+        repl(state, args);
     }
 }
 
-fn repl(mut state: run::Env/*, args: Args*/) {
+fn repl(mut state: run::Env, args: Args) {
     println!("welcome to vemf repl. enjoy your stay");
     loop {
         print!("    ");
@@ -93,11 +93,13 @@ fn repl(mut state: run::Env/*, args: Args*/) {
             continue;
         }
         let val = state.include_string(&code);
-        println!("fmt {}", codepage::tochars(
-            &token::rewrite(
-                &codepage::tobytes(code.trim_end()).unwrap()
-            )
-        ));
+        if args.rewrite {
+            println!(" r: {}", codepage::tochars(
+                &token::rewrite(
+                    &codepage::tobytes(code.trim_end()).unwrap()
+                )
+            ));
+        }
         if !val.is_nan() { println!("{}", val); }
         state.locals.insert(Bstr::from(&b"__"[..]), val);
     }
