@@ -58,7 +58,7 @@ impl Val {
         value
     }
 
-    pub fn iterinf<'r, 'e>(self, env: &'r mut Env<'e>) -> Box<dyn InconvenientIter<'r, 'e> + 'r> {
+    pub fn iterinf<'r>(self, env: &'r mut Env) -> Box<dyn InconvenientIter<'r> + 'r> {
         if self.is_finite() {
             if let Lis{l, ..} = self {
                 match Rc::try_unwrap(l) {
@@ -114,17 +114,17 @@ impl Val {
 pub trait GoodIter<V>: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator + FusedIterator {}
 impl<F, V> GoodIter<V> for F where F: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator + FusedIterator {}
 
-pub trait InconvenientIter<'r, 'e>: Iterator<Item=Val> {}
-impl<'r, 'e> InconvenientIter<'r, 'e> for InfIter<'r, 'e> {}
-impl<'r, 'e, F> InconvenientIter<'r, 'e> for F where F: GoodIter<Val> {}
+pub trait InconvenientIter<'r>: Iterator<Item=Val> {}
+impl<'r> InconvenientIter<'r> for InfIter<'r> {}
+impl<'r, F> InconvenientIter<'r> for F where F: GoodIter<Val> {}
 
-pub struct InfIter<'r, 'e> {
+pub struct InfIter<'r> {
     i: i64,
     value: Val,
-    env: &'r mut Env<'e>,
+    env: &'r mut Env,
 }
 
-impl<'r, 'e> Iterator for InfIter<'r, 'e> {
+impl<'r> Iterator for InfIter<'r> {
     type Item = Val;
     fn next(&mut self) -> Option<Self::Item> {
         let val = Some(self.value.monad(self.env, Int(self.i)));

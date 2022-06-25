@@ -21,7 +21,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             macro_rules! load { ($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
                 name.extend(stringify!($name).to_ascii_lowercase().bytes());
-                env.locals.insert(name, Val::$name)
+                env.set_local(name, Val::$name)
             } );* }}
             load!(
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
@@ -35,7 +35,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             macro_rules! load_av {($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
                 name.extend(stringify!($name).to_ascii_lowercase().bytes());
-                env.locals.insert(name, Val::AvBuilder(AvT::$name))
+                env.set_local(name, Val::AvBuilder(AvT::$name))
             } );* }}
             load_av!(
                 Swap, Const, Monadic,
@@ -48,15 +48,20 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
 
         Lis { .. } | Num(_) | Int(_) => self.clone(),
         Val::FSet(name) => {
-            env.locals.insert(name.clone(), a.clone());
+            env.set_local(name.clone(), a.clone());
             a
         },
+        Val::FCng(name) => {
+            env.mutate_var(name, a).unwrap_or(NAN)
+        }
         Val::Dfn { s, loc } => {
-            let mut inner = Env { locals: (**loc).clone(), outer: Some(env) };
-            inner.locals.insert(smallvec![b!('α')], a);
-            inner.locals.insert(smallvec![b!('β')], ba);
-            inner.locals.insert(smallvec![b!('ƒ')], self.clone());
-            inner.eval_block(s)
+            env.stack.push((**loc).clone());
+            env.set_local(smallvec![b!('α')], a);
+            env.set_local(smallvec![b!('β')], ba);
+            env.set_local(smallvec![b!('ƒ')], self.clone());
+            let val = env.eval_block(s);
+            env.stack.pop();
+            val
         },
 
         Val::Bind { f: aa, b: bb } => aa.dyad(env, a, (**bb).clone()),

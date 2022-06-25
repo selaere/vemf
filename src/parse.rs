@@ -21,7 +21,7 @@ pub enum Expr {
     Snd(Vec<Expr>),  // strand
     Afn1 { a: Box<Expr>, f: Box<Expr>               },  // apply monadic function
     Afn2 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> },  // apply dyadic  function 
-    SetVar(Bstr),
+    SetVar(Bstr), CngVar(Bstr),
     Aav1 {               v: Bstr     , g: Box<Expr> }, // apply monadic adverb
     Aav2 { f: Box<Expr>, v: Bstr     , g: Box<Expr> }, // apply dyadic  adverb
     Bind {               f: Box<Expr>, b: Box<Expr> }, // +1
@@ -36,6 +36,7 @@ pub enum Stmt {
     Discard(Expr),
     Return(Expr),
     Set(Expr, Bstr),
+    Cng(Expr, Bstr),
     Conj(Expr, Bstr),
     Cond(Expr, Box<Stmt>),
 }
@@ -62,6 +63,7 @@ impl Display for Expr {
             Self::Afn1 { a, f } => write!(m, "({} {})", a, f),
             Self::Afn2 { a, f, b } => write!(m, "({} {} {})", a, f, b),
             Self::SetVar(v) => write!(m, "→{}", displayname(v)),
+            Self::CngVar(v) => write!(m, "↔{}", displayname(v)),
             Self::Aav1 {    v, g } => write!(m, "[•{} {}]", displayname(v), g),
             Self::Aav2 { f, v, g } => write!(m, "[{} ○{} {}]", f, displayname(v), g),
             Self::Bind {    f, b } => write!(m, "[{} with {}]", f, b),
@@ -84,6 +86,7 @@ impl Display for Stmt {
             Stmt::Discard(e) => write!(m, "{}·", e),
             Stmt::Return(e) => write!(m, "{}◘", e),
             Stmt::Set(e, f) => write!(m, "{}→{}", e, displayname(f)),
+            Stmt::Cng(e, f) => write!(m, "{}↔{}", e, displayname(f)),
             Stmt::Conj(e, f) => write!(m, "{}{}", e, displayname(f)),
             Stmt::Cond(i, t) => write!(m, "{}?{}", i, t),
         }
@@ -105,6 +108,7 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
     let (rol, val) = match t {
         Tok::Conj(c) => { step!(code); (Verb, Expr::Var(smallvec![*c])) },
         Tok::VarSet(v) => { step!(code); (Verb, Expr::SetVar(v.clone())) },
+        Tok::VarCng(v) => { step!(code); (Verb, Expr::CngVar(v.clone())) },
         Tok::VarAv1(name) => { step!(code);
             let word = word(code, morphemes);
             if let Some((_role, word)) = word {
@@ -184,7 +188,7 @@ pub fn phrase_by_morphemes(code: &mut&[Tok], mut morphemes: usize) -> Vec<(Role,
     let morphemes = &mut morphemes;
     loop {
         let mut backtrack: Option<&[Tok]> = None;
-        if let Some(Tok::VarSet(_) | Tok::Conj(_)) = code.first() {
+        if let Some(Tok::VarSet(_) | Tok::VarCng(_) | Tok::Conj(_)) = code.first() {
             let ptr = &**code;
             let word = word(code, morphemes);
             if let Some(word) = word { phrase.push(word); } else { break }
@@ -212,7 +216,7 @@ pub fn phrase_by_words(code: &mut&[Tok], words: usize) -> Vec<(Role, Expr)> {
     let mut phrase = Vec::with_capacity(if words > 10 {0} else {words});
     while phrase.len() < words {
         let mut backtrack: Option<&[Tok]> = None;
-        if let Some(Tok::VarSet(_) | Tok::Conj(_)) = code.first() {
+        if let Some(Tok::VarSet(_) | Tok::VarCng(_) | Tok::Conj(_)) = code.first() {
             let ptr = &**code;
             let word = word(code, &mut usize::MAX);
             if let Some(word) = word { phrase.push(word); } else { break }
@@ -325,7 +329,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
 impl Expr {
 fn capture(&self, vars: &mut HashSet<Bstr>) { // yeah...
     match self {
-        Expr::Var(n) | Expr::SetVar(n) => { vars.insert(n.clone()); },
+        Expr::Var(n) | Expr::SetVar(n) | Expr::CngVar(n) => { vars.insert(n.clone()); },
         Expr::Int(_) | Expr::Flt(_) => (),
         Expr::Snd(l) => for i in l { i.capture(vars) }
         Expr::Afn1 { a, f    } => { a.capture(vars); f.capture(vars); },
@@ -343,11 +347,12 @@ fn capture(&self, vars: &mut HashSet<Bstr>) { // yeah...
 
 
 impl Stmt {
-    fn capture(&self, vars: &mut HashSet<Bstr>) { // yeah...
+    fn capture(&self, vars: &mut HashSet<Bstr>) {
         match self {
             Stmt::Discard(e) => { e.capture(vars); },
             Stmt::Return(e) => { e.capture(vars); },
             Stmt::Set(e, f) =>  { e.capture(vars); vars.insert(f.clone()); },
+            Stmt::Cng(e, f) =>  { e.capture(vars); vars.insert(f.clone()); },
             Stmt::Conj(e, v) => { e.capture(vars); vars.insert(v.clone()); },
             Stmt::Cond(i, t) => { i.capture(vars); t.capture(vars); },
         }
@@ -360,6 +365,8 @@ fn parse_stmt(code: &mut&[Tok], ev: Expr) -> Option<Stmt> {
             Stmt::Conj(ev, smallvec![*c]) },
         Some(Tok::VarSet(v)) => { step!(code); 
             Stmt::Set(ev, v.clone()) },
+        Some(Tok::VarCng(v)) => { step!(code); 
+            Stmt::Cng(ev, v.clone()) },
         Some(Tok::Just(b!('◘'))) => { step!(code);
             Stmt::Return(ev) },
         Some(Tok::Just(b!('·'))) => { step!(code);

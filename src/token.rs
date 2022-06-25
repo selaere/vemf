@@ -26,20 +26,62 @@ macro_rules! short_verb { () => {
     | b!('▄''▌''▐''▀''≡''±''≥''≤''⌠''⌡''÷''≈''°''√''ⁿ''²')
 }; }
 
+fn do_escape(a: u8, bytes: &mut&[u8]) -> Option<u8> {
+    if let Some(c) = onechar_abbr(a) {
+        Some(c)
+    } else if let Some(c) = twochar_abbr([a, *bytes.first().unwrap_or(&0u8)]) {
+        step(bytes); Some(c)
+    } else {
+        None
+    }
+}
+
+fn string(bytes: &mut &[u8]) -> Bstr {
+    let mut buf = Bstr::new();
+    loop { match step(bytes) {
+        Some(b'"') | None => break,
+        Some(b'\'') => {
+            let Some(a) = step(bytes) else { break };
+            buf.push(do_escape(a, bytes).unwrap_or(a));
+        }
+        Some(c) => buf.push(c),
+    }}
+    buf
+}
+
+fn identifier(bytes: &mut&[u8]) -> Bstr {
+    match step(bytes) {
+        Some(first @ b'a'..=b'z') => {
+            let mut buf = smallvec![first];
+            loop { match bytes.first() {
+                Some(&ltr @ b'a'..=b'z') => {
+                    step(bytes); buf.push(ltr);
+                }
+                Some(&ltr @ b'A'..=b'Z') => {
+                    step(bytes); buf.push(ltr - 32); break;
+                }
+                _ => break,
+            }}
+            buf
+        }
+        Some(b'_') => smallvec![b'_', step(bytes).unwrap_or(b'_')],
+        Some(b'"') => string(bytes),
+        Some(b'\'') => {
+            let a = step(bytes).unwrap_or(b'\'');
+            smallvec![do_escape(a, bytes).unwrap_or(a)]
+        }
+        Some(c @ (b']' | b!('■'))) => {
+            [c].into_iter().chain(identifier(bytes)).collect()
+        }
+        Some(chr) => smallvec![chr],
+        None => panic!(),
+    }
+}
 
 pub fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
     Some(match first {
         Some(b'"') => {
-            let mut buf = Bstr::new();
-            loop { match step(bytes) {
-                Some(b'"') | None => break,
-                Some(b'\'') => {
-                    let Some(a) = step(bytes) else { break };
-                    buf.push(do_escape(a, bytes).unwrap_or(a));
-                }
-                Some(c) => buf.push(c),
-            }}
-            Tok::Str(buf)
+            Tok::Str(string(bytes))
         }
         Some(b!('■')) => {
             let mut buf = Bstr::new();
@@ -78,45 +120,13 @@ pub fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
             },
             Some(a) => return token(do_escape(a, bytes).or_else(|| step(bytes)), bytes),
         },
-        Some(typ @ b!('.' ':' '•' '○' '→' '¨')) => {
-            let variant = match typ {
-                  b'.'  => Tok::VarNoun,   b':'  => Tok::VarVerb,
-                b!('•') => Tok::VarAv1, b!('○') => Tok::VarAv2,
-                b!('→') => Tok::VarSet, b!('↔') => Tok::VarCng,
-                b!('¨') => Tok::Str,
-                _ => unreachable!(),
-            };
-            variant(match step(bytes) {
-                Some(first @ b'a'..=b'z') => {
-                    let mut buf = smallvec![first];
-                    loop { match bytes.first() {
-                        Some(&ltr @ b'a'..=b'z') => {
-                            step(bytes); buf.push(ltr);
-                        }
-                        Some(&ltr @ b'A'..=b'Z') => {
-                            step(bytes); buf.push(ltr.to_ascii_lowercase()); break;
-                        }
-                        _ => break,
-                    }}
-                    buf
-                }
-                Some(b'_') => smallvec![b'_', step(bytes).unwrap_or(b'_')],
-                Some(b'"') => {
-                    let mut buf = Bstr::new();
-                    loop { match step(bytes) {
-                        Some(b'"') | None => break,
-                        Some(c) => buf.push(c),
-                    }}
-                    buf
-                }
-                Some(b'\'') => {
-                    let a = step(bytes).unwrap_or(b'\'');
-                    smallvec![do_escape(a, bytes).unwrap_or(a)]
-                }
-                Some(chr) => smallvec![chr],
-                None => panic!(),
-            })
-        }
+        Some(b!('.')) => Tok::VarNoun(identifier(bytes)),
+        Some(b!(':')) => Tok::VarVerb(identifier(bytes)),
+        Some(b!('•')) => Tok::VarAv1 (identifier(bytes)),
+        Some(b!('○')) => Tok::VarAv2 (identifier(bytes)),
+        Some(b!('→')) => Tok::VarSet (identifier(bytes)),
+        Some(b!('↔')) => Tok::VarCng (identifier(bytes)),
+        Some(b!('¨')) => Tok::Str    (identifier(bytes)),
         Some(c @ (b' ' | b'\n')) => Tok::White(c),
         Some(c @ short_verb!())  => Tok::VarVerb(smallvec![c]),
         Some(c @ short_av1!())   => Tok::VarAv1(smallvec![c]),
@@ -129,16 +139,6 @@ pub fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
         Some(x) => Tok::Just(x),
         None => return None,
     })
-}
-
-pub fn do_escape(a: u8, bytes: &mut&[u8]) -> Option<u8> {
-    if let Some(c) = onechar_abbr(a) {
-        Some(c)
-    } else if let Some(c) = twochar_abbr([a, *bytes.first().unwrap_or(&0u8)]) {
-        step(bytes); Some(c)
-    } else {
-        None
-    }
 }
 
 pub fn tokenize(mut bytes: &[u8]) -> Vec<Tok> {
@@ -158,23 +158,25 @@ pub fn rewrite(mut bytes: &[u8]) -> Vec<u8> {
             Tok::Comment(s) => { out.extend(b"' "); out.extend(s.into_iter()); out.push(10); }
             Tok::VarNoun(s) => match s[..] {
                 [c @ short_noun!()] => out.push(c),
-                ref s => { out.push(b'.'); out.extend(s) }
+                [b!('■'), b!('α')] => out.push(b!('σ')),
+                [b!('■'), b!('β')] => out.push(b!('μ')),
+                ref s => { out.push(b'.'); out.extend(s) },
             },
             Tok::VarVerb(s) => match s[..] {
                 [c @ short_verb!()] => out.push(c),
-                ref s => { out.push(b':'); out.extend(s) }
+                ref s => { out.push(b':'); out.extend(s) },
             },
             Tok::VarAv1(s) => match s[..] {
                 [c @ short_av1!()] => out.push(c),
-                ref s => { out.push(b!('•')); out.extend(s) }
+                ref s => { out.push(b!('•')); out.extend(s) },
             },
             Tok::VarAv2(s) => match s[..] {
                 [c @ short_av2!()] => out.push(c),
-                ref s => { out.push(b!('○')); out.extend(s) }
+                ref s => { out.push(b!('○')); out.extend(s) },
             },
             Tok::VarSet(s) => match s[..] {
                 [c @ b'a'..=b'z'] => out.push(c - 32),
-                ref s => { out.push(b!('→')); out.extend(s) }
+                ref s => { out.push(b!('→')); out.extend(s) },
             },
             Tok::VarCng(s) => { out.push(b!('↔')); out.extend(s); },
             Tok::Chr(a) => { out.push(b'`'); out.push(a); },

@@ -39,9 +39,9 @@ struct Args {
     rewrite: bool
 }
 
-fn rewrite(args: Args) {
+fn rewrite(path: PathBuf) {
     let mut code = String::new();
-    File::open(args.filename.expect("no file given")).unwrap()
+    File::open(path).unwrap()
         .read_to_string(&mut code).unwrap();
     println!("{}", codepage::tochars_ln(
         &token::rewrite( &codepage::tobytes(code.trim_end()).unwrap() )
@@ -50,13 +50,13 @@ fn rewrite(args: Args) {
 
 fn main() {
     let args = Args::parse();
-    if args.rewrite { return rewrite(args); }
     let mut state = run::Env::new();
     if !args.no_stdlib {
         state.include_stdlib();
     }
     //println!("sizeof(Val) = {}", std::mem::size_of::<run::Val>());
     if let Some(path) = args.filename {
+        if args.rewrite { return rewrite(path); }
         let arguments = state.include_args(&args.arguments);
         let mut res = state.include_file(&mut File::open(path).unwrap()).unwrap();
         if !res.is_finite() {
@@ -85,7 +85,7 @@ fn repl(mut state: run::Env, args: Args) {
         if code.trim_start().starts_with(')') {
             if let Some((l, r)) = code[1..].split_once(' ') {
                 let val = state.include_string(r);
-                state.locals.insert(Bstr::from(&b"__"[..]), val);
+                state.set_local(Bstr::from(&b"__"[..]), val);
                 state.include_string(&format!("__ⁿ({})☻", l));
             } else {
                 state.include_string(&format!("__ⁿ({})☻", &code[1..]));
@@ -101,6 +101,6 @@ fn repl(mut state: run::Env, args: Args) {
             ));
         }
         if !val.is_nan() { println!("{}", val); }
-        state.locals.insert(Bstr::from(&b"__"[..]), val);
+        state.set_local(Bstr::from(&b"__"[..]), val);
     }
 }

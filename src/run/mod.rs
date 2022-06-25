@@ -10,10 +10,11 @@ pub use num_complex::Complex64 as c64;
 
 pub const NAN: Val = Num(c64::new(f64::NAN, f64::NAN));
 
+pub type Frame = HashMap<Bstr, Val>;
+
 #[derive(Debug)]
-pub struct Env<'a> {
-    pub locals: HashMap<Bstr, Val>,
-    pub outer: Option<&'a Env<'a>>,
+pub struct Env {
+    pub stack: Vec<Frame>,
 }
 
 #[derive(Clone, Debug)]
@@ -21,7 +22,7 @@ pub enum Val {
     Num(c64),
     Int(i64),
     Lis { l: Rc<Vec<Val>>, fill: Rc<Val> },
-    FSet(Bstr),
+    FSet(Bstr), FCng(Bstr),
     Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Stmt]> },
     Bind{ f: Rc<Val>, b: Rc<Val> },
     Trn2{ a: Rc<Val>, f: Rc<Val> },
@@ -46,23 +47,76 @@ impl Default for Val {
     fn default() -> Self { NAN }
 }
 
-impl Env<'_> {
+impl Env {
     
-    pub fn new<'a>() -> Env<'a> {
+    pub fn new() -> Env {
         let mut locals = HashMap::new();
         locals.insert(Bstr::from(&b"loadintrinsics"[..]), Val::LoadIntrinsics);
-        Env { locals, outer: None }
+        Env::from_frame(locals)
     }
 
-    pub fn get_var(&self, name: &[u8]) -> Option<Val> {
-        self.locals.get(name).cloned().or_else(|| self.outer.as_ref().and_then(|x| x.get_var(name)))
+    pub fn from_frame(frame: Frame) -> Env {
+        Env { stack: vec![frame] }
     }
 
-    pub fn get_var_rec(&self, name: &[u8]) -> Option<Val> {
-        if let Some(stripped) = name.strip_prefix(&[b!('■')]) {
-            self.outer.as_ref().and_then(|x| x.get_var_rec(stripped))
-        } else {
-            self.get_var(name)
+    pub fn locals(&self) -> &Frame { self.stack.last().unwrap() }
+    pub fn locals_mut(&mut self) -> &mut Frame { self.stack.last_mut().unwrap() }
+
+    pub fn set_local(&mut self, name: Bstr, value: Val) {
+        self.locals_mut().insert(name, value);
+    }
+
+    pub fn get_var_cap(&self, mut name: &[u8]) -> Option<Val> {
+        if let Some(b!('■')) = name.first() {name = &name[1..]}
+        let mut skipped = 0;
+        loop {
+            for frame in self.stack.iter().rev().skip(skipped) {
+                if let Some(var) = frame.get(name) {
+                    return Some(var.clone())
+                }
+            }
+            if let Some(b!('■')) = name.first() {
+                name = &name[1..];
+                skipped += 1;
+            } else { return None }
+        }
+    }
+
+    pub fn get_var(&self, mut name: &[u8]) -> Option<Val> {
+        let mut skipped = 0;
+        loop {
+            for frame in self.stack.iter().rev().skip(skipped) {
+                if let Some(var) = frame.get(name) {
+                    return Some(var.clone())
+                }
+            }
+            if let Some(b!(']')) = name.first() {
+                name = &name[1..];
+                skipped += 1;
+            } else { return None }
+        }
+    }
+
+    pub fn mutate_var(&mut self, mut name: &[u8], func: Val) -> Option<Val> {
+        let mut skipped = 0;
+
+        loop {
+            for (fmn, frame) in self.stack.iter_mut().enumerate().rev().skip(skipped) {
+                /*
+                if let Some(thing) = frame.get(name).cloned() {
+                    let val = func.monad(self, thing);
+                    frame.insert(Bstr::from(name), val);
+                }*/
+                if let Some((nam, val)) = frame.remove_entry(name) {
+                    let val = func.monad(self, val);
+                    self.stack[fmn].insert(nam, val.clone());
+                    return Some(val);
+                }
+            }
+            if let Some(b!(']')) = name.first() {
+                name = &name[1..];
+                skipped += 1;
+            } else { return None }
         }
     }
 
@@ -84,13 +138,14 @@ impl Env<'_> {
                 f.dyad(self, a, b)
             },
             Expr::SetVar(v) => Val::FSet(v.clone()),
+            Expr::CngVar(v) => Val::FCng(v.clone()),
             Expr::Aav1 { v, g } => {
                 let g = self.eval(&*g.clone());
-                self.locals.get(&v[..]).cloned().unwrap_or_default().monad(self, g)
+                self.get_var(&v[..]).unwrap_or_default().monad(self, g)
             }
             Expr::Aav2 { f, v, g } => {
                 let f = self.eval(&*f.clone()); let g = self.eval(&*g.clone());
-                self.locals.get(&v[..]).cloned().unwrap_or_default().dyad(self, g, f)
+                self.get_var(&v[..]).unwrap_or_default().dyad(self, g, f)
             },
             Expr::Bind { f, b } => {
                 let f = self.eval(&*f.clone()); let b = self.eval(&*b.clone());
@@ -115,8 +170,7 @@ impl Env<'_> {
             Expr::Dfn { s, cap } => {
                 let mut locals = HashMap::with_capacity(cap.len());
                 for var in cap {
-                    let a = if let Some(a) = var.strip_prefix(&[b!('■')]) {a} else {var};
-                    self.get_var_rec(a).and_then(|x| locals.insert(var.clone(), x));
+                    self.get_var_cap(var).and_then(|x| locals.insert(var.clone(), x));
                 }
                 Val::Dfn {s: Rc::from(&s[..]), loc: Rc::new(locals)}
             },
@@ -129,18 +183,22 @@ impl Env<'_> {
             Stmt::Discard(expr) => { let _ = self.eval(&expr); },
             Stmt::Conj(a, v) => {
                 let a = self.eval(&a);
-                self.locals.get(&v[..]).cloned().unwrap_or_default().monad(self, a);
+                self.get_var(&v[..]).unwrap_or_default().monad(self, a);
             },
             Stmt::Set(a, v) => {
                 let a = self.eval(&a);
-                self.locals.insert(v.clone(), a);
+                self.set_local(v.clone(), a);
+            },
+            Stmt::Cng(a, v) => {
+                let a = self.eval(&a);
+                self.mutate_var(v, a);
             },
             Stmt::Return(expr) => { return Some(self.eval(&expr)); },
             Stmt::Cond(cond, then) => {
                 let val = self.eval(&cond);
                 let cond = val.is_scalar() && val.as_bool() || {
-                    let a = self.locals.get(&[b!('α')][..]).cloned().unwrap_or(NAN);
-                    let b = self.locals.get(&[b!('β')][..]).cloned();
+                    let a = self.locals().get(&[b!('α')][..]).cloned().unwrap_or(NAN);
+                    let b = self.locals().get(&[b!('β')][..]).cloned();
                     val.call(self, a, b).as_bool()
                 };
                 if cond { return self.eval_stmt(then) }
@@ -178,9 +236,9 @@ impl Env<'_> {
     pub fn include_args(&mut self, args: &[String]) -> Vec<Val> {
         use smallvec::smallvec;
         let args: Vec<Val> = args.iter().map(|s| s.chars().map(|x| Int(x as i64)).collect()).collect();
-        args.get(0).map(|x| self.locals.insert(smallvec![b!('α')], x.clone()));
-        args.get(1).map(|x| self.locals.insert(smallvec![b!('β')], x.clone()));
-        self.locals.insert(smallvec![b!('δ')], Val::lis(args.clone()));
+        if let Some(x) = args.get(0) { self.set_local(smallvec![b!('α')], x.clone()); }
+        if let Some(x) = args.get(1) { self.set_local(smallvec![b!('β')], x.clone()); }
+        self.set_local(smallvec![b!('δ')], Val::lis(args.clone()));
         args
     }
 
