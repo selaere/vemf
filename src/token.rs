@@ -160,6 +160,7 @@ pub fn rewrite(mut bytes: &[u8]) -> Vec<u8> {
                 [c @ short_noun!()] => out.push(c),
                 [b!('■'), b!('α')] => out.push(b!('σ')),
                 [b!('■'), b!('β')] => out.push(b!('μ')),
+                [b!('_'), c] => { out.push(b'_'); out.push(c) },
                 ref s => { out.push(b'.'); out.extend(s) },
             },
             Tok::VarVerb(s) => match s[..] {

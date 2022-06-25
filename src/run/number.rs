@@ -9,7 +9,7 @@ impl Val {
 
     pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
 
-    pub fn is_finite(&self) -> bool { matches!(self, Int(_) | Num(_) | Lis {..})}
+    pub fn is_infinite(&self) -> bool { !matches!(self, Int(_) | Num(_) | Lis {..})}
 
     pub fn is_scalar(&self) -> bool { matches!(self, Int(_) | Num(_))}
 
@@ -98,7 +98,7 @@ pub fn complexcmp(a: c64, b: c64) -> std::cmp::Ordering {
 
 
 pub fn encode(a: Val, b: Val) -> Val {
-    if !b.is_finite() { return NAN };
+    if b.is_infinite() { return NAN };
     match a {
         Int(n) => encode_int(n, b),
         Num(n) => encode_flt(n.re, b),

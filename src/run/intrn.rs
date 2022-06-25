@@ -180,8 +180,8 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Numfmt => if !a.is_scalar() {NAN} else {
             format!("{a}").chars().map(|x| Int(x as i64)).collect() }
         Val::Parse => a.display_string().parse::<c64>().map(Num).unwrap_or(NAN),
-        Val::Takeleft => super::list::takeleft(env, a, ba),
-        Val::Takeright => super::list::takeright(env, a, ba),
+        Val::Takeleft => super::list::reshape(env, a, ba, false),
+        Val::Takeright => super::list::reshape(env, a, ba, true),
         Val::Dropleft =>  ba.try_int().map_or(NAN, |b| super::list::dropleft(a, b)),
         Val::Dropright => ba.try_int().map_or(NAN, |b| super::list::dropright(a, b)),
 
@@ -195,7 +195,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Iota => match a {
             Lis{l, ..} => super::list::iota(
                 Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>()),
-            Num(n) => if !n.is_finite() {Val::Left} else {super::list::iota_scalar(n.re as i64)},
+            Num(n) => if n.is_infinite() {Val::Left} else {super::list::iota_scalar(n.re as i64)},
             Int(n) => super::list::iota_scalar(n),
             _ => Val::Av(AvT::Const, None, NAN.rc()),
         }
@@ -214,7 +214,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             Lis {l, ..} => Lis {l, fill: ba.rc()},
             a => a,
         },
-        Val::Replist => if a.is_finite() {
+        Val::Replist => if !a.is_infinite() {
             let Some(num) = ba.try_int() else {return NAN};
             (0..num).flat_map(|_| a.iterf().cloned()).collect()
         } else {a},

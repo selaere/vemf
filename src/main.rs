@@ -59,7 +59,7 @@ fn main() {
         if args.rewrite { return rewrite(path); }
         let arguments = state.include_args(&args.arguments);
         let mut res = state.include_file(&mut File::open(path).unwrap()).unwrap();
-        if !res.is_finite() {
+        if res.is_infinite() {
             res = res.call(
                 &mut state,
                 arguments.get(0).cloned().unwrap_or(run::NAN),

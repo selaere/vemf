@@ -49,14 +49,16 @@ pub fn each(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.is_scalar() && b.iter().all(|x| x.is_scalar()) {
         g.call(env, a, b)
     } else if let Some(b) = b {
-        if a.is_scalar() {
-            b.into_iterf().map(|x| g.dyad(env, a.clone(), x)).collect()
-        } else if b.is_scalar() {
-            a.into_iterf().map(|x| g.dyad(env, x, b.clone())).collect()
-        } else if !a.is_finite() && !b.is_finite() { 
+        if (a.is_infinite() && b.is_infinite())
+        || (a.is_infinite() && b.is_scalar()  )
+        || (a.is_scalar()   && b.is_infinite()) {
             Val::Fork { a: a.rc(), 
                         f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(), 
                         b: b.rc() }
+        } else if a.is_scalar() {
+            b.into_iterf().map(|x| g.dyad(env, a.clone(), x)).collect()
+        } else if b.is_scalar() {
+            a.into_iterf().map(|x| g.dyad(env, x, b.clone())).collect()
         } else {
             let len = usize::min(a.len(), b.len());
             a.itertake(env, len).zip(b.itertake(env, len))
@@ -68,25 +70,29 @@ pub fn each(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
 pub fn each_left(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.is_scalar() {
         g.call(env, a, b)
-    } else if !a.is_finite() { if let Some(b) = b {
-        Val::Fork { a: a.rc(), f: Rc::clone(g), b: b.rc() }
-    } else {
-        Val::Trn2 { a: a.rc(), f: Rc::clone(g) }
-    }} else { a.into_iterf().map(|x| g.call(env, x, b.clone())).collect() }
+    } else if a.is_infinite() {
+        if let Some(b) = b {
+            Val::Fork { a: a.rc(), f: Rc::clone(g), b: b.rc() }
+        } else {
+            Val::Trn2 { a: a.rc(), f: Rc::clone(g) }
+        }
+    } else { a.into_iterf().map(|x| g.call(env, x, b.clone())).collect() }
 }
 
 pub fn conform(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.is_scalar() && b.iter().all(|x| x.is_scalar()) {
         g.call(env, a, b)
     } else if let Some(b) = b {
-        if a.is_scalar() {
-            b.into_iterf().map(|x| conform(env, a.clone(), Some(x), g)).collect()
-        } else if b.is_scalar() {
-            a.into_iterf().map(|x| conform(env, x, Some(b.clone()), g)).collect()
-        } else if !a.is_finite() && !b.is_finite() { 
+        if (a.is_infinite() && b.is_infinite())
+        || (a.is_infinite() && b.is_scalar())
+        || (a.is_scalar() && b.is_infinite()) {
             Val::Fork { a: a.rc(), 
                         f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(), 
                         b: b.rc() }
+        } else if a.is_scalar() {
+            b.into_iterf().map(|x| conform(env, a.clone(), Some(x), g)).collect()
+        } else if b.is_scalar() {
+            a.into_iterf().map(|x| conform(env, x, Some(b.clone()), g)).collect()
         } else {
             let len = usize::min(a.len(), b.len());
             a.itertake(env, len).zip(b.itertake(env, len))
@@ -99,16 +105,18 @@ pub fn conform(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
 pub fn extend(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.is_scalar() {
         g.call(env, a, b)
-    } else if !a.is_finite() { if let Some(b) = b {
-        Val::Fork { a: a.rc(), f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(), b: b.rc() }
-    } else {
-        Val::Trn2 { a: a.rc(), f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc() }
-    }} else { a.into_iterf().map(|x| extend(env, x, b.clone(), g)).collect()}
+    } else if a.is_infinite() { 
+        if let Some(b) = b {
+            Val::Fork { a: a.rc(), f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc(), b: b.rc() }
+        } else {
+            Val::Trn2 { a: a.rc(), f: Val::Av(AvT::Conform, None, Rc::clone(g)).rc() }
+        }
+    } else { a.into_iterf().map(|x| extend(env, x, b.clone(), g)).collect()}
 }
 
 
 pub fn scan(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
-    if !a.is_finite() { return NAN; }
+    if a.is_infinite() { return NAN; }
     let mut values = Vec::with_capacity(a.len());
     let mut iter = a.into_iterf();
     let Some(start) = iter.next() else { return b.unwrap_or(NAN) };
@@ -125,7 +133,7 @@ pub fn scan(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
 }
 
 pub fn reduce(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
-    if !a.is_finite() { return NAN; }
+    if a.is_infinite() { return NAN; }
     let mut iter = a.into_iterf();
     let Some(start) = iter.next() else { return b.unwrap_or(NAN) };
     let mut val = match b {
@@ -173,7 +181,6 @@ pub fn power_scan(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val
     Val::lis(values)
 }
 
-
 pub fn power(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
     let num = f.call(env, a.clone(), b.clone()).try_int().map_or(0, |x| x.try_into().unwrap_or(0));
     let mut val = a;
@@ -202,7 +209,7 @@ pub fn stencil(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) 
         // multiple dimensions but uh
         return Val::lis(Vec::new());
     };
-    if !a.is_finite() { return Val::lis(Vec::new()); }
+    if a.is_infinite() { return Val::lis(Vec::new()); }
     // 1234567 3╫◄ = (123)(234)(345)(456)(567) l-n+1
     (0..(a.len() + 1).saturating_sub(size)).map(|n| {
         g.call(env, a.iterf().skip(n).take(size).cloned().collect(), b.clone())

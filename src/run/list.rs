@@ -59,17 +59,15 @@ impl Val {
     }
 
     pub fn iterinf<'r>(self, env: &'r mut Env) -> Box<dyn InconvenientIter<'r> + 'r> {
-        if self.is_finite() {
-            if let Lis{l, ..} = self {
-                match Rc::try_unwrap(l) {
-                    Ok(l) => Box::new(l.into_iter()),
-                    // https://smallcultfollowing.com/babysteps/blog/2018/09/02/rust-pattern-iterating-an-over-a-rc-vec-t/
-                    Err(l) => Box::new((0..l.len()).map(move |x| l[x].clone()))
-                }
-            } else { Box::new(std::iter::once(self)) }
-        } else { Box::new(InfIter {
-            i: 0, value: self, env
-        }) }
+        if self.is_infinite() {
+            Box::new(InfIter { i: 0, value: self, env })
+        } else if let Lis{l, ..} = self {
+            match Rc::try_unwrap(l) {
+                Ok(l) => Box::new(l.into_iter()),
+                // https://smallcultfollowing.com/babysteps/blog/2018/09/02/rust-pattern-iterating-an-over-a-rc-vec-t/
+                Err(l) => Box::new((0..l.len()).map(move |x| l[x].clone()))
+            }
+        } else { Box::new(std::iter::once(self)) }
     }
 
     pub fn lis(vec: Vec<Val>) -> Val {
@@ -102,10 +100,10 @@ impl Val {
     }
 
     pub fn itertake(self, env: &mut Env, len: usize) -> Box<dyn GoodIter<Val>> {
-        if self.is_finite() {
-            Box::new(self.into_iterf().take(len))
-        } else {
+        if self.is_infinite() {
             Box::new(self.iterinf(env).take(len).collect::<Vec<_>>().into_iter())
+        } else {
+            Box::new(self.into_iterf().take(len))
         }
     }
 
@@ -169,7 +167,7 @@ pub fn ravel(arg: Val, list: &mut Vec<Val>) {
 }
 
 pub fn concat(a: Val, b: Val) -> Val {
-    if !(a.is_finite() && b.is_finite()) { return NAN }
+    if a.is_infinite() || b.is_infinite() { return NAN }
     if let Lis{l, ..} = a {
         return match Rc::try_unwrap(l) {
             Ok(mut l) => {
@@ -184,8 +182,50 @@ pub fn concat(a: Val, b: Val) -> Val {
 }
 
 pub fn reverse(a: Val) -> Val {
-    if !a.is_finite() { return std::iter::empty::<Val>().collect() }
+    if a.is_infinite() { return std::iter::empty::<Val>().collect() }
     a.into_iterf().rev().collect()
+}
+
+pub fn reshape(env: &mut Env, a: Val, b: Val, isright: bool) -> Val {
+    if b.is_infinite() { return NAN };
+    let mut shape = Vec::<usize>::new();
+    let mut spot = None::<usize>; // in 2█↑, the spot is Some(1)
+    let mut product = if isright {-1} else {1};
+    for i in b.iterf() { 
+        if i.is_nan() && spot.is_none() { // there can only be 1 spot 
+            spot = Some(shape.len());
+            shape.push(1);
+        } else if let Some(n) = i.try_int() {
+            product *= n as isize;
+            shape.push(n.unsigned_abs() as usize);
+        } else { return NAN }
+    }
+    // fill up the spot
+    if let Some(index) = spot {
+        fn divceil(x: usize, y: usize) -> usize {x / y + usize::from(x % y != 0)}
+        let num = divceil(
+            match &a { Val::DCycle(c) => c.len(), e => e.len() },
+            product.unsigned_abs(),
+        );
+        shape[index] = num;
+        product *= num as isize;
+    }
+    let fill = a.fill();
+    let mut iter = if product >= 0 {
+        // pick from left
+        a.iterinf(env)
+    } else {
+        // pick from right
+        let elems = product.unsigned_abs();
+        let bee = if a.len() < elems {
+            std::iter::repeat(a.fill()).take(elems - a.len()).chain(a.iterinf(env)).collect::<Val>()
+        } else {
+            let len = a.len() - elems;
+            a.iterinf(env).skip(len).collect::<Val>()
+        };
+        bee.iterinf(env)
+    };
+    reshape_iter(&mut iter, &shape[..], &fill)
 }
 
 pub fn reshape_iter(a: &mut dyn Iterator<Item=Val>, b: &[usize], fill: &Val) -> Val {
@@ -194,57 +234,15 @@ pub fn reshape_iter(a: &mut dyn Iterator<Item=Val>, b: &[usize], fill: &Val) -> 
     (0..pre).map(move |_| reshape_iter(a, suf, fill)).collect()
 }
 
-pub fn takeleft(env: &mut Env, a: Val, b: Val) -> Val {
-    let Some(shape) = fillreshape(&a, &b) else {return NAN};
-    let fill = a.fill();
-    let mut iter = a.iterinf(env);
-    reshape_iter(&mut iter, &shape[..], &fill)
-}
-
-pub fn takeright(env: &mut Env, a: Val, b: Val) -> Val {
-    let Some(shape) = fillreshape(&a, &b) else {return NAN};
-    let elems = shape.iter().product::<usize>();
-    let fill = a.fill();
-    let bee = if a.len() < elems {
-        std::iter::repeat(a.fill()).take(elems - a.len()).chain(a.iterinf(env)).collect::<Val>()
-    } else {
-        let len = a.len() - elems;
-        a.iterinf(env).skip(len).collect::<Val>()
-    };
-    let mut iter = bee.iterinf(env);
-    reshape_iter(&mut iter, &shape[..], &fill)
-} 
-
-pub fn fillreshape(a: &Val, b: &Val) -> Option<Vec<usize>> {
-    if !b.is_finite() { return None };
-    let mut shape = Vec::new();
-    let mut spot = None::<usize>;
-    for i in b.iterf() { 
-        if i.is_nan() && spot.is_none() {
-            spot = Some(shape.len());
-            shape.push(1);
-        } else if let Some(n) = i.try_int() {
-            shape.push(n as usize);
-        } else { return None }
-    }
-    if let Some(index) = spot {
-        fn divceil(x: usize, y: usize) -> usize {x / y + usize::from(x % y != 0)}
-        shape[index] = divceil(match a {
-            Val::DCycle(c) => c.len(), e => e.len()
-        }, shape.iter().product());
-    }
-    Some(shape)
-}
-
 pub fn dropleft(a: Val, b: i64) -> Val {
     if b < 0 {return dropright(a, -b); }
-    if !a.is_finite() { return NAN; }
+    if a.is_infinite() { return NAN; }
     a.into_iterf().skip(b as _).collect()
 }
 
 pub fn dropright(a: Val, b: i64) -> Val {
     if b < 0 { return dropleft(a, -b); }
-    if !a.is_finite() { return a; }
+    if a.is_infinite() { return a; }
     a.into_iterf().rev().skip(b as _).rev().collect()
 }
 
@@ -262,8 +260,6 @@ pub fn shape(a: &Val) -> Vec<usize> {
     } else { vec![] }
 }
 
-
-// 0123(123)5‼3010(45)0 -> 0002(111122222)4
 
 pub fn replicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
     let mut lis = Vec::new();
