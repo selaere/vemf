@@ -1,0 +1,56 @@
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
+    <style>
+        body {
+            font-size: 18px;
+        }
+        textarea {
+            font-size: 18px;
+            font-family: monospace;
+            width: 100%;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        #outp {
+            word-break: normal;
+        }
+    </style>
+</head>
+<body>
+    <label>live update : <input type="checkbox" id="live" checked></label>
+    <br>
+    <button id="run">run</button>
+    <button id="rew">rewrite</button>
+    <label>format: <input id="fmt"></label>
+    <textarea id="inp"></textarea>
+    <pre id="outp"></pre>
+<script type="module">
+
+import init, { evaluate, rewrite } from './pkg/vemfwasm.js';
+
+const id = x => document.getElementById(x);
+
+async function run() {
+    await init();
+    const execute = function(ev) {
+        let a = evaluate(id('inp').value, id('fmt').value);
+        id('outp').innerText = a;
+    }
+    id('inp').addEventListener('input', () => {
+        if (id('live').checked) execute();
+    });
+    id('fmt').addEventListener('input', () => {
+        if (id('live').checked) execute();
+    });
+    id('rew').addEventListener('click', () => {
+        id('inp').value = rewrite(id('inp').value);
+    });
+    id('run').addEventListener('click', execute);
+}
+
+run();
+
+</script>
+</body>
+</html>

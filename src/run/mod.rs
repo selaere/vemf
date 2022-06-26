@@ -12,11 +12,13 @@ pub const NAN: Val = Num(c64::new(f64::NAN, f64::NAN));
 
 pub type Frame = HashMap<Bstr, Val>;
 
+/// vemf interpreter state
 #[derive(Debug)]
 pub struct Env {
     pub stack: Vec<Frame>,
 }
 
+/// represents a vemf value
 #[derive(Clone, Debug)]
 pub enum Val {
     Num(c64),
@@ -242,5 +244,11 @@ impl Env {
         args
     }
 
+}
+
+impl Default for Env {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 

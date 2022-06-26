@@ -1,0 +1,14 @@
+[package]
+name = "vemfwasm"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+path = "lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+vemf = { path = ".." }
+getrandom = { version = "0.2", features = ["js"] }
+wasm-bindgen = "0.2.81"
+

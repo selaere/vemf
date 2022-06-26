@@ -5,12 +5,7 @@
 
 use std::{path::PathBuf, io::{Read, Write}, fs::File};
 use clap::Parser;
-use crate::run::Val;
-
-#[macro_use] mod codepage;
-mod token; mod parse; mod run; mod test;
-
-pub type Bstr = smallvec::SmallVec<[u8; 16]>; // length will be the same as a Vec in 64bit archs
+use vemf::{Bstr, codepage, Val, Env};
 
 #[derive(Parser)]
 #[clap(dont_collapse_args_in_usage = true)]
@@ -44,17 +39,17 @@ fn rewrite(path: PathBuf) {
     File::open(path).unwrap()
         .read_to_string(&mut code).unwrap();
     println!("{}", codepage::tochars_ln(
-        &token::rewrite( &codepage::tobytes(code.trim_end()).unwrap() )
+        &vemf::rewrite( &codepage::tobytes(code.trim_end()).unwrap() )
     ));
 }
 
 fn main() {
     let args = Args::parse();
-    let mut state = run::Env::new();
+    let mut state = Env::new();
     if !args.no_stdlib {
         state.include_stdlib();
     }
-    //println!("sizeof(Val) = {}", std::mem::size_of::<run::Val>());
+    //println!("sizeof(Val) = {}", std::mem::size_of::<Val>());
     if let Some(path) = args.filename {
         if args.rewrite { return rewrite(path); }
         let arguments = state.include_args(&args.arguments);
@@ -62,7 +57,7 @@ fn main() {
         if res.is_infinite() {
             res = res.call(
                 &mut state,
-                arguments.get(0).cloned().unwrap_or(run::NAN),
+                arguments.get(0).cloned().unwrap_or(Val::NAN),
                 arguments.get(1).cloned()
             );
         }
@@ -75,7 +70,7 @@ fn main() {
     }
 }
 
-fn repl(mut state: run::Env, args: Args) {
+fn repl(mut state: Env, args: Args) {
     println!("welcome to vemf repl. enjoy your stay");
     loop {
         print!("    ");
@@ -95,7 +90,7 @@ fn repl(mut state: run::Env, args: Args) {
         let val = state.include_string(&code);
         if args.rewrite {
             println!(" r: {}", codepage::tochars(
-                &token::rewrite(
+                &vemf::rewrite(
                     &codepage::tobytes(code.trim_end()).unwrap()
                 )
             ));

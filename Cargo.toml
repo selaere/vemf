@@ -3,6 +3,9 @@ name = "vemf"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+path = "src/lib.rs"
+
 [dependencies]
 # small byte strings
 smallvec = { version = "1.8", features = ["union"] }
@@ -10,7 +13,8 @@ smallvec = { version = "1.8", features = ["union"] }
 rand = "0.8"
 # complex numbers
 num-complex = "0.4"
-# command line argument parsing
-clap = { version = "3.2", features = ["std", "derive", "wrap_help"], default-features = false }
 # gamma (not complex (i have to look for a better library))
 libm = "0.2"
+
+[workspace]
+members = ["cli", "wasm"]

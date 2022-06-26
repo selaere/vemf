@@ -1,0 +1,17 @@
+[package]
+name = "vemfcli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "vemf"
+path = "main.rs"
+
+[dependencies]
+vemf = { path = ".." }
+
+# command line argument parsing
+[dependencies.clap]
+version = "3.2"
+features = ["std", "derive", "wrap_help"]
+default-features = false

@@ -3,6 +3,8 @@ use super::{NAN, c64};
 
 impl Val {
     
+    pub const NAN: Val = NAN;
+    
     pub fn bool(b: bool) -> Val { Int(i64::from(b)) }
 
     //pub fn is_list(&self) -> bool { matches!(self, Lis {..})}

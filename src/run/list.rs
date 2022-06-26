@@ -3,6 +3,7 @@ use super::{Val::{self, Lis, Num, Int}, Env, NAN};
 
 impl Val {
 
+    #[allow(clippy::len_without_is_empty)] // shut up!!! shut up!!!!
     pub fn len(&self) -> usize { match self {
         Num(_) | Int(_) => 1,
         Lis { l, .. } => l.len(),
