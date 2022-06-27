@@ -87,6 +87,7 @@ impl PartialEq for Val {
         }
     }
 }
+impl Eq for Val {}
 
 pub fn complexcmp(a: c64, b: c64) -> std::cmp::Ordering {
     use std::cmp::Ordering::{Equal, Greater, Less};

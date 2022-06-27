@@ -20,4 +20,3 @@ libm = "0.2"
 
 [workspace]
 members = ["cli", "wasm"]
-default-members = ["cli"]

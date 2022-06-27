@@ -1,29 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
     <style>
+        @font-face {
+            font-family: 'Iosevka Fixed Web Extended';
+            font-display: swap;
+            font-weight: 400;
+            font-style: normal;
+            src: url('pkg/iosevka-fixed-extended.ttf') format('truetype'),
+                 url('pkg/iosevka-fixed-extended.woff2') format('woff2');
+        }
         body {
+            padding: 10px 15px;
             font-size: 18px;
+            font-family: 'Iosevka Fixed Web Extended', monospace;
+        }
+        input, button {
+            font-size: 16px;
+            font-family: inherit;
         }
         textarea {
             font-size: 18px;
-            font-family: monospace;
             width: 100%;
             resize: vertical;
+            font-family: inherit;
             box-sizing: border-box;
         }
         #outp {
-            word-break: normal;
+            font-family: inherit;
+            white-space: pre-wrap;
+            width: 100%;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-    <label>live update : <input type="checkbox" id="live" checked></label>
+    <label>live update: <input type="checkbox" id="live" checked></label>
     <br>
     <button id="run">run</button>
     <button id="rew">rewrite</button>
-    <label>format: <input id="fmt"></label>
+    <label>format: <input id="fmt" type="text" size="6"></label>
     <textarea id="inp"></textarea>
     <pre id="outp"></pre>
 <script type="module">

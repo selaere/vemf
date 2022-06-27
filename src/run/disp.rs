@@ -37,7 +37,7 @@ impl Val {
             2 => if let Some(n) = self.try_int() { format!("{}", n) } else { self.format(rest) }
             3 => self.try_int().map_or_else(|| self.format(rest),
                 |n| match char::from_u32(n as u32) {
-                    Some('\x00'..='\x19' | '\x7F'..='\u{9F}' | '\\') =>
+                    Some('\x00'..='\x1F' | '\x7F'..='\u{9F}' | '\\') =>
                         format!("\\{}", tochar(n as u8)),
                     Some(c) => c.to_string(), None => '\u{FFFD}'.to_string(),
                 }),
@@ -45,7 +45,7 @@ impl Val {
                 std::iter::once("\"".to_string())
                 .chain(l.iter().map(|x| x.try_int().map_or('\u{FFFD}'.to_string(),
                     |n| match char::from_u32(n as u32) {
-                        Some('\x00'..='\x19' | '\x7F'..='\u{9F}' | '\\' | '"') =>
+                        Some('\x00'..='\x1F' | '\x7F'..='\u{9F}' | '\\' | '"') =>
                             format!("\\{}", tochar(n as u8)),
                         Some(c) => c.to_string(), None => '\u{FFFD}'.to_string(),
                     }

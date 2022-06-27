@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::{Bstr, b};
-use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, number::complexcmp};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, number::complexcmp, list};
 use smallvec::smallvec;
 
 impl Val {
@@ -25,7 +25,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             } );* }}
             load!(
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
-                Gcd, Lcm, Binom,
+                Gcd, Lcm, Binom, Get, Set, Call,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
                 Complex, Real, Imag, Conj, Arg, Cis,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
@@ -51,6 +51,15 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::FSet(name) => {
             env.set_local(name.clone(), a.clone());
             a
+        },
+        Val::Set  => {
+            let name = a.iterf().filter_map(|x| x.try_int().map(|x| x as u8)).collect::<Bstr>();
+            env.set_local(name, ba.clone());
+            ba
+        },
+        Val::Get  => {
+            let name = a.iterf().filter_map(|x| x.try_int().map(|x| x as u8)).collect::<Bstr>();
+            env.get_var(&name).unwrap_or(NAN)
         },
         Val::FCng(name) => {
             env.mutate_var(name, a).unwrap_or(NAN)
@@ -184,10 +193,10 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Numfmt => if !a.is_scalar() {NAN} else {
             format!("{a}").chars().map(|x| Int(x as i64)).collect() }
         Val::Parse => a.display_string().parse::<c64>().map(Num).unwrap_or(NAN),
-        Val::Takeleft => super::list::reshape(env, a, ba, false),
-        Val::Takeright => super::list::reshape(env, a, ba, true),
-        Val::Dropleft =>  ba.try_int().map_or(NAN, |b| super::list::dropleft(a, b)),
-        Val::Dropright => ba.try_int().map_or(NAN, |b| super::list::dropright(a, b)),
+        Val::Takeleft => list::reshape(env, a, ba, false),
+        Val::Takeright => list::reshape(env, a, ba, true),
+        Val::Dropleft =>  ba.try_int().map_or(NAN, |b| list::dropleft(a, b)),
+        Val::Dropright => ba.try_int().map_or(NAN, |b| list::dropright(a, b)),
 
         Val::Left => a, Val::Right => ba,
         Val::Len => match a {
@@ -197,19 +206,19 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         },
         Val::Index => a.index_at_depth(env, ba),
         Val::Iota => match a {
-            Lis{l, ..} => super::list::iota(
+            Lis{l, ..} => list::iota(
                 Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>()),
-            Num(n) => if n.is_infinite() {Val::Left} else {super::list::iota_scalar(n.re as i64)},
-            Int(n) => super::list::iota_scalar(n),
+            Num(n) => if n.is_infinite() {Val::Left} else {list::iota_scalar(n.re as i64)},
+            Int(n) => list::iota_scalar(n),
             _ => Val::Av(AvT::Const, None, NAN.rc()),
         }
         Val::Pair => Val::lis(vec![a, ba]),
         Val::Enlist => Val::lis(vec![a]),
         Val::Ravel => {
-            let mut list = Vec::new(); super::list::ravel(a, &mut list); Val::lis(list)
+            let mut list = Vec::new(); list::ravel(a, &mut list); Val::lis(list)
         },
-        Val::Concat => super::list::concat(a, ba),
-        Val::Reverse => super::list::reverse(a),
+        Val::Concat => list::concat(a, ba),
+        Val::Reverse => list::reverse(a),
         Val::GetFill => match a {
             Lis {fill, ..} => (*fill).clone(),
             _ => NAN
@@ -230,7 +239,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::DCycle(l) => a.try_int().map_or(NAN, |a| l[(a as usize) % l.len()].clone()),
         Val::Match => Val::bool(a == ba),
         Val::Shape => Val::lis_fill(
-            super::list::shape(&a).iter().map(|x| Int(*x as i64)).collect(),
+            list::shape(&a).iter().map(|x| Int(*x as i64)).collect(),
             Int(1),
         ),
 
@@ -252,27 +261,36 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         ),
         Val::Replicate => {
             let fill = a.fill();
-            Val::lis_fill(super::list::replicate(env, a, ba), fill)
+            Val::lis_fill(list::replicate(env, a, ba), fill)
         }
 
-        Val::GradeUp   => super::list::grade_up(a),
-        Val::GradeDown => super::list::grade_down(a),
-        Val::SortUp    => super::list::sort_up(a),
-        Val::SortDown  => super::list::sort_down(a),
-        Val::BinsUp    => super::list::bins_up(&a, &ba),
-        Val::BinsDown  => super::list::bins_down(&a, &ba),
+        Val::GradeUp   => list::grade_up(a),
+        Val::GradeDown => list::grade_down(a),
+        Val::SortUp    => list::sort_up(a),
+        Val::SortDown  => list::sort_down(a),
+        Val::BinsUp    => list::bins_up(&a, &ba),
+        Val::BinsDown  => list::bins_down(&a, &ba),
         Val::Encode    => super::number::encode(a, ba),
-        Val::FromCp    => {
+        Val::FromCp => {
             if a.is_nan() { return NAN; }
             let Some(a) = a.try_int() else { return NAN };
             a.try_into().map_or(NAN, |x:u8| Int(crate::codepage::tochar(x) as i64))
         }
-        Val::ToCp     => {
+        Val::ToCp => {
             if a.is_nan() { return NAN; }
             let Some(Ok(a)) = a.try_int().map(u32::try_from) else { return NAN };
             char::from_u32(a).map_or(NAN, |x:char| crate::codepage::tobyte(x).map_or(NAN, 
                 |x| Int(i64::from(x))
             ))
+        }
+        Val::Call => {
+            if ba.is_scalar() {
+                a.monad(env, ba)
+            } else {
+                let aa = ba.index(env, 0);
+                let bb = (ba.len() > 1).then(|| ba.index(env, 1));
+                a.call(env, aa, bb)
+            }
         }
     }
 }
