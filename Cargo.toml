@@ -13,8 +13,11 @@ smallvec = { version = "1.8", features = ["union"] }
 rand = "0.8"
 # complex numbers
 num-complex = "0.4"
+# gcd, lcm, binom
+num-integer = "0.1"
 # gamma (not complex (i have to look for a better library))
 libm = "0.2"
 
 [workspace]
 members = ["cli", "wasm"]
+default-members = ["cli"]

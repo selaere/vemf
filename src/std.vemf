@@ -84,9 +84,9 @@
 .inlen     ╬┌=¬→~·
 .insortdown╬┌>¬→≤·
 
-^2→²·
-/2→½·
-*2→¼·
+(^2)╬┼.inbinom→²·
+(/2)╬┼.inlcm→½·
+(*2)╬┼.ingcd→¼·
 
 .iniota→↕·
 ↕╬┼{β-α|0↕+α}→↕·
@@ -118,6 +118,8 @@
 .inuntilscan→╦·
 .inpower→╨·
 .inpowerscan→╥·
+
+┼(◄▄)╨►→▌·(▐╙▌)╬▌→▌·
 
 ├~=0╬.inmatch→≡·
 ≡¬→≈·

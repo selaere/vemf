@@ -21,7 +21,7 @@ macro_rules! short_av2 { () => { b!('╬''╫''╩''╦''╨''╥''╖''╓''╜
 macro_rules! short_noun { () => { b'a'..=b'z' | b!('α''β''π''τ''Ω''Σ''δ') }; }
 macro_rules! short_verb { () => {
     b!('♦''♣''♠''♂''♀''♫''►''◄''↕''‼''¶''§''▬''↨''↑''↓''←''∟''▲''▼'
-       '!''#''$''%''&''*''+'',''-''/'';''<''=''>''@''[''\\'']''^''|''~')
+       '!''#''$''%''&''*''+'',''-''/'';''<''=''>''@''\\''^''|''~')
     | 0x80..=0xAF // ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»
     | b!('▄''▌''▐''▀''≡''±''≥''≤''⌠''⌡''÷''≈''°''√''ⁿ''²')
 }; }
@@ -70,7 +70,7 @@ fn identifier(bytes: &mut&[u8]) -> Bstr {
             let a = step(bytes).unwrap_or(b'\'');
             smallvec![do_escape(a, bytes).unwrap_or(a)]
         }
-        Some(c @ (b']' | b!('■'))) => {
+        Some(c @ (b']' | b!('['))) => {
             [c].into_iter().chain(identifier(bytes)).collect()
         }
         Some(chr) => smallvec![chr],
@@ -78,7 +78,7 @@ fn identifier(bytes: &mut&[u8]) -> Bstr {
     }
 }
 
-pub fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
+fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
     Some(match first {
         Some(b'"') => {
             Tok::Str(string(bytes))
@@ -134,8 +134,8 @@ pub fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
         Some(c @ b'A'..=b'Z')    => Tok::VarSet(smallvec![c + 32]),
         Some(c @ b!('☺''☻''⌂'))  => Tok::Conj(c),
         Some(c @ short_noun!())  => Tok::VarNoun(smallvec![c]),
-        Some(b!('σ')) => Tok::VarNoun(smallvec![b!('■'), b!('α')]),
-        Some(b!('μ')) => Tok::VarNoun(smallvec![b!('■'), b!('β')]),
+        Some(b!('σ')) => Tok::VarNoun(smallvec![b!('['), b!('α')]),
+        Some(b!('μ')) => Tok::VarNoun(smallvec![b!('['), b!('β')]),
         Some(x) => Tok::Just(x),
         None => return None,
     })
@@ -158,8 +158,8 @@ pub fn rewrite(mut bytes: &[u8]) -> Vec<u8> {
             Tok::Comment(s) => { out.extend(b"' "); out.extend(s.into_iter()); out.push(10); }
             Tok::VarNoun(s) => match s[..] {
                 [c @ short_noun!()] => out.push(c),
-                [b!('■'), b!('α')] => out.push(b!('σ')),
-                [b!('■'), b!('β')] => out.push(b!('μ')),
+                [b!('['), b!('α')] => out.push(b!('σ')),
+                [b!('['), b!('β')] => out.push(b!('μ')),
                 [b!('_'), c] => { out.push(b'_'); out.push(c) },
                 ref s => { out.push(b'.'); out.extend(s) },
             },

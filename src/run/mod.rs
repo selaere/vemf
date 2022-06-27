@@ -34,6 +34,7 @@ pub enum Val {
     AvBuilder(AvT),
     Cycle,     DCycle(Rc<Vec<Val>>),
     Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
+    Gcd, Lcm, Binom,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
     Complex, Cis, Real, Imag, Conj, Arg,
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
@@ -69,7 +70,7 @@ impl Env {
     }
 
     pub fn get_var_cap(&self, mut name: &[u8]) -> Option<Val> {
-        if let Some(b!('■')) = name.first() {name = &name[1..]}
+        if let Some(b!('[')) = name.first() {name = &name[1..]}
         let mut skipped = 0;
         loop {
             for frame in self.stack.iter().rev().skip(skipped) {
@@ -77,7 +78,7 @@ impl Env {
                     return Some(var.clone())
                 }
             }
-            if let Some(b!('■')) = name.first() {
+            if let Some(b!('[')) = name.first() {
                 name = &name[1..];
                 skipped += 1;
             } else { return None }
@@ -101,14 +102,8 @@ impl Env {
 
     pub fn mutate_var(&mut self, mut name: &[u8], func: Val) -> Option<Val> {
         let mut skipped = 0;
-
         loop {
             for (fmn, frame) in self.stack.iter_mut().enumerate().rev().skip(skipped) {
-                /*
-                if let Some(thing) = frame.get(name).cloned() {
-                    let val = func.monad(self, thing);
-                    frame.insert(Bstr::from(name), val);
-                }*/
                 if let Some((nam, val)) = frame.remove_entry(name) {
                     let val = func.monad(self, val);
                     self.stack[fmn].insert(nam, val.clone());

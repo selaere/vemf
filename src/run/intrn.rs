@@ -25,6 +25,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             } );* }}
             load!(
                 Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
+                Gcd, Lcm, Binom,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
                 Complex, Real, Imag, Conj, Arg, Cis,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
@@ -128,6 +129,9 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             Val::flt(f64::atan2(y.re + x.im, x.re - y.im))
         },
         Val::Approx=> Val::bool(Val::approx(&a, &ba)),
+        Val::Gcd => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(num_integer::gcd(a, b))),
+        Val::Lcm => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(num_integer::lcm(a, b))),
+        Val::Binom => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(num_integer::binomial(a, b))),
         Val::Isnan=> Val::bool(a.is_nan()),
         Val::BAnd => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(a & b)),
         Val::BOr  => a.try_int().zip(ba.try_int()).map_or(NAN, |(a, b)| Int(a | b)),

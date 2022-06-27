@@ -1,8 +1,3 @@
-#![feature(let_else)]
-#![warn(clippy::cast_lossless)]
-#![warn(clippy::map_unwrap_or)]
-#![warn(clippy::semicolon_if_nothing_returned)]
-
 use std::{path::PathBuf, io::{Read, Write}, fs::File};
 use clap::Parser;
 use vemf::{Bstr, codepage, Val, Env};
