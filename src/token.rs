@@ -91,7 +91,7 @@ fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
             }}
             Tok::Num(buf)
         }
-        Some(b'`') => Tok::Chr(step(bytes).unwrap_or(0)),
+        Some(b'`') => Tok::Chr(step(bytes).unwrap_or(0x20)),
         Some(b'_') => Tok::VarNoun(smallvec![b'_', step(bytes).unwrap_or(b'_')]),
         Some(b!('♥')) => Tok::Chr2(
             step(bytes).unwrap_or(  0), step(bytes).unwrap_or(  0),
@@ -226,7 +226,7 @@ fn twochar_abbr(c: [u8; 2]) -> Option<u8> {
         b"aO"=>b!('Å'), b"ao"=>b!('å'), b"aE"=>b!('Æ'), b"ae"=>b!('æ'),
         b"a,"=>b!('ª'), b"o,"=>b!('º'), b"z,"=>b!('²'), b"n,"=>b!('ⁿ'),
         b"pr"=>b!('☺'), b"tp"=>b!('♦'), b"c2"=>b!('♥'), b"rd"=>b!('♣'),
-        b"dl"=>b!('♂'), b"dr"=>b!('♀'), b"sn"=>b!('☼'), b"ss"=>b!('§'), b"rv"=>b!('▬'),
+        b"dl"=>b!('♂'), b"dr"=>b!('♀'), b"sn"=>b!('☼'), b"ss"=>b!('§'), b"sh"=>b!('▬'),
         b"bu"=>b!('▲'), b"bd"=>b!('▼'), b"iq"=>b!('¿'), b"hf"=>b!('½'), b"db"=>b!('¼'),
         b"sl"=>b!('«'), b"sr"=>b!('»'), b"cl"=>b!('⌠'), b"fl"=>b!('⌡'), b"gb"=>b!('£'),
         b"hl"=>b!('▌'), b"hu"=>b!('▀'), b"hd"=>b!('▄'), b"hr"=>b!('▐'), b"pt"=>b!('₧'),
@@ -238,6 +238,7 @@ fn twochar_abbr(c: [u8; 2]) -> Option<u8> {
         // ↓ most of these will be changed probably
         b"vl"=>b!('╬'), b"wn"=>b!('╫'), b"sc"=>b!('┼'), b"s2"=>b!('╪'), b"lr"=>b!('╓'),
         b"su"=>b!('╦'), b"sp"=>b!('╥'), b"mo"=>b!('┬'), b"co"=>b!('╒'), b"vb"=>b!('│'),
+        b"x1"=>b!('╝'), b"x2"=>b!('╚'), b"x3"=>b!('╗'), b"x4"=>b!('╔'), b"x5"=>b!('╖'),
         _ => return None,
     })
 }

@@ -228,6 +228,9 @@ _2&2 : _2
 (12)(34)(56)(78)@█1 : 2468
 123@█ : 123
 
+"bus""red""are"\ : "bee"
+Σ↑55\ : '1'7'13'19'25
+(100)(020)(003)\ : 123
 "hello world i am a vemf test"\`  : "helloworldiamavemftest"
 "hello world i am a vemf test"\¨aeiou : "hll wrld  m  vmf tst"
 
@@ -352,6 +355,10 @@ _2Ä0 : π½-
 1010è : 5
 011101111101è2 : '3054
 3054èΦ : '4503
+
+"bee bumblebee honeybee"Ü000ɸ111111000ɸ11111000 : "beebeebee""bumblehoney"▐ɸ
+"vemf programming language"Ü0000█11111112222█33333333 : "vemf""program""ming""language"▐ɸ
+"eastern bumblehoneybee"Ü2222222211111122222(012)(012)(012) : "bee""bumblebee""eastern honeybee"▐ɸ
 
 5¢ : 5
 0¢ : 0

@@ -324,3 +324,25 @@ pub fn bins_down(a: &Val, b: &Val) -> Val {
         Int(l.partition_point(|x| x.cmpval(b).is_gt()) as i64)
     } else { Int(0) }
 }
+
+pub fn group(env: &mut Env, a: Val, b: Val) -> Val {
+    if a.is_infinite() { return NAN; }
+    let mut lis: Vec<Vec<Val>> = Vec::new();
+    let len = a.len();
+    for (l, r) in a.into_iterf().zip(b.itertake(env, len)) {
+        for i in r.into_iterf() {
+            if i.is_nan() { continue }
+            let Some(i) = i.try_int()
+                .and_then(|x|->Option<usize> {x.try_into().ok()})  // epic type inference fail
+                else { continue };
+            if i >= lis.len() {
+                lis.resize(i + 1, Vec::new());
+            }
+            lis[i].push(l.clone())
+        }
+    }
+    Val::lis_fill(
+        lis.into_iter().map(Val::lis).collect(),
+        Val::lis(Vec::new())
+    )
+}

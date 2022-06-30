@@ -40,7 +40,7 @@ pub enum Val {
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
     Print, Println, Exit, Format, Numfmt, Parse,
     Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample, Replicate,
-    GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode, FromCp, ToCp,
+    GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode, FromCp, ToCp, Group,
     LoadIntrinsics,
 }
 

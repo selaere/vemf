@@ -31,7 +31,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
                 Print, Println, Exit, Format, Numfmt, Parse,
                 Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample, Replicate,
-                GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode, FromCp, ToCp,
+                GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode, FromCp, ToCp, Group,
             );
             macro_rules! load_av {($($name:ident,)*) => { $( {
                 let mut name = Bstr::from(&b"in"[..]);
@@ -270,6 +270,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::SortDown  => list::sort_down(a),
         Val::BinsUp    => list::bins_up(&a, &ba),
         Val::BinsDown  => list::bins_down(&a, &ba),
+        Val::Group     => list::group(env, a, ba),
         Val::Encode    => super::number::encode(a, ba),
         Val::FromCp => {
             if a.is_nan() { return NAN; }
