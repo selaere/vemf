@@ -374,6 +374,16 @@ _2Ä0 : π½-
 "vemf programming language"Ü0000█11111112222█33333333 : "vemf""program""ming""language"▐ɸ
 "eastern bumblehoneybee"Ü2222222211111122222(012)(012)(012) : "bee""bumblebee""eastern honeybee"▐ɸ
 
+"UPPERCASE"ç : "uppercase"
+"lowercase"ç : "lowercase"
+"Bees, bees"ç : "bees, bees"
+"mOcKiNg"ç : "mocking"
+
+"UPPERCASE"Ç : "UPPERCASE"
+"lowercase"Ç : "LOWERCASE"
+"Bees, bees"Ç : "BEES, BEES"
+"mOcKiNg"Ç : "MOCKING"
+
 "bee""bees""apioids"æ` ◄ : "bee bees apioids"
 123ªæ", " : "1, 2, 3"
 "Hello"æ`f : "Hfeflflfo"
@@ -439,6 +449,7 @@ _4¢ : 4
 '30¼'45 : '15
 
 "aeiou"¡ : `u
+123¡ : 3
 13524¡" aeiouy" : "aiueo"
 
 12345» : 51234
@@ -600,11 +611,21 @@ _3± : Θ
 
 '100 7╨½ : '0.78125
 
-3²╓+5 : 3²+(5²)
-3²╓+  : 3²+(3²)
+♫,;`(,`)→f· : █
+♫,;`[,`]→g· : █
+♫,;`{,`}→h· : █
 
-4²╜+  : 4²+4
-4²╜+5 : 4²+5
-
-4²╙+  : 4+(4²)
-4²╙+5 : 4+(5²)
+`af╜g     : "[(a)]"
+`af╜g`b   : "[(a)b]"
+`af╙g     : "[a]"
+`af╙g`b   : "[a(b)]"
+`af╖g     : "[(a)a]"
+`af╖g`b   : "[(ab)b]"
+`af╓g     : "[a(a)]"
+`af╓g`b   : "[a(ab)]"
+`af╝g     : "[(a)]"
+`af╝g`b   : "[(a)(b)]"
+`a┘fgh    : "[(a){a}]"
+`a┘fgh`b  : "[(ab){ab}]"
+`af╜h╙g   : "[(a)]"
+`af╜h╙g`b : "[(a){b}]"

@@ -80,9 +80,7 @@ fn identifier(bytes: &mut&[u8]) -> Bstr {
 
 fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
     Some(match first {
-        Some(b'"') => {
-            Tok::Str(string(bytes))
-        }
+        Some(b'"') => Tok::Str(string(bytes)),
         Some(b!('■')) => {
             let mut buf = Bstr::new();
             loop { match step(bytes) {

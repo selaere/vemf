@@ -42,7 +42,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Swap, Const, Monadic,
                 Each, EachLeft, Conform, Extend,
                 Scan, ScanPairs, Reduce, Stencil, Valences,
-                Overleft, Overright, Over,
+                Overleft, Overright, Over, Forkleft, Forkright,
                 Until, UntilScan, Power, PowerScan,
             ); Int(1)
         }
