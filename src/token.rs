@@ -58,7 +58,7 @@ fn identifier(bytes: &mut&[u8]) -> Bstr {
                     step(bytes); buf.push(ltr);
                 }
                 Some(&ltr @ b'A'..=b'Z') => {
-                    step(bytes); buf.push(ltr - 32); break;
+                    step(bytes); buf.push(ltr + 32); break;
                 }
                 _ => break,
             }}
