@@ -66,8 +66,8 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         }
         Val::Dfn { s, loc } => {
             env.stack.push((**loc).clone());
+            env.set_local(smallvec![b!('β')], b.unwrap_or_else(||a.clone()));
             env.set_local(smallvec![b!('α')], a);
-            env.set_local(smallvec![b!('β')], ba!());
             env.set_local(smallvec![b!('ƒ')], self.clone());
             let val = env.eval_block(s);
             env.stack.pop();
@@ -198,7 +198,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Dropleft =>  ba!().try_int().map_or(NAN, |b| list::dropleft(a, b)),
         Val::Dropright => ba!().try_int().map_or(NAN, |b| list::dropright(a, b)),
 
-        Val::Left => a, Val::Right => ba!(),
+        Val::Left => a, Val::Right => b.unwrap_or(a),
         Val::Len => match a {
             Num(_) | Int(_) => Int(1),
             Lis { l, .. } => Int(l.len() as i64),
