@@ -137,31 +137,31 @@ impl Env {
             Expr::SetVar(v) => Val::FSet(v.clone()),
             Expr::CngVar(v) => Val::FCng(v.clone()),
             Expr::Aav1 { v, g } => {
-                let g = self.eval(&*g.clone());
+                let g = self.eval(&g.clone());
                 self.get_var(&v[..]).unwrap_or_default().monad(self, g)
             }
             Expr::Aav2 { f, v, g } => {
-                let f = self.eval(&*f.clone()); let g = self.eval(&*g.clone());
+                let f = self.eval(&f.clone()); let g = self.eval(&g.clone());
                 self.get_var(&v[..]).unwrap_or_default().dyad(self, g, f)
             },
             Expr::Bind { f, b } => {
-                let f = self.eval(&*f.clone()); let b = self.eval(&*b.clone());
+                let f = self.eval(&f.clone()); let b = self.eval(&b.clone());
                 Val::Bind{f: f.rc(), b: b.rc()}
             },
             Expr::Trn2 { a, f } => {
-                let a = self.eval(&*a.clone()); let f = self.eval(&*f.clone());
+                let a = self.eval(&a.clone()); let f = self.eval(&f.clone());
                 Val::Trn2{a: a.rc(), f: f.rc()}
             },
             Expr::Trn3 { a, f, b } => {
-                let a = self.eval(&*a.clone());
-                let f = self.eval(&*f.clone());
-                let b = self.eval(&*b.clone());
+                let a = self.eval(&a.clone());
+                let f = self.eval(&f.clone());
+                let b = self.eval(&b.clone());
                 Val::Trn3{a: a.rc(), f: f.rc(), b: b.rc()}
             },
             Expr::Fork { a, f, b } => {
-                let a = self.eval(&*a.clone());
-                let f = self.eval(&*f.clone());
-                let b = self.eval(&*b.clone());
+                let a = self.eval(&a.clone());
+                let f = self.eval(&f.clone());
+                let b = self.eval(&b.clone());
                 Val::Fork{a: a.rc(), f: f.rc(), b: b.rc()}
             },
             Expr::Dfn { s, cap } => {

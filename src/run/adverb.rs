@@ -8,21 +8,11 @@ pub enum AvT {
     Scan, ScanPairs, Reduce, Stencil, Valences,
     Overleft, Overright, Over, Forkleft, Forkright,
     Until, UntilScan, Power, PowerScan,
+    Drill,
 }
 
-/*
-split compose components
-╜ a+/b . a+/
-╙ a/(b+) . a/
-fork components
-╖ a+b/b . a+/a
-╓ a/(a+b) . a/(a+)
-over
-╝ a+/(b+) . a+/
-*/
 impl AvT {
 pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>, f: Option<&Rc<Val>>, g: &Rc<Val>) -> Val {
-    //let ba = b.unwrap_or(a);
     let fg = f.unwrap_or(g);
     match self {
         Self::Swap =>      g.dyad(env, b.unwrap_or_else(|| a.clone()), a),
@@ -62,6 +52,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>, f: Option<&Rc<Val>>, g
         Self::UntilScan => until_scan(env, a, b, fg, g),
         Self::Power =>     power(env, a, b, fg, g),
         Self::PowerScan => power_scan(env, a, b, fg, g),
+        Self::Drill     => drill(env, a, b, fg, g),
     }
 }
 }
@@ -135,7 +126,6 @@ pub fn extend(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     } else { a.into_iterf().map(|x| extend(env, x, b.clone(), g)).collect()}
 }
 
-
 pub fn scan(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.is_infinite() { return NAN; }
     let mut values = Vec::with_capacity(a.len());
@@ -178,7 +168,6 @@ pub fn until_scan(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val
     }
     Val::lis(values)
 }
-
 
 pub fn until(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
     let mut val = a;
@@ -235,5 +224,33 @@ pub fn stencil(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) 
     (0..(a.len() + 1).saturating_sub(size)).map(|n| {
         g.call(env, a.iterf().skip(n).take(size).cloned().collect(), b.clone())
     }).collect()
+}
 
+pub fn drill(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
+    let iter = (**f).clone().into_iterf();
+    drill_iter(env, a, b, iter, g)
+}
+
+pub fn drill_iter(
+    env: &mut Env, a: Val, b: Option<Val>, mut iter: Box<dyn super::list::GoodIter<Val>>, g: &Rc<Val>
+) -> Val {
+    let index = iter.next();
+    if let Some(index) = index {
+        let Some(index) = index.try_int()
+            .and_then(|x|->Option<usize> { x.try_into().ok() })
+        else { return a };
+        match a {
+            Val::Lis{l, fill} => {
+                let mut v = match Rc::try_unwrap(l) {
+                    Ok(l) => l,
+                    Err(l) => l.to_vec(),
+                };
+                v[index] = drill_iter(env, std::mem::take(&mut v[index]), b, iter, g);
+                Val::lis_fill(v, (*fill).clone())
+            },
+            _ => g.call(env, a, b)
+        }
+    } else {
+        g.call(env, a, b)
+    }
 }

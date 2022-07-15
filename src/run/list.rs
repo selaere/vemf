@@ -94,7 +94,6 @@ impl Val {
         if let Lis{l, ..} = self {
             match Rc::try_unwrap(l) {
                 Ok(l) => Box::new(l.into_iter()),
-                // https://smallcultfollowing.com/babysteps/blog/2018/09/02/rust-pattern-iterating-an-over-a-rc-vec-t/
                 Err(l) => Box::new((0..l.len()).map(move |x| l[x].clone()))
             }
         } else { Box::new(std::iter::once(self)) }
@@ -338,7 +337,7 @@ pub fn group(env: &mut Env, a: Val, b: Val) -> Val {
             if i >= lis.len() {
                 lis.resize(i + 1, Vec::new());
             }
-            lis[i].push(l.clone())
+            lis[i].push(l.clone());
         }
     }
     Val::lis_fill(

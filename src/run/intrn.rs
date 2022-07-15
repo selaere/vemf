@@ -44,6 +44,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Scan, ScanPairs, Reduce, Stencil, Valences,
                 Overleft, Overright, Over, Forkleft, Forkright,
                 Until, UntilScan, Power, PowerScan,
+                Drill,
             ); Int(1)
         }
 
