@@ -227,7 +227,7 @@ pub fn stencil(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) 
 }
 
 pub fn drill(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
-    let iter = (**f).clone().into_iterf();
+    let iter = (**f).call(env, a.clone(), b.clone()).into_iterf();
     drill_iter(env, a, b, iter, g)
 }
 

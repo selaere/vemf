@@ -24,7 +24,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 env.set_local(name, Val::$name)
             } );* }}
             load!(
-                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
+                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, And, Or, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
                 Gcd, Lcm, Binom, Get, Set, Call,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
                 Complex, Real, Imag, Conj, Arg, Cis,
@@ -126,6 +126,8 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             (Int(a), Int(b)) => Val::bool(a > b),
             (a, ba) => a.try_c().zip(ba.try_c()).map_or(NAN, |(a, b)| Val::bool(complexcmp(a, b).is_gt()))
         },
+        Val::And => Val::bool(a.as_bool() && ba!().as_bool()),
+        Val::Or =>  Val::bool(a.as_bool() || ba!().as_bool()),
         Val::Max => match (a, ba!()) {
             (Int(a), Int(b)) => Int(a.max(b)),
             (a, ba) => if complexcmp(a.as_c(), ba.as_c()).is_gt() {a} else {ba}
