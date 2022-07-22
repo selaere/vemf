@@ -24,7 +24,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 env.set_local(name, Val::$name)
             } );* }}
             load!(
-                Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Eq, Gt, And, Or, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
+                Add, Sub, Mul, Div, DivE, Mod, Pow, Log, Lt, Eq, Gt, And, Or, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
                 Gcd, Lcm, Binom, Get, Set, Call,
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
                 Complex, Real, Imag, Conj, Arg, Cis,
@@ -107,8 +107,16 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Div => Num(a.as_c().fdiv(ba!().as_c())),
         Val::Mod => match (a, ba!()) {
             (Int(a), Int(b)) => Int(a.rem_euclid(b)),
-            (a, ba) => Num(a.as_c() % ba.as_c()),
+            (a, ba) => {
+                let (a, b) = (a.as_c(), ba.as_c());
+                // this definition is probably not very useful for imaginary numbers
+                let mut r = a % b;
+                if r.re < 0.0 { r += b.re.abs(); }
+                if r.im < 0.0 { r += b.im.abs(); }
+                Num(r)
+            },
         }
+        Val::DivE => a.try_int().zip(ba!().try_int()).map_or(NAN, |(a, b)| Int(a.div_euclid(b))),
         Val::Pow => match (a, ba!()) {
             (Int(a), Int(b)) if b >= 0 => Int(a.saturating_pow(b as u32)),
             (a, ba) => Num(a.as_c().powc(ba.as_c())),

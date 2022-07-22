@@ -35,8 +35,10 @@ pub enum Expr {
 pub enum Stmt {
     Discard(Expr),
     Return(Expr),
-    Set(Expr, Bstr),
-    Cng(Expr, Bstr),
+    Loc(Expr, Bstr),
+    Mut(Expr, Bstr),
+    DelLoc(Bstr),
+    DelMut(Bstr),
     Conj(Expr, Bstr),
     Cond(Expr, Box<Stmt>),
 }
@@ -85,8 +87,10 @@ impl Display for Stmt {
         match self {
             Stmt::Discard(e) => write!(m, "{}·", e),
             Stmt::Return(e) => write!(m, "{}◘", e),
-            Stmt::Set(e, f) => write!(m, "{}→{}", e, displayname(f)),
-            Stmt::Cng(e, f) => write!(m, "{}↔{}", e, displayname(f)),
+            Stmt::Loc(e, f) => write!(m, "{}→{}", e, displayname(f)),
+            Stmt::Mut(e, f) => write!(m, "{}↔{}", e, displayname(f)),
+            Stmt::DelLoc(f) => write!(m, "→{}", displayname(f)),
+            Stmt::DelMut(f) => write!(m, "↔{}", displayname(f)),
             Stmt::Conj(e, f) => write!(m, "{}{}", e, displayname(f)),
             Stmt::Cond(i, t) => write!(m, "{}?{}", i, t),
         }
@@ -100,6 +104,11 @@ fn displayname(bytes: &[u8]) -> String {
     } else {
         tochars(bytes)
     }
+}
+
+fn word_cst(code: &mut&[Tok], mut morphemes: usize) -> Option<(Role, Expr)>{
+    let ptr = &mut morphemes;
+    word(code, ptr)
 }
 
 fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
@@ -117,18 +126,16 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
                 (Verb, Expr::Var(name.clone()))
             }
         },
-        #[allow(const_item_mutation)]
         Tok::Just(b!('┘')) => { step!(code);
-            let a = word(code, &mut usize::MAX).map_or(NAN, |x| x.1);
-            let f = word(code, &mut usize::MAX).map_or(NAN, |x| x.1);
-            let b = word(code, &mut usize::MAX).map_or(NAN, |x| x.1);
+            let a = word_cst(code, usize::MAX).map_or(NAN, |x| x.1);
+            let f = word_cst(code, usize::MAX).map_or(NAN, |x| x.1);
+            let b = word_cst(code, usize::MAX).map_or(NAN, |x| x.1);
             (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
         },
-        #[allow(const_item_mutation)]
         Tok::Just(b!('└')) => { step!(code);
-            let a = word(code, &mut usize::MAX).map_or(NAN, |x| x.1);
-            let f = word(code, &mut usize::MAX).map_or(NAN, |x| x.1);
-            let b = word(code, &mut 1         ).map_or(NAN, |x| x.1);
+            let a = word_cst(code, usize::MAX).map_or(NAN, |x| x.1);
+            let f = word_cst(code, usize::MAX).map_or(NAN, |x| x.1);
+            let b = word_cst(code, 1         ).map_or(NAN, |x| x.1);
             (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
         },
         Tok::Just(b'{') => { step!(code);
@@ -145,8 +152,7 @@ fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
             (Noun, expr)
         },
         Tok::Just(b!('♪')) => { step!(code);
-            #[allow(const_item_mutation)]
-            let (rol, arg) = word(code, &mut usize::MAX).unwrap_or((Noun, NAN));
+            let (rol, arg) = word_cst(code, usize::MAX).unwrap_or((Noun, NAN));
             (Noun, match rol {
                 Noun => Expr::Snd(vec![arg]),
                 Verb => arg
@@ -211,14 +217,13 @@ pub fn phrase_by_morphemes(code: &mut&[Tok], mut morphemes: usize) -> Vec<(Role,
     phrase
 }
 
-#[allow(const_item_mutation)]
 pub fn phrase_by_words(code: &mut&[Tok], words: usize) -> Vec<(Role, Expr)> {
     let mut phrase = Vec::with_capacity(if words > 10 {0} else {words});
     while phrase.len() < words {
         let mut backtrack: Option<&[Tok]> = None;
         if let Some(Tok::VarSet(_) | Tok::VarCng(_) | Tok::Conj(_)) = code.first() {
             let ptr = &**code;
-            let word = word(code, &mut usize::MAX);
+            let word = word_cst(code, usize::MAX);
             if let Some(word) = word { phrase.push(word); } else { break }
             if phrase.len() >= words { break }
             if let Some(Tok::Just(b!('·'))) | None = code.first() {
@@ -226,7 +231,7 @@ pub fn phrase_by_words(code: &mut&[Tok], words: usize) -> Vec<(Role, Expr)> {
             }
             backtrack = Some(ptr);
         }
-        let word = word(code, &mut usize::MAX);
+        let word = word_cst(code, usize::MAX);
         //println!("{:?} {:?}", word, morphemes);
         if let Some(word) = word {
             if let Some(ptr) = backtrack { if let Noun = word.0 {
@@ -351,32 +356,42 @@ impl Stmt {
         match self {
             Stmt::Discard(e) => { e.capture(vars); },
             Stmt::Return(e) => { e.capture(vars); },
-            Stmt::Set(e, f) =>  { e.capture(vars); vars.insert(f.clone()); },
-            Stmt::Cng(e, f) =>  { e.capture(vars); vars.insert(f.clone()); },
+            Stmt::Loc(e, f) =>  { e.capture(vars); vars.insert(f.clone()); },
+            Stmt::Mut(e, _) =>  { e.capture(vars); },
+            Stmt::DelLoc(f) => { vars.insert(f.clone()); },
+            Stmt::DelMut(_) => { },
             Stmt::Conj(e, v) => { e.capture(vars); vars.insert(v.clone()); },
             Stmt::Cond(i, t) => { i.capture(vars); t.capture(vars); },
         }
     }
 }
 
-fn parse_stmt(code: &mut&[Tok], ev: Expr) -> Option<Stmt> {
+fn parse_stmt(code: &mut&[Tok], expr: Option<Expr>) -> Option<Stmt> {
     Some(match code.first() {
         Some(Tok::Conj(c)) => { step!(code); 
-            Stmt::Conj(ev, smallvec![*c]) },
-        Some(Tok::VarSet(v)) => { step!(code); 
-            Stmt::Set(ev, v.clone()) },
+            Stmt::Conj(expr.unwrap_or(NAN), smallvec![*c]) },
+        Some(Tok::VarSet(v)) => { step!(code);
+            match expr {
+                Some(e) => Stmt::Loc(e, v.clone()),
+                None    => Stmt::DelLoc(v.clone()),
+            }
+        },
         Some(Tok::VarCng(v)) => { step!(code); 
-            Stmt::Cng(ev, v.clone()) },
+            match expr {
+                Some(e) => Stmt::Mut(e, v.clone()),
+                None    => Stmt::DelMut(v.clone()),
+            }
+        },
         Some(Tok::Just(b!('◘'))) => { step!(code);
-            Stmt::Return(ev) },
+            Stmt::Return(expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('·'))) => { step!(code);
-            Stmt::Discard(ev) },
+            Stmt::Discard(expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('}'))) | None => {
-            Stmt::Return(ev) },
+            Stmt::Return(expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('?'))) => { step!(code);
-            let ev2 = phrase_to_expr(phrase(code)).unwrap_or(NAN);
+            let ev2 = phrase_to_expr(phrase(code));
             let Some(block) = parse_stmt(code, ev2) else {return None};
-            Stmt::Cond(ev, Box::new(block))
+            Stmt::Cond(expr.unwrap_or(NAN), Box::new(block))
         },
         _ => return None,
     })
@@ -388,7 +403,7 @@ pub fn block(code: &mut&[Tok]) -> Vec<Stmt> {
     loop {
         while let Some(Tok::Just(b!('·'))) = code.first() { step!(code); }
         if let Some(Tok::Just(b!('}'))) | None = code.first() { break };
-        let ev = phrase_to_expr(phrase(code)).unwrap_or(NAN);
+        let ev = phrase_to_expr(phrase(code));
         let Some(stmt) = parse_stmt(code, ev) else { break };
         exps.push(stmt);
     }

@@ -111,12 +111,10 @@
 .inreverse→♠·
 
 ┼:inceil→⌠·
-┼:inround→÷·
+┼:inround╬.indive→÷·
 ┼:infloor→⌡·
 
 .informat→ⁿ·
-
-÷╬┐/⌡→÷·
 
 .inuntil→╩·
 .inuntilscan→╦·

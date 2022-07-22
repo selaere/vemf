@@ -33,7 +33,7 @@ pub enum Val {
     Av(AvT, Option<Rc<Val>>, Rc<Val>),
     AvBuilder(AvT),
     Cycle,     DCycle(Rc<Vec<Val>>),
-    Add, Sub, Mul, Div, Mod, Pow, Log, Lt, Gt, Eq, And, Or, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
+    Add, Sub, Mul, Div, DivE, Mod, Pow, Log, Lt, Gt, Eq, And, Or, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
     Gcd, Lcm, Binom, Get, Set, Call,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
     Complex, Cis, Real, Imag, Conj, Arg,
@@ -117,6 +117,19 @@ impl Env {
         }
     }
 
+    pub fn delete_var(&mut self, mut name: &[u8]) {
+        let mut skipped = 0;
+        loop {
+            for (_, frame) in self.stack.iter_mut().enumerate().rev().skip(skipped) {
+                if frame.remove_entry(name).is_some() { return; }
+            }
+            if let Some(b!(']')) = name.first() {
+                name = &name[1..];
+                skipped += 1;
+            } else { return }
+        }
+    }
+
     pub fn eval(&mut self, expr: &Expr) -> Val {
         match expr {
             Expr::Var(s) => self.get_var(s).unwrap_or_default(),
@@ -182,13 +195,19 @@ impl Env {
                 let a = self.eval(&a);
                 self.get_var(&v[..]).unwrap_or_default().monad(self, a);
             },
-            Stmt::Set(a, v) => {
+            Stmt::Loc(a, v) => {
                 let a = self.eval(&a);
                 self.set_local(v.clone(), a);
             },
-            Stmt::Cng(a, v) => {
+            Stmt::Mut(a, v) => {
                 let a = self.eval(&a);
                 self.mutate_var(v, a);
+            },
+            Stmt::DelLoc(v) => {
+                self.locals_mut().remove(v);
+            },
+            Stmt::DelMut(v) => {
+                self.delete_var(v);
             },
             Stmt::Return(expr) => { return Some(self.eval(&expr)); },
             Stmt::Cond(cond, then) => {
