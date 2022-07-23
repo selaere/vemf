@@ -265,7 +265,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             }
         }),
         Val::Sample => a.try_int().zip(ba!().try_int()).map_or(NAN, |(a, b)|
-            rand::seq::index::sample(&mut rand::thread_rng(), a as _, isize::min(a as _, b as _) as _)
+            rand::seq::index::sample(&mut rand::thread_rng(), a as _, usize::min(a as _, b as _))
                 .iter()
                 .map(|x| Int(x as i64))
                 .collect::<Val>(),
