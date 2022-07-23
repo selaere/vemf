@@ -1,7 +1,7 @@
 mod intrn; mod list; mod adverb; mod disp; mod number;
 
 use crate::{parse::{Expr, Stmt}, Bstr};
-use std::{collections::HashMap, rc::Rc};
+use std::{collections::HashMap, rc::Rc, any::Any};
 use adverb::AvT;
 
 const STDLIB: &str = include_str!("../std.vemf");
@@ -13,9 +13,15 @@ pub const NAN: Val = Num(c64::new(f64::NAN, f64::NAN));
 pub type Frame = HashMap<Bstr, Val>;
 
 /// vemf interpreter state
-#[derive(Debug)]
 pub struct Env {
-    pub stack: Vec<Frame>,
+    stack: Vec<Frame>,
+    pub output: Vec<Box<dyn Stream>>,
+}
+pub trait Stream : std::io::Write + Any {
+    fn as_any(&self) -> &dyn Any;
+}
+impl<T> Stream for T where T: std::io::Write + Any {
+    fn as_any(&self) -> &dyn Any { self }
 }
 
 /// represents a vemf value
@@ -59,7 +65,7 @@ impl Env {
     }
 
     pub fn from_frame(frame: Frame) -> Env {
-        Env { stack: vec![frame] }
+        Env { stack: vec![frame], output: vec![] }
     }
 
     pub fn locals(&self) -> &Frame { self.stack.last().unwrap() }

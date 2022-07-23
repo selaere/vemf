@@ -192,8 +192,19 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Conj => a.try_c().map_or(NAN, |a| Num(a.conj())),
         Val::Arg  => a.try_c().map_or(NAN, |a| Val::flt(a.arg())),
 
-        Val::Print   => { print  !("{}", a.display_string()); a },
-        Val::Println => { println!("{}", a.display_string()); a },
+        Val::Print   => {
+            if let Some(o) = env.output.first_mut() {
+                let _= o.write(a.display_string().as_bytes());
+            }
+            a
+        },
+        Val::Println => {
+            if let Some(o) = env.output.first_mut() {
+                let _= o.write(a.display_string().as_bytes());
+                let _= o.write(b"\n");
+            }
+            a
+        },
         Val::Exit => match a.try_int() {
             Some(n) => std::process::exit(n as i32),
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
@@ -286,7 +297,9 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::FromCp => {
             if a.is_nan() { return NAN; }
             let Some(a) = a.try_int() else { return NAN };
-            a.try_into().map_or(NAN, |x:u8| Int(crate::codepage::tochar(x) as i64))
+            a.try_into().map_or(NAN, |x:u8| Int(
+                if x == b'\n' {'\n'} else {crate::codepage::tochar(x)}
+            as i64))
         }
         Val::ToCp => {
             if a.is_nan() { return NAN; }

@@ -41,6 +41,7 @@ fn rewrite(path: PathBuf) {
 fn main() {
     let args = Args::parse();
     let mut state = Env::new();
+    state.output.push(Box::new(std::io::stdout()));
     if !args.no_stdlib {
         state.include_stdlib();
     }
@@ -58,7 +59,7 @@ fn main() {
         }
         println!("{}", res.format(
             &args.format.chars()
-            .filter_map(|x| x.is_ascii_digit().then(|| Val::Int(x as i64 - 0x30) ))
+            .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
             .collect::<Vec<_>>()[..]));
     } else {
         repl(state, args);
