@@ -120,9 +120,9 @@ impl Val {
     pub fn display_string(&self) -> String {
         if self.is_nan() { return String::new() }
         self.try_int().map_or_else(|| match self {
-            Lis { l, .. } => l.iter().map(
-                |x| x.try_int().map_or_else(
-                    | | x.display_string() + "\n",
+            Lis { l, .. } => l.iter().enumerate().map(
+                |(i,x)| x.try_int().map_or_else(
+                    | | x.display_string() + if i == l.len()-1 {""} else {"\n"},
                     |n| char::from_u32(n as u32).into_iter().collect::<String>())
             ).collect(),
             otherwise => format!("{}", otherwise),

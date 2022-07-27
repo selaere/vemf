@@ -15,14 +15,15 @@ pub type Frame = HashMap<Bstr, Val>;
 /// vemf interpreter state
 pub struct Env {
     stack: Vec<Frame>,
-    pub output: Vec<Box<dyn Stream>>,
+    pub  input: Vec<Box<dyn  InStream>>,
+    pub output: Vec<Box<dyn OutStream>>,
 }
-pub trait Stream : std::io::Write + Any {
-    fn as_any(&self) -> &dyn Any;
-}
-impl<T> Stream for T where T: std::io::Write + Any {
-    fn as_any(&self) -> &dyn Any { self }
-}
+
+pub trait OutStream: std::io::Write + Any {}
+impl<T> OutStream for T where T: std::io::Write + Any {}
+
+pub trait InStream: std::io::BufRead + Any {}
+impl<T> InStream for T where T: std::io::BufRead + Any {}
 
 /// represents a vemf value
 #[derive(Clone, Debug)]
@@ -44,7 +45,7 @@ pub enum Val {
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
     Complex, Cis, Real, Imag, Conj, Arg,
     Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-    Print, Println, Exit, Format, Numfmt, Parse,
+    Print, Println, Exit, Format, Numfmt, Parse, Out, In, FromUtf8, ToUtf8,
     Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample, Replicate,
     GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode, FromCp, ToCp, Group,
     LoadIntrinsics,
@@ -65,7 +66,7 @@ impl Env {
     }
 
     pub fn from_frame(frame: Frame) -> Env {
-        Env { stack: vec![frame], output: vec![] }
+        Env { stack: vec![frame], input: vec![], output: vec![] }
     }
 
     pub fn locals(&self) -> &Frame { self.stack.last().unwrap() }

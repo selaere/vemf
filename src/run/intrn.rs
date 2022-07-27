@@ -29,7 +29,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
                 Complex, Real, Imag, Conj, Arg, Cis,
                 Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-                Print, Println, Exit, Format, Numfmt, Parse,
+                Print, Println, Exit, Format, Numfmt, Parse, Out, In, ToUtf8, FromUtf8,
                 Takeleft, Takeright, Dropleft, Dropright, Replist, Cycle, Match, Deal, Sample, Replicate,
                 GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode, FromCp, ToCp, Group,
             );
@@ -205,6 +205,51 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             }
             a
         },
+        Val::Out => {
+            let Some(stm): Option<usize> = ba!().try_int().and_then(|x| x.try_into().ok())
+            else { return Int(-1) };
+            if let Some(o) = env.output.get_mut(stm) {
+                let bytes = a.iterf()
+                    .flat_map(|x| x.try_int().map(|x| (x & 0xff) as u8))
+                    .collect::<Vec<_>>();
+                Int(o.write(&bytes).map(|x| x as i64).unwrap_or(-1))
+            } else {
+                Int(-1)
+            }
+        }
+        Val::In => {
+            let Some(stm): Option<usize> = ba!().try_int().and_then(|x| x.try_into().ok())
+            else { return NAN };
+            let Some(chars): Option<isize> = a.try_int().and_then(|x| x.try_into().ok())
+            else { return NAN };
+            if let Some(o) = env.input.get_mut(stm) {
+                if chars < 0 {
+                    let mut buf = Vec::with_capacity(32);
+                    let Ok(_) = o.read_until(b'\n', &mut buf) else { return NAN };
+                    buf.into_iter().map(|i| Int(i64::from(i))).collect()
+                } else if chars == isize::MAX {
+                    let mut buf = Vec::with_capacity(32);
+                    let Ok(size) = o.read_to_end(&mut buf) else { return NAN };
+                    buf.into_iter().take(size).map(|i| Int(i64::from(i))).collect()
+                } else {
+                    let mut buf = vec![0; chars as usize];
+                    let Ok(size) = o.read(&mut buf) else { return NAN };
+                    buf.into_iter().take(size).map(|i| Int(i64::from(i))).collect()
+                }
+            } else {NAN}
+        }
+        Val::FromUtf8 => String::from_utf8_lossy(
+            &a.iterf()
+            .flat_map(|x| x.try_int().map(|x| (x & 0xff) as u8))
+            .collect::<Vec<_>>()
+        ).chars().map(|x| Int(x as _)).collect(),
+        Val::ToUtf8 => a.iterf()
+            .flat_map(|x| x.try_int().map(|x| 
+                x.try_into().ok().and_then(char::from_u32).unwrap_or('\u{FFFD}')))
+            .collect::<String>()
+            .bytes()
+            .map(|x| Int(i64::from(x)))
+            .collect(),
         Val::Exit => match a.try_int() {
             Some(n) => std::process::exit(n as i32),
             _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }

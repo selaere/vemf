@@ -42,11 +42,13 @@ fn main() {
     let args = Args::parse();
     let mut state = Env::new();
     state.output.push(Box::new(std::io::stdout()));
+    state.output.push(Box::new(std::io::stderr()));
     if !args.no_stdlib {
         state.include_stdlib();
     }
     //println!("sizeof(Val) = {}", std::mem::size_of::<Val>());
     if let Some(path) = args.filename {
+        state.input.push(Box::new(std::io::stdin().lock()));
         if args.rewrite { return rewrite(path); }
         let arguments = state.include_args(&args.arguments);
         let mut res = state.include_file(&mut File::open(path).unwrap()).unwrap();
@@ -57,10 +59,11 @@ fn main() {
                 arguments.get(1).cloned()
             );
         }
-        println!("{}", res.format(
+        let form = res.format(
             &args.format.chars()
             .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
-            .collect::<Vec<_>>()[..]));
+            .collect::<Vec<_>>()[..]);
+        if !form.is_empty() { println!("{}", form); }
     } else {
         repl(state, args);
     }
