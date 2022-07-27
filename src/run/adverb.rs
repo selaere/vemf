@@ -232,7 +232,11 @@ pub fn drill(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) ->
 }
 
 pub fn drill_iter(
-    env: &mut Env, a: Val, b: Option<Val>, mut iter: Box<dyn super::list::GoodIter<Val>>, g: &Rc<Val>
+    env: &mut Env,
+    a: Val,
+    b: Option<Val>,
+    mut iter: Box<dyn super::list::GoodIter<Val>>,
+    g: &Rc<Val>,
 ) -> Val {
     let index = iter.next();
     if let Some(index) = index {
@@ -245,6 +249,9 @@ pub fn drill_iter(
                     Ok(l) => l,
                     Err(l) => l.to_vec(),
                 };
+                if v.len() <= index {
+                    v.resize(index+1, (*fill).clone());
+                }
                 v[index] = drill_iter(env, std::mem::take(&mut v[index]), b, iter, g);
                 Val::lis_fill(v, (*fill).clone())
             },
