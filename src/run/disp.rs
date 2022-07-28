@@ -75,7 +75,7 @@ impl Val {
                     Lis{l, ..} => Ok(l.iter().enumerate().map(|(n, j)| {
                         let f = j.format(rest);
                         if l.len() + 1 > col_lens.len() { col_lens.resize(l.len() + 1, 0); }
-                        if col_lens[n] < f.len() { col_lens[n] = f.len(); };
+                        if col_lens[n] < f.chars().count() { col_lens[n] = f.chars().count(); };
                         f
                     }).collect()),
                     #[allow(clippy::needless_borrow)] /*clippy bug i think*/
