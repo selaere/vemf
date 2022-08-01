@@ -1,5 +1,6 @@
 use super::Val::{self, Num, Int, Lis};
 use super::{NAN, c64};
+use crate::or_nan;
 
 impl Val {
     
@@ -109,10 +110,10 @@ pub fn encode(a: Val, b: Val) -> Val {
     }
 }
 
-fn encode_int(mut a: i64, b: Val) -> Val{
+fn encode_int(mut a: i64, b: Val) -> Val {
     let mut list = vec![Int(0); b.len() + 1];
     for (n, i) in b.into_iterf().enumerate().rev() {
-        let Some(i) = i.try_int() else { return NAN };
+        let i = or_nan!(i.try_int());
         if i == 0 { list[n+1] = Int(a); return Val::lis(list); }
         let m; (a, m) = (a.div_euclid(i), a % i);
         list[n+1] = Int(m);
@@ -125,7 +126,7 @@ fn encode_int(mut a: i64, b: Val) -> Val{
 fn encode_flt(mut a: f64, b: Val) -> Val {
     let mut list = vec![Val::flt(0.); b.len() + 1];
     for (n, i) in b.into_iterf().enumerate().rev() {
-        let Some(c64{re: i, ..}) = i.try_c() else { return NAN };
+        let c64{re: i, ..} = or_nan!(i.try_c());
         if i == 0. { list[n+1] = Val::flt(a); return Val::lis(list); }
         let m; (a, m) = (a.div_euclid(i), a.rem_euclid(i));
         list[n+1] = Val::flt(m);

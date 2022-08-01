@@ -29,8 +29,9 @@ impl std::fmt::Display for Val {
 }
 impl Val {
     pub fn format(&self, slice: &[Val]) -> String {
-        let Some(first) = slice.first() else {return format!("{}", self)};
-        let rest = &slice[1..];
+        if slice.is_empty() { return format!("{}", self) }
+        let first = &slice[0];
+        let rest  = &slice[1..];
         first.try_int().map_or_else(|| self.format(rest), |n| match n as isize {
             0 => self.display_string(),
             1 => if self.is_scalar() { format!("{self}") } else { self.format(rest) }

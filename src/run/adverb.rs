@@ -130,31 +130,34 @@ pub fn scan(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.is_infinite() { return NAN; }
     let mut values = Vec::with_capacity(a.len());
     let mut iter = a.into_iterf();
-    let Some(start) = iter.next() else { return b.unwrap_or(NAN) };
-    let mut val = match b {
-        Some(b) => g.dyad(env, b, start),
-        None => start,
-    };
-    values.push(val.clone());
-    for i in iter {
-        val = g.dyad(env, val, i);
+    if let Some(start) = iter.next() {
+        let mut val = match b {
+            Some(b) => g.dyad(env, b, start),
+            None => start,
+        };
         values.push(val.clone());
-    }
-    Val::lis(values)
+        for i in iter {
+            val = g.dyad(env, val, i);
+            values.push(val.clone());
+        }
+        Val::lis(values)
+    } else { b.unwrap_or(NAN) }
 }
 
 pub fn reduce(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.is_infinite() { return NAN; }
     let mut iter = a.into_iterf();
-    let Some(start) = iter.next() else { return b.unwrap_or(NAN) };
-    let mut val = match b {
-        Some(b) => g.dyad(env, b, start),
-        None => start,
-    };
-    for i in iter {
-        val = g.dyad(env, val, i);
-    }
-    val
+    if let Some(start) = iter.next() {
+        let mut val = match b {
+            Some(b) => g.dyad(env, b, start),
+            None => start,
+        };
+        for i in iter {
+            val = g.dyad(env, val, i);
+        }
+        val
+    } else { b.unwrap_or(NAN) }
+    
 }
 
 pub fn until_scan(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
@@ -214,16 +217,16 @@ pub fn scan_pairs(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
 }
 
 pub fn stencil(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
-    let Some(size) = f.call(env, a.clone(), b.clone()).try_int().map(|x| x as usize) else {
+    if let Some(size) = f.call(env, a.clone(), b.clone()).try_int().map(|x| x as usize) {
+        if a.is_infinite() { return Val::lis(Vec::new()); }
+        (0..(a.len() + 1).saturating_sub(size)).map(|n| {
+            g.call(env, a.iterf().skip(n).take(size).cloned().collect(), b.clone())
+        }).collect()
+    } else {
         // we could do something smart here like reshaping the output or using
         // multiple dimensions but uh
-        return Val::lis(Vec::new());
-    };
-    if a.is_infinite() { return Val::lis(Vec::new()); }
-    // 1234567 3╫◄ = (123)(234)(345)(456)(567) l-n+1
-    (0..(a.len() + 1).saturating_sub(size)).map(|n| {
-        g.call(env, a.iterf().skip(n).take(size).cloned().collect(), b.clone())
-    }).collect()
+        Val::lis(Vec::new())
+    }
 }
 
 pub fn drill(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
@@ -240,22 +243,21 @@ pub fn drill_iter(
 ) -> Val {
     let index = iter.next();
     if let Some(index) = index {
-        let Some(index) = index.try_int()
-            .and_then(|x|->Option<usize> { x.try_into().ok() })
-        else { return a };
-        match a {
-            Val::Lis{l, fill} => {
-                let mut v = match Rc::try_unwrap(l) {
-                    Ok(l) => l,
-                    Err(l) => l.to_vec(),
-                };
-                if v.len() <= index {
-                    v.resize(index+1, (*fill).clone());
-                }
-                v[index] = drill_iter(env, std::mem::take(&mut v[index]), b, iter, g);
-                Val::lis_fill(v, (*fill).clone())
-            },
-            _ => g.call(env, a, b)
+        let index = match index.try_int().and_then(|x|->Option<usize> { x.try_into().ok() }) {
+            Some(i) => i, None => return a,
+        };
+        if let Val::Lis{l, fill} = a {
+            let mut v = match Rc::try_unwrap(l) {
+                Ok(l) => l,
+                Err(l) => l.to_vec(),
+            };
+            if v.len() <= index {
+                v.resize(index+1, (*fill).clone());
+            }
+            v[index] = drill_iter(env, std::mem::take(&mut v[index]), b, iter, g);
+            Val::lis_fill(v, (*fill).clone())
+        } else {
+            g.call(env, a, b)
         }
     } else {
         g.call(env, a, b)

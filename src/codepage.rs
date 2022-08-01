@@ -1,8 +1,7 @@
 //! im sorry
 use crate::Bstr;
 
-macro_rules! chars { ($func:ident $($other:tt)?) => { $func! {
-    $($other)*
+macro_rules! chars { ($func:ident $($other:tt)?) => { $func! { $($other)*
     '⍁' '☺' '☻' '♥' '♦' '♣' '♠' '•' '◘' '○' '◙' '♂' '♀' '♪' '♫' '☼'
     '►' '◄' '↕' '‼' '¶' '§' '▬' '↨' '↑' '↓' '←' '→' '∟' '↔' '▲' '▼'
     ' ' '!' '"' '#' '$' '%' '&' '\'''(' ')' '*' '+' ',' '-' '.' '/'
@@ -25,7 +24,7 @@ macro_rules! array { ($($x:tt)*) => { [$($x),*] }}
 
 const CHARS: [char; 256] = chars!(array);
 
-macro_rules! byte_maker { ( [ $($n:tt),* ] $($c:tt)*) => {
+macro_rules! byte_maker { ([ $($n:tt),* ] $($c:tt)*) => {
     macro_rules! byte {
         $( ($c) => {$n} );*
     }
@@ -61,7 +60,7 @@ pub const fn tobyte(x: char) -> Option<u8> {
             _ => None,
         }
     } }
-    if let Some(c) = chars!(bee) { return Some(c) };
+    //if let Some(c) = chars!(bee) { return Some(c) };
     Some(match x {
         '\0'..=' ' => x as u8,
         '␀'=>0, '‘'|'’'|'′'|'ʹ'|'ʻ'|'ʼ'|'ʽ'=>b'\'', '−'|'–'=>b'-', '“'|'”'|'″'|'ʺ'=>b'"', '≠'=>b'~',
@@ -69,7 +68,7 @@ pub const fn tobyte(x: char) -> Option<u8> {
         'ß'|'ϐ'=>b!('β'), 'Π'|'∏'|'ϖ'=>b!('π'), '∑'=>b!('Σ'), 'µ'=>b!('μ'), 'θ'|'ϑ'=>b!('Θ'),
         'Ω'=>b!('Ω'), 'ð'|'∂'=>b!('δ'), 'φ'|'ɸ'|'∅'|'Ø'|'ø'=>b!('ϕ'), '∈'|'∊'|'€'|'ɛ'=>b!('ε'),
         '≢'=>b!('≈'), '∙'|'˙'=>b!('¨'), '⌼'=>b!('◘'), '⍽'=>b!('⎕'),
-        _ => return None
+        _ => return chars!(bee)
     })
 }
 
@@ -77,8 +76,7 @@ pub fn tobytes(string: &str) -> Option<Bstr> {
     let mut vector = Bstr::with_capacity(string.len() / 2);
     for c in string.chars() {
         if let '\r' | '\u{200E}' | '\u{FE0E}' | '\u{FE0F}' = c { continue } // crlf moment
-        let Some(b) = tobyte(c) else {return None};
-        vector.push(b);
+        vector.push(tobyte(c)?);
     }
     Some(vector)
 }

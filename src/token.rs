@@ -40,10 +40,9 @@ fn string(bytes: &mut &[u8]) -> Bstr {
     let mut buf = Bstr::new();
     loop { match step(bytes) {
         Some(b'"') | None => break,
-        Some(b'\'') => {
-            let Some(a) = step(bytes) else { break };
+        Some(b'\'') => if let Some(a) = step(bytes) {
             buf.push(do_escape(a, bytes).unwrap_or(a));
-        }
+        } else { break },
         Some(c) => buf.push(c),
     }}
     buf

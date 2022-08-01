@@ -113,8 +113,7 @@ fn word_cst(code: &mut&[Tok], mut morphemes: usize) -> Option<(Role, Expr)>{
 
 fn word(code: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
     if *morphemes == 0 {return None}
-    let Some(t) = code.first() else {return None};
-    let (rol, val) = match t {
+    let (rol, val) = match code.first()? {
         Tok::Conj(c) => { step!(code); (Verb, Expr::Var(smallvec![*c])) },
         Tok::VarSet(v) => { step!(code); (Verb, Expr::SetVar(v.clone())) },
         Tok::VarCng(v) => { step!(code); (Verb, Expr::CngVar(v.clone())) },
@@ -390,8 +389,7 @@ fn parse_stmt(code: &mut&[Tok], expr: Option<Expr>) -> Option<Stmt> {
             Stmt::Return(expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('?'))) => { step!(code);
             let ev2 = phrase_to_expr(phrase(code));
-            let Some(block) = parse_stmt(code, ev2) else {return None};
-            Stmt::Cond(expr.unwrap_or(NAN), Box::new(block))
+            Stmt::Cond(expr.unwrap_or(NAN), Box::new(parse_stmt(code, ev2)?))
         },
         _ => return None,
     })
@@ -404,8 +402,9 @@ pub fn block(code: &mut&[Tok]) -> Vec<Stmt> {
         while let Some(Tok::Just(b!('·'))) = code.first() { step!(code); }
         if let Some(Tok::Just(b!('}'))) | None = code.first() { break };
         let ev = phrase_to_expr(phrase(code));
-        let Some(stmt) = parse_stmt(code, ev) else { break };
-        exps.push(stmt);
+        if let Some(stmt) = parse_stmt(code, ev) {
+            exps.push(stmt);
+        } else { break }
     }
     exps
 }

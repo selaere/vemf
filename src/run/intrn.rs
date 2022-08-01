@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use crate::{Bstr, b};
+use crate::{Bstr, b, or_nan};
 use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, number::complexcmp, list};
 use smallvec::smallvec;
 
@@ -206,37 +206,35 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             a
         },
         Val::Out => {
-            let Some(stm): Option<usize> = ba!().try_int().and_then(|x| x.try_into().ok())
-            else { return Int(-1) };
-            if let Some(o) = env.output.get_mut(stm) {
-                let bytes = a.iterf()
-                    .flat_map(|x| x.try_int().map(|x| (x & 0xff) as u8))
-                    .collect::<Vec<_>>();
-                Int(o.write(&bytes).map(|x| x as i64).unwrap_or(-1))
-            } else {
-                Int(-1)
-            }
+            let stm = or_nan!(
+                ba!().try_int()
+                .and_then(|x| usize::try_from(x).ok())
+                .and_then(|n| env.output.get_mut(n))
+            );
+            let bytes = a.iterf()
+                .flat_map(|x| x.try_int().map(|x| (x & 0xff) as u8))
+                .collect::<Vec<_>>();
+            stm.write(&bytes).map(|x| Int(x as i64)).unwrap_or(NAN)
         }
         Val::In => {
-            let Some(stm): Option<usize> = ba!().try_int().and_then(|x| x.try_into().ok())
-            else { return NAN };
-            let Some(chars): Option<isize> = a.try_int().and_then(|x| x.try_into().ok())
-            else { return NAN };
-            if let Some(o) = env.input.get_mut(stm) {
-                if chars < 0 {
-                    let mut buf = Vec::with_capacity(32);
-                    let Ok(_) = o.read_until(b'\n', &mut buf) else { return NAN };
-                    buf.into_iter().map(|i| Int(i64::from(i))).collect()
-                } else if chars == isize::MAX {
-                    let mut buf = Vec::with_capacity(32);
-                    let Ok(size) = o.read_to_end(&mut buf) else { return NAN };
-                    buf.into_iter().take(size).map(|i| Int(i64::from(i))).collect()
-                } else {
-                    let mut buf = vec![0; chars as usize];
-                    let Ok(size) = o.read(&mut buf) else { return NAN };
-                    buf.into_iter().take(size).map(|i| Int(i64::from(i))).collect()
-                }
-            } else {NAN}
+            let chars = or_nan!(a.try_int().and_then(|x| isize::try_from(x).ok()));
+            let stm = or_nan!(
+                ba!().try_int()
+                .and_then(|x| usize::try_from(x).ok())
+                .and_then(|n| env.input.get_mut(n)));
+            if chars < 0 {
+                let mut buf = Vec::with_capacity(32);
+                or_nan!(stm.read_until(b'\n', &mut buf).ok());
+                buf.into_iter().map(|i| Int(i64::from(i))).collect()
+            } else if chars == isize::MAX { // don't allocate an infinite buffer
+                let mut buf = Vec::with_capacity(32);
+                let size = or_nan!(stm.read_to_end(&mut buf).ok());
+                buf.into_iter().take(size).map(|i| Int(i64::from(i))).collect()
+            } else {
+                let mut buf = vec![0; chars as usize];
+                let size = or_nan!(stm.read(&mut buf).ok());
+                buf.into_iter().take(size).map(|i| Int(i64::from(i))).collect()
+            }
         }
         Val::FromUtf8 => String::from_utf8_lossy(
             &a.iterf()
@@ -295,8 +293,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             a => a,
         },
         Val::Replist => if !a.is_infinite() {
-            let Some(num) = ba!().try_int() else {return NAN};
-            (0..num).flat_map(|_| a.iterf().cloned()).collect()
+            (0..or_nan!(ba!().try_int())).flat_map(|_| a.iterf().cloned()).collect()
         } else {a},
         Val::Cycle => match a {
             Lis{l, ..} => Val::DCycle(l),
@@ -341,17 +338,19 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Encode    => super::number::encode(a, ba!()),
         Val::FromCp => {
             if a.is_nan() { return NAN; }
-            let Some(a) = a.try_int() else { return NAN };
-            a.try_into().map_or(NAN, |x:u8| Int(
-                if x == b'\n' {'\n'} else {crate::codepage::tochar(x)}
-            as i64))
+            a.try_int()
+                .and_then(|x| u8::try_from(x).ok())
+                .map_or(NAN, |x| Int(
+                    if x == b'\n' {'\n'} else {crate::codepage::tochar(x)}
+                as i64))
         }
         Val::ToCp => {
             if a.is_nan() { return NAN; }
-            let Some(Ok(a)) = a.try_int().map(u32::try_from) else { return NAN };
-            char::from_u32(a).map_or(NAN, |x:char| crate::codepage::tobyte(x).map_or(NAN, 
-                |x| Int(i64::from(x))
-            ))
+            a.try_int()
+                .and_then(|x| u32::try_from(x).ok())
+                .and_then(char::from_u32)
+                .and_then(crate::codepage::tobyte)
+                .map_or(NAN, |x| Int(i64::from(x)))
         }
         Val::Call => {
             let b = ba!();

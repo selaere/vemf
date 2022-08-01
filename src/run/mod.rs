@@ -25,6 +25,16 @@ impl<T> OutStream for T where T: std::io::Write + Any {}
 pub trait InStream: std::io::BufRead + Any {}
 impl<T> InStream for T where T: std::io::BufRead + Any {}
 
+#[macro_export]
+macro_rules! or_nan {
+    ($expr:expr) => {
+        match $expr {
+            Some(x) => x,
+            None => return NAN,
+        }
+    };
+}
+
 /// represents a vemf value
 #[derive(Clone, Debug)]
 pub enum Val {
