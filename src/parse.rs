@@ -304,7 +304,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Tok::Just(b!('ϕ')) => Expr::Snd(Vec::new()),
         Tok::VarNoun(x) => Expr::Var(x),
         Tok::Chr(x) =>
-            Expr::Int(if x <= 10 { -i64::from(x) } else { i64::from(x) }),
+            Expr::Int(i64::from(x)),
         Tok::Chr2(x, y) =>
             Expr::Snd(vec![Expr::Int(i64::from(x)), Expr::Int(i64::from(y))]),
         Tok::Num2(x, y) =>

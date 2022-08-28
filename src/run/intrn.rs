@@ -116,7 +116,9 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Num(r)
             },
         }
-        Val::DivE => a.try_int().zip(ba!().try_int()).map_or(NAN, |(a, b)| Int(a.div_euclid(b))),
+        Val::DivE => a.try_int().zip(ba!().try_int()).map_or(NAN, |(a, b)| if b == 0 {NAN} else {
+            Int(a.div_euclid(b))
+        }),
         Val::Pow => match (a, ba!()) {
             (Int(a), Int(b)) if b >= 0 => Int(a.saturating_pow(b as u32)),
             (a, ba) => Num(a.as_c().powc(ba.as_c())),

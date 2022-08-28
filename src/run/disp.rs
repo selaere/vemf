@@ -27,6 +27,7 @@ impl std::fmt::Display for Val {
         }
     }
 }
+
 impl Val {
     pub fn format(&self, slice: &[Val]) -> String {
         if slice.is_empty() { return format!("{}", self) }

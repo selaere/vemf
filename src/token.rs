@@ -43,6 +43,8 @@ fn string(bytes: &mut &[u8]) -> Bstr {
         Some(b'\'') => if let Some(a) = step(bytes) {
             buf.push(do_escape(a, bytes).unwrap_or(a));
         } else { break },
+        Some(b!('¨')) => buf.push(b'"'),
+        Some(b!('·')) => buf.push(b'\''),
         Some(c) => buf.push(c),
     }}
     buf
@@ -89,7 +91,10 @@ fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
             Tok::Num(buf)
         }
         Some(b'`') => Tok::Chr(step(bytes).unwrap_or(0x20)),
-        Some(b'_') => Tok::VarNoun(smallvec![b'_', step(bytes).unwrap_or(b'_')]),
+        Some(b'_') => match step(bytes).unwrap_or(b'_') {
+            c @ short_verb!() => Tok::VarVerb(smallvec![b'_', c]),
+            c => Tok::VarNoun(smallvec![b'_', c]),
+        }
         Some(b!('♥')) => Tok::Chr2(
             step(bytes).unwrap_or(  0), step(bytes).unwrap_or(  0),
         ),

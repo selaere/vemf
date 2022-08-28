@@ -1,4 +1,3 @@
-//! im sorry
 use crate::Bstr;
 
 macro_rules! chars { ($func:ident $($other:tt)?) => { $func! { $($other)*
@@ -60,7 +59,6 @@ pub const fn tobyte(x: char) -> Option<u8> {
             _ => None,
         }
     } }
-    //if let Some(c) = chars!(bee) { return Some(c) };
     Some(match x {
         '\0'..=' ' => x as u8,
         '␀'=>0, '‘'|'’'|'′'|'ʹ'|'ʻ'|'ʼ'|'ʽ'=>b'\'', '−'|'–'=>b'-', '“'|'”'|'″'|'ʺ'=>b'"', '≠'=>b'~',

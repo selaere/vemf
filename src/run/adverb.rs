@@ -243,6 +243,7 @@ pub fn drill_iter(
 ) -> Val {
     let index = iter.next();
     if let Some(index) = index {
+        if index.is_nan() { return a; }
         let index = match index.try_int().and_then(|x|->Option<usize> { x.try_into().ok() }) {
             Some(i) => i, None => return a,
         };

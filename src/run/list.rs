@@ -41,6 +41,7 @@ impl Val {
 
     pub fn index_at_depth(&self, env: &mut Env, index: Val) -> Val {
         let mut value = self.clone();
+        if index.is_nan() { return value.fill() }
         for n in 0..index.len() {
             if value.is_scalar() { return value.clone(); }
             let i = index.index(env, n);
