@@ -301,7 +301,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Tok::Just(b!('∞')) => Expr::Flt(c64::new(f64::INFINITY, 0.)),
         Tok::Just(b!('Γ')) => Expr::Flt(c64::i()),
         Tok::Just(b!('█')) => NAN,
-        Tok::Just(b!('ϕ')) => Expr::Snd(Vec::new()),
+        Tok::Just(b!('φ')) => Expr::Snd(Vec::new()),
         Tok::VarNoun(x) => Expr::Var(x),
         Tok::Chr(x) =>
             Expr::Int(i64::from(x)),
