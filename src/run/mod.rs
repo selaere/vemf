@@ -208,10 +208,6 @@ impl Env {
     pub fn eval_stmt(&mut self, stmt: &Stmt) -> Option<Val> {
         match stmt {
             Stmt::Discard(expr) => { let _ = self.eval(&expr); },
-            Stmt::Conj(a, v) => {
-                let a = self.eval(&a);
-                self.get_var(&v[..]).unwrap_or_default().monad(self, a);
-            },
             Stmt::Loc(a, v) => {
                 let a = self.eval(&a);
                 self.set_local(v.clone(), a);

@@ -51,7 +51,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Lis { .. } | Num(_) | Int(_) => self.clone(),
         Val::FSet(name) => {
             env.set_local(name.clone(), a.clone());
-            a
+            b.unwrap_or(a)
         },
         Val::Set  => {
             let name = a.iterf().filter_map(|x| x.try_int().map(|x| x as u8)).collect::<Bstr>();
@@ -198,14 +198,14 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             if let Some(o) = env.output.first_mut() {
                 let _= o.write(a.display_string().as_bytes());
             }
-            a
+            b.unwrap_or(a)
         },
         Val::Println => {
             if let Some(o) = env.output.first_mut() {
                 let _= o.write(a.display_string().as_bytes());
                 let _= o.write(b"\n");
             }
-            a
+            b.unwrap_or(a)
         },
         Val::Out => {
             let stm = or_nan!(

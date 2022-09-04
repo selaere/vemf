@@ -3,8 +3,9 @@ use smallvec::smallvec;
 
 #[derive(Debug, Clone)]
 pub enum Tok {
-    Just(u8), Conj(u8), White(u8), Comment(Bstr),
-    VarNoun(Bstr), VarVerb(Bstr), VarAv1(Bstr), VarAv2(Bstr), VarSet(Bstr), VarCng(Bstr),
+    Just(u8), White(u8), Comment(Bstr),
+    VarNoun(Bstr), VarVerb(Bstr), VarAv1(Bstr), VarAv2(Bstr),
+    VarSet(Bstr), VarCng(Bstr), VarSetStmt(Bstr), VarCngStmt(Bstr),
     Chr(u8), Chr2(u8, u8), Num2(u8, u8), Num3(u8, u8, u8),
     Num(Bstr), HNum(Bstr), Str(Bstr),
 }
@@ -20,8 +21,8 @@ macro_rules! short_av1 { () => { b!('┼''╪''┴''┬''╧''╤''╕''╒''╛
 macro_rules! short_av2 { () => { b!('╬''╫''╩''╦''╨''╥''╖''╓''╜''╙''╝''╚''╗''╔') }; }
 macro_rules! short_noun { () => { b'a'..=b'z' | b!('α''β''π''τ''Ω''Σ''δ') }; }
 macro_rules! short_verb { () => {
-    b!('♦''♣''♠''♂''♀''♫''►''◄''↕''‼''¶''§''▬''↨''↑''↓''←''∟''▲''▼'
-       '!''#''$''%''&''*''+'',''-''/'';''<''=''>''@''\\''^''|''~')
+    b!('☺''☻''♦''♣''♠''♂''♀''♫''►''◄''↕''‼''¶''§''▬''↨''↑''↓''←''∟''▲''▼'
+       '!''#''$''%''&''*''+'',''-''/'';''<''=''>''@''\\''^''|''~''⌂')
     | 0x80..=0xAF // ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»
     | b!('▄''▌''▐''▀''ε''∩''≡''±''≥''≤''⌠''⌡''÷''≈''°''√''ⁿ''²')
 }; }
@@ -126,15 +127,28 @@ fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
         Some(b!(':')) => Tok::VarVerb(identifier(bytes)),
         Some(b!('•')) => Tok::VarAv1 (identifier(bytes)),
         Some(b!('○')) => Tok::VarAv2 (identifier(bytes)),
-        Some(b!('→')) => Tok::VarSet (identifier(bytes)),
-        Some(b!('↔')) => Tok::VarCng (identifier(bytes)),
+        Some(b!('→')) => {
+            let ident = identifier(bytes);
+            (if let Some(b!('·')) | None = bytes.first() {
+                step(bytes); Tok::VarSetStmt
+            } else {
+                Tok::VarSet
+            })(ident)
+        },
+        Some(b!('↔')) => {
+            let ident = identifier(bytes);
+            (if let Some(b!('·')) | None = bytes.first() {
+                step(bytes); Tok::VarCngStmt
+            } else {
+                Tok::VarCng
+            })(ident)
+        },
         Some(b!('¨')) => Tok::Str    (identifier(bytes)),
         Some(c @ (b' ' | b'\n')) => Tok::White(c),
         Some(c @ short_verb!())  => Tok::VarVerb(smallvec![c]),
         Some(c @ short_av1!())   => Tok::VarAv1(smallvec![c]),
         Some(c @ short_av2!())   => Tok::VarAv2(smallvec![c]),
-        Some(c @ b'A'..=b'Z')    => Tok::VarSet(smallvec![c + 32]),
-        Some(c @ b!('☺''☻''⌂'))  => Tok::Conj(c),
+        Some(c @ b'A'..=b'Z')    => Tok::VarVerb(smallvec![c]),
         Some(c @ short_noun!())  => Tok::VarNoun(smallvec![c]),
         Some(b!('σ')) => Tok::VarNoun(smallvec![b!('['), b!('α')]),
         Some(b!('μ')) => Tok::VarNoun(smallvec![b!('['), b!('β')]),
@@ -156,7 +170,7 @@ pub fn rewrite(mut bytes: &[u8]) -> Vec<u8> {
     let mut out = Vec::new();
     while let Some(tok) = token(step(&mut bytes), &mut bytes) {
         match tok {
-            Tok::Just(c) | Tok::Conj(c) | Tok::White(c) => out.push(c),
+            Tok::Just(c) | Tok::White(c) => out.push(c),
             Tok::Comment(s) => { out.extend(b"' "); out.extend(s.into_iter()); out.push(10); }
             Tok::VarNoun(s) => match s[..] {
                 [c @ short_noun!()] => out.push(c),
@@ -177,11 +191,10 @@ pub fn rewrite(mut bytes: &[u8]) -> Vec<u8> {
                 [c @ short_av2!()] => out.push(c),
                 ref s => { out.push(b!('○')); out.extend(s) },
             },
-            Tok::VarSet(s) => match s[..] {
-                [c @ b'a'..=b'z'] => out.push(c - 32),
-                ref s => { out.push(b!('→')); out.extend(s) },
-            },
-            Tok::VarCng(s) => { out.push(b!('↔')); out.extend(s); },
+            Tok::VarSet(s)     => { out.push(b!('→')); out.extend(s); },
+            Tok::VarSetStmt(s) => { out.push(b!('→')); out.extend(s); out.push(b!('·')); },
+            Tok::VarCng(s)     => { out.push(b!('↔')); out.extend(s); },
+            Tok::VarCngStmt(s) => { out.push(b!('↔')); out.extend(s); out.push(b!('·')); },
             Tok::Chr(a) => { out.push(b'`'); out.push(a); },
             Tok::Chr2(a, b) => { out.push(b!('♥')); out.push(a); out.push(b); },
             Tok::Num2(a, b) => { out.push(b!('░')); out.push(a); out.push(b); },
