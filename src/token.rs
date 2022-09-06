@@ -41,9 +41,10 @@ fn string(bytes: &mut &[u8]) -> Bstr {
     let mut buf = Bstr::new();
     loop { match step(bytes) {
         Some(b'"') | None => break,
-        Some(b'\'') => if let Some(a) = step(bytes) {
+        Some(b'\'') => {
+            let a = step(bytes).unwrap_or(b'\'');
             buf.push(do_escape(a, bytes).unwrap_or(a));
-        } else { break },
+        },
         Some(b!('¨')) => buf.push(b'"'),
         Some(b!('·')) => buf.push(b'\''),
         Some(c) => buf.push(c),
@@ -76,7 +77,7 @@ fn identifier(bytes: &mut&[u8]) -> Bstr {
             [c].into_iter().chain(identifier(bytes)).collect()
         }
         Some(chr) => smallvec![chr],
-        None => panic!(),
+        None => smallvec![],
     }
 }
 
@@ -92,9 +93,16 @@ fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
             Tok::Num(buf)
         }
         Some(b'`') => Tok::Chr(step(bytes).unwrap_or(0x20)),
-        Some(b'_') => match step(bytes).unwrap_or(b'_') {
-            c @ short_verb!() => Tok::VarVerb(smallvec![b'_', c]),
-            c => Tok::VarNoun(smallvec![b'_', c]),
+        Some(b'_') => {
+            let mut c = step(bytes).unwrap_or(b'_');
+            if let b'\'' = c {
+                let a = step(bytes).unwrap_or(b'\'');
+                c = do_escape(a, bytes).unwrap_or(a);
+            }
+            match c {
+                c @ short_verb!() => Tok::VarVerb(smallvec![b'_', c]),
+                c => Tok::VarNoun(smallvec![b'_', c]),
+            }
         }
         Some(b!('♥')) => Tok::Chr2(
             step(bytes).unwrap_or(  0), step(bytes).unwrap_or(  0),
@@ -106,7 +114,7 @@ fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
             step(bytes).unwrap_or(253), step(bytes).unwrap_or(253), step(bytes).unwrap_or(253),
         ),
         Some(b!('\'')) => match step(bytes) {
-            Some(b' ' | b'\n') | None => {
+            Some(b' ') | None => {
                 let mut buf = Bstr::new();
                 loop { match step(bytes) {
                     Some(b'\n') | None => break,
@@ -166,52 +174,114 @@ pub fn tokenize(mut bytes: &[u8]) -> Vec<Tok> {
     toks
 }
 
-pub fn rewrite(mut bytes: &[u8]) -> Vec<u8> {
-    let mut out = Vec::new();
-    while let Some(tok) = token(step(&mut bytes), &mut bytes) {
-        match tok {
-            Tok::Just(c) | Tok::White(c) => out.push(c),
-            Tok::Comment(s) => { out.extend(b"' "); out.extend(s.into_iter()); out.push(10); }
-            Tok::VarNoun(s) => match s[..] {
-                [c @ short_noun!()] => out.push(c),
-                [b!('['), b!('α')] => out.push(b!('σ')),
-                [b!('['), b!('β')] => out.push(b!('μ')),
-                [b!('_'), c] => { out.push(b'_'); out.push(c) },
-                ref s => { out.push(b'.'); out.extend(s) },
-            },
-            Tok::VarVerb(s) => match s[..] {
-                [c @ short_verb!()] => out.push(c),
-                ref s => { out.push(b':'); out.extend(s) },
-            },
-            Tok::VarAv1(s) => match s[..] {
-                [c @ short_av1!()] => out.push(c),
-                ref s => { out.push(b!('•')); out.extend(s) },
-            },
-            Tok::VarAv2(s) => match s[..] {
-                [c @ short_av2!()] => out.push(c),
-                ref s => { out.push(b!('○')); out.extend(s) },
-            },
-            Tok::VarSet(s)     => { out.push(b!('→')); out.extend(s); },
-            Tok::VarSetStmt(s) => { out.push(b!('→')); out.extend(s); out.push(b!('·')); },
-            Tok::VarCng(s)     => { out.push(b!('↔')); out.extend(s); },
-            Tok::VarCngStmt(s) => { out.push(b!('↔')); out.extend(s); out.push(b!('·')); },
-            Tok::Chr(a) => { out.push(b'`'); out.push(a); },
-            Tok::Chr2(a, b) => { out.push(b!('♥')); out.push(a); out.push(b); },
-            Tok::Num2(a, b) => { out.push(b!('░')); out.push(a); out.push(b); },
-            Tok::Num3(a, b, c) => { out.push(b!('▓')); out.push(a); out.push(b); out.push(c); },
-            Tok::Num(n) => { out.push(b!('■')); out.extend(n); out.push(b!('■')); },
-            Tok::HNum(n) => { out.push(b!('\'')); out.extend(n); },
-            Tok::Str(s) => {
-                out.push(b!('"'));
-                for i in s { match i { 
-                    b'\'' => out.extend(b"\'\'"),
-                    i => out.push(i),
-                }}
-                out.push(b!('"'));
-            },
+
+fn rewrite_token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Bstr> {
+    let first = first?;
+    Some(match first {
+        b'"' => rewrite_string(bytes),
+        b!('■') => {
+            let mut buf = smallvec![b!('■')];
+            loop { match step(bytes) {
+                Some(b!('■')) | None => break,
+                Some(c) => buf.push(c),
+            }}
+            buf
         }
+        b'`' => smallvec![b'`', step(bytes).unwrap_or(0x20)],
+        b'_' => {
+            let mut c = step(bytes).unwrap_or(b'_');
+            if let b'\'' = c {
+                let a = step(bytes).unwrap_or(b'\'');
+                c = do_escape(a, bytes).unwrap_or(a);
+            }
+            smallvec![b'_', c]
+        }
+        b!('♥') => smallvec![
+            b!('♥'), step(bytes).unwrap_or(  0), step(bytes).unwrap_or(  0),
+        ],
+        b!('░') => smallvec![
+            b!('░'), step(bytes).unwrap_or(253), step(bytes).unwrap_or(253),
+        ],
+        b!('▒') => smallvec![
+            b!('▒'), step(bytes).unwrap_or(253), step(bytes).unwrap_or(253), step(bytes).unwrap_or(253),
+        ],
+        b!('\'') => match step(bytes) {
+            Some(b' ') | None => {
+                let mut buf = smallvec![b'\'', b' '];
+                loop { match step(bytes) {
+                    Some(b'\n') | None => break,
+                    Some(a) => buf.push(a),
+                }}
+                buf.push(b'\n');
+                buf
+            },
+            Some(first @ (b'0'..=b'9' | b'-')) => {
+                let mut buf = smallvec![b'\'', first];
+                while let Some(&x @ (b'0'..=b'9' | b'.')) = bytes.first() {
+                    buf.push(x); step(bytes);
+                }
+                buf
+            },
+            Some(a) => return rewrite_token(do_escape(a, bytes).or_else(|| step(bytes)), bytes),
+        },
+        c @ b!('.'':''•''○''→''↔''¨') => {
+            let mut i = rewrite_identifier(bytes);
+            i.insert(0, c);
+            i
+        }
+        c => smallvec![c]
+    })
+}
+
+
+fn rewrite_identifier(bytes: &mut&[u8]) -> Bstr {
+    match step(bytes) {
+        Some(first @ b'a'..=b'z') => {
+            let mut buf = smallvec![first];
+            while let Some(&ltr @ (b'A'..=b'Z' | b'a'..=b'z')) = bytes.first() {
+                buf.push(ltr); step(bytes);
+                if let b'A'..=b'Z' = ltr { break }
+            }
+            buf
+        }
+        Some(b'_') => smallvec![b'_', step(bytes).unwrap_or(b'_')],
+        Some(b'"') => rewrite_string(bytes),
+        Some(b'\'') => {
+            let a = step(bytes).unwrap_or(b'\'');
+            smallvec![do_escape(a, bytes).unwrap_or(a)]
+        }
+        Some(c @ (b']' | b!('['))) => {
+            [c].into_iter().chain(rewrite_identifier(bytes)).collect()
+        }
+        Some(chr) => smallvec![chr],
+        None => panic!(),
     }
-    out
+}
+
+fn rewrite_string(bytes: &mut &[u8]) -> Bstr {
+    let mut buf = smallvec![b'"'];
+    loop { match step(bytes) {
+        c @ (Some(b'"') | None) => {
+            if let Some(c) = c { buf.push(c) }
+            break
+        },
+        Some(b'\'') => {
+            let a = step(bytes).unwrap_or(b'\'');
+            buf.push(do_escape(a, bytes).unwrap_or(a));
+        },
+        Some(c) => buf.push(c),
+    }}
+    buf
+}
+
+
+pub fn rewrite(mut bytes: &[u8]) -> Vec<u8> {
+    let mut string = Vec::with_capacity(bytes.len());
+    
+    while let Some(str) = rewrite_token(step(&mut bytes), &mut bytes) {
+        string.extend_from_slice(&str);
+    }
+    string
 }
 
 // !"#$%&'()*+,-./:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~

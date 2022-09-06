@@ -23,8 +23,7 @@ struct Args {
     #[clap(short, long, default_value = "0")]
     format: String,
 
-    /// if given, prints to stdout the file, rewritten without '⬚ escapes and
-    /// some ambiguities like ``:/``. potentially buggy
+    /// if given, prints to stdout the file, rewritten without ' escapes
     #[clap(short, long)]
     rewrite: bool
 }

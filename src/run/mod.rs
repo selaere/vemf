@@ -204,16 +204,15 @@ impl Env {
         }
     }
 
-    #[allow(clippy::needless_borrow)] /*clippy bug i think*/
     pub fn eval_stmt(&mut self, stmt: &Stmt) -> Option<Val> {
         match stmt {
-            Stmt::Discard(expr) => { let _ = self.eval(&expr); },
+            Stmt::Discard(expr) => { let _ = self.eval(expr); },
             Stmt::Loc(a, v) => {
-                let a = self.eval(&a);
+                let a = self.eval(a);
                 self.set_local(v.clone(), a);
             },
             Stmt::Mut(a, v) => {
-                let a = self.eval(&a);
+                let a = self.eval(a);
                 self.mutate_var(v, a);
             },
             Stmt::DelLoc(v) => {
@@ -222,9 +221,9 @@ impl Env {
             Stmt::DelMut(v) => {
                 self.delete_var(v);
             },
-            Stmt::Return(expr) => { return Some(self.eval(&expr)); },
+            Stmt::Return(expr) => { return Some(self.eval(expr)); },
             Stmt::Cond(cond, then) => {
-                let val = self.eval(&cond);
+                let val = self.eval(cond);
                 let cond = val.is_scalar() && val.as_bool() || {
                     let a = self.locals().get(&[b!('α')][..]).cloned().unwrap_or(NAN);
                     let b = self.locals().get(&[b!('β')][..]).cloned();

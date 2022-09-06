@@ -16,7 +16,7 @@ fn test() -> Result<(), String> {
                 println!("test failed line {} ``{i} : {o}``: {left} ≢ {right}", n+1);
                 failed += 1;
             } else {
-                println!("test passed line {} ``{i} : {o}``", n+1);
+                //println!("test passed line {} ``{i} : {o}``", n+1);
             }
             tested += 1;
         } else if let Some((i, o)) = line.split_once(" ± ") {
