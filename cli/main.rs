@@ -16,7 +16,7 @@ struct Args {
     arguments: Vec<String>,
 
     /// whether to include the standard library
-    #[clap(short = 's', long)]
+    #[clap(long)]
     no_stdlib: bool,
 
     /// how to format the output. use like dyadic ⁿ. ignored in repl mode.
@@ -25,7 +25,10 @@ struct Args {
 
     /// if given, prints to stdout the file, rewritten without ' escapes
     #[clap(short, long)]
-    rewrite: bool
+    rewrite: bool,
+
+    #[clap(short, long)]
+    input: Vec<String>,
 }
 
 fn rewrite(path: PathBuf) {

@@ -8,7 +8,7 @@ impl std::fmt::Display for Val {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Num(n) => {
-                if n.is_nan() { return write!(f, "NaN"); }
+                if n.is_nan() { return write!(f, "█"); }
                 write!(f, "{}", n.re)?;
                 if n.im != 0. { write!(f, "{:+}i", n.im)? };
                 Ok(())

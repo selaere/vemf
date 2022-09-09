@@ -278,7 +278,8 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Tok::Num(l) => {
             let mut num = 0;
             for i in l { num = num*253 + i64::from(i) }
-            Expr::Int(num)
+            if num % 2 == 1 { num = 1-num; }
+            Expr::Int(num / 2)
         }
         Tok::HNum(x) => {
             let num = std::str::from_utf8(&x).unwrap().parse::<f64>().unwrap();
@@ -319,9 +320,9 @@ impl Stmt {
         match self {
             Stmt::Discard(e) => { e.capture(vars); },
             Stmt::Return(e) => { e.capture(vars); },
-            Stmt::Loc(e, f) =>  { e.capture(vars); vars.insert(f.clone()); },
+            Stmt::Loc(e, _) =>  { e.capture(vars); },
             Stmt::Mut(e, _) =>  { e.capture(vars); },
-            Stmt::DelLoc(f) => { vars.insert(f.clone()); },
+            Stmt::DelLoc(_) => { },
             Stmt::DelMut(_) => { },
             Stmt::Cond(i, t) => { i.capture(vars); t.capture(vars); },
         }
