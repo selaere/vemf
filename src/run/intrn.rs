@@ -67,8 +67,9 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         }
         Val::Dfn { s, loc } => {
             env.stack.push((**loc).clone());
-            env.set_local(smallvec![b!('β')], b.unwrap_or_else(||a.clone()));
+            env.set_local(smallvec![b!('Σ')], Int(1 + i64::from(b.is_some())));
             env.set_local(smallvec![b!('α')], a);
+            env.set_local(smallvec![b!('β')], b.unwrap_or(NAN));
             env.set_local(smallvec![b!('ƒ')], self.clone());
             let val = env.eval_block(s);
             env.stack.pop();

@@ -1,6 +1,6 @@
 φ:loadintrinsics·
 
-.inleft→◄→Ω·
+.inleft→◄·
 .inright→►·
 
 .invalences→╬·
@@ -79,7 +79,7 @@
 ┼:inacos╬:inacos╜^→ö·
 ┼:inatan╬:inatan╜^→ä·
 
-(┌+1→Σ)╬•_╘.inbinsup→▲·
+┌+1╬•_╘.inbinsup→▲·
 ┌-1╬•_╘.inbinsdown→▼·
 
 .ingradedown╬┼:inlt→<·

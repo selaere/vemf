@@ -226,7 +226,9 @@ impl Env {
                 let val = self.eval(cond);
                 let cond = val.is_scalar() && val.as_bool() || {
                     let a = self.locals().get(&[b!('α')][..]).cloned().unwrap_or(NAN);
-                    let b = self.locals().get(&[b!('β')][..]).cloned();
+                    let b = self.locals().get(&[b!('Σ')][..])
+                        .map_or(false, |x| x.try_int() != Some(1))
+                        .then(|| self.locals().get(&[b!('β')][..]).cloned().unwrap_or(NAN) );
                     val.call(self, a, b).as_bool()
                 };
                 if cond { return self.eval_stmt(then) }
@@ -266,6 +268,7 @@ impl Env {
         let args: Vec<Val> = args.iter().map(|s| s.chars().map(|x| Int(x as i64)).collect()).collect();
         if let Some(x) = args.get(0) { self.set_local(smallvec![b!('α')], x.clone()); }
         if let Some(x) = args.get(1) { self.set_local(smallvec![b!('β')], x.clone()); }
+        self.set_local(smallvec![b!('Σ')], Int(args.len() as _));
         self.set_local(smallvec![b!('δ')], Val::lis(args.clone()));
         args
     }

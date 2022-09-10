@@ -88,7 +88,6 @@ fn repl(mut state: Env, args: Args) {
             }
             continue;
         }
-        let val = state.include_string(&code);
         if args.rewrite {
             println!(" r: {}", codepage::tochars(
                 &vemf::rewrite(
@@ -96,6 +95,7 @@ fn repl(mut state: Env, args: Args) {
                 )
             ));
         }
+        let val = state.include_string(&code);
         if !val.is_nan() { println!("{}", val); }
         state.set_local(Bstr::from(&b"__"[..]), val);
     }
