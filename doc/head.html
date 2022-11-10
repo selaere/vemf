@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<meta charset="UTF-8">
+<title>vemf documentation</title>
+<meta name="description" content="vemf documentation"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>/* bees */</script>
+<style>
+@media (width < 70em) {
+    body   { font-size: 0.9em !important; }
+    #fixed { position: static !important; }
+    nav    { flex-basis: auto !important; }
+}
+body {
+    margin: 2% 4%;
+    font-size: 1.1em;
+    font-family: sans-serif;
+}
+#all {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
+}
+nav {
+    flex-basis: 22.8em;
+    flex-grow: 1;
+    background: #ddd;
+    width: 100%;
+}
+#wrapper {
+    margin: 1em auto 1em auto;
+    width: 21.2em;
+}
+#fixed { position: fixed; }
+#fixed>h1 { margin: 0; font-size: 1.5em; }
+#fixed>h2 { margin: 0.5em 0 0.1em 0; font-size: 0.8em; }
+#fixed>ol { margin: 0; column-count: 2; }
+main {
+    padding: 0.5em 1.5em;
+    flex-basis: 26em;
+    flex-grow: 10;
+    min-width: 1em;
+    background: #eee;
+}
+table,code,pre{ 
+    font-family: "Iosevka Fixed", monospace;
+    font-stretch: expanded;
+}
+table {
+    border-collapse: collapse;
+    font-size: 1.2em;
+}
+code {
+    background: #ccc;
+    border-radius: 5px;
+}
+pre {
+    background: #ddd;
+    padding-left: 2px;
+    margin-left: 2em;
+    overflow-x: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+pre::-webkit-scrollbar { display: none; }
+td {
+    white-space: pre;
+    text-align: center;
+    padding: 0.05em;
+    width: 1em;
+    height: 1em;
+}
+td:hover { box-shadow: 0 0 1em 1em rgba(255, 255, 255, 0.5) inset; }
+p>a, li>a { color: #0055aa }
+td>a {
+    display: block;
+    width: 100%;
+    color: #000;
+    text-decoration: none;
+}
+h2>code { background-color: inherit; white-space: pre; }
+.var      { background-color: #ebe; }
+.noun     { background-color: #aae; }
+.verb     { background-color: #eea; }
+.verb_var { background-color: #fca; }
+.literal  { background-color: #aee; }
+.prefix   { background-color: #aee; }
+.stmt     { background-color: #aee; }
+.adverb1  { background-color: #faa; }
+.adverb2  { background-color: #fca; }
+.mgroup   { background-color: #afa; }
+.wgroup   { background-color: #9fc; }
+</style>
+</head>

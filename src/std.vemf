@@ -71,14 +71,6 @@
 
 ┼:insqrt╬/╙^→√·
 
-┼:insin╬:insin╜^→î·
-┼:incos╬:incos╜^→ô·
-┼:intan╬:intan╜^→â·
-
-┼:inasin╬:inasin╜^→ï·
-┼:inacos╬:inacos╜^→ö·
-┼:inatan╬:inatan╜^→ä·
-
 ┌+1╬•_╘.inbinsup→▲·
 ┌-1╬•_╘.inbinsdown→▼·
 
@@ -92,6 +84,14 @@
 .insortup  ╬┌<¬→≥·
 .inlen     ╬┌=¬→~·
 .insortdown╬┌>¬→≤·
+
+┼:insin╬:inbxor→î·
+┼:incos╬:inbor →ô·
+┼:intan╬:inband→â·
+
+┼:inasin╬⌐╝~→ï·
+┼:inacos╬┌|¬→ö·
+┼:inatan╬┌&¬→ä·
 
 (^2)╬┼.inbinom→²·
 (/2)╬┼.inlcm→½·
@@ -170,7 +170,7 @@
 (╟▬2ñ↕╕;╓╕@) ╬ ┌┴ε¬╓‼ →\·
 
 ((╛≈█)╓‼) ╬ ╕┌►¬╨█→▀·
-╧╕,→♦·
+╧╕¬(►φ)→♦·
 
 "0123456789abcdefghijklmnopqrstuvwxyz"→base·
 .inparse╬(ç┴#.base♠)╖è→º·
@@ -198,6 +198,7 @@
 .inget╬.inset→←·
 
 9↨╕┘(ª;`_)←-· ' set _2, _3
+Φ-→_Φ·
 ∞-→_∞·
 Γ-→_Γ·
 

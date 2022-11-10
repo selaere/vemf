@@ -1,0 +1,47 @@
+
+{α£╓┴Æβ»(β♣)+(►ε2¬)╩(┌#2╜♣╙+ÿÆ)╓-β╤+╖*┴▀▼~╙%β}→_£· ' find but better
+(_£┘(=0╤+)▀▄)╓Ü→_¥· ' split substr
+(┌#ÿ╓┴Æ┘╤+▀¬)╓Ü↑2→_₧· ' split once
+
+(~`<)╓▀▌"&lt;",→esc·
+
+@êª'16▐`0↓2Ç→fc·
+φ→titles·
+∞Ö_ë _¥"◙---◙"→pg·
+█§'256→tab·
+.pg╕{
+    →tab· α¥Φ▐φL·
+    l╕(=":title"&)#¡l♂8→title·
+    l╕(=":char" &)#¡l♂7→c· c:fc→hex·
+    l╕(=":type" &)#¡l♂7→type·
+    l╕(=":ascii"&)#¡l♂8≈╨(;", <code>","</code>")→ascii·
+    (c@ê)╗.type↔tab·
+    "<h2 class=¨",.type,"¨ id=¨",.hex,"¨><code>",(c:esc),"</code> (0x",.hex,.ascii,")</h2>◙"→h·    
+    .title≈? "<h2 id=¨",.title,"¨>",.title,"</h2>◙"→h·
+    .title≈? ¬.title↔titles·
+    l╕{
+        @=`>? α♂2:esc;"<pre>","</pre>"◘
+        @=`:? █◘
+        @=`#? α♂_₧` ╧{
+            ◄@=`_? (;`_)↔c (♂)↔α· `αëA `βëB ·
+            "<h3 id=¨",β,"¨>",(α:esc{
+                ≡¨0?   c         ◘
+                ≡¨1?   ac        ◘ ≡¨2?    acb      ◘ ≡"12"?  ac"</code>"░@╚"<code>"acb ◘
+                ≡"a1"? c`G       ◘ ≡"1a1"? a  c`G   ◘ ≡"2a1"? a  c`Gb ◘
+                ≡"a2"? `Fc`G     ◘ ≡"1a2"? a`Fc`G   ◘ ≡"2a2"? a`Fc`Gb ◘
+                ≡"n"?  c¨name    ◘ ≈?      α:esc    ◘ φ
+            },≈╨(;"<code>","</code>",░@╚)),β,"</h3>"
+        }◘
+        α:esc→a
+        =`|╤+%2¬;0♀╤+┴Üa╕{~=1?α ◘ α♀♂;æ"¨>";"<a href=¨#","</a>"},→a
+        =``╤+%2╪-0▲¡"<code>"█"</code>"╕▌a;"<p>","</p>",
+    }▀╧{(α↓6≡"</pre>")&(β↑5≡"<pre>")? α♀6,Φ,(β♂5) ◘ α,Φ,β};h
+}æΦ→body·
+
+'256↕ëΦ╗'9689╕{"<td class=¨"(β▌"none")"¨><a href=¨#"┐α:fc"¨>"┐α:esc"</a></td>",}.tab
+↑█'16╛(æΦ;"<tr>","</tr>")æΦ→nav·
+
+"<body><div id=¨all¨><nav><div id=¨wrapper¨><div id=¨fixed¨>◙<h1>vemf docs</h1>◙"
+"<h2>tutorial:</h2>◙<ol>◙"( .titles╕{"<li><a href=¨#"α"¨>"α"</a></li>◙",}, )"</ol>◙"
+"<h2>codepage:</h2>◙<table>◙".nav"◙</table>"
+"</div></div>◙</nav><main>◙".body"◙</main></div></body></html>",

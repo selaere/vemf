@@ -257,6 +257,11 @@ fn phrase_to_expr(things: Vec<(Role, Expr)>) -> Option<Expr> {
 }
 
 
+fn numberise(mut num: i64) -> Expr {
+    if num % 2 == 1 { num = 1-num; }
+    Expr::Int(num / 2)
+}
+
 fn value_token(chr: Tok) -> Option<Expr> {
     Some(match chr {
         Tok::Just(c @ b'0'..=b'9') => Expr::Int(i64::from(c - b'0')),
@@ -271,15 +276,12 @@ fn value_token(chr: Tok) -> Option<Expr> {
             Expr::Int(i64::from(x)),
         Tok::Chr2(x, y) =>
             Expr::Snd(vec![Expr::Int(i64::from(x)), Expr::Int(i64::from(y))]),
-        Tok::Num2(x, y) =>
-            Expr::Int(i64::from(x)*253 + i64::from(y)),
-        Tok::Num3(x, y, z) =>
-            Expr::Int(i64::from(x)*253*253 + i64::from(y)*253 + i64::from(z)),
+        Tok::Num2(   y, z) => numberise(                       i64::from(y)*253 + i64::from(z)),
+        Tok::Num3(x, y, z) => numberise(i64::from(x)*253*253 + i64::from(y)*253 + i64::from(z)),
         Tok::Num(l) => {
             let mut num = 0;
             for i in l { num = num*253 + i64::from(i) }
-            if num % 2 == 1 { num = 1-num; }
-            Expr::Int(num / 2)
+            numberise(num)
         }
         Tok::HNum(x) => {
             let num = std::str::from_utf8(&x).unwrap().parse::<f64>().unwrap();
