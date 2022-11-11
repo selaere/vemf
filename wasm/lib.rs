@@ -6,6 +6,7 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 pub fn evaluate(s: &str, fmt: &str) -> String {
     let mut env = Env::new();
+    #[allow(clippy::box_default)] // why clippy???
     env.output.push(Box::new(Vec::new()));
     env.include_stdlib();
     let out = env.include_string(s).format(

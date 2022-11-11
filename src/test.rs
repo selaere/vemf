@@ -1,6 +1,6 @@
 #[test]
 fn test() -> Result<(), String> {
-    let code: &str = include_str!("../../doc/raw.txt");
+    let code: &str = include_str!("../doc/raw.txt");
     println!("doing doc tests...");
     let mut tested = 0;
     let mut failed = 0;

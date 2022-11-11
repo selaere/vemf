@@ -18,8 +18,8 @@ pub enum Expr {
     Int(i64),
     Flt(c64),
     Snd(Vec<Expr>),  // strand
-    Afn1 { a: Box<Expr>, f: Box<Expr>               },  // apply monadic function
-    Afn2 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> },  // apply dyadic  function 
+    Afn1 { a: Box<Expr>, f: Box<Expr>               }, // apply monadic function
+    Afn2 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> }, // apply dyadic  function 
     SetVar(Bstr), CngVar(Bstr),
     Aav1 {               v: Bstr     , g: Box<Expr> }, // apply monadic adverb
     Aav2 { f: Box<Expr>, v: Bstr     , g: Box<Expr> }, // apply dyadic  adverb
@@ -272,10 +272,8 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Tok::Just(b!('█')) => NAN,
         Tok::Just(b!('φ')) => Expr::Snd(Vec::new()),
         Tok::VarNoun(x) => Expr::Var(x),
-        Tok::Chr(x) =>
-            Expr::Int(i64::from(x)),
-        Tok::Chr2(x, y) =>
-            Expr::Snd(vec![Expr::Int(i64::from(x)), Expr::Int(i64::from(y))]),
+        Tok::Chr(x) => Expr::Int(i64::from(x)),
+        Tok::Chr2(x, y) => Expr::Snd(vec![Expr::Int(i64::from(x)), Expr::Int(i64::from(y))]),
         Tok::Num2(   y, z) => numberise(                       i64::from(y)*253 + i64::from(z)),
         Tok::Num3(x, y, z) => numberise(i64::from(x)*253*253 + i64::from(y)*253 + i64::from(z)),
         Tok::Num(l) => {
@@ -291,8 +289,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
                 Expr::Flt(c64::new(num, 0.))
             }
         },
-        Tok::Str(x) =>
-            Expr::Snd(x.iter().map(|&x| Expr::Int(i64::from(x))).collect()),
+        Tok::Str(x) => Expr::Snd(x.iter().map(|&x| Expr::Int(i64::from(x))).collect()),
         _ => return None,
     })
 }
@@ -331,7 +328,6 @@ impl Stmt {
     }
 }
 
-// XXX: this should be expr: Expr
 fn parse_stmt(code: &mut&[Tok], expr: Option<Expr>) -> Option<Stmt> {
     Some(match code.first() {
         Some(Tok::VarSetStmt(v)) => { step!(code);
@@ -346,12 +342,9 @@ fn parse_stmt(code: &mut&[Tok], expr: Option<Expr>) -> Option<Stmt> {
                 None    => Stmt::DelMut(v.clone()),
             }
         },
-        Some(Tok::Just(b!('◘'))) => { step!(code);
-            Stmt::Return(expr.unwrap_or(NAN)) },
-        Some(Tok::Just(b!('·'))) => { step!(code);
-            Stmt::Discard(expr.unwrap_or(NAN)) },
-        Some(Tok::Just(b!('}'))) | None => {
-            Stmt::Return(expr.unwrap_or(NAN)) },
+        Some(Tok::Just(b!('◘'))) => { step!(code); Stmt::Return(expr.unwrap_or(NAN)) },
+        Some(Tok::Just(b!('·'))) => { step!(code); Stmt::Discard(expr.unwrap_or(NAN)) },
+        Some(Tok::Just(b!('}'))) | None => { Stmt::Return(expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('?'))) => { step!(code);
             let ev2 = phrase_to_expr(phrase(code));
             Stmt::Cond(expr.unwrap_or(NAN), Box::new(parse_stmt(code, ev2)?))
@@ -359,7 +352,6 @@ fn parse_stmt(code: &mut&[Tok], expr: Option<Expr>) -> Option<Stmt> {
         _ => return None,
     })
 }
-
 
 pub fn block(code: &mut&[Tok]) -> Vec<Stmt> {
     let mut exps = Vec::new();

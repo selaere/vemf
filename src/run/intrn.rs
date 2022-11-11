@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::{Bstr, b, or_nan};
-use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, number::complexcmp, list};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, c64, val::complexcmp, list};
 use smallvec::smallvec;
 
 impl Val {
@@ -338,7 +338,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::BinsUp    => list::bins_up(&a, &ba!()),
         Val::BinsDown  => list::bins_down(&a, &ba!()),
         Val::Group     => list::group(env, a, ba!()),
-        Val::Encode    => super::number::encode(a, ba!()),
+        Val::Encode    => super::val::encode(a, ba!()),
         Val::FromCp => {
             if a.is_nan() { return NAN; }
             a.try_int()
