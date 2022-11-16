@@ -40,17 +40,37 @@ fn rewrite(path: PathBuf) {
     ));
 }
 
+struct Stdstreams {
+    do_input: bool
+}
+
+impl vemf::Interface<'_> for Stdstreams {
+    fn input(&mut self, n: usize) -> Option<Box<dyn std::io::BufRead>> {
+        if !self.do_input { return None; }
+        match n {
+            0 => Some(Box::new(std::io::stdin().lock())),
+            _ => None
+        }
+    }
+    fn output(&mut self, n: usize) -> Option<Box<dyn std::io::Write>> {
+        match n {
+            0 => Some(Box::new(std::io::stdout())),
+            1 => Some(Box::new(std::io::stderr())),
+            _ => None,
+        }
+    }
+}
+
+
 fn main() {
     let args = Args::parse();
     let mut state = Env::new();
-    state.output.push(Box::new(std::io::stdout()));
-    state.output.push(Box::new(std::io::stderr()));
     if !args.no_stdlib {
         state.include_stdlib();
     }
     //println!("sizeof(Val) = {}", std::mem::size_of::<Val>());
     if let Some(path) = args.filename {
-        state.input.push(Box::new(std::io::stdin().lock()));
+        state.interface = Box::new(Stdstreams { do_input: true });
         if args.rewrite { return rewrite(path); }
         let arguments = state.include_args(&args.arguments);
         let mut res = state.include_file(&mut File::open(path).unwrap()).unwrap();
@@ -72,6 +92,7 @@ fn main() {
 }
 
 fn repl(mut state: Env, args: Args) {
+    state.interface = Box::new(Stdstreams { do_input: false });
     println!("welcome to vemf repl. enjoy your stay");
     loop {
         print!("    ");

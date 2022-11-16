@@ -5,7 +5,7 @@
 #[macro_use] pub mod codepage;
 mod token; mod parse; mod run; mod test;
 
-pub use run::{Env, Val, c64};
+pub use run::{Env, Val, c64, Interface, NoIO};
 
 pub use token::rewrite;
 

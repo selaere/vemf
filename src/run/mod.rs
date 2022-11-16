@@ -1,7 +1,7 @@
 mod intrn; mod list; mod adverb; mod disp; mod val;
 
 use crate::{parse::{Expr, Stmt}, Bstr};
-use std::{collections::HashMap, rc::Rc, any::Any};
+use std::{collections::HashMap, rc::Rc};
 use adverb::AvT;
 
 const STDLIB: &str = include_str!("../std.vemf");
@@ -12,19 +12,35 @@ pub const NAN: Val = Num(c64::new(f64::NAN, f64::NAN));
 
 pub type Frame = HashMap<Bstr, Val>;
 
-/// vemf interpreter state
-pub struct Env {
-    stack: Vec<Frame>,
-    pub  input: Vec<Box<dyn  InStream>>,
-    pub output: Vec<Box<dyn OutStream>>,
+pub trait Interface<'io> {
+    fn  input(&mut self, n: usize) -> Option<Box<dyn std::io::BufRead + 'io>>;
+    fn output(&mut self, n: usize) -> Option<Box<dyn std::io::Write   + 'io>>;
 }
 
-pub trait OutStream: std::io::Write + Any {}
-impl<T> OutStream for T where T: std::io::Write + Any {}
 
-pub trait InStream: std::io::BufRead + Any {}
-impl<T> InStream for T where T: std::io::BufRead + Any {}
+pub struct NoIO;
 
+impl<'io> Interface<'io> for NoIO {
+    fn  input(&mut self, _: usize) -> Option<Box<dyn std::io::BufRead>> { None }
+    fn output(&mut self, _: usize) -> Option<Box<dyn std::io::Write  >> { None }
+}
+
+/// vemf interpreter state
+pub struct Env<'io> {
+    pub stack: Vec<Frame>,
+    pub interface: Box<dyn Interface<'io> + 'io>,
+    /*
+    pub  input: Vec<Box<dyn DerefMut<Target=dyn std::io::BufRead + 'io>>>,
+    pub output: Vec<Box<dyn DerefMut<Target=dyn std::io::Write + 'io>>>,
+    */
+}
+/*
+pub trait OutStream<'io>: BorrowMut<dyn std::io::Write + 'io> {}
+impl<'io> OutStream<'io> for &'io mut (dyn std::io::Write + 'io) {}
+
+pub trait InStream: std::io::BufRead {}
+impl<T> InStream for T where T: std::io::BufRead {}
+*/
 #[macro_export]
 macro_rules! or_nan { ($expr:expr) => {
     match $expr {
@@ -65,16 +81,16 @@ impl Default for Val {
     fn default() -> Self { NAN }
 }
 
-impl Env {
+impl<'io> Env<'io> {
     
-    pub fn new() -> Env {
+    pub fn new<'a>() -> Env<'a> {
         let mut locals = HashMap::new();
         locals.insert(Bstr::from(&b"loadintrinsics"[..]), Val::LoadIntrinsics);
         Env::from_frame(locals)
     }
 
-    pub fn from_frame(frame: Frame) -> Env {
-        Env { stack: vec![frame], input: vec![], output: vec![] }
+    pub fn from_frame<'a>(frame: Frame) -> Env<'a> {
+        Env { stack: vec![frame], interface: Box::new(NoIO) }
     }
 
     pub fn locals(&self) -> &Frame { self.stack.last().unwrap() }
@@ -273,7 +289,7 @@ impl Env {
 
 }
 
-impl Default for Env {
+impl<'io> Default for Env<'io> {
     fn default() -> Self {
         Self::new()
     }

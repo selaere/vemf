@@ -1,24 +1,43 @@
-use std::any::Any;
+use std::cell::{RefCell, RefMut};
 
 use vemf::{self, Env, codepage, Val};
 use wasm_bindgen::prelude::*;
 
+struct Output<'io> {
+    bufref: &'io RefCell<Vec<u8>>
+}
+impl<'io> vemf::Interface<'io> for Output<'io> {
+    fn input(&mut self, _: usize) -> Option<Box<dyn std::io::BufRead + 'io>> { None }
+    fn output(&mut self, n: usize) -> Option<Box<dyn std::io::Write + 'io>> {
+        if let 0..=1 = n {
+            Some(Box::new(Handle(self.bufref.borrow_mut())))
+        } else { None }
+    }
+}
+
+struct Handle<'io>(RefMut<'io, Vec<u8>>);
+use std::io::{Result as IOResult, IoSlice};
+
+impl<'io> std::io::Write for Handle<'io> {
+    fn write(&mut self, buf: &[u8]) -> IOResult<usize> { self.0.write(buf) }
+    fn write_vectored(&mut self, bufs: &[IoSlice<'_>]) -> IOResult<usize> { self.0.write_vectored(bufs) }
+    fn write_all(&mut self, buf: &[u8]) -> IOResult<()> { self.0.write_all(buf) }
+    fn flush(&mut self) -> IOResult<()> { self.0.flush() }
+}
+
 #[wasm_bindgen]
 pub fn evaluate(s: &str, fmt: &str) -> String {
+    let outbuf = RefCell::new(Vec::new());
     let mut env = Env::new();
-    #[allow(clippy::box_default)] // why clippy???
-    env.output.push(Box::new(Vec::new()));
+    env.interface = Box::new(Output {bufref: &outbuf});
     env.include_stdlib();
     let out = env.include_string(s).format(
         &fmt.chars()
         .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
         .collect::<Vec<_>>()[..]);
-    if let Some(buf) = env.output.first().and_then(|x| (x as &dyn Any).downcast_ref::<Vec<_>>()) {
-        String::from_utf8_lossy(buf).into_owned() + &out
-    } else {
-        // this will not happen but it could happen
-        String::from("error retrieving output\n") + &out
-    }
+    env.interface = Box::new(vemf::NoIO);
+    let borrow = outbuf.borrow();
+    String::from_utf8_lossy(&borrow).into_owned() + &out
 }
 
 #[wasm_bindgen]

@@ -60,7 +60,7 @@ impl Val {
         value
     }
 
-    pub fn iterinf<'r>(self, env: &'r mut Env) -> Box<dyn InconvenientIter<'r> + 'r> {
+    pub fn iterinf<'r, 'io>(self, env: &'r mut Env<'io>) -> Box<dyn InconvenientIter<'r, 'io> + 'r> {
         if self.is_infinite() {
             Box::new(InfIter { i: 0, value: self, env })
         } else if let Lis{l, ..} = self {
@@ -113,17 +113,17 @@ impl Val {
 pub trait GoodIter<V>: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator + FusedIterator {}
 impl<F, V> GoodIter<V> for F where F: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator + FusedIterator {}
 
-pub trait InconvenientIter<'r>: Iterator<Item=Val> {}
-impl<'r> InconvenientIter<'r> for InfIter<'r> {}
-impl<'r, F> InconvenientIter<'r> for F where F: GoodIter<Val> {}
+pub trait InconvenientIter<'r, 'io>: Iterator<Item=Val> {}
+impl<'r, 'io> InconvenientIter<'r, 'io> for InfIter<'r, 'io> {}
+impl<'r, 'io, F> InconvenientIter<'r, 'io> for F where F: GoodIter<Val> {}
 
-pub struct InfIter<'r> {
+pub struct InfIter<'r, 'io> {
     i: i64,
     value: Val,
-    env: &'r mut Env,
+    env: &'r mut Env<'io>,
 }
 
-impl<'r> Iterator for InfIter<'r> {
+impl<'r, 'io> Iterator for InfIter<'r, 'io> {
     type Item = Val;
     fn next(&mut self) -> Option<Self::Item> {
         let val = Some(self.value.monad(self.env, Int(self.i)));
@@ -236,7 +236,7 @@ pub fn reshape_iter(a: &mut dyn Iterator<Item=Val>, b: &[usize], fill: &Val) -> 
 }
 
 pub fn dropleft(a: Val, b: i64) -> Val {
-    if b < 0 {return dropright(a, -b); }
+    if b < 0 { return dropright(a, -b); }
     if a.is_infinite() { return NAN; }
     a.into_iterf().skip(b as _).collect()
 }

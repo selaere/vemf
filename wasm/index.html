@@ -9,7 +9,7 @@
             font-display: swap;
             font-weight: 400;
             font-style: normal;
-            src: url('pkg/iosevka-fixed-extended.ttf') format('truetype'),
+            src: url('pkg/iosevka-fixed-extended.ttf')   format('truetype'),
                  url('pkg/iosevka-fixed-extended.woff2') format('woff2');
         }
         body {
@@ -46,8 +46,8 @@
     <pre id="outp"></pre>
 <script type="module">
 
+// generated with `$ wasm-pack build --target web --no-typescript wasm`
 import init, { evaluate, rewrite } from './pkg/vemfwasm.js';
-// generated with `$ wasm-pack build --target web`
 
 const id = x => document.getElementById(x);
 
@@ -57,15 +57,9 @@ async function run() {
         let a = evaluate(id('inp').value, id('fmt').value);
         id('outp').innerText = a;
     }
-    id('inp').addEventListener('input', () => {
-        if (id('live').checked) execute();
-    });
-    id('fmt').addEventListener('input', () => {
-        if (id('live').checked) execute();
-    });
-    id('rew').addEventListener('click', () => {
-        id('inp').value = rewrite(id('inp').value);
-    });
+    id('inp').addEventListener('input', () => { if (id('live').checked) execute(); });
+    id('fmt').addEventListener('input', () => { if (id('live').checked) execute(); });
+    id('rew').addEventListener('click', () => { id('inp').value = rewrite(id('inp').value); });
     id('run').addEventListener('click', execute);
 }
 
