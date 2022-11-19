@@ -29,18 +29,8 @@ impl<'io> Interface<'io> for NoIO {
 pub struct Env<'io> {
     pub stack: Vec<Frame>,
     pub interface: Box<dyn Interface<'io> + 'io>,
-    /*
-    pub  input: Vec<Box<dyn DerefMut<Target=dyn std::io::BufRead + 'io>>>,
-    pub output: Vec<Box<dyn DerefMut<Target=dyn std::io::Write + 'io>>>,
-    */
 }
-/*
-pub trait OutStream<'io>: BorrowMut<dyn std::io::Write + 'io> {}
-impl<'io> OutStream<'io> for &'io mut (dyn std::io::Write + 'io) {}
 
-pub trait InStream: std::io::BufRead {}
-impl<T> InStream for T where T: std::io::BufRead {}
-*/
 #[macro_export]
 macro_rules! or_nan { ($expr:expr) => {
     match $expr {
@@ -64,6 +54,7 @@ pub enum Val {
     Av(AvT, Option<Rc<Val>>, Rc<Val>),
     AvBuilder(AvT),
     Cycle,     DCycle(Rc<Vec<Val>>),
+    Err(i32), // exit code
     Add, Sub, Mul, Div, DivE, Mod, Pow, Log, Lt, Gt, Eq, And, Or, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
     Gcd, Lcm, Binom, Get, Set, Call,
     Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
@@ -162,50 +153,53 @@ impl<'io> Env<'io> {
     }
 
     pub fn eval(&mut self, expr: &Expr) -> Val {
+        macro_rules! eval { ($v:expr) => {
+            match self.eval($v) {
+                Val::Err(x) => return Val::Err(x),
+                x => x,
+            }
+        }}
         match expr {
             Expr::Var(s) => self.get_var(s).unwrap_or_default(),
             Expr::Int(n) => Int(*n),
             Expr::Flt(n) => Num(*n),
-            Expr::Snd(l) => Lis {
-                l: Rc::from(l.iter().map(|x| self.eval(x)).collect::<Vec<_>>()),
-                fill: NAN.rc()
+            Expr::Snd(l) => {    
+                let mut v = Vec::with_capacity(l.len());
+                for x in l { v.push(eval!(x)); }
+                Lis { l: Rc::from(v), fill: NAN.rc() }
             },
             Expr::Afn1 { a, f } => {
-                let a = self.eval(a); let f = self.eval(f);
+                let a = eval!(a); let f = eval!(f);
                 f.monad(self, a)
             },
             Expr::Afn2 { a, f, b } => {
-                let a = self.eval(a); let f = self.eval(f); let b = self.eval(b);
+                let a = eval!(a); let f = eval!(f); let b = eval!(b);
                 f.dyad(self, a, b)
             },
             Expr::SetVar(v) => Val::FSet(v.clone()),
             Expr::CngVar(v) => Val::FCng(v.clone()),
             Expr::Aav1 { v, g } => {
-                let g = self.eval(&g.clone());
+                let g = eval!(&g.clone());
                 self.get_var(&v[..]).unwrap_or_default().monad(self, g)
             }
             Expr::Aav2 { f, v, g } => {
-                let f = self.eval(&f.clone()); let g = self.eval(&g.clone());
+                let f = eval!(&f.clone()); let g = eval!(&g.clone());
                 self.get_var(&v[..]).unwrap_or_default().dyad(self, g, f)
             },
             Expr::Bind { f, b } => {
-                let f = self.eval(&f.clone()); let b = self.eval(&b.clone());
+                let f = eval!(&f.clone()); let b = eval!(&b.clone());
                 Val::Bind{f: f.rc(), b: b.rc()}
             },
             Expr::Trn2 { a, f } => {
-                let a = self.eval(&a.clone()); let f = self.eval(&f.clone());
+                let a = eval!(&a.clone()); let f = eval!(&f.clone());
                 Val::Trn2{a: a.rc(), f: f.rc()}
             },
             Expr::Trn3 { a, f, b } => {
-                let a = self.eval(&a.clone());
-                let f = self.eval(&f.clone());
-                let b = self.eval(&b.clone());
+                let a = eval!(&a.clone()); let f = eval!(&f.clone()); let b = eval!(&b.clone());
                 Val::Trn3{a: a.rc(), f: f.rc(), b: b.rc()}
             },
             Expr::Fork { a, f, b } => {
-                let a = self.eval(&a.clone());
-                let f = self.eval(&f.clone());
-                let b = self.eval(&b.clone());
+                let a = eval!(&a.clone()); let f = eval!(&f.clone()); let b = eval!(&b.clone());
                 Val::Fork{a: a.rc(), f: f.rc(), b: b.rc()}
             },
             Expr::Dfn { s, cap } => {
@@ -219,25 +213,21 @@ impl<'io> Env<'io> {
     }
 
     pub fn eval_stmt(&mut self, stmt: &Stmt) -> Option<Val> {
+        macro_rules! eval { ($v:expr) => {
+            match self.eval($v) {
+                Val::Err(x) => return Some(Val::Err(x)),
+                x => x,
+            }
+        }}
         match stmt {
-            Stmt::Discard(expr) => { let _ = self.eval(expr); },
-            Stmt::Loc(a, v) => {
-                let a = self.eval(a);
-                self.set_local(v.clone(), a);
-            },
-            Stmt::Mut(a, v) => {
-                let a = self.eval(a);
-                self.mutate_var(v, a);
-            },
-            Stmt::DelLoc(v) => {
-                self.locals_mut().remove(v);
-            },
-            Stmt::DelMut(v) => {
-                self.delete_var(v);
-            },
-            Stmt::Return(expr) => { return Some(self.eval(expr)); },
+            Stmt::Discard(expr) => { let _ = eval!(expr); },
+            Stmt::Loc(a, v) => { let a = eval!(a); self.set_local(v.clone(), a); },
+            Stmt::Mut(a, v) => { let a = eval!(a); self.mutate_var(v, a); },
+            Stmt::DelLoc(v) => { self.locals_mut().remove(v); },
+            Stmt::DelMut(v) => { self.delete_var(v); },
+            Stmt::Return(expr) => { return Some(eval!(expr)); },
             Stmt::Cond(cond, then) => {
-                let val = self.eval(cond);
+                let val = eval!(cond);
                 let cond = val.is_scalar() && val.as_bool() || {
                     let a = self.locals().get(&[b!('α')][..]).cloned().unwrap_or(NAN);
                     let b = self.locals().get(&[b!('Σ')][..])

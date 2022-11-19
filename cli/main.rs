@@ -74,6 +74,7 @@ fn main() {
         if args.rewrite { return rewrite(path); }
         let arguments = state.include_args(&args.arguments);
         let mut res = state.include_file(&mut File::open(path).unwrap()).unwrap();
+        if let Val::Err(x) = res { std::process::exit(x); }
         if res.is_infinite() {
             res = res.call(
                 &mut state,
@@ -81,6 +82,7 @@ fn main() {
                 arguments.get(1).cloned()
             );
         }
+        if let Val::Err(x) = res { std::process::exit(x); }
         let form = res.format(
             &args.format.chars()
             .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))

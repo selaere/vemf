@@ -47,6 +47,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
                 Drill,
             ); Int(1)
         }
+        Val::Err(x) => Val::Err(*x),
 
         Lis { .. } | Num(_) | Int(_) => self.clone(),
         Val::FSet(name) => {
@@ -249,10 +250,16 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             .bytes()
             .map(|x| Int(i64::from(x)))
             .collect(),
-        Val::Exit => match a.try_int() {
-            Some(n) => std::process::exit(n as i32),
-            _ => { eprintln!("{}", a.display_string()); std::process::exit(1); }
-        }
+        Val::Exit => 
+            if let Some(n) = a.try_int() {
+                Val::Err(n as i32)
+            } else {
+                if let Some(mut o) = env.interface.output(1) {
+                    let _= o.write(a.display_string().as_bytes());
+                    let _= o.write(b"\n");
+                }
+                Val::Err(1)
+            }
         Val::Format => a.format(&b.as_ref().map_or_else(Vec::new,
             |x| x.iterf().cloned().collect::<Vec<_>>())
         ).chars().map(|x| Int(x as i64)).collect(),
