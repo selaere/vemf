@@ -58,6 +58,7 @@ pub fn io_result(ioresult: std::io::Result<usize>) -> Option<usize> {
 /// vemf interpreter state
 pub struct Env<'io> {
     pub stack: Vec<Frame>,
+    pub rng: Box<dyn rand::RngCore>,
     pub interface: Box<dyn Interface<'io> + 'io>,
 }
 
@@ -104,14 +105,14 @@ impl Default for Val {
 
 impl<'io> Env<'io> {
     
-    pub fn new<'a>() -> Env<'a> {
+    pub fn new<'a>(rng: Box<dyn rand::RngCore>) -> Env<'a> {
         let mut locals = HashMap::new();
         locals.insert(Bstr::from(&b"loadintrinsics"[..]), Val::LoadIntrinsics);
-        Env::from_frame(locals)
+        Env::from_frame(locals, rng)
     }
 
-    pub fn from_frame<'a>(frame: Frame) -> Env<'a> {
-        Env { stack: vec![frame], interface: Box::new(NoIO) }
+    pub fn from_frame<'a>(frame: Frame, rng: Box<dyn rand::RngCore>) -> Env<'a> {
+        Env { stack: vec![frame], interface: Box::new(NoIO), rng }
     }
 
     pub fn locals(&self) -> &Frame { self.stack.last().unwrap() }
@@ -308,10 +309,3 @@ impl<'io> Env<'io> {
     }
 
 }
-
-impl<'io> Default for Env<'io> {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-

@@ -305,15 +305,15 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Deal => a.try_int().zip(ba!().try_int()).map_or(NAN, |(a, b)| {
             use rand::distributions::{Distribution, Uniform, Standard};
             if a <= 0 { 
-                Standard.sample_iter(rand::thread_rng()).take(b as _).map(Val::flt).collect()
+                Standard.sample_iter(&mut env.rng).take(b as _).map(Val::flt).collect()
             } else {
-                Uniform::from(0..a as _).sample_iter(rand::thread_rng())
+                Uniform::from(0..a as _).sample_iter(&mut env.rng)
                     .take(b as usize)
                     .map(|x| Int(i64::from(x))).collect::<Val>()
             }
         }),
         Val::Sample => a.try_int().zip(ba!().try_int()).map_or(NAN, |(a, b)|
-            rand::seq::index::sample(&mut rand::thread_rng(), a as _, usize::min(a as _, b as _))
+            rand::seq::index::sample(&mut env.rng, a as _, usize::min(a as _, b as _))
                 .iter()
                 .map(|x| Int(x as i64))
                 .collect::<Val>(),

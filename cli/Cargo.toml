@@ -9,6 +9,7 @@ path = "main.rs"
 
 [dependencies]
 vemf = { path = ".." }
+rand = { version = "0.8", features = ["std"] }
 
 # command line argument parsing
 [dependencies.clap]

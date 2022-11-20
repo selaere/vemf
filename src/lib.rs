@@ -3,7 +3,8 @@
 #![warn(clippy::semicolon_if_nothing_returned)]
 
 #[macro_use] pub mod codepage;
-mod token; mod parse; mod run; mod test;
+#[cfg(test)] mod test;
+mod token; mod parse; mod run;
 
 pub use run::{Env, Val, c64, Interface, NoIO, io_result};
 

@@ -70,7 +70,7 @@ impl vemf::Interface<'_> for Stdstreams {
 
 fn main() {
     let args = Args::parse();
-    let mut state = Env::new();
+    let mut state = Env::new(Box::new(rand::thread_rng()));
     if !args.no_stdlib {
         state.include_stdlib();
     }

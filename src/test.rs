@@ -1,10 +1,12 @@
+use rand::rngs::mock::StepRng;
+
 #[test]
 fn test() -> Result<(), String> {
     let code: &str = include_str!("../doc/raw.txt");
     println!("doing doc tests...");
     let mut tested = 0;
     let mut failed = 0;
-    let mut env = super::run::Env::new();
+    let mut env = super::run::Env::new(Box::new(StepRng::new(0, 1)));
     env.include_stdlib();
     for (n, line) in code.lines().enumerate() {
         if let Some(line) = line.strip_prefix("> ") {

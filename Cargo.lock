@@ -357,6 +357,7 @@ name = "vemfcli"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "rand",
  "vemf",
 ]
 
@@ -365,6 +366,7 @@ name = "vemfwasm"
 version = "0.1.0"
 dependencies = [
  "getrandom",
+ "rand",
  "vemf",
  "wasm-bindgen",
 ]

@@ -30,7 +30,7 @@ impl<'io> std::io::Write for Handle<'io> {
 #[wasm_bindgen]
 pub fn evaluate(s: &str, fmt: &str) -> String {
     let outbuf = RefCell::new(Vec::new());
-    let mut env = Env::new();
+    let mut env = Env::new(Box::new(rand::thread_rng()));
     env.interface = Box::new(Output {bufref: &outbuf});
     env.include_stdlib();
     let out = env.include_string(s).format(
