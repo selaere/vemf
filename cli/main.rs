@@ -1,4 +1,4 @@
-use std::{path::PathBuf, io::{Read, Write}, fs::File};
+use std::{path::PathBuf, io::{Read, Write, BufRead}, fs::File};
 use clap::Parser;
 use vemf::{Bstr, codepage, Val, Env};
 
@@ -26,9 +26,9 @@ struct Args {
     /// if given, prints to stdout the file, rewritten without ' escapes
     #[clap(short, long)]
     rewrite: bool,
-
+    /*
     #[clap(short, long)]
-    input: Vec<String>,
+    input: Vec<String>,*/
 }
 
 fn rewrite(path: PathBuf) {
@@ -40,22 +40,28 @@ fn rewrite(path: PathBuf) {
     ));
 }
 
-struct Stdstreams {
-    do_input: bool
-}
+struct Stdstreams {}
 
 impl vemf::Interface<'_> for Stdstreams {
-    fn input(&mut self, n: usize) -> Option<Box<dyn std::io::BufRead>> {
-        if !self.do_input { return None; }
-        match n {
-            0 => Some(Box::new(std::io::stdin().lock())),
-            _ => None
-        }
+    fn read(&mut self, stm: usize, buf: &mut [u8]) -> Option<usize> {
+        if stm == 0 {
+            vemf::io_result(std::io::stdin().read(buf))
+        } else { None }
     }
-    fn output(&mut self, n: usize) -> Option<Box<dyn std::io::Write>> {
-        match n {
-            0 => Some(Box::new(std::io::stdout())),
-            1 => Some(Box::new(std::io::stderr())),
+    fn read_line(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
+        if stm == 0 {
+            vemf::io_result(std::io::stdin().lock().read_until(b'\n', buf))
+        } else { None }
+    }
+    fn read_to_end(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
+        if stm == 0 {
+            vemf::io_result(std::io::stdin().read_to_end(buf))
+        } else { None }
+    }
+    fn write(&mut self, stm: usize, slice: &[u8]) -> Option<usize> {
+        match stm {
+            0 => vemf::io_result(std::io::stdout().write(slice)),
+            1 => vemf::io_result(std::io::stderr().write(slice)),
             _ => None,
         }
     }
@@ -68,20 +74,18 @@ fn main() {
     if !args.no_stdlib {
         state.include_stdlib();
     }
+    state.interface = Box::new(Stdstreams {});
     //println!("sizeof(Val) = {}", std::mem::size_of::<Val>());
     if let Some(path) = args.filename {
-        state.interface = Box::new(Stdstreams { do_input: true });
         if args.rewrite { return rewrite(path); }
         let arguments = state.include_args(&args.arguments);
         let mut res = state.include_file(&mut File::open(path).unwrap()).unwrap();
         if let Val::Err(x) = res { std::process::exit(x); }
-        if res.is_infinite() {
-            res = res.call(
-                &mut state,
-                arguments.get(0).cloned().unwrap_or(Val::NAN),
-                arguments.get(1).cloned()
-            );
-        }
+        if res.is_infinite() { res = res.call(
+            &mut state,
+            arguments.get(0).cloned().unwrap_or(Val::NAN),
+            arguments.get(1).cloned()
+        ); }
         if let Val::Err(x) = res { std::process::exit(x); }
         let form = res.format(
             &args.format.chars()
@@ -94,7 +98,6 @@ fn main() {
 }
 
 fn repl(mut state: Env, args: Args) {
-    state.interface = Box::new(Stdstreams { do_input: false });
     println!("welcome to vemf repl. enjoy your stay");
     loop {
         print!("    ");

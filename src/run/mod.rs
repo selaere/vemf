@@ -13,16 +13,46 @@ pub const NAN: Val = Num(c64::new(f64::NAN, f64::NAN));
 pub type Frame = HashMap<Bstr, Val>;
 
 pub trait Interface<'io> {
-    fn  input(&mut self, n: usize) -> Option<Box<dyn std::io::BufRead + 'io>>;
-    fn output(&mut self, n: usize) -> Option<Box<dyn std::io::Write   + 'io>>;
+    fn read     (&mut self, stm: usize, buf: &mut [u8])    -> Option<usize>;
+    fn write    (&mut self, stm: usize, slice: &[u8])      -> Option<usize>;
+    fn read_line(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
+        let mut a: [u8; 1] = [0];
+        let original_len = buf.len();
+        while self.read(stm, &mut a[..]).is_some() {
+            buf.push(a[0]);
+        }
+        Some(buf.len() - original_len)
+    }
+    fn read_to_end(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
+        let mut tmp = [0; 256];
+        let original_len = buf.len();
+        loop {
+            match self.read(stm, &mut tmp[..]) {
+                Some(0) => break,
+                Some(n) => buf.extend(&tmp[..n]),
+                None => if buf.len() > original_len { break } else { return None }
+            }
+        }
+        Some(buf.len() - original_len)
+    }
 }
 
 
 pub struct NoIO;
 
 impl<'io> Interface<'io> for NoIO {
-    fn  input(&mut self, _: usize) -> Option<Box<dyn std::io::BufRead>> { None }
-    fn output(&mut self, _: usize) -> Option<Box<dyn std::io::Write  >> { None }
+    fn read       (&mut self, _: usize, _: &mut [u8])    -> Option<usize> { None }
+    fn read_line  (&mut self, _: usize, _: &mut Vec<u8>) -> Option<usize> { None }
+    fn write      (&mut self, _: usize, _: &[u8])        -> Option<usize> { None }
+    fn read_to_end(&mut self, _: usize, _: &mut Vec<u8>) -> Option<usize> { None }
+}
+
+pub fn io_result(ioresult: std::io::Result<usize>) -> Option<usize> {
+    match ioresult {
+        Ok(n) => Some(n),
+        Err(e) if e.kind() == std::io::ErrorKind::Interrupted => Some(0),
+        Err(_) => None,
+    }
 }
 
 /// vemf interpreter state

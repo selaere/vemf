@@ -7,10 +7,12 @@ struct Output<'io> {
     bufref: &'io RefCell<Vec<u8>>
 }
 impl<'io> vemf::Interface<'io> for Output<'io> {
-    fn input(&mut self, _: usize) -> Option<Box<dyn std::io::BufRead + 'io>> { None }
-    fn output(&mut self, n: usize) -> Option<Box<dyn std::io::Write + 'io>> {
-        if let 0..=1 = n {
-            Some(Box::new(Handle(self.bufref.borrow_mut())))
+    fn read(&mut self, _: usize, _: &mut [u8]) -> Option<usize> { None }
+    fn write(&mut self, stm: usize, slice: &[u8]) -> Option<usize> {
+        if stm == 0 || stm == 1 {
+            let mut borrow = self.bufref.borrow_mut();
+            borrow.extend(slice);
+            Some(slice.len())
         } else { None }
     }
 }

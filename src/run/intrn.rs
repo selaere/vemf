@@ -197,44 +197,33 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::Arg  => a.try_c().map_or(NAN, |a| Val::flt(a.arg())),
 
         Val::Print   => {
-            if let Some(mut o) = env.interface.output(0) {
-                let _= o.write(a.display_string().as_bytes());
-            }
+            let _= env.interface.write(0, a.display_string().as_bytes());
             b.unwrap_or(a)
         },
         Val::Println => {
-            if let Some(mut o) = env.interface.output(0) {
-                let _= o.write(a.display_string().as_bytes());
-                let _= o.write(b"\n");
-            }
+            let _= env.interface.write(0, a.display_string().as_bytes());
+            let _= env.interface.write(0, b"\n");
             b.unwrap_or(a)
         },
         Val::Out => {
-            let mut stm = or_nan!(
-                ba!().try_int()
-                .and_then(|x| usize::try_from(x).ok())
-                .and_then(|n| env.interface.output(n))
-            );
+            let stm = or_nan!(ba!().try_int().and_then(|x| usize::try_from(x).ok()));
             let bytes = a.iterf()
                 .flat_map(|x| x.try_int().map(|x| (x & 0xff) as u8))
                 .collect::<Vec<_>>();
-            stm.write(&bytes).map(|x| Int(x as i64)).unwrap_or(NAN)
+            env.interface.write(stm, &bytes).map_or(NAN, |x| Int(x as i64))
         }
         Val::In => {
             let chars = or_nan!(a.try_int().and_then(|x| isize::try_from(x).ok()));
-            let mut stm = or_nan!(
-                ba!().try_int()
-                .and_then(|x| usize::try_from(x).ok())
-                .and_then(|n| env.interface.input(n)));
+            let stm = or_nan!(ba!().try_int().and_then(|x| usize::try_from(x).ok()));
             let mut buf;
             let size = or_nan!(
                 if chars < 0 { // read line
-                    buf = Vec::with_capacity(128); stm.read_until(b'\n', &mut buf)
+                    buf = Vec::with_capacity(128); env.interface.read_line(stm, &mut buf)
                 } else if chars == isize::MAX { // don't allocate an infinite buffer
-                    buf = Vec::with_capacity(128); stm.read_to_end(&mut buf)
+                    buf = Vec::with_capacity(128); env.interface.read_to_end(stm, &mut buf)
                 } else {
-                    buf = vec![0; chars as usize]; stm.read(&mut buf)
-                }.ok()
+                    buf = vec![0; chars as usize]; env.interface.read(stm, &mut buf)
+                }
             );
             buf.into_iter().take(size).map(|i| Int(i64::from(i))).collect()
         }
@@ -254,10 +243,8 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
             if let Some(n) = a.try_int() {
                 Val::Err(n as i32)
             } else {
-                if let Some(mut o) = env.interface.output(1) {
-                    let _= o.write(a.display_string().as_bytes());
-                    let _= o.write(b"\n");
-                }
+                let _= env.interface.write(0, a.display_string().as_bytes());
+                let _= env.interface.write(0, b"\n");
                 Val::Err(1)
             }
         Val::Format => a.format(&b.as_ref().map_or_else(Vec::new,

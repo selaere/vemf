@@ -8,7 +8,7 @@ path = "src/lib.rs"
 
 [dependencies]
 # small byte strings
-smallvec = { version = "1.8", features = ["union"] }
+smallvec = { version = "1.10", features = ["union"] }
 # random number generation
 rand = "0.8"
 # complex numbers
