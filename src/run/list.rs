@@ -1,4 +1,5 @@
-use std::{rc::Rc, iter::FusedIterator};
+use crate::prelude::*;
+use iter::FusedIterator;
 use super::{Val::{self, Lis, Num, Int}, Env, NAN};
 
 impl Val {
@@ -52,7 +53,7 @@ impl Val {
                         let slice = index.iterinf(env).skip(n+1).collect::<Val>();
                         l.iter().map(|x| x.index_at_depth(env, slice.clone())).collect::<Val>()
                     }
-                    _ => std::iter::empty::<Val>().collect()
+                    _ => iter::empty::<Val>().collect()
                 };
             }
             value = value.indexval(env, i);
@@ -69,7 +70,7 @@ impl Val {
                 // https://smallcultfollowing.com/babysteps/blog/2018/09/02/rust-pattern-iterating-an-over-a-rc-vec-t/
                 Err(l) => Box::new((0..l.len()).map(move |x| l[x].clone()))
             }
-        } else { Box::new(std::iter::once(self)) }
+        } else { Box::new(iter::once(self)) }
     }
 
     pub fn lis(vec: Vec<Val>) -> Val {
@@ -86,7 +87,7 @@ impl Val {
         if let Lis{l, ..} = self {
             Box::new(l.iter())
         } else {
-            Box::new(std::iter::once(self))
+            Box::new(iter::once(self))
         }
     }
 
@@ -97,7 +98,7 @@ impl Val {
                 Ok(l) => Box::new(l.into_iter()),
                 Err(l) => Box::new((0..l.len()).map(move |x| l[x].clone()))
             }
-        } else { Box::new(std::iter::once(self)) }
+        } else { Box::new(iter::once(self)) }
     }
 
     pub fn itertake(self, env: &mut Env, len: usize) -> Box<dyn GoodIter<Val>> {
@@ -183,7 +184,7 @@ pub fn concat(a: Val, b: Val) -> Val {
 }
 
 pub fn reverse(a: Val) -> Val {
-    if a.is_infinite() { return std::iter::empty::<Val>().collect() }
+    if a.is_infinite() { return iter::empty::<Val>().collect() }
     a.into_iterf().rev().collect()
 }
 
@@ -219,7 +220,7 @@ pub fn reshape(env: &mut Env, a: Val, b: Val, isright: bool) -> Val {
         // pick from right
         let elems = product.unsigned_abs();
         let bee = if a.len() < elems {
-            std::iter::repeat(a.fill()).take(elems - a.len()).chain(a.iterinf(env)).collect::<Val>()
+            iter::repeat(a.fill()).take(elems - a.len()).chain(a.iterinf(env)).collect::<Val>()
         } else {
             let len = a.len() - elems;
             a.iterinf(env).skip(len).collect::<Val>()
@@ -265,7 +266,7 @@ pub fn shape(a: &Val) -> Vec<usize> {
 pub fn replicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
     let mut lis = Vec::new();
     let (afill, bfill, len) = (a.fill(), b.fill(), a.len());
-    for (l,r) in a.into_iterf().zip(b.itertake(env, len).chain(std::iter::repeat(bfill))) {
+    for (l,r) in a.into_iterf().zip(b.itertake(env, len).chain(iter::repeat(bfill))) {
         if let Some(n) = r.try_int() {
             if n != 0 {
                 let val = if n > 0 {l} else {afill.clone()};

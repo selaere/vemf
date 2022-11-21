@@ -1,11 +1,12 @@
 use crate::codepage::tochar;
-use std::fmt::Write;
+use crate::prelude::*;
+use alloc::fmt::Write;
 
 use super::{Val, Lis, Num, Int};
 
 
-impl std::fmt::Display for Val {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl alloc::fmt::Display for Val {
+    fn fmt(&self, f: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
         match self {
             Num(n) => {
                 if n.is_nan() { return write!(f, "█"); }
@@ -45,7 +46,7 @@ impl Val {
                     Some(c) => c.to_string(), None => '\u{FFFD}'.to_string(),
                 }),
             4 => match self { Lis{l, ..} => 
-                std::iter::once("\"".to_string())
+                iter::once("\"".to_string())
                 .chain(l.iter().map(|x| x.try_int().map_or('\u{FFFD}'.to_string(),
                     |n| match char::from_u32(n as u32) {
                         Some('\x00'..='\x1F' | '\x7F'..='\u{9F}' | '\\' | '"') =>
@@ -53,7 +54,7 @@ impl Val {
                         Some(c) => c.to_string(), None => '\u{FFFD}'.to_string(),
                     }
                 )))
-                .chain(std::iter::once("\"".to_string()))
+                .chain(iter::once("\"".to_string()))
                 .collect(),
             _ => self.format(rest) }
             5 => match self { Lis{l, ..} => 

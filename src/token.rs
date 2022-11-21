@@ -1,4 +1,4 @@
-use crate::Bstr;
+use crate::prelude::*;
 use smallvec::smallvec;
 
 #[derive(Debug, Clone)]

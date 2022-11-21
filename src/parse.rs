@@ -1,7 +1,6 @@
-use std::collections::HashSet;
-use std::fmt::Display;
+use alloc::fmt::Display;
 
-use crate::{b, Bstr};
+use crate::prelude::*;
 use crate::codepage::tochars;
 use crate::token::Tok;
 
@@ -49,7 +48,7 @@ use Role::{Noun, Verb};
 const NAN: Expr = Expr::Flt(c64::new(f64::NAN, f64::NAN));
 
 impl Display for Expr {
-    fn fmt(&self, m: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
         match self {
             Self::Var(v) => write!(m, ".{}", displayname(v)),
             Self::Int(n) => write!(m, "'{}", n),
@@ -81,7 +80,7 @@ impl Display for Expr {
 }
 
 impl Display for Stmt {
-    fn fmt(&self, m: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
         match self {
             Stmt::Discard(e) => write!(m, "{}·", e),
             Stmt::Return(e) => write!(m, "{}◘", e),
@@ -214,7 +213,7 @@ pub fn phrase(code: &mut&[Tok]) -> Vec<(Role, Expr)> {
 
 // takes from iterator to make a strand. if it's only one element, it's just the one value. 
 // if it's not a strand, returns None
-fn strand(iter: &mut std::iter::Peekable<std::vec::IntoIter<(Role, Expr)>>) -> Option<Expr> {
+fn strand(iter: &mut iter::Peekable<alloc::vec::IntoIter<(Role, Expr)>>) -> Option<Expr> {
     let mut evs = Vec::new();
     while let Some((Noun, v)) = iter.peek() {
         evs.push(v.clone()); iter.next();
@@ -282,7 +281,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
             numberise(num)
         }
         Tok::HNum(x) => {
-            let num = std::str::from_utf8(&x).unwrap().parse::<f64>().unwrap();
+            let num = core::str::from_utf8(&x).unwrap().parse::<f64>().unwrap();
             if num == num as i64 as f64 {
                 Expr::Int(num as i64)
             } else {
@@ -371,7 +370,7 @@ pub fn parse(code: &[Tok]) -> Vec<Stmt> {
     let exps = block(&mut slice);
     if !slice.is_empty() {
         let num = code.len() - slice.len();
-        println!("unexpected token {:?} at {}", code[num], num);
+        panic!("unexpected token {:?} at {}", code[num], num);
     }
     exps
 }

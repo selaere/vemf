@@ -1,4 +1,4 @@
-use crate::Bstr;
+use crate::prelude::*;
 
 macro_rules! chars { ($func:ident $($other:tt)?) => { $func! { $($other)*
     '⍁' '☺' '☻' '♥' '♦' '♣' '♠' '•' '◘' '○' '◙' '♂' '♀' '♪' '♫' '☼'

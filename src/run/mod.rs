@@ -1,7 +1,7 @@
 mod intrn; mod list; mod adverb; mod disp; mod val;
 
-use crate::{parse::{Expr, Stmt}, Bstr};
-use std::{collections::HashMap, rc::Rc};
+use crate::parse::{Expr, Stmt};
+use crate::prelude::*;
 use adverb::AvT;
 
 const STDLIB: &str = include_str!("../std.vemf");
@@ -47,6 +47,7 @@ impl<'io> Interface<'io> for NoIO {
     fn read_to_end(&mut self, _: usize, _: &mut Vec<u8>) -> Option<usize> { None }
 }
 
+#[cfg(feature = "std")]
 pub fn io_result(ioresult: std::io::Result<usize>) -> Option<usize> {
     match ioresult {
         Ok(n) => Some(n),
@@ -291,6 +292,7 @@ impl<'io> Env<'io> {
         self.include_string(STDLIB);
     }
 
+    #[cfg(feature = "std")]
     pub fn include_file<F: std::io::Read>(&mut self, file: &mut F) -> std::io::Result<Val> {
         let mut code = String::new();
         file.read_to_string(&mut code)?;

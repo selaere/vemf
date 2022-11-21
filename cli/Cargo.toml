@@ -8,7 +8,7 @@ name = "vemf"
 path = "main.rs"
 
 [dependencies]
-vemf = { path = ".." }
+vemf = { path = "..", features = ["std"] }
 rand = { version = "0.8", features = ["std"] }
 
 # command line argument parsing

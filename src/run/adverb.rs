@@ -1,5 +1,5 @@
 use super::{Val, Env, NAN};
-use std::rc::Rc;
+use crate::prelude::*;
 
 #[derive(Copy, Clone, Debug)]
 pub enum AvT {
@@ -255,7 +255,7 @@ pub fn drill_iter(
             if v.len() <= index {
                 v.resize(index+1, (*fill).clone());
             }
-            v[index] = drill_iter(env, std::mem::take(&mut v[index]), b, iter, g);
+            v[index] = drill_iter(env, core::mem::take(&mut v[index]), b, iter, g);
             Val::lis_fill(v, (*fill).clone())
         } else {
             g.call(env, a, b)

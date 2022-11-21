@@ -1,5 +1,8 @@
+use core::cmp::Ordering;
+
 use super::Val::{self, Num, Int, Lis};
 use super::{NAN, c64};
+use crate::prelude::*;
 use crate::or_nan;
 
 impl Val {
@@ -59,15 +62,14 @@ impl Val {
         }
     }
 
-    pub fn cmpval(&self, other: &Val) -> std::cmp::Ordering {
-        use std::cmp::Ordering::{Greater, Less};
+    pub fn cmpval(&self, other: &Val) -> Ordering {
         match (self, other) {
             (Int(m), Int(n)) => m.cmp(n),
             (a, b) => match (a.try_c(), b.try_c()) {
                 (Some(m), Some(n)) => complexcmp(m, n),
-                (None,    Some(_)) => Greater,
-                (Some(_), None) => Less,
-                (None,    None) => Less,
+                (None,    Some(_)) => Ordering::Greater,
+                (Some(_), None) => Ordering::Less,
+                (None,    None) => Ordering::Less,
             }
         }
     }
@@ -90,12 +92,11 @@ impl PartialEq for Val {
 }
 impl Eq for Val {}
 
-pub fn complexcmp(a: c64, b: c64) -> std::cmp::Ordering {
-    use std::cmp::Ordering::{Equal, Greater, Less};
+pub fn complexcmp(a: c64, b: c64) -> Ordering {
     match (a.is_nan(), b.is_nan()) {
-        (true, true) => Equal,
-        (true, false) => Less,
-        (false, true) => Greater,
+        (true , true ) => Ordering::Equal,
+        (true , false) => Ordering::Less,
+        (false, true ) => Ordering::Greater,
         (false, false) => a.re.total_cmp(&b.re).then_with(|| a.im.total_cmp(&b.im))
     }
 }

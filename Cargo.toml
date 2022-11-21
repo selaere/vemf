@@ -17,6 +17,11 @@ num-complex = "0.4"
 num-integer = "0.1"
 # gamma (not complex (i have to look for a better library))
 libm = "0.2"
+# HashMap and HashSet for no_std
+hashbrown = "0.13"
+
+[features]
+std = []
 
 [workspace]
 members = ["cli", "wasm"]
