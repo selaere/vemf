@@ -1,4 +1,4 @@
-use std::{path::PathBuf, io::{Read, Write, BufRead}, fs::File};
+use std::{path::PathBuf, io::{Read, Write}, fs::File};
 use clap::Parser;
 use vemf::{Bstr, codepage, Val, Env};
 
@@ -40,33 +40,6 @@ fn rewrite(path: PathBuf) {
     ));
 }
 
-struct Stdstreams {}
-
-impl vemf::Interface<'_> for Stdstreams {
-    fn read(&mut self, stm: usize, buf: &mut [u8]) -> Option<usize> {
-        if stm == 0 {
-            vemf::io_result(std::io::stdin().read(buf))
-        } else { None }
-    }
-    fn read_line(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
-        if stm == 0 {
-            vemf::io_result(std::io::stdin().lock().read_until(b'\n', buf))
-        } else { None }
-    }
-    fn read_to_end(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
-        if stm == 0 {
-            vemf::io_result(std::io::stdin().read_to_end(buf))
-        } else { None }
-    }
-    fn write(&mut self, stm: usize, slice: &[u8]) -> Option<usize> {
-        match stm {
-            0 => vemf::io_result(std::io::stdout().write(slice)),
-            1 => vemf::io_result(std::io::stderr().write(slice)),
-            _ => None,
-        }
-    }
-}
-
 
 fn main() {
     let args = Args::parse();
@@ -74,7 +47,7 @@ fn main() {
     if !args.no_stdlib {
         state.include_stdlib();
     }
-    state.interface = Box::new(Stdstreams {});
+    state.interface = Box::new(vemf::StdIO {});
     //println!("sizeof(Val) = {}", std::mem::size_of::<Val>());
     if let Some(path) = args.filename {
         if args.rewrite { return rewrite(path); }

@@ -9,8 +9,8 @@ extern crate core; extern crate alloc;
 #[cfg(all(test, feature="std"))] mod test;
 mod token; mod parse; mod run;
 
-pub use run::{Env, Val, c64, Interface, NoIO};
-#[cfg(feature="std")] pub use run::io_result;
+pub use run::{Env, Val, c64, io::{Interface, NoIO, StdIO}};
+#[cfg(feature="std")] pub use run::io::io_result;
 
 /// owned byte string type. length will be the same as a Vec in 64bit archs
 pub type Bstr = smallvec::SmallVec<[u8; 16]>;

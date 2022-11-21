@@ -32,22 +32,10 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>, f: Option<&Rc<Val>>, g
             let r = b.map(|b| fg.monad(env, b));
             g.call(env, l, r)
         },
-        Self::Overleft => {
-            let l = fg.monad(env, a);
-            g.call(env, l, b)
-        },
-        Self::Overright => {
-            let r = b.map(|b| fg.monad(env, b));
-            g.call(env, a, r)
-        },
-        Self::Forkleft => {
-            let l = fg.call(env, a.clone(), b.clone());
-            g.dyad(env, l, b.unwrap_or(a))
-        },
-        Self::Forkright => {
-            let r = fg.call(env, a.clone(), b);
-            g.dyad(env, a, r)
-        },
+        Self::Overleft  => { let l = fg.monad(env, a); g.call(env, l, b) },
+        Self::Overright => { let r = b.map(|b| fg.monad(env, b)); g.call(env, a, r) },
+        Self::Forkleft  => { let l = fg.call(env, a.clone(), b.clone()); g.dyad(env, l, b.unwrap_or(a)) },
+        Self::Forkright => { let r = fg.call(env, a.clone(), b); g.dyad(env, a, r) },
         Self::Until =>     until(env, a, b, fg, g),
         Self::UntilScan => until_scan(env, a, b, fg, g),
         Self::Power =>     power(env, a, b, fg, g),

@@ -360,9 +360,6 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
     }
 }
 
-
 pub fn rc(self) -> Rc<Self> { Rc::new(self) }
 
-
 }
-

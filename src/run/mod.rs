@@ -1,4 +1,4 @@
-mod intrn; mod list; mod adverb; mod disp; mod val;
+mod intrn; mod list; mod adverb; mod disp; mod val; pub mod io;
 
 use crate::parse::{Expr, Stmt};
 use crate::prelude::*;
@@ -12,55 +12,11 @@ pub const NAN: Val = Num(c64::new(f64::NAN, f64::NAN));
 
 pub type Frame = HashMap<Bstr, Val>;
 
-pub trait Interface<'io> {
-    fn read     (&mut self, stm: usize, buf: &mut [u8])    -> Option<usize>;
-    fn write    (&mut self, stm: usize, slice: &[u8])      -> Option<usize>;
-    fn read_line(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
-        let mut a: [u8; 1] = [0];
-        let original_len = buf.len();
-        while self.read(stm, &mut a[..]).is_some() {
-            buf.push(a[0]);
-        }
-        Some(buf.len() - original_len)
-    }
-    fn read_to_end(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
-        let mut tmp = [0; 256];
-        let original_len = buf.len();
-        loop {
-            match self.read(stm, &mut tmp[..]) {
-                Some(0) => break,
-                Some(n) => buf.extend(&tmp[..n]),
-                None => if buf.len() > original_len { break } else { return None }
-            }
-        }
-        Some(buf.len() - original_len)
-    }
-}
-
-
-pub struct NoIO;
-
-impl<'io> Interface<'io> for NoIO {
-    fn read       (&mut self, _: usize, _: &mut [u8])    -> Option<usize> { None }
-    fn read_line  (&mut self, _: usize, _: &mut Vec<u8>) -> Option<usize> { None }
-    fn write      (&mut self, _: usize, _: &[u8])        -> Option<usize> { None }
-    fn read_to_end(&mut self, _: usize, _: &mut Vec<u8>) -> Option<usize> { None }
-}
-
-#[cfg(feature = "std")]
-pub fn io_result(ioresult: std::io::Result<usize>) -> Option<usize> {
-    match ioresult {
-        Ok(n) => Some(n),
-        Err(e) if e.kind() == std::io::ErrorKind::Interrupted => Some(0),
-        Err(_) => None,
-    }
-}
-
 /// vemf interpreter state
 pub struct Env<'io> {
     pub stack: Vec<Frame>,
     pub rng: Box<dyn rand::RngCore>,
-    pub interface: Box<dyn Interface<'io> + 'io>,
+    pub interface: Box<dyn io::Interface<'io> + 'io>,
 }
 
 #[macro_export]
@@ -113,7 +69,7 @@ impl<'io> Env<'io> {
     }
 
     pub fn from_frame<'a>(frame: Frame, rng: Box<dyn rand::RngCore>) -> Env<'a> {
-        Env { stack: vec![frame], interface: Box::new(NoIO), rng }
+        Env { stack: vec![frame], interface: Box::new(io::NoIO), rng }
     }
 
     pub fn locals(&self) -> &Frame { self.stack.last().unwrap() }
@@ -296,7 +252,6 @@ impl<'io> Env<'io> {
     pub fn include_file<F: std::io::Read>(&mut self, file: &mut F) -> std::io::Result<Val> {
         let mut code = String::new();
         file.read_to_string(&mut code)?;
-        //println!("input : ```{}```", code);
         Ok(self.include_string(&code))
     }
 
