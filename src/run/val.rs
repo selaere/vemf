@@ -3,7 +3,7 @@ use core::cmp::Ordering;
 use super::Val::{self, Num, Int, Lis};
 use super::{NAN, c64};
 use crate::prelude::*;
-use crate::or_nan;
+use crate::{or_nan, func};
 
 impl Val {
     
@@ -102,14 +102,14 @@ pub fn complexcmp(a: c64, b: c64) -> Ordering {
 }
 
 
-pub fn encode(a: Val, b: Val) -> Val {
+func!(a :encode b => {
     if b.is_infinite() { return NAN };
     match a {
         Int(n) => encode_int(n, b),
         Num(n) => encode_flt(n.re, b),
         _ => NAN,
     }
-}
+});
 
 fn encode_int(mut a: i64, b: Val) -> Val {
     let mut list = vec![Int(0); b.len() + 1];

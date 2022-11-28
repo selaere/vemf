@@ -25,7 +25,7 @@ impl alloc::fmt::Display for Val {
             },
             Val::FSet(x) => write!(f, "→{}", crate::codepage::tochars(x)),
             Val::Err(x) => write!(f, "ERROR ERROR {}", x),
-            z => write!(f, "<function {:?}>", z),
+            _ => write!(f, "<function>"),
         }
     }
 }

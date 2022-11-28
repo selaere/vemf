@@ -1,13 +1,14 @@
+use crate::prelude::*;
 
 pub trait Interface<'io> {
-    /// read bytes into ``buf``, 
     fn read     (&mut self, stm: usize, buf: &mut [u8])    -> Option<usize>;
     fn write    (&mut self, stm: usize, slice: &[u8])      -> Option<usize>;
     fn read_line(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
         let mut a: [u8; 1] = [0];
         let original_len = buf.len();
-        while self.read(stm, &mut a[..]).is_some() {
+        while let Some(1) = self.read(stm, &mut a[..]) {
             buf.push(a[0]);
+            if a[0] == b'\n' { break; }
         }
         Some(buf.len() - original_len)
     }

@@ -30,8 +30,8 @@
 
 .inprint→☺·
 .inprintln→☻·
-.inout→É·
-.inin →Ö·
+.inoutput→É·
+.ininput →Ö·
 ."intoutf8"→_ê
 ."infromutf8"→_ë
 .inexit→⌂·
@@ -65,7 +65,7 @@
 
 ┼:inexp╬:inpow→^·
 
-┼┌┴^2╬:inmod→%·
+┼┌┴^2╬:inrem→%·
 
 ┼:inln╬:inlog→∟·
 
@@ -126,7 +126,7 @@
 
 ╛(◄▄)╨►→▌·(▐╓▌)╬▌→▌·
 
-├~=0╬.inmatch→≡·
+├~=0╬.inmatches→≡·
 ≡¬→≈·
 
 '3.141592653589793→π·
@@ -137,14 +137,14 @@
 ┌├~▲↕╓╘↓╬↓→↓·
 ┌├~▲↕╓╘↑╬↑→↑·
 
-.indeal→á·┼├á1@╬á→á·
+.inpick→á·┼├á1@╬á→á·
 (┌~á╓@)╬•_╘(~╜á)╓╘@→å·
 (~╜┴┴:insample)╓╘@→à·
 
 :incomplex→í·┼┌í0╬í→í·
 :incis→ì·┼┌ì1╬ì→ì·
 ┼:inreal→ù·┼:inimag→ú·┼:inconj→ü·
-┼:inarg╬:inatanb→Ä·
+┼:inarg╬:"inatan2"→Ä·
 
 .inreplicate→‼·┌♣╖‼╬‼→‼·
 

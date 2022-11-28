@@ -1,6 +1,7 @@
 use crate::prelude::*;
 use iter::FusedIterator;
-use super::{Val::{self, Lis, Num, Int}, Env, NAN};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, intrn::left};
+use crate::{func, or_nan};
 
 impl Val {
 
@@ -38,27 +39,6 @@ impl Val {
             },
             x => x.monad(env, Int(index as i64))
         }
-    }
-
-    pub fn index_at_depth(&self, env: &mut Env, index: Val) -> Val {
-        let mut value = self.clone();
-        if index.is_nan() { return value.fill() }
-        for n in 0..index.len() {
-            if value.is_scalar() { return value.clone(); }
-            let i = index.index(env, n);
-            if i.is_nan() {
-                if n+1 == index.len() {return value}
-                return match value {
-                    Lis {l, ..} => {
-                        let slice = index.iterinf(env).skip(n+1).collect::<Val>();
-                        l.iter().map(|x| x.index_at_depth(env, slice.clone())).collect::<Val>()
-                    }
-                    _ => iter::empty::<Val>().collect()
-                };
-            }
-            value = value.indexval(env, i);
-        }
-        value
     }
 
     pub fn iterinf<'r, 'io>(self, env: &'r mut Env<'io>) -> Box<dyn InconvenientIter<'r, 'io> + 'r> {
@@ -118,6 +98,28 @@ pub trait InconvenientIter<'r, 'io>: Iterator<Item=Val> {}
 impl<'r, 'io> InconvenientIter<'r, 'io> for InfIter<'r, 'io> {}
 impl<'r, 'io, F> InconvenientIter<'r, 'io> for F where F: GoodIter<Val> {}
 
+
+func!(@env, a :index b => {
+    let mut a = a;
+    if b.is_nan() { return a.fill() }
+    for n in 0..b.len() {
+        if a.is_scalar() { return a.clone(); }
+        let i = b.index(env, n);
+        if i.is_nan() {
+            if n+1 == b.len() {return a}
+            return match a {
+                Lis {l, ..} => {
+                    let slice = b.iterinf(env).skip(n+1).collect::<Val>();
+                    l.iter().map(|x| index(env, x.clone(), Some(slice.clone()))).collect::<Val>()
+                }
+                _ => iter::empty::<Val>().collect()
+            };
+        }
+        a = a.indexval(env, i);
+    }
+    a
+});
+
 pub struct InfIter<'r, 'io> {
     i: i64,
     value: Val,
@@ -139,7 +141,7 @@ impl FromIterator<Val> for Val {
     }
 }
 
-pub fn iota(prefix: Vec<i64>, arg: &[i64]) -> Val {
+pub fn iiota(prefix: Vec<i64>, arg: &[i64]) -> Val {
     if arg.is_empty() {
         return prefix.into_iter().map(Int).collect()
     }
@@ -148,7 +150,7 @@ pub fn iota(prefix: Vec<i64>, arg: &[i64]) -> Val {
     } else {
         Box::new((0..arg[0].abs()).rev())
     };
-    Val::lis(iter.map(|i| iota([&prefix[..], &[i]].concat(), &arg[1..])).collect())
+    Val::lis(iter.map(|i| iiota([&prefix[..], &[i]].concat(), &arg[1..])).collect())
 }
 
 
@@ -161,32 +163,57 @@ pub fn iota_scalar(arg: i64) -> Val {
     Val::lis(iter.map(Int).collect())
 }
 
-pub fn ravel(arg: Val, list: &mut Vec<Val>) {
+func!(a :len => match a {
+    Num(_) | Int(_) => Int(1),
+    Lis { l, .. } => Int(l.len() as i64),
+    _ => Val::flt(f64::INFINITY),
+});
+func!(a :iota => match a {
+    Lis{l, ..} => iiota(
+        Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>()),
+    Num(n) => if n.is_infinite() {Val::Func(left)} else {iota_scalar(n.re as i64)},
+    Int(n) => iota_scalar(n),
+    _ => Val::Av(AvT::Const, None, NAN.rc()),
+});
+func!(a :pair b => Val::lis(vec![a, b]));
+func!(a :enlist => Val::lis(vec![a]));
+
+func!(a :getfill => a.fill());
+func!(a :setfill b => match a { Lis {l, ..} => Lis {l, fill: b.rc()}, a => a });
+
+func!(a :ravel => { let mut list = Vec::new(); vecravel(a, &mut list); Val::lis(list) });
+pub fn vecravel(arg: Val, list: &mut Vec<Val>) {
     match arg {
-        l @ Lis{ .. } => for i in l.into_iterf() {ravel(i, list)},
+        l @ Lis{ .. } => for i in l.into_iterf() {vecravel(i, list)},
         _ => list.push(arg)
     }
 }
 
-pub fn concat(a: Val, b: Val) -> Val {
-    if a.is_infinite() || b.is_infinite() { return NAN }
-    if let Lis{l, ..} = a {
-        return match Rc::try_unwrap(l) {
-            Ok(mut l) => {
-                // println!("efficient!!!");
-                l.extend(b.iterf().cloned());
-                Val::lis(l)
-            },
-            Err(l) => l.iter().cloned().chain(b.into_iterf()).collect()
-        }
-    }
-    a.into_iterf().chain(b.into_iterf()).collect()
-}
+func!(a :replist b => if !a.is_infinite() {
+    (0..or_nan!(b.try_int())).flat_map(|_| a.iterf().cloned()).collect()
+} else {a});
+func!(a :cycle => match a {
+    Lis{l, ..} => Val::DCycle(l),
+    Num(_) | Int(_) => Val::DCycle(Rc::new(vec![a])),
+    _ => a
+});
 
-pub fn reverse(a: Val) -> Val {
+func!(a :concat b => {
+    if a.is_infinite() || b.is_infinite() { return NAN }
+    if let Lis{l, ..} = a { return match Rc::try_unwrap(l) {
+        Ok(mut l) => { l.extend(b.iterf().cloned()); Val::lis(l) },
+        Err(l) => l.iter().cloned().chain(b.into_iterf()).collect()
+    }}
+    a.into_iterf().chain(b.into_iterf()).collect()
+});
+
+func!(a :reverse => {
     if a.is_infinite() { return iter::empty::<Val>().collect() }
     a.into_iterf().rev().collect()
-}
+});
+
+func!(@env, a :takeleft  b => reshape(env, a, b, false));
+func!(@env, a :takeright b => reshape(env, a, b, true));
 
 pub fn reshape(env: &mut Env, a: Val, b: Val, isright: bool) -> Val {
     if b.is_infinite() { return NAN };
@@ -227,32 +254,37 @@ pub fn reshape(env: &mut Env, a: Val, b: Val, isright: bool) -> Val {
         };
         bee.iterinf(env)
     };
-    reshape_iter(&mut iter, &shape[..], &fill)
+    ireshape(&mut iter, &shape[..], &fill)
 }
 
-pub fn reshape_iter(a: &mut dyn Iterator<Item=Val>, b: &[usize], fill: &Val) -> Val {
+pub fn ireshape(a: &mut dyn Iterator<Item=Val>, b: &[usize], fill: &Val) -> Val {
     if b.is_empty() {return a.next().unwrap_or_else(|| fill.clone())}
     let (pre, suf) = (b[0], &b[1..]);
-    (0..pre).map(move |_| reshape_iter(a, suf, fill)).collect()
+    (0..pre).map(move |_| ireshape(a, suf, fill)).collect()
 }
 
-pub fn dropleft(a: Val, b: i64) -> Val {
-    if b < 0 { return dropright(a, -b); }
+func!(a :dropleft  b => b.try_int().map_or(NAN, |b| drop(a, b)));
+func!(a :dropright b => b.try_int().map_or(NAN, |b| drop(a, -b)));
+
+pub fn drop(a: Val, b: i64) -> Val {
     if a.is_infinite() { return NAN; }
-    a.into_iterf().skip(b as _).collect()
+    if b >= 0 {
+        a.into_iterf().skip(b as _).collect()
+    } else {
+        a.into_iterf().rev().skip(-b as _).rev().collect()
+    }
 }
 
-pub fn dropright(a: Val, b: i64) -> Val {
-    if b < 0 { return dropleft(a, -b); }
-    if a.is_infinite() { return a; }
-    a.into_iterf().rev().skip(b as _).rev().collect()
-}
+func!(a :shape => Val::lis_fill( 
+    ishape(&a).iter().map(|x| Int(*x as i64)).collect(),
+    Int(1),
+));
 
-pub fn shape(a: &Val) -> Vec<usize> {
+pub fn ishape(a: &Val) -> Vec<usize> {
     if let Lis { l, .. } = a {
         let mut shp = vec![l.len()];
         for v in &**l {
-            let inr = shape(v);
+            let inr = ishape(v);
             if inr.len() + 1 > shp.len() { shp.resize(inr.len() + 1, 0); }
             for (n, &i) in inr.iter().enumerate() {
                 if shp[n+1] < i { shp[n+1] = i; };
@@ -262,8 +294,11 @@ pub fn shape(a: &Val) -> Vec<usize> {
     } else { vec![] }
 }
 
+func!(@env, a :replicate b => { let fill = a.fill();
+    Val::lis_fill(ireplicate(env, a, b), fill)
+});
 
-pub fn replicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
+pub fn ireplicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
     let mut lis = Vec::new();
     let (afill, bfill, len) = (a.fill(), b.fill(), a.len());
     for (l,r) in a.into_iterf().zip(b.itertake(env, len).chain(iter::repeat(bfill))) {
@@ -274,59 +309,45 @@ pub fn replicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
                 lis.push(val);
             }
         } else {
-            lis.extend(replicate(env, l, r).into_iter());
+            lis.extend(ireplicate(env, l, r).into_iter());
         }
     }
     lis
 }
 
-pub fn grade_up(a: Val) -> Val {
-    if let Lis {l, ..} = a {
-        let mut lis = (0..l.len()).collect::<Vec<_>>();
-        lis.sort_by(|a, b| l[*a].cmpval(&l[*b]));
-        Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
-    } else {
-        Val::lis(vec![Int(0)])
-    }
-}
+func!(a :gradeup => if let Lis {l, ..} = a {
+    let mut lis = (0..l.len()).collect::<Vec<_>>();
+    lis.sort_by(|a, b| l[*a].cmpval(&l[*b]));
+    Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
+} else { Val::lis(vec![Int(0)]) });
 
-pub fn grade_down(a: Val) -> Val {
-    if let Lis {l, ..} = a {
-        let mut lis = (0..l.len()).collect::<Vec<_>>();
-        lis.sort_by(|a, b| l[*a].cmpval(&l[*b]).reverse());
-        Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
-    } else { Val::lis(vec![Int(0)]) }
-}
+func!(a :gradedown => if let Lis {l, ..} = a {
+    let mut lis = (0..l.len()).collect::<Vec<_>>();
+    lis.sort_by(|a, b| l[*a].cmpval(&l[*b]).reverse());
+    Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
+} else { Val::lis(vec![Int(0)]) } );
 
-pub fn sort_up(a: Val) -> Val {
-    if let Lis {l, ..} = a {
-        let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).clone());
-        list.sort_by(|a, b| a.cmpval(b));
-        Val::lis(list)
-    } else { Val::lis(vec![a]) }
-}
+func!( a :sortup => if let Lis {l, ..} = a {
+    let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).clone());
+    list.sort_by(|a, b| a.cmpval(b));
+    Val::lis(list)
+} else { Val::lis(vec![a]) } );
 
-pub fn sort_down(a: Val) -> Val {
-    if let Lis {l, ..} = a {
-        let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).clone());
-        list.sort_by(|a, b| a.cmpval(b).reverse());
-        Val::lis(list)
-    } else { Val::lis(vec![a]) }
-}
+func!(a :sortdown => if let Lis {l, ..} = a {
+    let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).clone());
+    list.sort_by(|a, b| a.cmpval(b).reverse());
+    Val::lis(list)
+} else { Val::lis(vec![a]) });
 
-pub fn bins_up(a: &Val, b: &Val) -> Val {
-    if let Lis {l, ..} = a {
-        Int(l.partition_point(|x| x.cmpval(b).is_le()) as i64)
-    } else { Int(0) }
-}
+func!(a :binsup b => if let Lis {l, ..} = a {
+    Int(l.partition_point(|x| x.cmpval(&b).is_le()) as i64)
+} else { Int(0) } );
 
-pub fn bins_down(a: &Val, b: &Val) -> Val {
-    if let Lis {l, ..} = a {
-        Int(l.partition_point(|x| x.cmpval(b).is_gt()) as i64)
-    } else { Int(0) }
-}
+func!( a :binsdown b => if let Lis {l, ..} = a {
+    Int(l.partition_point(|x| x.cmpval(&b).is_gt()) as i64)
+} else { Int(0) });
 
-pub fn group(env: &mut Env, a: Val, b: Val) -> Val {
+func!( @env, a :group b => {
     if a.is_infinite() { return NAN; }
     let mut lis: Vec<Vec<Val>> = Vec::new();
     let len = a.len();
@@ -346,4 +367,4 @@ pub fn group(env: &mut Env, a: Val, b: Val) -> Val {
         lis.into_iter().map(Val::lis).collect(),
         Val::lis(Vec::new())
     )
-}
+});

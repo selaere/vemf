@@ -191,7 +191,6 @@ pub fn power(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) ->
     val
 }
 
-#[allow(clippy::needless_borrow)]
 pub fn scan_pairs(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
     if a.len() == 0 { return Val::lis_fill(Vec::new(), a.fill()); }
     let elems = a.iterf().collect::<Vec<_>>();

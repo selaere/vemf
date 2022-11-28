@@ -27,8 +27,10 @@ macro_rules! or_nan { ($expr:expr) => {
     }
 } }
 
+pub type Func = fn(env: &mut Env, a: Val, b: Option<Val>) -> Val;
+
 /// represents a vemf value
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub enum Val {
     Num(c64),
     Int(i64),
@@ -41,17 +43,9 @@ pub enum Val {
     Fork{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
     Av(AvT, Option<Rc<Val>>, Rc<Val>),
     AvBuilder(AvT),
-    Cycle,     DCycle(Rc<Vec<Val>>),
+    Cycle, DCycle(Rc<Vec<Val>>),
     Err(i32), // exit code
-    Add, Sub, Mul, Div, DivE, Mod, Pow, Log, Lt, Gt, Eq, And, Or, Max, Min, Atanb, Approx, BAnd, BOr, BXor, Gamma,
-    Gcd, Lcm, Binom, Get, Set, Call,
-    Abs, Neg, Ln, Exp, Sin, Asin, Cos, Acos, Tan, Atan, Sqrt, Round, Ceil, Floor, Isnan, Sign, BNot, BRepr,
-    Complex, Cis, Real, Imag, Conj, Arg,
-    Left, Right, Len, Shape, Index, Iota, Pair, Enlist, Ravel, Concat, Reverse, GetFill, SetFill,
-    Print, Println, Exit, Format, Numfmt, Parse, Out, In, FromUtf8, ToUtf8,
-    Takeleft, Takeright, Dropleft, Dropright, Replist, Match, Deal, Sample, Replicate,
-    GradeUp, GradeDown, SortUp, SortDown, BinsUp, BinsDown, Encode, FromCp, ToCp, Group,
-    LoadIntrinsics,
+    Func(Func)
 }
 
 
@@ -60,12 +54,11 @@ impl Default for Val {
     fn default() -> Self { NAN }
 }
 
+
 impl<'io> Env<'io> {
     
     pub fn new<'a>(rng: Box<dyn rand::RngCore>) -> Env<'a> {
-        let mut locals = HashMap::new();
-        locals.insert(Bstr::from(&b"loadintrinsics"[..]), Val::LoadIntrinsics);
-        Env::from_frame(locals, rng)
+        Env::from_frame(HashMap::new(), rng)
     }
 
     pub fn from_frame<'a>(frame: Frame, rng: Box<dyn rand::RngCore>) -> Env<'a> {
@@ -130,7 +123,7 @@ impl<'io> Env<'io> {
     pub fn delete_var(&mut self, mut name: &[u8]) {
         let mut skipped = 0;
         loop {
-            for (_, frame) in self.stack.iter_mut().enumerate().rev().skip(skipped) {
+            for frame in self.stack.iter_mut().rev().skip(skipped) {
                 if frame.remove_entry(name).is_some() { return; }
             }
             if let Some(b!(']')) = name.first() {
@@ -245,7 +238,9 @@ impl<'io> Env<'io> {
     }
 
     pub fn include_stdlib(&mut self) {
+        self.set_local(Bstr::from(&b"loadintrinsics"[..]), Val::Func(intrn::loadintrinsics));
         self.include_string(STDLIB);
+        //self.set_local(Bstr::from(&b"sus"[..]), Val::Func(intrn::add));
     }
 
     #[cfg(feature = "std")]
@@ -256,7 +251,6 @@ impl<'io> Env<'io> {
     }
 
     pub fn include_args(&mut self, args: &[String]) -> Vec<Val> {
-        use smallvec::smallvec;
         let args: Vec<Val> = args.iter().map(|s| s.chars().map(|x| Int(x as i64)).collect()).collect();
         if let Some(x) = args.get(0) { self.set_local(smallvec![b!('α')], x.clone()); }
         if let Some(x) = args.get(1) { self.set_local(smallvec![b!('β')], x.clone()); }
