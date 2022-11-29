@@ -9,6 +9,7 @@ pub enum AvT {
     Overleft, Overright, Over, Forkleft, Forkright,
     Until, UntilScan, Power, PowerScan,
     Drill,
+    Cycle,
 }
 
 impl AvT {
@@ -41,6 +42,7 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>, f: Option<&Rc<Val>>, g
         Self::Power =>     power(env, a, b, fg, g),
         Self::PowerScan => power_scan(env, a, b, fg, g),
         Self::Drill     => drill(env, a, b, fg, g),
+        Self::Cycle     => cycle(env, a, g),
     }
 }
 }
@@ -250,4 +252,8 @@ pub fn drill_iter(
     } else {
         g.call(env, a, b)
     }
+}
+
+pub fn cycle(env: &mut Env, a: Val, g: &Rc<Val>) -> Val {
+    a.try_int().map_or(NAN, |a| g.index(env, (a as usize) % g.len()))
 }

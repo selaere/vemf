@@ -192,11 +192,6 @@ pub fn vecravel(arg: Val, list: &mut Vec<Val>) {
 func!(a :replist b => if !a.is_infinite() {
     (0..or_nan!(b.try_int())).flat_map(|_| a.iterf().cloned()).collect()
 } else {a});
-func!(a :cycle => match a {
-    Lis{l, ..} => Val::DCycle(l),
-    Num(_) | Int(_) => Val::DCycle(Rc::new(vec![a])),
-    _ => a
-});
 
 func!(a :concat b => {
     if a.is_infinite() || b.is_infinite() { return NAN }
@@ -233,7 +228,7 @@ pub fn reshape(env: &mut Env, a: Val, b: Val, isright: bool) -> Val {
     if let Some(index) = spot {
         fn divceil(x: usize, y: usize) -> usize {x / y + usize::from(x % y != 0)}
         let num = divceil(
-            match &a { Val::DCycle(c) => c.len(), e => e.len() },
+            match &a { Val::Av(AvT::Cycle, _, c) => c.len(), e => e.len() },
             product.unsigned_abs(),
         );
         shape[index] = num;

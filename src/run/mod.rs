@@ -43,7 +43,6 @@ pub enum Val {
     Fork{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
     Av(AvT, Option<Rc<Val>>, Rc<Val>),
     AvBuilder(AvT),
-    Cycle, DCycle(Rc<Vec<Val>>),
     Err(i32), // exit code
     Func(Func)
 }

@@ -56,10 +56,6 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.rc()), a.rc()),
         Val::Av(t, f, g) => t.call(env, a, b, f.as_ref(), g),
         Val::Func(f) => f(env, a, b),
-
-        Val::DCycle(l) => a.try_int().map_or(NAN, |a| l[(a as usize) % l.len()].clone()),
-
-        _ => todo!()
     }
 }
 
@@ -105,7 +101,7 @@ func!(@env, _a :loadintrinsics => {
         left, right, get, set, call,
         shape, len, index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, matches,
         print, println, output, input, fromutf8, toutf8, fromcp, tocp, exit, format, numfmt, parse,
-        takeleft, takeright, dropleft, dropright, replist, cycle, pick, sample, replicate,
+        takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate,
         reverse, gradeup, gradedown, sortup, sortdown, binsup, binsdown, encode, group,
     );
     macro_rules! load_av {($($name:ident,)*) => { $( {
@@ -120,6 +116,7 @@ func!(@env, _a :loadintrinsics => {
         Overleft, Overright, Over, Forkleft, Forkright,
         Until, UntilScan, Power, PowerScan,
         Drill,
+        Cycle,
     ); Int(1)
 });
 
