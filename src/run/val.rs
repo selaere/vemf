@@ -1,9 +1,8 @@
 use core::cmp::Ordering;
 
 use super::Val::{self, Num, Int, Lis};
-use super::{NAN, c64};
+use super::{NAN, c64, Env};
 use crate::prelude::*;
-use crate::{or_nan, func};
 
 impl Val {
     
@@ -73,6 +72,61 @@ impl Val {
             }
         }
     }
+        
+    pub fn monad(&self, env: &mut Env, a: Val) -> Val { 
+        self.call(env, a, None)
+    }
+
+    pub fn dyad(&self, env: &mut Env, a: Val, b: Val) -> Val {
+        self.call(env, a, Some(b))
+    }
+
+    pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
+        match self {
+            Val::Err(x) => Val::Err(*x),
+
+            Lis { .. } | Num(_) | Int(_) => self.clone(),
+            Val::FSet(name) => {
+                env.set_local(name.clone(), a.clone());
+                b.unwrap_or(a)
+            },
+            Val::FCng(name) => {
+                env.mutate_var(name, a).unwrap_or(NAN)
+            }
+            Val::Dfn { s, loc } => {
+                env.stack.push((**loc).clone());
+                env.set_local(smallvec![b!('Σ')], Int(1 + i64::from(b.is_some())));
+                env.set_local(smallvec![b!('α')], a);
+                env.set_local(smallvec![b!('β')], b.unwrap_or(NAN));
+                env.set_local(smallvec![b!('ƒ')], self.clone());
+                let val = env.eval_block(s);
+                env.stack.pop();
+                val
+            },
+
+            Val::Bind { f: aa, b: bb } => aa.dyad(env, a, (**bb).clone()),
+            Val::Trn2 { a: aa, f: ff } => {
+                let x = aa.call(env, a, b);
+                ff.monad(env, x)
+            },
+            Val::Trn3 { a: aa, f: ff, b: bb } => {
+                let x = aa.call(env, a, b);
+                ff.dyad(env, x, (**bb).clone())
+            },
+            Val::Fork { a: aa, f: ff, b: bb } => {
+                let l = aa.call(env, a.clone(), b.clone());
+                let r = bb.call(env, a, b);
+                ff.dyad(env, l, r)
+            }
+
+            Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.rc()), a.rc()),
+            Val::Av(t, f, g) => t.call(env, a, b, f.as_ref(), g),
+            Val::Func(f) => f(env, a, b),
+        }
+    }
+
+    pub fn rc(self) -> Rc<Self> { Rc::new(self) }
+
 }
 
 impl PartialEq for Val {

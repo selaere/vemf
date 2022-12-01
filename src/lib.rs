@@ -7,7 +7,7 @@ extern crate core; extern crate alloc;
 
 #[macro_use] pub mod codepage;
 #[cfg(test)] mod test;
-mod token; mod parse; mod run;
+mod token; mod parse; #[macro_use] mod run;
 
 pub use run::{Env, Val, c64, io::{Interface, NoIO}};
 #[cfg(feature="std")] pub use run::io::{io_result, StdIO};
@@ -23,7 +23,7 @@ mod prelude {
     pub use alloc::rc::Rc;
     pub use core::iter;
 
-    pub use b;
+    pub use {b, or_nan, func};
     pub use alloc::{vec, format};
 
     pub use crate::Bstr;

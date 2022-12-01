@@ -1,4 +1,4 @@
-mod intrn; mod list; mod adverb; mod disp; mod val; pub mod io;
+#[macro_use] mod intrn; mod list; mod adverb; mod disp; mod val; pub mod io;
 
 use crate::parse::{Expr, Stmt};
 use crate::prelude::*;

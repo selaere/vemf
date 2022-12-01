@@ -82,7 +82,6 @@ impl Val {
                         if col_lens[n] < f.chars().count() { col_lens[n] = f.chars().count(); };
                         f
                     }).collect()),
-                    #[allow(clippy::needless_borrow)] /*clippy bug i think*/
                     _ => Err(i.format(rest))
                 }).collect();
 

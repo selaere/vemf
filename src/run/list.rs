@@ -1,7 +1,6 @@
 use crate::prelude::*;
 use iter::FusedIterator;
 use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, intrn::left};
-use crate::{func, or_nan};
 
 impl Val {
 

@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use smallvec::smallvec;
 
 #[derive(Debug, Clone)]
 pub enum Tok {
