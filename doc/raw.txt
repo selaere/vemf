@@ -1739,7 +1739,7 @@ calculate `α²+(β²)√`, or the distance of (α, β) to the origin (0, 0), or
 :ascii: 'E
 :type: verb
 #2 Find
-finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are α's fill. if β is a scalar or the |Empty List|, search for the element β.
+finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are |None|. if β is a scalar or the |Empty List|, search for the element β.
 > "sus sus amongus"£`s    ≡ 0█0█0█0███████0
 > "sus sus amongus"£"s"   ≡ 0█0█0█0███████0
 > "sus sus amongus"£"us"  ≡ █01██01██████01
