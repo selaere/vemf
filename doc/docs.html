@@ -1733,13 +1733,31 @@ _4¢ ≡ 4
 8¢6 ≡ '10
 1¢1 ≡ 2√</pre>
 <h2 class="verb" id="9C"><code>£</code> (0x9C, <code>'E</code>)</h2>
-<h3 id="Find Window"><code>α£β</code> Find Window</h3>
-<pre>"bee, wasp, hor,net"£", " ≡ 00010000010000000▐0
-"bee, wasp, hor,net"£"," ≡  000100000100001000▐0</pre>
+<h3 id="Find"><code>α£β</code> Find</h3>
+<p>finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are α's fill. if β is a scalar or the <a href="#Empty List">Empty List</a>, search for the element β.</p>
+<pre>"sus sus amongus"£`s    ≡ 0█0█0█0███████0
+"sus sus amongus"£"s"   ≡ 0█0█0█0███████0
+"sus sus amongus"£"us"  ≡ █01██01██████01
+"sus sus amongus"£"us " ≡ █012█012███████
+"sus sus amongus"£"sus" ≡ 012█012████████
+"bee beebeee beebe"£"ee"  ≡ █01██01█01███01██
+"bee beebeee beebe"£"bee" ≡ 012█012012██012██</pre>
+<p>this is similar to using <a href="#Windows">Windows</a> and <a href="#Match">Match</a> <code>α(►~)╫≡β</code> but this does not include overlapping matches</p>
+<pre>"asininity"£"ini" ≡ ██012████
+"asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!</pre>
+<p>it's also in a bit more convenient format: same length as the original string, and you can do <code>=0</code> to find the starts of matches or <a href="#Is Not None">Is Not None</a> <code>ɛ</code> to find all the matched characters:</p>
+<pre>"sus sus amongus"£"sus"   ≡ 012█012████████
+"sus sus amongus"£"sus"=0 ≡ 100010000000000
+"sus sus amongus"£"sus"ɛ  ≡ 111011100000000</pre>
+<p>see also: <a href="#Equals">Equals</a>, <a href="#Windows">Windows</a>, <a href="#Split">Split</a></p>
 <h2 class="verb" id="9D"><code>¥</code> (0x9D, <code>'Y</code>)</h2>
 <h3 id="Split"><code>α¥β</code> Split</h3>
+<p>splits a list α at all the ocurrences of the sublist β</p>
 <pre>"bee bees apioids"¥` ◄ ≡ "bee""bees""apioids"
-"bee bees apioids"¥`,  ≡ ♪"bee bees apioids"</pre>
+"bee bees apioids"¥`,  ≡ ♪"bee bees apioids"
+"one, two, three"¥", " ≡ "one""two""three"</pre>
+<h3 id="Split Newlines"><code>α¥</code> Split Newlines</h3>
+<p>splits at newlines (byte 0x0A). same as <code>¥Φ</code>. won't strip out carriage returns.</p>
 <h2 class="verb" id="9E"><code>₧</code> (0x9E, <code>'pt</code>)</h2>
 <h3 id="Partition"><code>α₧β</code> Partition</h3>
 <p>partition the list α at indexes β</p>
@@ -1774,7 +1792,7 @@ _4¢ ≡ 4
 2í² ± _4
 3í2² ± '12í_5</pre>
 <h2 class="verb" id="A2"><code>ó</code> (0xA2, <code>'o-</code>)</h2>
-<h3 id="Find Right"><code>αóβ</code> Find Right</h3>
+<h3 id="Index of Last"><code>αóβ</code> Index of Last</h3>
 <p>find the last exact match in the list and return its index, or else <a href="#None">None</a>. β-pervasive.</p>
 <pre>012073167140ó0123456789 ≡ '11 925Φ█78██</pre>
 <h2 class="verb" id="A3"><code>ú</code> (0xA3, <code>'u-</code>)</h2>

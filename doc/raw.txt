@@ -1738,16 +1738,34 @@ calculate `α²+(β²)√`, or the distance of (α, β) to the origin (0, 0), or
 :char: £
 :ascii: 'E
 :type: verb
-#2 Find Window
-> "bee, wasp, hor,net"£", " ≡ 00010000010000000▐0
-> "bee, wasp, hor,net"£"," ≡  000100000100001000▐0
+#2 Find
+finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are α's fill. if β is a scalar or the |Empty List|, search for the element β.
+> "sus sus amongus"£`s    ≡ 0█0█0█0███████0
+> "sus sus amongus"£"s"   ≡ 0█0█0█0███████0
+> "sus sus amongus"£"us"  ≡ █01██01██████01
+> "sus sus amongus"£"us " ≡ █012█012███████
+> "sus sus amongus"£"sus" ≡ 012█012████████
+> "bee beebeee beebe"£"ee"  ≡ █01██01█01███01██
+> "bee beebeee beebe"£"bee" ≡ 012█012012██012██
+this is similar to using |Windows| and |Match| `α(►~)╫≡β` but this does not include overlapping matches
+> "asininity"£"ini" ≡ ██012████
+> "asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!
+it's also in a bit more convenient format: same length as the original string, and you can do `=0` to find the starts of matches or |Is Not None| `ɛ` to find all the matched characters:
+> "sus sus amongus"£"sus"   ≡ 012█012████████
+> "sus sus amongus"£"sus"=0 ≡ 100010000000000
+> "sus sus amongus"£"sus"ɛ  ≡ 111011100000000
+see also: |Equals|, |Windows|, |Split|
 ---
 :char: ¥
 :ascii: 'Y
 :type: verb
 #2 Split
+splits a list α at all the ocurrences of the sublist β
 > "bee bees apioids"¥` ◄ ≡ "bee""bees""apioids"
 > "bee bees apioids"¥`,  ≡ ♪"bee bees apioids"
+> "one, two, three"¥", " ≡ "one""two""three"
+#1 Split Newlines
+splits at newlines (byte 0x0A). same as `¥Φ`. won't strip out carriage returns.
 ---
 :char: ₧
 :ascii: 'pt
@@ -1797,7 +1815,7 @@ calculate `β + α*i`
 :char: ó
 :ascii: 'o-
 :type: verb
-#2 Find Right
+#2 Index of Last
 find the last exact match in the list and return its index, or else |None|. β-pervasive.
 > 012073167140ó0123456789 ≡ '11 925Φ█78██
 ---

@@ -362,3 +362,17 @@ func!( @env, a :group b => {
         Val::lis(Vec::new())
     )
 });
+
+func!(a :find b => {
+    let Lis{l: a, fill} = a else { return NAN };
+    let b = match b { Lis{l, ..} if l.len() != 0 => l, _ => Rc::new(vec![b]) };
+    let mut res = vec![(*fill).clone(); a.len()];
+    let mut i = 0;
+    while i+b.len() <= a.len() {
+        if a[i..i+b.len()] == b[..] {
+            for n in 0..b.len() { res[i+n] = Int(n as i64); }
+            i += b.len();
+        } else { i += 1; }
+    }
+    Val::lis(res)
+});
