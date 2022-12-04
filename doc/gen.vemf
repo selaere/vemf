@@ -1,21 +1,21 @@
-(┌#ÿ╓┴Æ┘╤+▀¬)╓Ü↑2→_₧· ' split once
+(┌#ÿ╓┴Æ┘╤+▀¬)╓Ü↑2─_₧ ' split once
 
-(~`<)╓▀▌"&lt;",→esc·
+(~`<)╓▀▌"&lt;",─esc
 
-@êª'16▐`0↓2Ç→fc·
-φ→titles·
-∞Ö_ë ¥"◙---◙"→pg·
-█§'256→tab·
+@êª'16▐`0↓2Ç─fc
+φ─titles
+∞Ö_ë ¥"◙---◙"─pg
+█§'256─tab
 .pg╕{
-    →tab· α¥Φ▐φL·
-    l╕(=":title"&)#¡l♂8→title·
-    l╕(=":char" &)#¡l♂7→c· c:fc→hex·
-    l╕(=":type" &)#¡l♂7→type·
-    l╕(=":ascii"&)#¡l♂8≈╨(;", <code>","</code>")→ascii·
-    (c@ê)╗.type↔tab·
-    "<h2 class=¨",.type,"¨ id=¨",.hex,"¨><code>",(c:esc),"</code> (0x",.hex,.ascii,")</h2>◙"→h·    
-    .title≈? "<h2 id=¨",.title,"¨>",.title,"</h2>◙"→h·
-    .title≈? ¬.title↔titles·
+    ─tab α¥Φ▐φL·
+    l╕(=":title"&)#¡l♂8─title
+    l╕(=":char" &)#¡l♂7─c c:fc─hex
+    l╕(=":type" &)#¡l♂7─type
+    l╕(=":ascii"&)#¡l♂8≈╨(;", <code>","</code>")─ascii
+    (c@ê)╗.type═tab
+    "<h2 class=¨",.type,"¨ id=¨",.hex,"¨><code>",(c:esc),"</code> (0x",.hex,.ascii,")</h2>◙"─h    
+    .title≈? "<h2 id=¨",.title,"¨>",.title,"</h2>◙"─h
+    .title≈? ¬.title═titles
     l╕{
         @=`>? α♂2:esc;"<pre>","</pre>"◘
         @=`:? █◘
@@ -33,10 +33,10 @@
         =`|╤+%2¬;0♀╤+┴Üa╕{~=1?α ◘ α♀♂;æ"¨>";"<a href=¨#","</a>"},→a
         =``╤+%2╪-0▲¡"<code>"█"</code>"╕▌a;"<p>","</p>",
     }▀╧{(α↓6≡"</pre>")&(β↑5≡"<pre>")? α♀6,Φ,(β♂5) ◘ α,Φ,β};h
-}æΦ→body·
+}æΦ─body
 
 '256↕ëΦ╗'9689╕{"<td class=¨"(β▌"none")"¨><a href=¨#"┐α:fc"¨>"┐α:esc"</a></td>",}.tab
-↑█'16╛(æΦ;"<tr>","</tr>")æΦ→nav·
+↑█'16╛(æΦ;"<tr>","</tr>")æΦ─nav
 
 "<body><div id=¨all¨><nav><div id=¨wrapper¨><div id=¨fixed¨>◙<h1>vemf docs</h1>◙"
 "<h2>tutorial:</h2>◙<ol>◙"( .titles╕{"<li><a href=¨#"α"¨>"α"</a></li>◙",}, )"</ol>◙"

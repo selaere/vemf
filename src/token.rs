@@ -134,22 +134,10 @@ fn token(first: Option<u8>, bytes: &mut &[u8]) -> Option<Tok> {
         Some(b!(':')) => Tok::VarVerb(identifier(bytes)),
         Some(b!('•')) => Tok::VarAv1 (identifier(bytes)),
         Some(b!('○')) => Tok::VarAv2 (identifier(bytes)),
-        Some(b!('→')) => {
-            let ident = identifier(bytes);
-            (if let Some(b!('·')) | None = bytes.first() {
-                step(bytes); Tok::VarSetStmt
-            } else {
-                Tok::VarSet
-            })(ident)
-        },
-        Some(b!('↔')) => {
-            let ident = identifier(bytes);
-            (if let Some(b!('·')) | None = bytes.first() {
-                step(bytes); Tok::VarCngStmt
-            } else {
-                Tok::VarCng
-            })(ident)
-        },
+        Some(b!('─')) => Tok::VarSetStmt(identifier(bytes)),
+        Some(b!('═')) => Tok::VarCngStmt(identifier(bytes)),
+        Some(b!('→')) => Tok::VarSet (identifier(bytes)),
+        Some(b!('↔')) => Tok::VarCng (identifier(bytes)),
         Some(b!('¨')) => Tok::Str    (identifier(bytes)),
         Some(c @ (b' ' | b'\n')) => Tok::White(c),
         Some(c @ short_verb!())  => Tok::VarVerb(smallvec![c]),
@@ -291,8 +279,8 @@ fn onechar_abbr(c: u8) -> Option<u8> { Some(match c {
     b'.' =>b!('•'), b'/' =>b!('╧'), b':' =>b!('○'), b';' =>b!('♫'), b'<' =>b!('≤'), b'=' =>b!('≡'), 
     b'>' =>b!('≥'), b'?' =>b!('¿'), b'@' =>b!('¡'), b'A' =>b!('α'), b'B' =>b!('β'), b'C' =>b!('¢'), 
     b'D' =>b!('δ'), b'E' =>b!('ε'), b'F' =>b!('ƒ'), b'G' =>b!('↑'), b'H' =>b!('↓'), b'I' =>b!('↕'), 
-    b'J' =>b!('↨'), b'K' =>b!('∟'), b'L' =>b!('╜'), b'M' =>b!('μ'), b'N' =>b!('█'), b'O' =>b!('◘'), 
-    b'P' =>b!('╨'), b'Q' =>b!('Θ'), b'R' =>b!('╙'), b'S' =>b!('σ'), b'T' =>b!('τ'), b'U' =>b!('╩'), 
+    b'J' =>b!('↨'), b'K' =>b!('∟'), b'L' =>b!('◄'), b'M' =>b!('μ'), b'N' =>b!('█'), b'O' =>b!('◘'), 
+    b'P' =>b!('╨'), b'Q' =>b!('Θ'), b'R' =>b!('►'), b'S' =>b!('σ'), b'T' =>b!('τ'), b'U' =>b!('╩'), 
     b'V' =>b!('√'), b'W' =>b!('♠'), b'X' =>b!('Φ'), b'Y' =>b!('¥'), b'Z' =>b!('φ'), b'[' =>b!('╓'),
     b'\\'=>b!('╤'), b']' =>b!('╖'), b'^' =>b!('→'), b'_' =>b!('¬'), b'`' =>b!('┴'), b'{' =>b!('╘'),
     b'|' =>b!('·'), b'}' =>b!('╛'), b'~' =>b!('≈'), 
@@ -323,7 +311,7 @@ fn twochar_abbr(c: [u8; 2]) -> Option<u8> {
         b"su"=>b!('╦'), b"sp"=>b!('╥'), b"mo"=>b!('┬'), b"co"=>b!('╒'), b"vb"=>b!('│'),
         b"ov"=>b!('╝'), b"dp"=>b!('╗'),
         // ↓ most of these will be changed probably
-        b"x1"=>b!('─'), b"x2"=>b!('═'), b"x3"=>b!('╚'), b"x4"=>b!('╔'),
+        b"x^"=>b!('─'), b"x*"=>b!('═'), b"x1"=>b!('╚'), b"x2"=>b!('╔'),
         _ => return None,
     })
 }
