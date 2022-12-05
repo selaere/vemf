@@ -124,9 +124,9 @@ you can chain them, left-to-right
 > ~=0─empty φ:empty ≡ 1
 we've been setting these trains to variables before using them. if you try to apply them directly, it won't work:
 > 5(+/2)9
-is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with `│` (that is a box drawing character, not a pipe):
-> 5│(+/2)9 ≡ 7
-> 6│(↨*) ≡ '720
+is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with `┌` (that is a box drawing character, not a pipe):
+> 5┌(+/2)9 ≡ 7
+> 6┌(↨*) ≡ '720
 but you never actually need to do this! an inlined train will always be shorter:
 > 5+9/2 ≡ 7
 > 6↨* ≡ '720
@@ -195,10 +195,10 @@ the formula for triangular numbers is n(n+1)/2. we can do the first part as a fo
 and the halving with `½` |Half|:
 > 6└◄*▲½ ≡ '21
 the `½` is applied atop the result of the fork, so as a single function this is an atop:
-> 6│(└◄*▲½) ≡ '21
-note that we need the `│` for it to be interpreted as a function. note also that the fork is only the first three functions `◄*▲`, and the `½` is not part of the fork.
+> 6┌(└◄*▲½) ≡ '21
+note that we need the `┌` for it to be interpreted as a function. note also that the fork is only the first three functions `◄*▲`, and the `½` is not part of the fork.
 as a general rule of thumb, when there is a `◄` or `►` in a fork, it can be represented with one of the other combinators. here we can use `αF╓G` |On Right|, which evaluates to `αG(αF)` (i read it as G, with F evaluated on the right)
-> 6│(▲╓*½) ≡ '21
+> 6┌(▲╓*½) ≡ '21
 we can set our function to a variable and use it.
 > ▲╓*½─triang 6:triang ≡ '21
 this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly:
@@ -217,13 +217,12 @@ here is another way of representing this that i can test automatically
 > (`aF╜H╙G)(`aF╜H╙G`b) ≡ "[(a)]"   "[(a){b}]"
 ---
 :title: Groups
-i dont like parentheses. i dont like the fact that occasionally i have to use them to make things work. i dont like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as `+2` gains two characters when used with an adverb `(+2)╜/`. or with nested list literals `(123)(45)(6789)`. we can do better.
-> 7 (+2)╙/ 3 ≡ 7 ┌+2╙/ 3
-> (123)(45)(6789) ≡ ├123┌45╞6789
-there are two types of groupers: word groupers and morpheme groupers
->           2 3 4 5 6
-> morpheme: ┌ ├ ╞ ╟ ╠
->     word: ┐ ┤ ╡ ╢ ╣
+i dont like parentheses. i dont like the fact that occasionally i have to use them to make things work. i dont like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as `+2` gains two characters when used with an adverb `(+2)╜/`. or with nested list literals `(123)(45)(6789)`:
+> 7 (+2)╙/ 3 ≡ 7 │+2╙/ 3
+> (123)(45)(6789) ≡ ├123│45╞6789
+the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use.
+> 2 3 4 5 6 7 8 9 Φ
+> │ ├ ╞ ╟ ╠ ┤ ╡ ╢ ╣
 TODO TODO
 ---
 :title: Blocks
@@ -391,8 +390,8 @@ a negative argument flips the output:
 > Φ-↕ ≡ 9876543210
 > "list"─l l~-↕¡l ≡ "tsil"
 when the argument is a list of scalars `i`, the result will be an array of shape `i,(i~)` where the deepest lists are the indices of an array of shape `i`
-> 34↕ ≡ (┐00┐01┐02┐03)(┐10┐11┐12┐13)(┐20┐21┐22┐23)
-> 123↕ ≡ ♪((┤000┤001┤002)(┤010┤011┤012))
+> 34↕ ≡ (│00│01│02│03)(│10│11│12│13)(│20│21│22│23)
+> 123↕ ≡ ♪((├000├001├002)(├010├011├012))
 > ♪5↕ ≡ 5↕╕♫
 > 15↕ ≡ 5↕╕;0♫
 > 0123↕ ≡ φ
@@ -492,8 +491,8 @@ when α is a scalar, the output is the range of natural numbers [1, α]; startin
 this is really just |Iota| with every item incremented by 1, or `↕▲`.
 the extensions that |Iota| has, like negative numbers and lists as arguments, will also work with Inclusive Iota:
 > Φ-↨ ≡ Φ987654321
-> 34↨ ≡ (┐11┐12┐13┐14)(┐21┐22┐23┐24)(┐31┐32┐33┐34)
-> 123↨ ≡ ♪((┤111┤112┤113)(┤121┤122┤123))
+> 34↨ ≡ (│11│12│13│14)(│21│22│23│24)(│31│32│33│34)
+> 123↨ ≡ ♪((├111├112├113)(├121├122├123))
 #2 Inclusive Range
 the range used is [α, β]. note that this means the resulting array is of length `β-α+1`.
 > 2↨8 ≡ 2345678
@@ -755,8 +754,8 @@ often, you won't need to close a parenthesis, like in the end of a file or a sta
 parentheses can be thought of having less precedence than braces `{}`
 > '15{"number ",(αª} ≡ "number 15"
 if there arent many words inside the parenthesis, |Grouping| may be used instead
-> ┤123┤456┤789@0 ≡ 123
-> 001334┌û¬╓‼ ≡ 0134
+> ├123├456├789@0 ≡ 123
+> 001334│û¬╓‼ ≡ 0134
 an empty parenthesis is the same as |Empty List|
 > () ≡ φ
 ---
@@ -2336,7 +2335,7 @@ calculate the binomial coefficient `α choose β`
 #1a1 Each
 call G with each item in α.
 > 123╕▲ ≡ 234
-> 123╕(,0) ≡ ┌10┌20┌30
+> 123╕(,0) ≡ │10│20│30
 #2a1 Each
 if both α and β are lists, pair the items up.
 > 123╕,456 ≡ (14)(25)(36)
@@ -2348,11 +2347,11 @@ if any argument is a scalar, it will be copied in each iteration; equivalently, 
 if both arguments are scalars, it just applies the operation on them
 > 1╕,2 ≡ 12
 Each applies only to one level of nesting (see |Scalar|):
-> (┌01┌23)(┌45┌67)(89) ,0 ≡     (┌01┌23)(┌45┌67)(89)0
-> (┌01┌23)(┌45┌67)(89) ╕,0 ≡    (┌01┌230)(┌45┌670)(890)
-> (┌01┌23)(┌45┌67)(89) ╕╕,0 ≡   (├010├230)(├450├670)(┌80┌90)
-> (┌01┌23)(┌45┌67)(89) ╕╕╕,0 ≡  (┌┌00┌10┌┌20┌30)(┌┌40┌50┌┌60┌70)(┌80┌90)
-> (┌01┌23)(┌45┌67)(89) ╕╕╕╕,0 ≡ (┌┌00┌10┌┌20┌30)(┌┌40┌50┌┌60┌70)(┌80┌90)
+> (│01│23)(│45│67)(89) ,0 ≡     (│01│23)(│45│67)(89)0
+> (│01│23)(│45│67)(89) ╕,0 ≡    (│01│230)(│45│670)(890)
+> (│01│23)(│45│67)(89) ╕╕,0 ≡   (├010├230)(├450├670)(│80│90)
+> (│01│23)(│45│67)(89) ╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
+> (│01│23)(│45│67)(89) ╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 see also: |Each Left|, |Each Right|, |Scalar|
 ---
 :char: ╒
@@ -2386,7 +2385,7 @@ see also: |Each Left|
 #1a1 Each Right
 monadically, it acts like `┴╘f`; iterates through α, passing α in each iteration
 > 123╘* ≡ ((123)(246)(369))
-> 123╘╛, ≡ (┌11┌21┌31)(┌12┌22┌32)(┌13┌23┌33)
+> 123╘╛, ≡ (│11│21│31)(│12│22│32)(│13│23│33)
 ---
 :char: ╤
 :ascii: '\
@@ -2447,14 +2446,14 @@ executes G, ignoring the right argument
 :type: adverb1
 #1a1 Scalar
 call F to every scalar in α, keeping the list's structure. this is similar to |Each| called arbitrarily many times.
-> (┌01┌23)(┌45┌67)(89)▲ ≡ (┌12┌34)(┌56┌78)(9Φ)
-> (┌01┌23)(┌45┌67)(89) ┼(,0) ≡ (┌┌00┌10┌┌20┌30)(┌┌40┌50┌┌60┌70)(┌80┌90)
+> (│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
+> (│01│23)(│45│67)(89) ┼(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 #2a1 Scalar
 apply a function to every scalar in α and β, following the same rules as |Each|, recursively.
 > 0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57)(89Φ)
-> (┌01┌23)(┌45┌67)(89) ┼, 0 ≡ (┌┌00┌10┌┌20┌30)(┌┌40┌50┌┌60┌70)(┌80┌90)
+> (│01│23)(│45│67)(89) ┼, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 > 123┼,456 ≡ (14)(25)(36)
-> 123(45)6 ┼, 6789 ≡ (16)(27)(38)(┌49┌59)
+> 123(45)6 ┼, 6789 ≡ (16)(27)(38)(│49│59)
 ---
 :char: ╪
 :ascii: 's2
@@ -2474,11 +2473,11 @@ run F through 2-item pairs of α, passing the left item as the left argument and
 :type: adverb2
 #1a2 Valences
 call F.
-> 1{"monad ",┌αⁿ}╬{"dyad ",┌αⁿ,` ,┌βⁿ} ≡ "monad 1"
+> 1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ} ≡ "monad 1"
 > 1█╬►  ≡ █
 #2a2 Valences
 call G.
-> 1{"monad ",┌αⁿ}╬{"dyad ",┌αⁿ,` ,┌βⁿ}2 ≡ "dyad 1 2"
+> 1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ}2 ≡ "dyad 1 2"
 > 1█╬►2 ≡ 2
 ---
 :char: ╦
@@ -2583,20 +2582,12 @@ equivalent to `αFG`
 #2a2 Over
 equivalent to `αFG(βF)`
 ---
-:char: ┘
-:ascii: 'mf
-:type: literal
-#α┘FGH Morpheme Fork
-equivalent to `αFG(αH)`
-#α┘FGHβ Morpheme Fork
-equivalent to `αFβG(αHβ)`
----
 :char: └
-:ascii: 'wf
+:ascii: 'fk
 :type: literal
-#α└FGH Word Fork
+#α└FGH Fork
 equivalent to `αFG(αH)`
-#α└FGHβ Word Fork
+#α└FGHβ Fork
 equivalent to `αFβG(αHβ)`
 ---
 :char: ─
@@ -2619,68 +2610,62 @@ like `↔name` |Mutate| but acts as a statement and changes the contents of the 
 if there is nothing in the statement body, the variable will be removed from its scope.
 > 4─a0{═a}·a ≡ █
 ---
-:char: │
-:ascii: 'm1
+:char: ┌
+:ascii: 'g1
 :type: mgroup
-#│m 1 Morpheme Group
+#┌m 1-Group
 see |Groups|
 ---
-:char: ┌
-:ascii: 'm2
+:char: │
+:ascii: 'g2
 :type: mgroup
-#┌mn 2 Morpheme Group
+#│mn 2-Group
 see |Groups|
 ---
 :char: ├
-:ascii: 'm3
+:ascii: 'g3
 :type: mgroup
-#├mno 3 Morpheme Group
+#├mno 3-Group
 see |Groups|
 ---
 :char: ╞
-:ascii: 'm4
+:ascii: 'g4
 :type: mgroup
-#╞mnop 4 Morpheme Group
+#╞mnop 4-Group
 see |Groups|
 ---
 :char: ╟
-:ascii: 'm5
+:ascii: 'g5
 :type: mgroup
-#╟mnopq 5 Morpheme Group
+#╟mnopq 5-Group
 see |Groups|
 ---
 :char: ╠
-:ascii: 'm6
+:ascii: 'g6
 :type: mgroup
-#╠mnopqr 6 Morpheme Group
-see |Groups|
----
-:char: ┐
-:ascii: 'w2
-:type: wgroup
-#┐ab 2 Word Group
+#╠mnopqr 6-Group
 see |Groups|
 ---
 :char: ┤
-:ascii: 'w3
-:type: wgroup
-#┤abc 3 Word Group
+:ascii: 'g7
+:type: mgroup
+#┤mnopqrs 7-Group
 see |Groups|
 ---
 :char: ╡
-:ascii: 'w4
-:type: wgroup
-#╡abcd 4 Word Group
+:ascii: 'g8
+:type: mgroup
+#╡mnopqrst 8-Group
 see |Groups|
 ---
 :char: ╢
-:ascii: 'm5
-:type: wgroup
-#╢abcde 5 Word Group
+:ascii: 'g9
+:type: mgroup
+#╢mnopqrstu 9-Group
 see |Groups|
 ---
 :char: ╣
-:ascii: 'm6
-:type: wgroup
-#╣abcdef 6 Word Group
+:ascii: 'g0
+:type: mgroup
+#╣mnopqrstuv 10-Group
 see |Groups|

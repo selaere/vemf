@@ -286,18 +286,18 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="none"><a href="#B1">▒</a></td>
 <td class="none"><a href="#B2">▓</a></td>
 <td class="mgroup"><a href="#B3">│</a></td>
-<td class="wgroup"><a href="#B4">┤</a></td>
-<td class="wgroup"><a href="#B5">╡</a></td>
-<td class="wgroup"><a href="#B6">╢</a></td>
+<td class="mgroup"><a href="#B4">┤</a></td>
+<td class="mgroup"><a href="#B5">╡</a></td>
+<td class="mgroup"><a href="#B6">╢</a></td>
 <td class="adverb2"><a href="#B7">╖</a></td>
 <td class="adverb1"><a href="#B8">╕</a></td>
-<td class="wgroup"><a href="#B9">╣</a></td>
+<td class="mgroup"><a href="#B9">╣</a></td>
 <td class="none"><a href="#BA">║</a></td>
 <td class="adverb2"><a href="#BB">╗</a></td>
 <td class="adverb2"><a href="#BC">╝</a></td>
 <td class="adverb2"><a href="#BD">╜</a></td>
 <td class="adverb1"><a href="#BE">╛</a></td>
-<td class="wgroup"><a href="#BF">┐</a></td></tr>
+<td class="none"><a href="#BF">┐</a></td></tr>
 <tr><td class="literal"><a href="#C0">└</a></td>
 <td class="adverb1"><a href="#C1">┴</a></td>
 <td class="adverb1"><a href="#C2">┬</a></td>
@@ -323,7 +323,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="adverb2"><a href="#D6">╓</a></td>
 <td class="adverb2"><a href="#D7">╫</a></td>
 <td class="adverb1"><a href="#D8">╪</a></td>
-<td class="literal"><a href="#D9">┘</a></td>
+<td class="none"><a href="#D9">┘</a></td>
 <td class="mgroup"><a href="#DA">┌</a></td>
 <td class="noun"><a href="#DB">█</a></td>
 <td class="verb"><a href="#DC">▄</a></td>
@@ -487,9 +487,9 @@ h2>code { background-color: inherit; white-space: pre; }
 ~=0─empty φ:empty ≡ 1</pre>
 <p>we've been setting these trains to variables before using them. if you try to apply them directly, it won't work:</p>
 <pre>5(+/2)9</pre>
-<p>is a list with <code>5</code>, the function <code>+/2</code> (as a noun) and <code>9</code>. you can turn a noun into a verb with <code>│</code> (that is a box drawing character, not a pipe):</p>
-<pre>5│(+/2)9 ≡ 7
-6│(↨*) ≡ '720</pre>
+<p>is a list with <code>5</code>, the function <code>+/2</code> (as a noun) and <code>9</code>. you can turn a noun into a verb with <code>┌</code> (that is a box drawing character, not a pipe):</p>
+<pre>5┌(+/2)9 ≡ 7
+6┌(↨*) ≡ '720</pre>
 <p>but you never actually need to do this! an inlined train will always be shorter:</p>
 <pre>5+9/2 ≡ 7
 6↨* ≡ '720</pre>
@@ -557,10 +557,10 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>and the halving with <code>½</code> <a href="#Half">Half</a>:</p>
 <pre>6└◄*▲½ ≡ '21</pre>
 <p>the <code>½</code> is applied atop the result of the fork, so as a single function this is an atop:</p>
-<pre>6│(└◄*▲½) ≡ '21</pre>
-<p>note that we need the <code>│</code> for it to be interpreted as a function. note also that the fork is only the first three functions <code>◄*▲</code>, and the <code>½</code> is not part of the fork.</p>
+<pre>6┌(└◄*▲½) ≡ '21</pre>
+<p>note that we need the <code>┌</code> for it to be interpreted as a function. note also that the fork is only the first three functions <code>◄*▲</code>, and the <code>½</code> is not part of the fork.</p>
 <p>as a general rule of thumb, when there is a <code>◄</code> or <code>►</code> in a fork, it can be represented with one of the other combinators. here we can use <code>αF╓G</code> <a href="#On Right">On Right</a>, which evaluates to <code>αG(αF)</code> (i read it as G, with F evaluated on the right)</p>
-<pre>6│(▲╓*½) ≡ '21</pre>
+<pre>6┌(▲╓*½) ≡ '21</pre>
 <p>we can set our function to a variable and use it.</p>
 <pre>▲╓*½─triang 6:triang ≡ '21</pre>
 <p>this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly:</p>
@@ -578,13 +578,12 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 (`a└FGH) (`a└FGH`b)  ≡ "[(a){a}]""[(ab){ab}]"
 (`aF╜H╙G)(`aF╜H╙G`b) ≡ "[(a)]"   "[(a){b}]"</pre>
 <h2 id="Groups">Groups</h2>
-<p>i dont like parentheses. i dont like the fact that occasionally i have to use them to make things work. i dont like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as <code>+2</code> gains two characters when used with an adverb <code>(+2)╜/</code>. or with nested list literals <code>(123)(45)(6789)</code>. we can do better.</p>
-<pre>7 (+2)╙/ 3 ≡ 7 ┌+2╙/ 3
-(123)(45)(6789) ≡ ├123┌45╞6789</pre>
-<p>there are two types of groupers: word groupers and morpheme groupers</p>
-<pre>          2 3 4 5 6
-morpheme: ┌ ├ ╞ ╟ ╠
-    word: ┐ ┤ ╡ ╢ ╣</pre>
+<p>i dont like parentheses. i dont like the fact that occasionally i have to use them to make things work. i dont like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as <code>+2</code> gains two characters when used with an adverb <code>(+2)╜/</code>. or with nested list literals <code>(123)(45)(6789)</code>:</p>
+<pre>7 (+2)╙/ 3 ≡ 7 │+2╙/ 3
+(123)(45)(6789) ≡ ├123│45╞6789</pre>
+<p>the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use.</p>
+<pre>2 3 4 5 6 7 8 9 Φ
+│ ├ ╞ ╟ ╠ ┤ ╡ ╢ ╣</pre>
 <p>TODO TODO</p>
 <h2 id="Blocks">Blocks</h2>
 <p>TODO</p>
@@ -701,8 +700,8 @@ morpheme: ┌ ├ ╞ ╟ ╠
 <pre>Φ-↕ ≡ 9876543210
 "list"─l l~-↕¡l ≡ "tsil"</pre>
 <p>when the argument is a list of scalars <code>i</code>, the result will be an array of shape <code>i,(i~)</code> where the deepest lists are the indices of an array of shape <code>i</code></p>
-<pre>34↕ ≡ (┐00┐01┐02┐03)(┐10┐11┐12┐13)(┐20┐21┐22┐23)
-123↕ ≡ ♪((┤000┤001┤002)(┤010┤011┤012))
+<pre>34↕ ≡ (│00│01│02│03)(│10│11│12│13)(│20│21│22│23)
+123↕ ≡ ♪((├000├001├002)(├010├011├012))
 ♪5↕ ≡ 5↕╕♫
 15↕ ≡ 5↕╕;0♫
 0123↕ ≡ φ
@@ -787,8 +786,8 @@ morpheme: ┌ ├ ╞ ╟ ╠
 <p>this is really just <a href="#Iota">Iota</a> with every item incremented by 1, or <code>↕▲</code>.</p>
 <p>the extensions that <a href="#Iota">Iota</a> has, like negative numbers and lists as arguments, will also work with Inclusive Iota:</p>
 <pre>Φ-↨ ≡ Φ987654321
-34↨ ≡ (┐11┐12┐13┐14)(┐21┐22┐23┐24)(┐31┐32┐33┐34)
-123↨ ≡ ♪((┤111┤112┤113)(┤121┤122┤123))</pre>
+34↨ ≡ (│11│12│13│14)(│21│22│23│24)(│31│32│33│34)
+123↨ ≡ ♪((├111├112├113)(├121├122├123))</pre>
 <h3 id="Inclusive Range"><code>α↨β</code> Inclusive Range</h3>
 <p>the range used is [α, β]. note that this means the resulting array is of length <code>β-α+1</code>.</p>
 <pre>2↨8 ≡ 2345678</pre>
@@ -1008,8 +1007,8 @@ _1%_2 ≡ 1</pre>
 <p>parentheses can be thought of having less precedence than braces <code>{}</code></p>
 <pre>'15{"number ",(αª} ≡ "number 15"</pre>
 <p>if there arent many words inside the parenthesis, <a href="#Grouping">Grouping</a> may be used instead</p>
-<pre>┤123┤456┤789@0 ≡ 123
-001334┌û¬╓‼ ≡ 0134</pre>
+<pre>├123├456├789@0 ≡ 123
+001334│û¬╓‼ ≡ 0134</pre>
 <p>an empty parenthesis is the same as <a href="#Empty List">Empty List</a></p>
 <pre>() ≡ φ</pre>
 <h2 class="literal" id="29"><code>)</code> (0x29)</h2>
@@ -2172,7 +2171,7 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Each"><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
 <pre>123╕▲ ≡ 234
-123╕(,0) ≡ ┌10┌20┌30</pre>
+123╕(,0) ≡ │10│20│30</pre>
 <h3 id="Each"><code>α╕Gβ</code> Each</h3>
 <p>if both α and β are lists, pair the items up.</p>
 <pre>123╕,456 ≡ (14)(25)(36)</pre>
@@ -2184,11 +2183,11 @@ _1÷_2 ≡ 1</pre>
 <p>if both arguments are scalars, it just applies the operation on them</p>
 <pre>1╕,2 ≡ 12</pre>
 <p>Each applies only to one level of nesting (see <a href="#Scalar">Scalar</a>):</p>
-<pre>(┌01┌23)(┌45┌67)(89) ,0 ≡     (┌01┌23)(┌45┌67)(89)0
-(┌01┌23)(┌45┌67)(89) ╕,0 ≡    (┌01┌230)(┌45┌670)(890)
-(┌01┌23)(┌45┌67)(89) ╕╕,0 ≡   (├010├230)(├450├670)(┌80┌90)
-(┌01┌23)(┌45┌67)(89) ╕╕╕,0 ≡  (┌┌00┌10┌┌20┌30)(┌┌40┌50┌┌60┌70)(┌80┌90)
-(┌01┌23)(┌45┌67)(89) ╕╕╕╕,0 ≡ (┌┌00┌10┌┌20┌30)(┌┌40┌50┌┌60┌70)(┌80┌90)</pre>
+<pre>(│01│23)(│45│67)(89) ,0 ≡     (│01│23)(│45│67)(89)0
+(│01│23)(│45│67)(89) ╕,0 ≡    (│01│230)(│45│670)(890)
+(│01│23)(│45│67)(89) ╕╕,0 ≡   (├010├230)(├450├670)(│80│90)
+(│01│23)(│45│67)(89) ╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
+(│01│23)(│45│67)(89) ╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
 <p>see also: <a href="#Each Left">Each Left</a>, <a href="#Each Right">Each Right</a>, <a href="#Scalar">Scalar</a></p>
 <h2 class="adverb1" id="D5"><code>╒</code> (0xD5, <code>'co</code>)</h2>
 <h3 id="Constant"><code>╒G</code> Constant</h3>
@@ -2213,7 +2212,7 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Each Right"><code>α╘G</code> Each Right</h3>
 <p>monadically, it acts like <code>┴╘f</code>; iterates through α, passing α in each iteration</p>
 <pre>123╘* ≡ ((123)(246)(369))
-123╘╛, ≡ (┌11┌21┌31)(┌12┌22┌32)(┌13┌23┌33)</pre>
+123╘╛, ≡ (│11│21│31)(│12│22│32)(│13│23│33)</pre>
 <h2 class="adverb1" id="D1"><code>╤</code> (0xD1, <code>'\</code>)</h2>
 <h3 id="Scan"><code>α╤G</code> Scan</h3>
 <p><a href="#Reduce">Reduce</a>, but keeping the intermediate results. the first element will be left unchanged.</p>
@@ -2259,14 +2258,14 @@ _1÷_2 ≡ 1</pre>
 <h2 class="adverb1" id="C5"><code>┼</code> (0xC5, <code>'sc</code>)</h2>
 <h3 id="Scalar"><code>α┼G</code> Scalar</h3>
 <p>call F to every scalar in α, keeping the list's structure. this is similar to <a href="#Each">Each</a> called arbitrarily many times.</p>
-<pre>(┌01┌23)(┌45┌67)(89)▲ ≡ (┌12┌34)(┌56┌78)(9Φ)
-(┌01┌23)(┌45┌67)(89) ┼(,0) ≡ (┌┌00┌10┌┌20┌30)(┌┌40┌50┌┌60┌70)(┌80┌90)</pre>
+<pre>(│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
+(│01│23)(│45│67)(89) ┼(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
 <h3 id="Scalar"><code>α┼Gβ</code> Scalar</h3>
 <p>apply a function to every scalar in α and β, following the same rules as <a href="#Each">Each</a>, recursively.</p>
 <pre>0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57)(89Φ)
-(┌01┌23)(┌45┌67)(89) ┼, 0 ≡ (┌┌00┌10┌┌20┌30)(┌┌40┌50┌┌60┌70)(┌80┌90)
+(│01│23)(│45│67)(89) ┼, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 123┼,456 ≡ (14)(25)(36)
-123(45)6 ┼, 6789 ≡ (16)(27)(38)(┌49┌59)</pre>
+123(45)6 ┼, 6789 ≡ (16)(27)(38)(│49│59)</pre>
 <h2 class="adverb1" id="D8"><code>╪</code> (0xD8, <code>'s2</code>)</h2>
 <h3 id="Scan Pairs"><code>α╪G</code> Scan Pairs</h3>
 <p>run F through 2-item pairs of α, passing the left item as the left argument and the right item as the right argument. the first item will be left unchanged.</p>
@@ -2280,11 +2279,11 @@ _1÷_2 ≡ 1</pre>
 <h2 class="adverb2" id="CE"><code>╬</code> (0xCE, <code>'vl</code>)</h2>
 <h3 id="Valences"><code>αF╬G</code> Valences</h3>
 <p>call F.</p>
-<pre>1{"monad ",┌αⁿ}╬{"dyad ",┌αⁿ,` ,┌βⁿ} ≡ "monad 1"
+<pre>1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ} ≡ "monad 1"
 1█╬►  ≡ █</pre>
 <h3 id="Valences"><code>αF╬Gβ</code> Valences</h3>
 <p>call G.</p>
-<pre>1{"monad ",┌αⁿ}╬{"dyad ",┌αⁿ,` ,┌βⁿ}2 ≡ "dyad 1 2"
+<pre>1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ}2 ≡ "dyad 1 2"
 1█╬►2 ≡ 2</pre>
 <h2 class="adverb2" id="CB"><code>╦</code> (0xCB, <code>'su</code>)</h2>
 <h3 id="Scan Until"><code>αF╦G</code> Scan Until</h3>
@@ -2355,15 +2354,10 @@ _1÷_2 ≡ 1</pre>
 <p>equivalent to <code>αFG</code></p>
 <h3 id="Over"><code>αF╝Gβ</code> Over</h3>
 <p>equivalent to <code>αFG(βF)</code></p>
-<h2 class="literal" id="D9"><code>┘</code> (0xD9, <code>'mf</code>)</h2>
-<h3 id="Morpheme Fork"><code>α┘FGH</code> Morpheme Fork</h3>
+<h2 class="literal" id="C0"><code>└</code> (0xC0, <code>'fk</code>)</h2>
+<h3 id="Fork"><code>α└FGH</code> Fork</h3>
 <p>equivalent to <code>αFG(αH)</code></p>
-<h3 id="Morpheme Fork"><code>α┘FGHβ</code> Morpheme Fork</h3>
-<p>equivalent to <code>αFβG(αHβ)</code></p>
-<h2 class="literal" id="C0"><code>└</code> (0xC0, <code>'wf</code>)</h2>
-<h3 id="Word Fork"><code>α└FGH</code> Word Fork</h3>
-<p>equivalent to <code>αFG(αH)</code></p>
-<h3 id="Word Fork"><code>α└FGHβ</code> Word Fork</h3>
+<h3 id="Fork"><code>α└FGHβ</code> Fork</h3>
 <p>equivalent to <code>αFβG(αHβ)</code></p>
 <h2 class="literal" id="C4"><code>─</code> (0xC4, <code>'x^</code>)</h2>
 <h3 id="Local Statement"><code>a─name</code> Local Statement</h3>
@@ -2379,37 +2373,34 @@ _1÷_2 ≡ 1</pre>
 <pre>3─n 4─m *2═n n ≡ 6</pre>
 <p>if there is nothing in the statement body, the variable will be removed from its scope.</p>
 <pre>4─a0{═a}·a ≡ █</pre>
-<h2 class="mgroup" id="B3"><code>│</code> (0xB3, <code>'m1</code>)</h2>
-<h3 id="1 Morpheme Group"><code>│m</code> 1 Morpheme Group</h3>
+<h2 class="mgroup" id="DA"><code>┌</code> (0xDA, <code>'g1</code>)</h2>
+<h3 id="1-Group"><code>┌m</code> 1-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h2 class="mgroup" id="DA"><code>┌</code> (0xDA, <code>'m2</code>)</h2>
-<h3 id="2 Morpheme Group"><code>┌mn</code> 2 Morpheme Group</h3>
+<h2 class="mgroup" id="B3"><code>│</code> (0xB3, <code>'g2</code>)</h2>
+<h3 id="2-Group"><code>│mn</code> 2-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h2 class="mgroup" id="C3"><code>├</code> (0xC3, <code>'m3</code>)</h2>
-<h3 id="3 Morpheme Group"><code>├mno</code> 3 Morpheme Group</h3>
+<h2 class="mgroup" id="C3"><code>├</code> (0xC3, <code>'g3</code>)</h2>
+<h3 id="3-Group"><code>├mno</code> 3-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h2 class="mgroup" id="C6"><code>╞</code> (0xC6, <code>'m4</code>)</h2>
-<h3 id="4 Morpheme Group"><code>╞mnop</code> 4 Morpheme Group</h3>
+<h2 class="mgroup" id="C6"><code>╞</code> (0xC6, <code>'g4</code>)</h2>
+<h3 id="4-Group"><code>╞mnop</code> 4-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h2 class="mgroup" id="C7"><code>╟</code> (0xC7, <code>'m5</code>)</h2>
-<h3 id="5 Morpheme Group"><code>╟mnopq</code> 5 Morpheme Group</h3>
+<h2 class="mgroup" id="C7"><code>╟</code> (0xC7, <code>'g5</code>)</h2>
+<h3 id="5-Group"><code>╟mnopq</code> 5-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h2 class="mgroup" id="CC"><code>╠</code> (0xCC, <code>'m6</code>)</h2>
-<h3 id="6 Morpheme Group"><code>╠mnopqr</code> 6 Morpheme Group</h3>
+<h2 class="mgroup" id="CC"><code>╠</code> (0xCC, <code>'g6</code>)</h2>
+<h3 id="6-Group"><code>╠mnopqr</code> 6-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h2 class="wgroup" id="BF"><code>┐</code> (0xBF, <code>'w2</code>)</h2>
-<h3 id="2 Word Group"><code>┐ab</code> 2 Word Group</h3>
+<h2 class="mgroup" id="B4"><code>┤</code> (0xB4, <code>'g7</code>)</h2>
+<h3 id="7-Group"><code>┤mnopqrs</code> 7-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h2 class="wgroup" id="B4"><code>┤</code> (0xB4, <code>'w3</code>)</h2>
-<h3 id="3 Word Group"><code>┤abc</code> 3 Word Group</h3>
+<h2 class="mgroup" id="B5"><code>╡</code> (0xB5, <code>'g8</code>)</h2>
+<h3 id="8-Group"><code>╡mnopqrst</code> 8-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h2 class="wgroup" id="B5"><code>╡</code> (0xB5, <code>'w4</code>)</h2>
-<h3 id="4 Word Group"><code>╡abcd</code> 4 Word Group</h3>
+<h2 class="mgroup" id="B6"><code>╢</code> (0xB6, <code>'g9</code>)</h2>
+<h3 id="9-Group"><code>╢mnopqrstu</code> 9-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h2 class="wgroup" id="B6"><code>╢</code> (0xB6, <code>'m5</code>)</h2>
-<h3 id="5 Word Group"><code>╢abcde</code> 5 Word Group</h3>
-<p>see <a href="#Groups">Groups</a></p>
-<h2 class="wgroup" id="B9"><code>╣</code> (0xB9, <code>'m6</code>)</h2>
-<h3 id="6 Word Group"><code>╣abcdef</code> 6 Word Group</h3>
+<h2 class="mgroup" id="B9"><code>╣</code> (0xB9, <code>'g0</code>)</h2>
+<h3 id="10-Group"><code>╣mnopqrstuv</code> 10-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
 </main></div></body></html>
