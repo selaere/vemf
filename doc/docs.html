@@ -503,7 +503,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <p>and if <a href="#Swap">Swap</a> <code>┴G</code> is called with two arguments, it returns a functions that applies <code>G</code> with its arguments flipped:</p>
 <pre>6┴-2 ≡ _4
 4┴/1 ≡ 1/4  ' reciprocal</pre>
-<p>there are two types of adverbs. 1-adverbs, like <code>┴G</code> <a href="#Selfie">Selfie</a>/<a href="#Swap">Swap</a>, take one operand after them, and the whole acts as a verb. 2-adverbs, like <code>F╝G</code> <a href="#Over">Over</a> take two operands at both sides. Over applies <code>G</code> to each argument, and then <code>F</code>:</p>
+<p>there are two types of adverbs. 1-adverbs, like <code>┴G</code> <a href="#Selfie">Selfie</a>/<a href="#Swap">Swap</a>, take one operand after them, and the whole acts as a verb. 2-adverbs, like <code>F╝G</code> <a href="#Over">Over</a>, take two operands at both sides. Over applies <code>G</code> to each argument, and then <code>F</code>:</p>
 <pre>4²╝+5 ≡ 4²+(5²)
 4²╝▲ ≡ 4²▲  ' same as train (²▲)</pre>
 <p>2-adverb precedence is right-to-left.</p>
@@ -595,7 +595,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h3 id="Print"><code>α☺β</code> Print</h3>
 <p>print α to standard output, and return β</p>
 <pre>"Hello, "☺"World!◙"☺</pre>
-<h2 class="verb" id="02"><code>☻</code> (0x02, <code>'#</code>)</h2>
+<h2 class="verb" id="02"><code>☻</code> (0x02, <code>'# 'pl</code>)</h2>
 <h3 id="Print Line"><code>α☻</code> Print Line</h3>
 <p>print α to standard output, with a training newline (0x0A)</p>
 <pre>"Hello, World!"☻</pre>
@@ -608,7 +608,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>a 2-character literal</p>
 <pre>♥() ≡ `(`)
 ♥012 ≡ (`0`1)2</pre>
-<h2 class="verb" id="04"><code>♦</code> (0x04, <code>'tp</code>)</h2>
+<h2 class="verb" id="04"><code>♦</code> (0x04, <code>'T</code>)</h2>
 <h3 id="Transpose"><code>α♦</code> Transpose</h3>
 <p>transpose a nested list. the shape will be the minimum of the lengths of the elements, or <code>╕~ñ;</code></p>
 <pre>(123)(456)(789)♦ ≡ (147)(258)(369)</pre>
@@ -618,7 +618,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>1234♣ ≡ 0123
 φ♣ ≡ φ
 (123)(456)(789)♣ ≡ 012</pre>
-<h2 class="verb" id="06"><code>♠</code> (0x06, <code>'W</code>)</h2>
+<h2 class="verb" id="06"><code>♠</code> (0x06, <code>'R</code>)</h2>
 <h3 id="Reverse"><code>α♠</code> Reverse</h3>
 <p>reverse a list.</p>
 <pre>1234♠ ≡ 4321
@@ -633,7 +633,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h3 id="Return"><code>x◘</code> Return</h3>
 <p>returns x, breaking out of the enclosing function</p>
 <pre>0{4·5◘6} ≡ 5</pre>
-<h2 class="prefix" id="09"><code>○</code> (0x09, <code>':</code>)</h2>
+<h2 class="prefix" id="09"><code>○</code> (0x09, <code>',</code>)</h2>
 <h3 id="2-Adverb"><code>○name</code> 2-Adverb</h3>
 <p>the variable <code>name</code> with 2-adverb role</p>
 <pre>{{αβσμ}}─d12○d34 ≡ 1 4 3 2</pre>
@@ -641,7 +641,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h2 class="literal" id="0A"><code>◙</code> (0x0A)</h2>
 <h3 id="Newline"><code>◙</code> Newline</h3>
 <p>whitespace</p>
-<h2 class="verb" id="0B"><code>♂</code> (0x0B, <code>'dl</code>)</h2>
+<h2 class="verb" id="0B"><code>♂</code> (0x0B, <code>'E</code>)</h2>
 <h3 id="Drop"><code>α♂β</code> Drop</h3>
 <p>return the list α, with β elements removed from the left. β-pervasive. if β is negative, <code>β¢</code> elements are removed from the right instead, like <a href="#Drop Right">Drop Right</a>. if β is equal or greater than the length, all elements are removed; an empty list is returned.</p>
 <pre>"testing"♂3 ≡ "ting"
@@ -650,7 +650,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h3 id="Behead"><code>α♂</code> Behead</h3>
 <p>drop 1 element from the left</p>
 <pre>"testing"♂ ≡ "esting"</pre>
-<h2 class="verb" id="0C"><code>♀</code> (0x0C, <code>'dr</code>)</h2>
+<h2 class="verb" id="0C"><code>♀</code> (0x0C, <code>'D</code>)</h2>
 <h3 id="Drop Right"><code>α♀β</code> Drop Right</h3>
 <p>returns the list α, with β elements removed from the right. β-pervasive. if β is negative, <code>β¢</code> elements are removed from the left instead, like <a href="#Drop Left">Drop Left</a>. if β is equal or greater than the length, all elements are removed; an empty list is returned.</p>
 <pre>"testing"♀3 ≡ "test"
@@ -659,7 +659,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h3 id="Curtail"><code>α♀</code> Curtail</h3>
 <p>drop 1 element from the right</p>
 <pre>"testing"♀ ≡ "testin"</pre>
-<h2 class="literal" id="0D"><code>♪</code> (0x0D, <code>',</code>)</h2>
+<h2 class="literal" id="0D"><code>♪</code> (0x0D, <code>':</code>)</h2>
 <h3 id="Enclosed"><code>♪a</code> Enclosed</h3>
 <p>for a noun <code>a</code>, literal for a list with the one argument. same as <code>(α♫)</code></p>
 <h3 id="Nominalize"><code>♪F</code> Nominalize</h3>
@@ -674,14 +674,14 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>1♫2 ≡ 12
 1♫2♫3♫4 ≡ ((12)3)4
 12♫34 ≡ (12)(34)</pre>
-<h2 class="verb" id="10"><code>►</code> (0x10, <code>'R</code>)</h2>
+<h2 class="verb" id="10"><code>►</code> (0x10, <code>'H</code>)</h2>
 <h3 id="Right"><code>α►β</code> Right</h3>
 <p>returns β</p>
 <pre>1►2 ≡ 2</pre>
 <h3 id="Left"><code>α►</code> Left</h3>
 <p>returns α</p>
 <pre>1► ≡ 1</pre>
-<h2 class="verb" id="11"><code>◄</code> (0x11, <code>'L</code>)</h2>
+<h2 class="verb" id="11"><code>◄</code> (0x11, <code>'G</code>)</h2>
 <h3 id="Left"><code>α◄β</code> Left</h3>
 <p>returns α</p>
 <pre>1◄2 ≡ 1</pre>
@@ -759,7 +759,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>it repeats the list α, β times. right-pervasive.</p>
 <pre>"testing"§3 ≡ "testingtestingtesting"
 6§3 ≡ 666</pre>
-<h2 class="verb" id="16"><code>▬</code> (0x16, <code>'sh</code>)</h2>
+<h2 class="verb" id="16"><code>▬</code> (0x16, <code>'M 'sh</code>)</h2>
 <h3 id="Shape"><code>α▬</code> Shape</h3>
 <p>get the shape of α, that is, the maximum length for each dimension. the output will be a list with fill 1.</p>
 <pre>1▬ ≡ φ▐1
@@ -791,7 +791,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h3 id="Inclusive Range"><code>α↨β</code> Inclusive Range</h3>
 <p>the range used is [α, β]. note that this means the resulting array is of length <code>β-α+1</code>.</p>
 <pre>2↨8 ≡ 2345678</pre>
-<h2 class="verb" id="18"><code>↑</code> (0x18, <code>'G</code>)</h2>
+<h2 class="verb" id="18"><code>↑</code> (0x18, <code>'W</code>)</h2>
 <h3 id="Take"><code>α↑β</code> Take</h3>
 <p>make a new list with a prefix shape of β, where the elements are taken from α in order. it truncates if α is longer than the elements needed (<code>β*</code>), and uses the fill of α if α is shorter.</p>
 <pre>9↕↑55 ≡ (01234)(5678█)(█████)(█████)(█████)
@@ -809,7 +809,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>"testing"↑ ≡ "" "t" "te" "tes" "test" "testi" "testin" "testing"</pre>
 <p>this list includes the empty list and the unmodified argument. those elements can be removed, as needed, easily enough, with <a href="#Behead">Behead</a> and <a href="#Curtail">Curtail</a>.</p>
 <p>see also: <a href="#Suffixes">Suffixes</a></p>
-<h2 class="verb" id="19"><code>↓</code> (0x19, <code>'H</code>)</h2>
+<h2 class="verb" id="19"><code>↓</code> (0x19, <code>'S</code>)</h2>
 <h3 id="Take Right"><code>α↓β</code> Take Right</h3>
 <p><a href="#Take">Take</a> but it takes from the back</p>
 <pre>9↕↓55 ≡ (█████)(█████)(█████)(█0123)(45678)
@@ -990,8 +990,8 @@ _1%_2 ≡ 1</pre>
 <p>escapes are one way to write characters outside the ascii range (characters in the range 0x20 <code> </code> to 0x7E <code>~</code>, the ones that you almost certainly have in your keyboard). you will see the escapes in the documentation of each character.</p>
 <p>there are more non-ascii characters than ascii characters in the codepage (256 - 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [<code>a</code>, <code>z</code>].</p>
 <p>the characters with single character escape sequences are the following:</p>
-<pre>!"#$%&()*+,./:;&lt;=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
-‼╕☻¶÷⌐╙╜↔±♪•╧○♫≤≡≥¿¡αβ¢δɛƒ↑↓↕↨∟◄μ█◘╨Θ►στ╩√♠Φ¥φ╓╤╖→¬┴╘·╛≈</pre>
+<pre>!"#$%&'()*+,./:;&lt;=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
+‼═☻¶÷·─╙╜↔±○•╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬█◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈</pre>
 <h3 id="Line Comment"><code>'&#x20;abc</code> Line Comment</h3>
 <p>all of the characters until the next line break will be ignored.</p>
 <h2 class="literal" id="28"><code>(</code> (0x28)</h2>
@@ -1467,7 +1467,7 @@ _1%_2 ≡ 1</pre>
 3~3 ≡ 0
 3~5 ≡ 1</pre>
 <p>see also: <a href="#Equals">Equals</a></p>
-<h2 class="verb" id="7F"><code>⌂</code> (0x7F)</h2>
+<h2 class="verb" id="7F"><code>⌂</code> (0x7F, <code>'ex</code>)</h2>
 <h3 id="Exit"><code>α⌂</code> Exit</h3>
 <p>exits the program. if α is an integer, it will be the return code; otherwise, α will be printed as a string before exiting.</p>
 <h2 class="verb" id="80"><code>Ç</code> (0x80, <code>'c+</code>)</h2>
@@ -1483,7 +1483,7 @@ _1%_2 ≡ 1</pre>
 <pre>2í3ü ≡ _2í3
 Θí4ü ≡ 1í4
 2ü ≡ 2</pre>
-<h2 class="verb" id="82"><code>é</code> (0x82, <code>'e-</code>)</h2>
+<h2 class="verb" id="82"><code>é</code> (0x82, <code>'e'</code>)</h2>
 <h3 id="Bits"><code>αé</code> Bits</h3>
 <p>get the internal representation of the integer α in little-endian order. this will be a 64-element list of bits with fill 0. scalar.</p>
 <pre>'3054é ≡ 0111011111010000000000000000000000000000000000000000000000000000▐0</pre>
@@ -1740,7 +1740,7 @@ _4¢ ≡ 4
 <pre>3¢4 ≡ 5
 8¢6 ≡ '10
 1¢1 ≡ 2√</pre>
-<h2 class="verb" id="9C"><code>£</code> (0x9C, <code>'E</code>)</h2>
+<h2 class="verb" id="9C"><code>£</code> (0x9C, <code>'fd</code>)</h2>
 <h3 id="Find"><code>α£β</code> Find</h3>
 <p>finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are <a href="#None">None</a>. if β is a scalar or the <a href="#Empty List">Empty List</a>, search for the element β.</p>
 <pre>"sus sus amongus"£`s    ≡ 0█0█0█0███████0
@@ -1771,12 +1771,12 @@ _4¢ ≡ 4
 <p>partition the list α at indexes β</p>
 <pre>0123456789₧46 ≡ (0123)(45)(6789)
 0123456789₧0469Φ ≡ ()(0123)(45)(678)(♪9)()</pre>
-<h2 class="verb_var" id="9F"><code>ƒ</code> (0x9F, <code>'F</code>)</h2>
+<h2 class="verb_var" id="9F"><code>ƒ</code> (0x9F, <code>'F 'f,</code>)</h2>
 <h3 id="Self"><code>αƒ</code> <code>αƒβ</code> Self</h3>
 <p>the function being executed. if not in a function definition, undefined. useful for recursive functions.</p>
 <pre>6{=0?1◘α▼ƒ*α} ≡ '720</pre>
 <p>remember to include an exit condition (<a href="#Return">Return</a>). you shouldn't need this very often; in this case, <code>↨*</code> or <code>!</code> would have been enough.</p>
-<h2 class="verb" id="A0"><code>á</code> (0xA0, <code>'a-</code>)</h2>
+<h2 class="verb" id="A0"><code>á</code> (0xA0, <code>'a'</code>)</h2>
 <h3 id="Pick"><code>αá</code> Pick</h3>
 <p>pick a random integer in the range [0, α). scalar.</p>
 <pre>5á ?≡ 3
@@ -1789,7 +1789,7 @@ _4¢ ≡ 4
 <p>pick β times. this is the same as doing <code>α§βá</code></p>
 <pre>5áΦ ?≡ 4 3 2 2 0 2 1 0 3 3
 5á'100&lt;5& ≡ 1</pre>
-<h2 class="verb" id="A1"><code>í</code> (0xA1, <code>'i-</code>)</h2>
+<h2 class="verb" id="A1"><code>í</code> (0xA1, <code>'i'</code>)</h2>
 <h3 id="Imaginary"><code>αí</code> Imaginary</h3>
 <p>calculate <code>α*i</code>, where <code>i</code> is the imaginary unit</p>
 <pre>1í ≡ Γ
@@ -1799,16 +1799,16 @@ _4¢ ≡ 4
 <pre>1í² ± _1
 2í² ± _4
 3í2² ± '12í_5</pre>
-<h2 class="verb" id="A2"><code>ó</code> (0xA2, <code>'o-</code>)</h2>
+<h2 class="verb" id="A2"><code>ó</code> (0xA2, <code>'o'</code>)</h2>
 <h3 id="Index of Last"><code>αóβ</code> Index of Last</h3>
 <p>find the last exact match in the list and return its index, or else <a href="#None">None</a>. β-pervasive.</p>
 <pre>012073167140ó0123456789 ≡ '11 925Φ█78██</pre>
-<h2 class="verb" id="A3"><code>ú</code> (0xA3, <code>'u-</code>)</h2>
+<h2 class="verb" id="A3"><code>ú</code> (0xA3, <code>'u'</code>)</h2>
 <h3 id="Imaginary Part"><code>αú</code> Imaginary Part</h3>
 <p>get the imaginary part of a complex number α. scalar.</p>
 <pre>3í4ú ≡ 3
 3ú ≡ 0</pre>
-<h2 class="verb" id="A4"><code>ñ</code> (0xA4, <code>'n~</code>)</h2>
+<h2 class="verb" id="A4"><code>ñ</code> (0xA4, <code>'n- 'n~</code>)</h2>
 <h3 id="Min"><code>αñβ</code> Min</h3>
 <p>return the lowest number between α and β. scalar.</p>
 <pre>0ñ2 ≡ 0
@@ -1857,7 +1857,7 @@ _2Ñ0 ≡ 0</pre>
 "bee"º'36 ≡ '14774
 "A5A5"º'16 ≡ '42405</pre>
 <p>see also: <a href="#Represent Base">Represent Base</a></p>
-<h2 class="verb" id="A9"><code>⌐</code> (0xA9, <code>'&</code>)</h2>
+<h2 class="verb" id="A9"><code>⌐</code> (0xA9, <code>'bl</code>)</h2>
 <h3 id="Bool"><code>α⌐</code> Bool</h3>
 <p>returns 1 if <code>α~0</code>, otherwise 0. scalar.</p>
 <pre>0⌐ ≡ 0
@@ -1978,34 +1978,34 @@ _2Ñ0 ≡ 0</pre>
 <pre>Γ ≡ Θ√</pre>
 <h3 id="Negative Imaginary Constant"><code>_Γ</code> Negative Imaginary Constant</h3>
 <p>-i</p>
-<h2 class="noun" id="E3"><code>π</code> (0xE3, <code>'pi</code>)</h2>
+<h2 class="noun" id="E3"><code>π</code> (0xE3, <code>'p- 'pi</code>)</h2>
 <h3 id="Pi"><code>π</code> Pi</h3>
 <p>archimedes constant, ratio of a semicircle to its radius, or at least the best approximation possible in 64-bit floating point.</p>
 <pre>π ≡ '3.141592653589793</pre>
 <h2 class="var" id="E4"><code>Σ</code> (0xE4, <code>'s+</code>)</h2>
 <h3 id="Arity"><code>Σ</code> Arity</h3>
 <p>the number of arguments passed (1 or 2). if not in a function definition, the number of arguments passed in the command-line (<code>δ~</code>, may not be 1 or 2).</p>
-<h2 class="noun" id="E5"><code>σ</code> (0xE5, <code>'S</code>)</h2>
+<h2 class="noun" id="E5"><code>σ</code> (0xE5, <code>'s-</code>)</h2>
 <h3 id="Outer Alpha"><code>σ</code> Outer Alpha</h3>
 <p>references <code>α</code> from the outer scope. useful for defining adverbs or higher-order functions.</p>
-<h2 class="noun" id="E6"><code>μ</code> (0xE6, <code>'M</code>)</h2>
+<h2 class="noun" id="E6"><code>μ</code> (0xE6, <code>'m-</code>)</h2>
 <h3 id="Outer Beta"><code>μ</code> Outer Beta</h3>
 <p>references <code>β</code> from the outer scope. useful for defining adverbs or higher-order functions.</p>
-<h2 class="noun" id="EB"><code>δ</code> (0xEB, <code>'D</code>)</h2>
+<h2 class="noun" id="EB"><code>δ</code> (0xEB, <code>'d-</code>)</h2>
 <h3 id="Arguments"><code>δ</code> Arguments</h3>
 <p>the list of arguments passed in the command line (not including the executable name, flags or the script filename)</p>
-<h2 class="noun" id="E8"><code>Φ</code> (0xE8, <code>'X</code>)</h2>
+<h2 class="noun" id="E8"><code>Φ</code> (0xE8, <code>'X 'f+</code>)</h2>
 <h3 id="Ten"><code>Φ</code> Ten</h3>
 <p>the number 10</p>
 <pre>Φ ≡ '10</pre>
 <h3 id="Minus Ten"><code>_Φ</code> Minus Ten</h3>
 <p>the number -10</p>
 <pre>_Φ ≡ '-10</pre>
-<h2 class="noun" id="E9"><code>Θ</code> (0xE9, <code>'Q</code>)</h2>
+<h2 class="noun" id="E9"><code>Θ</code> (0xE9, <code>'Q 't+</code>)</h2>
 <h3 id="Minus One"><code>Θ</code> Minus One</h3>
 <p>the number -1</p>
 <pre>Θ ≡ '-1</pre>
-<h2 class="noun" id="EB"><code>δ</code> (0xEB, <code>'D</code>)</h2>
+<h2 class="noun" id="EB"><code>δ</code> (0xEB, <code>'D 'd-</code>)</h2>
 <h3 id="Arguments"><code>δ</code> Arguments</h3>
 <p>the list of arguments passed in the command line (not including the executable name, flags or the script filename)</p>
 <h2 class="noun" id="EC"><code>∞</code> (0xEC, <code>'if</code>)</h2>
@@ -2015,11 +2015,11 @@ _2Ñ0 ≡ 0</pre>
 <h3 id="Negative Infinity"><code>_∞</code> Negative Infinity</h3>
 <p>negative infinity</p>
 <pre>5>_∞ ≡ 1</pre>
-<h2 class="noun" id="ED"><code>φ</code> (0xED, <code>'Z</code>)</h2>
+<h2 class="noun" id="ED"><code>φ</code> (0xED, <code>'Z 'f-</code>)</h2>
 <h3 id="Empty List"><code>φ</code> Empty List</h3>
 <p>literal for an empty list with <a href="#None">None</a> fill</p>
 <pre>φ~ ≡ 0</pre>
-<h2 class="verb" id="EE"><code>ε</code> (0xEE, <code>'E</code>)</h2>
+<h2 class="verb" id="EE"><code>ε</code> (0xEE, <code>'in 'e-</code>)</h2>
 <h3 id="Contains"><code>αεβ</code> Contains</h3>
 <p>for every item in the list β, check if it is in α</p>
 <pre>012073167140ε0123456789 ≡ 1111101100
@@ -2132,7 +2132,7 @@ _1÷_2 ≡ 1</pre>
 <p>the identifier <code>name</code> as a string.</p>
 <pre>¨bee ≡ "bee"
 ¨things¨words¨concepts ≡ "things""words""concepts"</pre>
-<h2 class="stmt" id="FA"><code>·</code> (0xFA, <code>'|</code>)</h2>
+<h2 class="stmt" id="FA"><code>·</code> (0xFA, <code>'&</code>)</h2>
 <h3 id="Discard"><code>a·</code> Discard</h3>
 <p>discards the value <code>a</code> and continues with the function or program.</p>
 <pre>0{4·5·6} ≡ 6</pre>
@@ -2143,23 +2143,22 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Root"><code>α√β</code> Root</h3>
 <p>calculate the βth root of α</p>
 <pre>2√3^3 ≡ 2</pre>
-<h2 class="verb" id="FC"><code>ⁿ</code> (0xFC, <code>'n,</code>)</h2>
+<h2 class="verb" id="FC"><code>ⁿ</code> (0xFC, <code>'n, 'ft</code>)</h2>
 <h3 id="Format"><code>αⁿ</code> Format</h3>
 <p>format α with default settings</p>
 <pre>123ⁿ ≡ "(1 2 3)"</pre>
-<h3 id="Format Custom"><code>αⁿβ</code> Format Custom</h3>
-<p>when this is called with a right argument, it will be interpreted in the following way</p>
+<h3 id="Custom Format"><code>αⁿβ</code> Custom Format</h3>
+<p>when this is called with a right argument, it will be interpreted in the following way:</p>
 <p>- 0: print</p>
 <p>- 1: float</p>
 <p>- 2: int</p>
 <p>- 3: char</p>
 <p>- 4: unicode string</p>
 <p>- 5: codepage string</p>
-<p>- 7: list</p>
 <p>- 8: line-separated list</p>
 <p>- 9: table (aligned list of lists)</p>
-<p>you can also use multiple of these in a list, like <code>ⁿ74</code> (list of strings) or <code>ⁿ24</code> (int or string)</p>
-<h2 class="verb" id="FD"><code>²</code> (0xFD, <code>'z,</code>)</h2>
+<p>you can also use multiple of these in a list, like <code>ⁿ84</code> (line-separated list of strings)</p>
+<h2 class="verb" id="FD"><code>²</code> (0xFD, <code>'z, 'sq</code>)</h2>
 <h3 id="Square"><code>α²</code> Square</h3>
 <p>equivalent to <code>^2</code></p>
 <pre>4² ≡ '16
@@ -2167,7 +2166,7 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Binomial Coefficient"><code>α²β</code> Binomial Coefficient</h3>
 <p>calculate the binomial coefficient <code>α choose β</code></p>
 <pre>4²012345 ≡ 146410</pre>
-<h2 class="adverb1" id="B8"><code>╕</code> (0xB8, <code>'"</code>)</h2>
+<h2 class="adverb1" id="B8"><code>╕</code> (0xB8, <code>'|</code>)</h2>
 <h3 id="Each"><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
 <pre>123╕▲ ≡ 234
@@ -2242,7 +2241,7 @@ _1÷_2 ≡ 1</pre>
 <p>gives an element to start with. <code>α╧fβ</code> is always <code>α⌐β╧f</code>. this also means the empty list will return <code>β</code>; in fact, this is how <a href="#Sum">Sum</a> and <a href="#Product">Product</a> are implemented.</p>
 <pre>12345╧+0 ≡ '15
 φ╧+0 ≡ 0</pre>
-<h2 class="adverb1" id="C1"><code>┴</code> (0xC1, <code>'*</code>)</h2>
+<h2 class="adverb1" id="C1"><code>┴</code> (0xC1, <code>'`</code>)</h2>
 <h3 id="Commute"><code>α┴G</code> Commute</h3>
 <p>equivalent to <code>αGα</code></p>
 <pre>5+5 ≡ 5┴+</pre>
@@ -2272,7 +2271,6 @@ _1÷_2 ≡ 1</pre>
 <pre>12345 ╪+ ≡ 13579
 23456 ╪+1 ≡ 3579'11</pre>
 <h3 id="Scan Pairs"><code>α╪Gβ</code> Scan Pairs</h3>
-<p></p>
 <p>run F through 2-item pairs of α, passing the left item as the left argument and the right item as the right argument. β will be passed as the left item to the first item of the result.</p>
 <pre>12345 ╪♫ ≡ 1(12)(23)(34)(45)
 12345 ╪♫0 ≡ (01)(12)(23)(34)(45)</pre>
@@ -2354,12 +2352,12 @@ _1÷_2 ≡ 1</pre>
 <p>equivalent to <code>αFG</code></p>
 <h3 id="Over"><code>αF╝Gβ</code> Over</h3>
 <p>equivalent to <code>αFG(βF)</code></p>
-<h2 class="literal" id="C0"><code>└</code> (0xC0, <code>'fk</code>)</h2>
+<h2 class="literal" id="C0"><code>└</code> (0xC0, <code>'K</code>)</h2>
 <h3 id="Fork"><code>α└FGH</code> Fork</h3>
 <p>equivalent to <code>αFG(αH)</code></p>
 <h3 id="Fork"><code>α└FGHβ</code> Fork</h3>
 <p>equivalent to <code>αFβG(αHβ)</code></p>
-<h2 class="literal" id="C4"><code>─</code> (0xC4, <code>'x^</code>)</h2>
+<h2 class="literal" id="C4"><code>─</code> (0xC4, <code>''</code>)</h2>
 <h3 id="Local Statement"><code>a─name</code> Local Statement</h3>
 <p>like <code>→name</code> <a href="#Local">Local</a> but acts as a statement and sets the contents of the body.</p>
 <pre>2─two .two+.two ≡ 4</pre>
@@ -2367,7 +2365,7 @@ _1÷_2 ≡ 1</pre>
 <pre>+2─add 3:add ≡ 5</pre>
 <p>if there is nothing in the statement body, the variable will be removed from the local scope.</p>
 <pre>4─a0{5─a ─a a} ≡ 4</pre>
-<h2 class="literal" id="CD"><code>═</code> (0xCD, <code>'x*</code>)</h2>
+<h2 class="literal" id="CD"><code>═</code> (0xCD, <code>'"</code>)</h2>
 <h3 id="Mutate Statement"><code>a═</code> Mutate Statement</h3>
 <p>like <code>↔name</code> <a href="#Mutate">Mutate</a> but acts as a statement and changes the contents of the body.</p>
 <pre>3─n 4─m *2═n n ≡ 6</pre>

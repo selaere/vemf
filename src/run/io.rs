@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use core::fmt::{Result as FResult, Error as FError};
 
 pub trait Interface<'io> {
     fn read     (&mut self, stm: usize, buf: &mut [u8])    -> Option<usize>;
@@ -46,8 +45,7 @@ pub fn io_result(ioresult: std::io::Result<usize>) -> Option<usize> { match iore
 #[cfg(feature="std")] use std::io::{Write, Read, BufRead};
 #[cfg(feature="std")] pub struct StdIO {}
 
-#[cfg(feature="std")]
-impl Interface<'_> for StdIO {
+#[cfg(feature="std")] impl Interface<'_> for StdIO {
     fn read(&mut self, stm: usize, buf: &mut [u8]) -> Option<usize> {
         if stm == 0 { io_result(std::io::stdin().read(buf)) } else { None }
     }
@@ -64,10 +62,9 @@ impl Interface<'_> for StdIO {
     }}
 }
 
-#[cfg(feature="std")]
-pub struct FromIoWrite<T: std::io::Write>(pub T);
-#[cfg(feature="std")]
-impl<T: std::io::Write> std::fmt::Write for FromIoWrite<T> {
+#[cfg(feature="std")] use core::fmt::{Result as FResult, Error as FError};
+#[cfg(feature="std")] pub struct FromIoWrite<T: std::io::Write>(pub T);
+#[cfg(feature="std")] impl<T: std::io::Write> std::fmt::Write for FromIoWrite<T> {
     fn write_str (&mut self, s: &str) -> FResult { write!(self.0, "{}", s).map_err(|_| FError) }
     fn write_char(&mut self, c: char) -> FResult { write!(self.0, "{}", c).map_err(|_| FError) }
     fn write_fmt(&mut self, args: core::fmt::Arguments<'_>) -> FResult {

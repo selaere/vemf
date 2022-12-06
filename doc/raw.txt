@@ -240,7 +240,7 @@ print α to standard output, and return β
 > "Hello, "☺"World!◙"☺
 ---
 :char: ☻
-:ascii: '#
+:ascii: '# 'pl
 :type: verb
 #1 Print Line
 print α to standard output, with a training newline (0x0A)
@@ -259,7 +259,7 @@ a 2-character literal
 > ♥012 ≡ (`0`1)2
 ---
 :char: ♦
-:ascii: 'tp
+:ascii: 'T
 :type: verb
 #1 Transpose
 transpose a nested list. the shape will be the minimum of the lengths of the elements, or `╕~ñ;`
@@ -275,7 +275,7 @@ get the domain of a list, or list of indices. same as `~↕`.
 > (123)(456)(789)♣ ≡ 012
 ---
 :char: ♠
-:ascii: 'W
+:ascii: 'R
 :type: verb
 #1 Reverse
 reverse a list.
@@ -299,7 +299,7 @@ returns x, breaking out of the enclosing function
 > 0{4·5◘6} ≡ 5
 ---
 :char: ○
-:ascii: ':
+:ascii: ',
 :type: prefix
 #n 2-Adverb
 the variable `name` with 2-adverb role
@@ -312,7 +312,7 @@ see also: |Monadic Adverb|
 whitespace
 ---
 :char: ♂
-:ascii: 'dl
+:ascii: 'E
 :type: verb
 #2 Drop
 return the list α, with β elements removed from the left. β-pervasive. if β is negative, `β¢` elements are removed from the right instead, like |Drop Right|. if β is equal or greater than the length, all elements are removed; an empty list is returned.
@@ -324,7 +324,7 @@ drop 1 element from the left
 > "testing"♂ ≡ "esting"
 ---
 :char: ♀
-:ascii: 'dr
+:ascii: 'D
 :type: verb
 #2 Drop Right
 returns the list α, with β elements removed from the right. β-pervasive. if β is negative, `β¢` elements are removed from the left instead, like |Drop Left|. if β is equal or greater than the length, all elements are removed; an empty list is returned.
@@ -336,7 +336,7 @@ drop 1 element from the right
 > "testing"♀ ≡ "testin"
 ---
 :char: ♪
-:ascii: ',
+:ascii: ':
 :type: literal
 #♪a Enclosed
 for a noun `a`, literal for a list with the one argument. same as `(α♫)`
@@ -357,7 +357,7 @@ create a list with the elements α and β. this is equivalent to `{αβ}`. for s
 > 12♫34 ≡ (12)(34)
 ---
 :char: ►
-:ascii: 'R
+:ascii: 'H
 :type: verb
 #2 Right
 returns β
@@ -367,7 +367,7 @@ returns α
 > 1► ≡ 1
 ---
 :char: ◄
-:ascii: 'L
+:ascii: 'G
 :type: verb
 #2 Left
 returns α
@@ -460,7 +460,7 @@ it repeats the list α, β times. right-pervasive.
 > 6§3 ≡ 666
 ---
 :char: ▬
-:ascii: 'sh
+:ascii: 'M 'sh
 :type: verb
 #1 Shape
 get the shape of α, that is, the maximum length for each dimension. the output will be a list with fill 1.
@@ -498,7 +498,7 @@ the range used is [α, β]. note that this means the resulting array is of lengt
 > 2↨8 ≡ 2345678
 ---
 :char: ↑
-:ascii: 'G
+:ascii: 'W
 :type: verb
 #2 Take
 make a new list with a prefix shape of β, where the elements are taken from α in order. it truncates if α is longer than the elements needed (`β*`), and uses the fill of α if α is shorter.
@@ -519,7 +519,7 @@ this list includes the empty list and the unmodified argument. those elements ca
 see also: |Suffixes|
 ---
 :char: ↓
-:ascii: 'H
+:ascii: 'S
 :type: verb
 #2 Take Right
 |Take| but it takes from the back
@@ -735,8 +735,8 @@ complex number literals or scientific notation is not supported.
 escapes are one way to write characters outside the ascii range (characters in the range 0x20 ` ` to 0x7E `~`, the ones that you almost certainly have in your keyboard). you will see the escapes in the documentation of each character.
 there are more non-ascii characters than ascii characters in the codepage (256 - 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [`a`, `z`].
 the characters with single character escape sequences are the following:
-> !"#$%&()*+,./:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
-> ‼╕☻¶÷⌐╙╜↔±♪•╧○♫≤≡≥¿¡αβ¢δɛƒ↑↓↕↨∟◄μ█◘╨Θ►στ╩√♠Φ¥φ╓╤╖→¬┴╘·╛≈
+> !"#$%&'()*+,./:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
+> ‼═☻¶÷·─╙╜↔±○•╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬█◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈
 #'&#x20;abc Line Comment
 all of the characters until the next line break will be ignored.
 ---
@@ -1384,6 +1384,7 @@ same as `=¬`. scalar.
 see also: |Equals|
 ---
 :char: ⌂
+:ascii: 'ex
 :type: verb
 #1 Exit
 exits the program. if α is an integer, it will be the return code; otherwise, α will be printed as a string before exiting.
@@ -1408,7 +1409,7 @@ returns α, changing the sign of the imaginary part
 > 2ü ≡ 2
 ---
 :char: é
-:ascii: 'e-
+:ascii: 'e'
 :type: verb
 #1 Bits
 get the internal representation of the integer α in little-endian order. this will be a 64-element list of bits with fill 0. scalar.
@@ -1521,7 +1522,6 @@ decode α from the radix system β in big-endian order. this is an inverse of |E
 > '12'3.45ë'10 ± '123.45
 > '123'0.45ë1 ± '123.45
 #_1 Decode UTF-8
-
 ---
 :char: è
 :ascii: 'e`
@@ -1744,7 +1744,7 @@ calculate `α²+(β²)√`, or the distance of (α, β) to the origin (0, 0), or
 > 1¢1 ≡ 2√
 ---
 :char: £
-:ascii: 'E
+:ascii: 'fd
 :type: verb
 #2 Find
 finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are |None|. if β is a scalar or the |Empty List|, search for the element β.
@@ -1784,7 +1784,7 @@ partition the list α at indexes β
 > 0123456789₧0469Φ ≡ ()(0123)(45)(678)(♪9)()
 ---
 :char: ƒ
-:ascii: 'F
+:ascii: 'F 'f,
 :type: verb_var
 #12 Self
 the function being executed. if not in a function definition, undefined. useful for recursive functions.
@@ -1792,7 +1792,7 @@ the function being executed. if not in a function definition, undefined. useful 
 remember to include an exit condition (|Return|). you shouldn't need this very often; in this case, `↨*` or `!` would have been enough.
 ---
 :char: á
-:ascii: 'a-
+:ascii: 'a'
 :type: verb
 #1 Pick
 pick a random integer in the range [0, α). scalar.
@@ -1808,7 +1808,7 @@ pick β times. this is the same as doing `α§βá`
 > 5á'100<5& ≡ 1
 ---
 :char: í
-:ascii: 'i-
+:ascii: 'i'
 :type: verb
 #1 Imaginary
 calculate `α*i`, where `i` is the imaginary unit
@@ -1821,14 +1821,14 @@ calculate `β + α*i`
 > 3í2² ± '12í_5
 ---
 :char: ó
-:ascii: 'o-
+:ascii: 'o'
 :type: verb
 #2 Index of Last
 find the last exact match in the list and return its index, or else |None|. β-pervasive.
 > 012073167140ó0123456789 ≡ '11 925Φ█78██
 ---
 :char: ú
-:ascii: 'u-
+:ascii: 'u'
 :type: verb
 #1 Imaginary Part
 get the imaginary part of a complex number α. scalar.
@@ -1836,7 +1836,7 @@ get the imaginary part of a complex number α. scalar.
 > 3ú ≡ 0
 ---
 :char: ñ
-:ascii: 'n~
+:ascii: 'n- 'n~
 :type: verb
 #2 Min
 return the lowest number between α and β. scalar.
@@ -1897,7 +1897,7 @@ convert the string α in base β to a number. behaviour unspecified for bases no
 see also: |Represent Base|
 ---
 :char: ⌐
-:ascii: '&
+:ascii: 'bl
 :type: verb
 #1 Bool
 returns 1 if `α~0`, otherwise 0. scalar.
@@ -2063,7 +2063,7 @@ the imaginary constant i
 -i
 ---
 :char: π
-:ascii: 'pi
+:ascii: 'p- 'pi
 :type: noun
 #0 Pi
 archimedes constant, ratio of a semicircle to its radius, or at least the best approximation possible in 64-bit floating point.
@@ -2076,25 +2076,25 @@ archimedes constant, ratio of a semicircle to its radius, or at least the best a
 the number of arguments passed (1 or 2). if not in a function definition, the number of arguments passed in the command-line (`δ~`, may not be 1 or 2).
 ---
 :char: σ
-:ascii: 'S
+:ascii: 's-
 :type: noun
 #0 Outer Alpha
 references `α` from the outer scope. useful for defining adverbs or higher-order functions.
 ---
 :char: μ
-:ascii: 'M
+:ascii: 'm-
 :type: noun
 #0 Outer Beta
 references `β` from the outer scope. useful for defining adverbs or higher-order functions.
 ---
 :char: δ
-:ascii: 'D
+:ascii: 'd-
 :type: noun
 #0 Arguments
 the list of arguments passed in the command line (not including the executable name, flags or the script filename)
 ---
 :char: Φ
-:ascii: 'X
+:ascii: 'X 'f+
 :type: noun
 #0 Ten
 the number 10
@@ -2104,14 +2104,14 @@ the number -10
 > _Φ ≡ '-10
 ---
 :char: Θ
-:ascii: 'Q
+:ascii: 'Q 't+
 :type: noun
 #0 Minus One
 the number -1
 > Θ ≡ '-1
 ---
 :char: δ
-:ascii: 'D
+:ascii: 'D 'd-
 :type: noun
 #0 Arguments
 the list of arguments passed in the command line (not including the executable name, flags or the script filename)
@@ -2127,14 +2127,14 @@ negative infinity
 > 5>_∞ ≡ 1
 ---
 :char: φ
-:ascii: 'Z
+:ascii: 'Z 'f-
 :type: noun
 #0 Empty List
 literal for an empty list with |None| fill
 > φ~ ≡ 0
 ---
 :char: ε
-:ascii: 'E
+:ascii: 'in 'e-
 :type: verb
 #2 Contains
 for every item in the list β, check if it is in α
@@ -2283,7 +2283,7 @@ the identifier `name` as a string.
 > ¨things¨words¨concepts ≡ "things""words""concepts"
 ---
 :char: ·
-:ascii: '|
+:ascii: '&
 :type: stmt
 #a· Discard
 discards the value `a` and continues with the function or program.
@@ -2300,7 +2300,7 @@ calculate the βth root of α
 > 2√3^3 ≡ 2
 ---
 :char: ⁿ
-:ascii: 'n,
+:ascii: 'n, 'ft
 :type: verb
 #1 Format
 format α with default settings
@@ -2318,7 +2318,7 @@ when this is called with a right argument, it will be interpreted in the followi
 you can also use multiple of these in a list, like `ⁿ84` (line-separated list of strings)
 ---
 :char: ²
-:ascii: 'z,
+:ascii: 'z, 'sq
 :type: verb
 #1 Square
 equivalent to `^2`
@@ -2329,7 +2329,7 @@ calculate the binomial coefficient `α choose β`
 > 4²012345 ≡ 146410
 ---
 :char: ╕
-:ascii: '"
+:ascii: '|
 :type: adverb1
 #1a1 Each
 call G with each item in α.
@@ -2422,7 +2422,7 @@ gives an element to start with. `α╧fβ` is always `α⌐β╧f`. this also me
 > φ╧+0 ≡ 0
 ---
 :char: ┴
-:ascii: '*
+:ascii: '`
 :type: adverb1
 #1a1 Commute
 equivalent to `αGα`
@@ -2462,7 +2462,6 @@ run F through 2-item pairs of α, passing the left item as the left argument and
 > 12345 ╪+ ≡ 13579
 > 23456 ╪+1 ≡ 3579'11
 #2a1 Scan Pairs
-
 run F through 2-item pairs of α, passing the left item as the left argument and the right item as the right argument. β will be passed as the left item to the first item of the result.
 > 12345 ╪♫ ≡ 1(12)(23)(34)(45)
 > 12345 ╪♫0 ≡ (01)(12)(23)(34)(45)
@@ -2582,7 +2581,7 @@ equivalent to `αFG`
 equivalent to `αFG(βF)`
 ---
 :char: └
-:ascii: 'fk
+:ascii: 'K
 :type: literal
 #α└FGH Fork
 equivalent to `αFG(αH)`
@@ -2590,7 +2589,7 @@ equivalent to `αFG(αH)`
 equivalent to `αFβG(αHβ)`
 ---
 :char: ─
-:ascii: 'x^
+:ascii: ''
 :type: literal
 #a─name Local Statement
 like `→name` |Local| but acts as a statement and sets the contents of the body.
@@ -2601,7 +2600,7 @@ if there is nothing in the statement body, the variable will be removed from the
 > 4─a0{5─a ─a a} ≡ 4
 ---
 :char: ═
-:ascii: 'x*
+:ascii: '"
 :type: literal
 #a═ Mutate Statement
 like `↔name` |Mutate| but acts as a statement and changes the contents of the body.
