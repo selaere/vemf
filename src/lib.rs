@@ -2,6 +2,7 @@
 #![warn(clippy::cast_lossless)]
 #![warn(clippy::map_unwrap_or)]
 #![warn(clippy::semicolon_if_nothing_returned)]
+#![warn(clippy::todo)]
 
 extern crate core; extern crate alloc;
 
@@ -10,7 +11,7 @@ extern crate core; extern crate alloc;
 mod token; mod parse; #[macro_use] mod run;
 
 pub use run::{Env, Val, c64, io::{Interface, NoIO}};
-#[cfg(feature="std")] pub use run::io::{io_result, StdIO};
+#[cfg(feature="std")] pub use run::io::{io_result, StdIO, FromIoWrite};
 
 /// owned byte string type. length will be the same as a Vec in 64bit archs
 pub type Bstr = smallvec::SmallVec<[u8; 16]>;

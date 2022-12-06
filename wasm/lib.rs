@@ -33,10 +33,11 @@ pub fn evaluate(s: &str, fmt: &str) -> String {
     let mut env = Env::new(Box::new(rand::thread_rng()));
     env.interface = Box::new(Output {bufref: &outbuf});
     env.include_stdlib();
-    let out = env.include_string(s).format(
+    let mut out = String::new();
+    env.include_string(s).format( &mut out,
         &fmt.chars()
         .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
-        .collect::<Vec<_>>()[..]);
+        .collect::<Vec<_>>()[..]).unwrap();
     env.interface = Box::new(vemf::NoIO);
     let borrow = outbuf.borrow();
     String::from_utf8_lossy(&borrow).into_owned() + &out

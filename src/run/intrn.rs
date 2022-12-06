@@ -221,9 +221,11 @@ func!(@env, a :exit => if let Some(n) = a.try_int() {
     let _= env.interface.write(0, b"\n");
     Val::Err(1)
 });
-func!(a :format b? => a.format(&b.as_ref().map_or_else(Vec::new, 
-    |x| x.iterf().cloned().collect::<Vec<_>>())
-).chars().map(|x| Int(x as i64)).collect());
+func!(a :format b? => {
+    let mut buf = String::new(); a.format(&mut buf,
+        &b.as_ref().map_or_else(Vec::new, |x| x.iterf().cloned().collect::<Vec<_>>())).unwrap();
+    buf.chars().map(|x| Int(x as i64)).collect()
+});
 func!(a :numfmt => if !a.is_scalar() {NAN} else { 
     format!("{a}").chars().map(|x| Int(x as i64)).collect() });
 func!(a :parse => a.display_string().parse::<c64>().map(Num).unwrap_or(NAN));

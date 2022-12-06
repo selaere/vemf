@@ -141,7 +141,7 @@ adverbs are like verbs for verbs. take one of the most basic: |Selfie| `┴G` ta
 and if |Swap| `┴G` is called with two arguments, it returns a functions that applies `G` with its arguments flipped:
 > 6┴-2 ≡ _4
 > 4┴/1 ≡ 1/4  ' reciprocal
-there are two types of adverbs. 1-adverbs, like `┴G` |Selfie|/|Swap|, take one operand after them, and the whole acts as a verb. 2-adverbs, like `F╝G` |Over| take two operands at both sides. Over applies `G` to each argument, and then `F`:
+there are two types of adverbs. 1-adverbs, like `┴G` |Selfie|/|Swap|, take one operand after them, and the whole acts as a verb. 2-adverbs, like `F╝G` |Over|, take two operands at both sides. Over applies `G` to each argument, and then `F`:
 > 4²╝+5 ≡ 4²+(5²)
 > 4²╝▲ ≡ 4²▲  ' same as train (²▲)
 2-adverb precedence is right-to-left.
@@ -2305,18 +2305,17 @@ calculate the βth root of α
 #1 Format
 format α with default settings
 > 123ⁿ ≡ "(1 2 3)"
-#2 Format Custom
-when this is called with a right argument, it will be interpreted in the following way
+#2 Custom Format
+when this is called with a right argument, it will be interpreted in the following way:
 - 0: print
 - 1: float
 - 2: int
 - 3: char
 - 4: unicode string
 - 5: codepage string
-- 7: list
 - 8: line-separated list
 - 9: table (aligned list of lists)
-you can also use multiple of these in a list, like `ⁿ74` (list of strings) or `ⁿ24` (int or string)
+you can also use multiple of these in a list, like `ⁿ84` (line-separated list of strings)
 ---
 :char: ²
 :ascii: 'z,

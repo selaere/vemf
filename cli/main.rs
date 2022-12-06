@@ -1,6 +1,6 @@
 use std::{path::PathBuf, io::{Read, Write}, fs::File};
 use clap::Parser;
-use vemf::{Bstr, codepage, Val, Env};
+use vemf::{Bstr, codepage, Val, Env, FromIoWrite};
 
 #[derive(Parser)]
 #[clap(dont_collapse_args_in_usage = true)]
@@ -33,22 +33,23 @@ struct Args {
 
 fn rewrite(path: PathBuf) {
     let mut code = String::new();
-    File::open(path).unwrap()
-        .read_to_string(&mut code).unwrap();
+    File::open(path).unwrap().read_to_string(&mut code).unwrap();
     println!("{}", codepage::tochars_ln(
         &vemf::rewrite( &codepage::tobytes(code.trim_end()).unwrap() )
     ));
 }
 
+fn fmtstring(format: &str) -> Vec<Val> {
+    format.chars()
+        .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
+        .collect::<Vec<_>>()
+}
 
 fn main() {
     let args = Args::parse();
     let mut state = Env::new(Box::new(rand::thread_rng()));
-    if !args.no_stdlib {
-        state.include_stdlib();
-    }
+    if !args.no_stdlib { state.include_stdlib(); }
     state.interface = Box::new(vemf::StdIO {});
-    //println!("sizeof(Val) = {}", std::mem::size_of::<Val>());
     if let Some(path) = args.filename {
         if args.rewrite { return rewrite(path); }
         let arguments = state.include_args(&args.arguments);
@@ -60,42 +61,33 @@ fn main() {
             arguments.get(1).cloned()
         ); }
         if let Val::Err(x) = res { std::process::exit(x); }
-        let form = res.format(
-            &args.format.chars()
-            .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
-            .collect::<Vec<_>>()[..]);
-        if !form.is_empty() { println!("{}", form); }
-    } else {
-        repl(state, args);
-    }
+        res.format(&mut FromIoWrite(std::io::stdout()), &fmtstring(&args.format)).unwrap();
+        println!();
+    } else { repl(state, args); }
 }
 
-fn repl(mut state: Env, args: Args) {
+fn repl(mut env: Env, args: Args) {
     println!("welcome to vemf repl. enjoy your stay");
     loop {
         print!("    ");
         let _ = std::io::stdout().flush();
         let mut code = String::new();
         std::io::stdin().read_line(&mut code).expect("error while reading from stdin");
-        if code.trim_start().starts_with(')') {
-            if let Some((l, r)) = code[1..].split_once(' ') {
-                let val = state.include_string(r);
-                state.set_local(Bstr::from(&b"__"[..]), val);
-                state.include_string(&format!("__ⁿ({})☻", l));
-            } else {
-                state.include_string(&format!("__ⁿ({})☻", &code[1..]));
+        if args.rewrite { println!(" r: {}", codepage::tochars(&vemf::rewrite(
+            &codepage::tobytes(code.trim_end()).unwrap()
+        )));}
+        if let Some(cmd) = code.trim_start().strip_prefix(')') {
+            if let Some((l, r)) = cmd.split_once(' ') {
+                let val = env.include_string(r);
+                val.format(&mut FromIoWrite(std::io::stdout()), &fmtstring(l)).unwrap();
+                env.set_local(Bstr::from(&b"__"[..]), val);
+            } else if let Some(x) = env.get_var(b"__") {
+                x.format(&mut FromIoWrite(std::io::stdout()), &fmtstring(cmd)).unwrap();
             }
-            continue;
+            println!(); continue;
         }
-        if args.rewrite {
-            println!(" r: {}", codepage::tochars(
-                &vemf::rewrite(
-                    &codepage::tobytes(code.trim_end()).unwrap()
-                )
-            ));
-        }
-        let val = state.include_string(&code);
+        let val = env.include_string(&code);
         if !val.is_nan() { println!("{}", val); }
-        state.set_local(Bstr::from(&b"__"[..]), val);
+        env.set_local(Bstr::from(&b"__"[..]), val);
     }
 }
