@@ -4,7 +4,7 @@
 
 @êª'16▐`0↓2Ç─fc
 φ─titles
-∞Ö_ë ¥"◙---◙"─pg
+∞Ö ¥"◙---◙"─pg
 █§'256─tab
 .pg╕{
     ─tab α¥Φ▐φL·
@@ -14,13 +14,12 @@
     l╕(=":ascii"&)#¡l♂8≈╨(;", <code>","</code>")─ascii
     (c@ê)╗.type═tab
     "<h2 class=¨",.type,"¨ id=¨",.hex,"¨><code>",(c:esc),"</code> (0x",.hex,.ascii,")</h2>◙"─h    
-    .title≈? "<h2 id=¨",.title,"¨>",.title,"</h2>◙"─h
-    .title≈? ¬.title═titles
+    .title≈? ["<h2 id=¨",.title,"¨>",.title,"</h2>◙"─h ¬.title═titles]·
     l╕{
         @=`>? α♂2:esc;"<pre>","</pre>"◘
         @=`:? █◘
         @=`#? α♂_₧` ╧{
-            ◄@=`_? (;`_)↔c (♂)↔α· `αëA `βëB ·
+            ◄@=`_? [;`_═c ♂═α]· `αëA `βëB ·
             "<h3 id=¨",β,"¨>",(α:esc{
                 ≡¨0?   c         ◘
                 ≡¨1?   ac        ◘ ≡¨2?    acb      ◘ ≡"12"?  ac"</code>"░@╚"<code>"acb ◘

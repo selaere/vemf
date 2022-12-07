@@ -197,9 +197,9 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="verb_var"><a href="#58">X</a></td>
 <td class="verb_var"><a href="#59">Y</a></td>
 <td class="verb_var"><a href="#5A">Z</a></td>
-<td class="none"><a href="#5B">[</a></td>
+<td class="literal"><a href="#5B">[</a></td>
 <td class="verb"><a href="#5C">\</a></td>
-<td class="none"><a href="#5D">]</a></td>
+<td class="literal"><a href="#5D">]</a></td>
 <td class="verb"><a href="#5E">^</a></td>
 <td class="literal"><a href="#5F">_</a></td></tr>
 <tr><td class="literal"><a href="#60">`</a></td>
@@ -1199,7 +1199,8 @@ _1%_2 ≡ 1</pre>
  5─b b&lt;0?-═b b ≡ 5</pre>
 <p><a href="#Return">Return</a> may be used for short-circuiting. this is the same as your familiar ternary statement.</p>
 <pre>_3{&lt;0?α-◘α} ≡ 3
- 5{&lt;0?α-◘α} ≡ 5</pre>
+ 5{&lt;0?α-◘α} ≡ 5
+5─a[a&lt;0?a-◘a] ≡ 5</pre>
 <h2 class="verb" id="40"><code>@</code> (0x40)</h2>
 <h3 id="First"><code>α@</code> First</h3>
 <p>get the first item in a list α. this is equivalent to calling α with 0.</p>
@@ -1308,6 +1309,11 @@ _1%_2 ≡ 1</pre>
 <h2 class="verb_var" id="5A"><code>Z</code> (0x5A)</h2>
 <h3 id=""><code>αZ</code> <code>αZβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→z</code>.</p>
+<h2 class="literal" id="5B"><code>[</code> (0x5B)</h2>
+<h3 id="Start Block"><code>[abc]</code> Start Block</h3>
+<p>list of statements that are executed until a <a href="#Return">Return</a> or the end is found, and return that value. similar to a <a href="#Define Function">Define Function</a>, but it is immediately executed and doesn't have a scope. most useful with <code>?</code> <a href="#Then">Then</a>, as it can be used to simulate a ternary operator:</p>
+<pre>6─a a%3=0?[/3═a "a is now ",(aⁿ] ≡ "a is now 2"
+[1+1=2?"yay"◘"oh no"]Ç ≡ "YAY"</pre>
 <h2 class="verb" id="5C"><code>\</code> (0x5C)</h2>
 <h3 id="Diagonal"><code>α\</code> Diagonal</h3>
 <p>get the diagonal of length <code>α▬2ñ</code> of a list α</p>
@@ -1318,6 +1324,9 @@ _1%_2 ≡ 1</pre>
 <p>return α without the items in β</p>
 <pre>"hello world i am a vemf test"\`  ≡ "helloworldiamavemftest"
 "hello world i am a vemf test"\¨aeiou ≡ "hll wrld  m  vmf tst"</pre>
+<h2 class="literal" id="5D"><code>]</code> (0x5D)</h2>
+<h3 id="End Block"><code>[abc]</code> End Block</h3>
+<p>closing counterpart of <code>[</code> <a href="#Start Block">Start Block</a>.</p>
 <h2 class="verb" id="5E"><code>^</code> (0x5E)</h2>
 <h3 id="Exponential"><code>α^</code> Exponential</h3>
 <p>calculate exp α, or e^α, where e = 2.718281828459045</p>
@@ -1417,7 +1426,7 @@ _1%_2 ≡ 1</pre>
 <h3 id=""><code>z</code> </h3>
 <p>a general-purpose variable. by default, 65536</p>
 <h2 class="literal" id="7B"><code>{</code> (0x7B)</h2>
-<h3 id="Start Function"><code>{abc}</code> Start Function</h3>
+<h3 id="Define Function"><code>{abc}</code> Define Function</h3>
 <p>return a function that executes the statements inside the braces, returning a value and stopping once a <a href="#Return">Return</a> statement is hit. a <a href="#Return">Return</a> statement is implicit at the end of a function. this function will have a role of verb.</p>
 <pre>{"Hello, World!"☻·}─sayhi
 {6á▲◘}─roll 0:roll ?≡ 4
@@ -1450,7 +1459,7 @@ _1%_2 ≡ 1</pre>
 <p>see also: <a href="#Or">Or</a>, <a href="#All">All</a></p>
 <h2 class="literal" id="7D"><code>}</code> (0x7D)</h2>
 <h3 id="End Function"><code>{abc}</code> End Function</h3>
-<p>closing counterpart of <a href="#Start Function">Start Function</a></p>
+<p>closing counterpart of <a href="#Define Function">Define Function</a>.</p>
 <h2 class="verb" id="7E"><code>~</code> (0x7E)</h2>
 <h3 id="Length"><code>α~</code> Length</h3>
 <p>get the length of α. equivalent to <code>▬@</code>.</p>
@@ -1563,6 +1572,9 @@ _1%_2 ≡ 1</pre>
 <p>encode is also useful as a divmod</p>
 <pre>'123.45ê'10 ± '12'3.45
 '123.45ê1 ± '123'0.45</pre>
+<h3 id="Encode UTF-8"><code>α_ê</code> Encode UTF-8</h3>
+<p>represent a string as a UTF-8 list of bytes, converting invalid values to � U+FFFD REPLACEMENT CHARACTER.</p>
+<pre>`a'269'676'1062'8224'30340'128238'69685_ê ≡ "a─ì╩ñ╨ªΓÇáτÜä≡ƒô«≡æÇ╡"</pre>
 <h2 class="verb" id="89"><code>ë</code> (0x89, <code>'e"</code>)</h2>
 <h3 id="Decode Codepage"><code>αë</code> Decode Codepage</h3>
 <p>convert characters from vemf codepage into unicode, or <a href="#None">None</a> if not possible. scalar.</p>
@@ -1573,7 +1585,9 @@ _1%_2 ≡ 1</pre>
 '1'6'40ë'24'60'60 ≡ '4000
 '12'3.45ë'10 ± '123.45
 '123'0.45ë1 ± '123.45</pre>
-<h3 id="Decode UTF-8"><code>_ë</code> Decode UTF-8</h3>
+<h3 id="Decode UTF-8"><code>α_ë</code> Decode UTF-8</h3>
+<p>converts a list of bytes into a string, converting invalid sequences to � U+FFFD REPLACEMENT CHARACTER.</p>
+<pre>"a─ì╩ñ╨ªΓÇáτÜä≡ƒô«≡æÇ╡"_ë ≡ `a'269'676'1062'8224'30340'128238'69685</pre>
 <h2 class="verb" id="8A"><code>è</code> (0x8A, <code>'e`</code>)</h2>
 <h3 id="Decode Base"><code>αèβ</code> Decode Base</h3>
 <p>converts a list α from positional base β, in little-endian order. β-pervasive.</p>
@@ -1645,10 +1659,14 @@ _2Ä0 ≡ π½-</pre>
 5Å3 ≡ 2</pre>
 <h2 class="verb" id="90"><code>É</code> (0x90, <code>'e+</code>)</h2>
 <h3 id="Write"><code>αÉβ</code> Write</h3>
-<p>write a list of bytes α to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
+<p>write a string α to output stream β, that will be utf-8 encoded. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
 <h3 id="Write Stdout"><code>αÉ</code> Write Stdout</h3>
-<p>write a list of bytes α to output stream 0. equivalent to <code>É0</code>.</p>
+<p>write a string α to output stream 0. equivalent to <code>É0</code>.</p>
 <p>see also: <a href="#Print">Print</a></p>
+<h3 id="Write Bytes"><code>α_Éβ</code> Write Bytes</h3>
+<p>write a list of bytes α to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
+<h3 id="Write Bytes to Stdout"><code>α_É</code> Write Bytes to Stdout</h3>
+<p>write a list of bytes α to output stream 0. equivalent to <code>_É0</code>.</p>
 <h2 class="verb" id="91"><code>æ</code> (0x91, <code>'ae</code>)</h2>
 <h3 id="Join"><code>αæβ</code> Join</h3>
 <p>join the lists in α with the separator β</p>
@@ -1716,11 +1734,16 @@ _2Ä0 ≡ π½-</pre>
 75420542545ÿ ≡ 10203401▐0</pre>
 <h2 class="verb" id="99"><code>Ö</code> (0x99, <code>'o+</code>)</h2>
 <h3 id="Read"><code>αÖβ</code> Read</h3>
-<p>read α bytes from input stream β.</p>
+<p>read α bytes from input stream β and decode them as utf-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER</p>
 <p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
 <p>may return <a href="#None">None</a> in case of an IO error.</p>
 <h3 id="Read Stdin"><code>αÖ</code> Read Stdin</h3>
 <p>read from input stream 0. equivalent to <code>Ö0</code>.</p>
+<h3 id="Read Bytes"><code>α_Öβ</code> Read Bytes</h3>
+<p>read α bytes from input stream β.</p>
+<p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
+<p>may return <a href="#None">None</a> in case of an IO error.</p>
+<h3 id="Read Bytes from Stdin"><code>α_Ö</code> Read Bytes from Stdin</h3>
 <h2 class="verb" id="9A"><code>Ü</code> (0x9A, <code>'u+</code>)</h2>
 <h3 id="Group"><code>αÜβ</code> Group</h3>
 <p>pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the <a href="#Empty List">Empty List</a>. if β is <a href="#None">None</a>, the element will be ignored.</p>
@@ -2341,7 +2364,7 @@ _1÷_2 ≡ 1</pre>
 <h3 id="On Left"><code>αF╖G</code> On Left</h3>
 <p>equivalent to <code>αFGα</code></p>
 <h3 id="On Left"><code>αF╖Gβ</code> On Left</h3>
-<p>equivalent to <code>αFβGα</code></p>
+<p>equivalent to <code>αFβGβ</code></p>
 <h2 class="adverb2" id="D6"><code>╓</code> (0xD6, <code>'[</code>)</h2>
 <h3 id="On Right"><code>αF╓G</code> On Right</h3>
 <p>equivalent to <code>αF(αG)</code></p>

@@ -103,7 +103,6 @@ impl Val {
                 env.stack.pop();
                 val
             },
-
             Val::Bind { f: aa, b: bb } => aa.dyad(env, a, (**bb).clone()),
             Val::Trn2 { a: aa, f: ff } => {
                 let x = aa.call(env, a, b);

@@ -25,6 +25,7 @@ pub enum Expr {
     Trn3 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> }, // +/2
     Fork { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> }, // └+/~
     Dfn  { s: Vec<Stmt>, cap: HashSet<Bstr> },
+    Block{ s: Vec<Stmt> },
 }
 
 #[derive(Debug, Clone)]
@@ -65,12 +66,16 @@ impl Display for Expr {
             Self::Trn2 { a, f    } => write!(m, "[{} {}]", a, f),
             Self::Trn3 { a, f, b } => write!(m, "[{} {} {}]", a, f, b),
             Self::Fork { a, f, b } => write!(m, "└[{} {} {}]", a, f, b),
-            Self::Dfn  { s: efs, .. } => {
+            Self::Dfn  { s, .. } => {
                 write!(m, "{{ ")?;
-                for v in efs { write!(m, "{} ", v)?; }
+                for v in s { write!(m, "{} ", v)?; }
                 write!(m, "}}")?;
-                Ok(())
-            },
+            Ok(()) },
+            Self::Block { s } => {
+                write!(m, "[ ")?;
+                for v in s { write!(m, "{} ", v)?; }
+                write!(m, "]")?;
+            Ok(()) }
         }
     }
 }
@@ -131,6 +136,11 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
             if let Some(Tok::Just(b'}')) = t.first() { step(t); }
             (Verb, Expr::Dfn {s, cap: vars})
         },
+        Tok::Just(b'[') => { step(t);
+            let s = block(t);
+            if let Some(Tok::Just(b']')) = t.first() { step(t); }
+            (Noun, Expr::Block {s})
+        }
         Tok::VarVerb(v) | Tok::VarAv2(v) => { step(t); (Verb, Expr::Var(v.clone())) },
         Tok::Just(b'(') => { step(t);
             let expr = phrase_to_expr(phrase(t)).unwrap_or(Expr::Snd(vec![]));
@@ -281,6 +291,7 @@ fn capture(&self, vars: &mut HashSet<Bstr>) { // yeah...
         Expr::Trn3 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
         Expr::Fork { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
         Expr::Dfn { cap, .. } => { vars.extend(cap.iter().cloned()); }
+        Expr::Block { s } => { for i in s {i.capture(vars)} }
     }
 }
 }
@@ -312,7 +323,7 @@ fn parse_stmt(t: &mut&[Tok], expr: Option<Expr>) -> Option<Stmt> {
         }},
         Some(Tok::Just(b!('◘'))) => { step(t); Stmt::Return(expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('·'))) => { step(t); Stmt::Discard(expr.unwrap_or(NAN)) },
-        Some(Tok::Just(b!('}'))) | None => { Stmt::Return(expr.unwrap_or(NAN)) },
+        Some(Tok::Just(b!('}'']'))) | None => { Stmt::Return(expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('?'))) => { step(t);
             let ev2 = phrase_to_expr(phrase(t));
             Stmt::Cond(expr.unwrap_or(NAN), Box::new(parse_stmt(t, ev2)?))
@@ -325,7 +336,7 @@ pub fn block(t: &mut&[Tok]) -> Vec<Stmt> {
     let mut exps = Vec::new();
     loop {
         while let Some(Tok::Just(b!('·'))) = t.first() { step(t); }
-        if let Some(Tok::Just(b!('}'))) | None = t.first() { break };
+        if let Some(Tok::Just(b!('}'']'))) | None = t.first() { break };
         let ev = phrase_to_expr(phrase(t));
         if let Some(stmt) = parse_stmt(t, ev) {
             exps.push(stmt);

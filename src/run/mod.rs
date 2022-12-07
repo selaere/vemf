@@ -187,8 +187,9 @@ impl<'io> Env<'io> {
                 for var in cap {
                     self.get_var_cap(var).and_then(|x| locals.insert(var.clone(), x));
                 }
-                Val::Dfn {s: Rc::from(&s[..]), loc: Rc::new(locals)}
+                Val::Dfn{s: Rc::from(&s[..]), loc: Rc::new(locals)}
             },
+            Expr::Block { s } => self.eval_block(s)
         }
     }
 
