@@ -5,9 +5,7 @@ use alloc::fmt::{Write, Formatter, Result as FResult};
 use super::{Val, Lis, Num, Int};
 
 impl alloc::fmt::Display for Val {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FResult {
-        self.format(f, &[])
-    }
+    fn fmt(&self, f: &mut Formatter<'_>) -> FResult { self.format(f, &[]) }
 }
 
 impl Val {

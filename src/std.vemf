@@ -5,7 +5,6 @@
 
 .invalences─╬
 
-' these could be dfns but it's so easy to make them intrinsics. and its more efficient too probably
 .inconst─╒
 .inswap─┴
 .inmonadic─┬
@@ -30,8 +29,11 @@
 
 .inprint─☺
 .inprintln─☻
-.inoutput─É
-.ininput ─Ö
+.inoutput─_É
+.ininput ─_Ö
+
+_ë╜_É─É
+_Ö_ê─Ö
 ."intoutf8"─_ê
 ."infromutf8"─_ë
 .inexit─⌂

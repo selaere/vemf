@@ -15,13 +15,11 @@ pub trait Interface<'io> {
     fn read_to_end(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
         let mut tmp = [0; 256];
         let original_len = buf.len();
-        loop {
-            match self.read(stm, &mut tmp[..]) {
-                Some(0) => break,
-                Some(n) => buf.extend(&tmp[..n]),
-                None => if buf.len() > original_len { break } else { return None }
-            }
-        }
+        loop { match self.read(stm, &mut tmp[..]) {
+            Some(0) => break,
+            Some(n) => buf.extend(&tmp[..n]),
+            None => if buf.len() > original_len { break } else { return None }
+        }}
         Some(buf.len() - original_len)
     }
 }
