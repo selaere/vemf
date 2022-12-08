@@ -61,7 +61,7 @@ impl<'io> Env<'io> {
     }
 
     pub fn from_frame<'a>(frame: Frame, rng: Box<dyn rand::RngCore>) -> Env<'a> {
-        Env { stack: vec![frame], interface: Box::new(io::NoIO), rng }
+        Env { stack: vec![frame], interface: bx(io::NoIO), rng }
     }
 
     pub fn locals(&self) -> &Frame { self.stack.last().unwrap() }
@@ -77,7 +77,7 @@ impl<'io> Env<'io> {
         loop {
             for frame in self.stack.iter().rev().skip(skipped) {
                 if let Some(var) = frame.get(name) {
-                    return Some(var.clone())
+                    return Some(var.c())
                 }
             }
             if let Some(b!('[')) = name.first() {
@@ -92,7 +92,7 @@ impl<'io> Env<'io> {
         loop {
             for frame in self.stack.iter().rev().skip(skipped) {
                 if let Some(var) = frame.get(name) {
-                    return Some(var.clone())
+                    return Some(var.c())
                 }
             }
             if let Some(b!(']')) = name.first() {
@@ -108,7 +108,7 @@ impl<'io> Env<'io> {
             for (fmn, frame) in self.stack.iter_mut().enumerate().rev().skip(skipped) {
                 if let Some((nam, val)) = frame.remove_entry(name) {
                     let val = func.monad(self, val);
-                    self.stack[fmn].insert(nam, val.clone());
+                    self.stack[fmn].insert(nam, val.c());
                     return Some(val);
                 }
             }
@@ -148,48 +148,48 @@ impl<'io> Env<'io> {
                 for x in l { v.push(eval!(x)); }
                 Lis { l: Rc::from(v), fill: NAN.rc() }
             },
-            Expr::Afn1 { a, f } => {
+            Expr::Afn1(a, f) => {
                 let a = eval!(a); let f = eval!(f);
                 f.monad(self, a)
             },
-            Expr::Afn2 { a, f, b } => {
+            Expr::Afn2(a, f, b) => {
                 let a = eval!(a); let f = eval!(f); let b = eval!(b);
                 f.dyad(self, a, b)
             },
-            Expr::SetVar(v) => Val::FSet(v.clone()),
-            Expr::CngVar(v) => Val::FCng(v.clone()),
-            Expr::Aav1 { v, g } => {
-                let g = eval!(&g.clone());
+            Expr::SetVar(v) => Val::FSet(v.c()),
+            Expr::MutVar(v) => Val::FCng(v.c()),
+            Expr::Aav1(v, g) => {
+                let g = eval!(&g.c());
                 self.get_var(&v[..]).unwrap_or_default().monad(self, g)
             }
-            Expr::Aav2 { f, v, g } => {
-                let f = eval!(&f.clone()); let g = eval!(&g.clone());
+            Expr::Aav2(f, v, g) => {
+                let f = eval!(&f.c()); let g = eval!(&g.c());
                 self.get_var(&v[..]).unwrap_or_default().dyad(self, g, f)
             },
-            Expr::Bind { f, b } => {
-                let f = eval!(&f.clone()); let b = eval!(&b.clone());
+            Expr::Bind(f, b) => {
+                let f = eval!(&f.c()); let b = eval!(&b.c());
                 Val::Bind{f: f.rc(), b: b.rc()}
             },
-            Expr::Trn2 { a, f } => {
-                let a = eval!(&a.clone()); let f = eval!(&f.clone());
+            Expr::Trn2(a, f) => {
+                let a = eval!(&a.c()); let f = eval!(&f.c());
                 Val::Trn2{a: a.rc(), f: f.rc()}
             },
-            Expr::Trn3 { a, f, b } => {
-                let a = eval!(&a.clone()); let f = eval!(&f.clone()); let b = eval!(&b.clone());
+            Expr::Trn3(a, f, b) => {
+                let a = eval!(&a.c()); let f = eval!(&f.c()); let b = eval!(&b.c());
                 Val::Trn3{a: a.rc(), f: f.rc(), b: b.rc()}
             },
-            Expr::Fork { a, f, b } => {
-                let a = eval!(&a.clone()); let f = eval!(&f.clone()); let b = eval!(&b.clone());
+            Expr::Fork(a, f, b) => {
+                let a = eval!(&a.c()); let f = eval!(&f.c()); let b = eval!(&b.c());
                 Val::Fork{a: a.rc(), f: f.rc(), b: b.rc()}
             },
             Expr::Dfn { s, cap } => {
                 let mut locals = HashMap::with_capacity(cap.len());
                 for var in cap {
-                    self.get_var_cap(var).and_then(|x| locals.insert(var.clone(), x));
+                    self.get_var_cap(var).and_then(|x| locals.insert(var.c(), x));
                 }
                 Val::Dfn{s: Rc::from(&s[..]), loc: Rc::new(locals)}
             },
-            Expr::Block { s } => self.eval_block(s)
+            Expr::Block(s) => self.eval_block(s)
         }
     }
 
@@ -202,7 +202,7 @@ impl<'io> Env<'io> {
         }}
         match stmt {
             Stmt::Discard(expr) => { let _ = eval!(expr); },
-            Stmt::Loc(a, v) => { let a = eval!(a); self.set_local(v.clone(), a); },
+            Stmt::Loc(a, v) => { let a = eval!(a); self.set_local(v.c(), a); },
             Stmt::Mut(a, v) => { let a = eval!(a); self.mutate_var(v, a); },
             Stmt::DelLoc(v) => { self.locals_mut().remove(v); },
             Stmt::DelMut(v) => { self.delete_var(v); },
@@ -252,10 +252,10 @@ impl<'io> Env<'io> {
 
     pub fn include_args(&mut self, args: &[String]) -> Vec<Val> {
         let args: Vec<Val> = args.iter().map(|s| s.chars().map(|x| Int(x as i64)).collect()).collect();
-        if let Some(x) = args.get(0) { self.set_local(smallvec![b!('α')], x.clone()); }
-        if let Some(x) = args.get(1) { self.set_local(smallvec![b!('β')], x.clone()); }
-        self.set_local(smallvec![b!('Σ')], Int(args.len() as _));
-        self.set_local(smallvec![b!('δ')], Val::lis(args.clone()));
+        if let Some(x) = args.get(0) { self.set_local(bstr![b!('α')], x.c()); }
+        if let Some(x) = args.get(1) { self.set_local(bstr![b!('β')], x.c()); }
+        self.set_local(bstr![b!('Σ')], Int(args.len() as _));
+        self.set_local(bstr![b!('δ')], Val::lis(args.c()));
         args
     }
 

@@ -85,35 +85,35 @@ impl Val {
         match self {
             Val::Err(x) => Val::Err(*x),
 
-            Lis { .. } | Num(_) | Int(_) => self.clone(),
+            Lis { .. } | Num(_) | Int(_) => self.c(),
             Val::FSet(name) => {
-                env.set_local(name.clone(), a.clone());
+                env.set_local(name.c(), a.c());
                 b.unwrap_or(a)
             },
             Val::FCng(name) => {
                 env.mutate_var(name, a).unwrap_or(NAN)
             }
             Val::Dfn { s, loc } => {
-                env.stack.push((**loc).clone());
-                env.set_local(smallvec![b!('Σ')], Int(1 + i64::from(b.is_some())));
-                env.set_local(smallvec![b!('α')], a);
-                env.set_local(smallvec![b!('β')], b.unwrap_or(NAN));
-                env.set_local(smallvec![b!('ƒ')], self.clone());
+                env.stack.push((**loc).c());
+                env.set_local(bstr![b!('Σ')], Int(1 + i64::from(b.is_some())));
+                env.set_local(bstr![b!('α')], a);
+                env.set_local(bstr![b!('β')], b.unwrap_or(NAN));
+                env.set_local(bstr![b!('ƒ')], self.c());
                 let val = env.eval_block(s);
                 env.stack.pop();
                 val
             },
-            Val::Bind { f: aa, b: bb } => aa.dyad(env, a, (**bb).clone()),
+            Val::Bind { f: aa, b: bb } => aa.dyad(env, a, (**bb).c()),
             Val::Trn2 { a: aa, f: ff } => {
                 let x = aa.call(env, a, b);
                 ff.monad(env, x)
             },
             Val::Trn3 { a: aa, f: ff, b: bb } => {
                 let x = aa.call(env, a, b);
-                ff.dyad(env, x, (**bb).clone())
+                ff.dyad(env, x, (**bb).c())
             },
             Val::Fork { a: aa, f: ff, b: bb } => {
-                let l = aa.call(env, a.clone(), b.clone());
+                let l = aa.call(env, a.c(), b.c());
                 let r = bb.call(env, a, b);
                 ff.dyad(env, l, r)
             }

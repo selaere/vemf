@@ -12,88 +12,84 @@ fn step(t: &mut&[Tok]) { *t = &t[1..]; }
 #[derive(Clone, Debug)]
 pub enum Expr {
     Var(Bstr),
-    Int(i64),
-    Flt(c64),
+    Int(i64), Flt(c64),
     Snd(Vec<Expr>),  // strand
-    Afn1 { a: Box<Expr>, f: Box<Expr>               }, // apply monadic function
-    Afn2 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> }, // apply dyadic  function 
-    SetVar(Bstr), CngVar(Bstr),
-    Aav1 {               v: Bstr     , g: Box<Expr> }, // apply monadic adverb
-    Aav2 { f: Box<Expr>, v: Bstr     , g: Box<Expr> }, // apply dyadic  adverb
-    Bind {               f: Box<Expr>, b: Box<Expr> }, // +1
-    Trn2 { a: Box<Expr>, f: Box<Expr>               }, // +/
-    Trn3 { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> }, // +/2
-    Fork { a: Box<Expr>, f: Box<Expr>, b: Box<Expr> }, // └+/~
+    Afn1(Box<Expr>, Box<Expr>),            // 1-
+    Afn2(Box<Expr>, Box<Expr>, Box<Expr>), // 1+2
+    SetVar(Bstr), MutVar(Bstr),
+    Aav1(           Bstr, Box<Expr>), // ╕@
+    Aav2(Box<Expr>, Bstr, Box<Expr>), // ~╙↑
+    Bind(Box<Expr>, Box<Expr>), // +1
+    Trn2(Box<Expr>, Box<Expr>), // +/
+    Trn3(Box<Expr>, Box<Expr>, Box<Expr>), // +/2
+    Fork(Box<Expr>, Box<Expr>, Box<Expr>), // └+/~
     Dfn  { s: Vec<Stmt>, cap: HashSet<Bstr> },
-    Block{ s: Vec<Stmt> },
+    Block(Vec<Stmt>),
 }
+use Expr::*;
 
 #[derive(Debug, Clone)]
 pub enum Stmt {
-    Discard(Expr),
-    Return(Expr),
-    Loc(Expr, Bstr),
-    Mut(Expr, Bstr),
-    DelLoc(Bstr),
-    DelMut(Bstr),
+    Discard(Expr), Return(Expr),
+    Loc(Expr, Bstr), Mut(Expr, Bstr),
+    DelLoc(Bstr),    DelMut(Bstr),
     Cond(Expr, Box<Stmt>),
 }
 
 #[derive(Debug)]
 pub enum Role { Noun, Verb }
 use Role::{Noun, Verb};
-const NAN: Expr = Expr::Flt(c64::new(f64::NAN, f64::NAN));
+
+const NAN: Expr = Flt(c64::new(f64::NAN, f64::NAN));
 
 impl Display for Expr {
-    fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
-        match self {
-            Self::Var(v) => write!(m, ".{}", displayname(v)),
-            Self::Int(n) => write!(m, "'{}", n),
-            Self::Flt(n) => write!(m, "'{}", n),
-            Self::Snd(l) => {
-                write!(m, "(")?;
-                for v in l { write!(m, "{}", v)?; }
-                write!(m, ")")?;
-                Ok(())
-            },
-            Self::Afn1 { a, f } => write!(m, "({} {})", a, f),
-            Self::Afn2 { a, f, b } => write!(m, "({} {} {})", a, f, b),
-            Self::SetVar(v) => write!(m, "→{}", displayname(v)),
-            Self::CngVar(v) => write!(m, "↔{}", displayname(v)),
-            Self::Aav1 {    v, g } => write!(m, "[•{} {}]", displayname(v), g),
-            Self::Aav2 { f, v, g } => write!(m, "[{} ○{} {}]", f, displayname(v), g),
-            Self::Bind {    f, b } => write!(m, "[{} with {}]", f, b),
-            Self::Trn2 { a, f    } => write!(m, "[{} {}]", a, f),
-            Self::Trn3 { a, f, b } => write!(m, "[{} {} {}]", a, f, b),
-            Self::Fork { a, f, b } => write!(m, "└[{} {} {}]", a, f, b),
-            Self::Dfn  { s, .. } => {
-                write!(m, "{{ ")?;
-                for v in s { write!(m, "{} ", v)?; }
-                write!(m, "}}")?;
-            Ok(()) },
-            Self::Block { s } => {
-                write!(m, "[ ")?;
-                for v in s { write!(m, "{} ", v)?; }
-                write!(m, "]")?;
-            Ok(()) }
-        }
+fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
+    match self {
+        Var(v) => write!(m, ".{}", display(v)),
+        Int(n) => write!(m, "'{}", n),
+        Flt(n) => write!(m, "'{}", n),
+        Snd(l) => {
+            write!(m, "(")?;
+            for v in l { write!(m, "{}", v)?; }
+            write!(m, ")")?;
+        Ok(()) },
+        Afn1(a, f) => write!(m, "({} {})", a, f),
+        Afn2(a, f, b) => write!(m, "({} {} {})", a, f, b),
+        SetVar(v) => write!(m, "→{}", display(v)),
+        MutVar(v) => write!(m, "↔{}", display(v)),
+        Aav1(v, g) => write!(m, "[•{} {}]", display(v), g),
+        Aav2(f, v, g) => write!(m, "[{} ○{} {}]", f, display(v), g),
+        Bind(f, b) => write!(m, "[{} with {}]", f, b),
+        Trn2(a, f) => write!(m, "[{} {}]", a, f),
+        Trn3(a, f, b) => write!(m, "[{} {} {}]", a, f, b),
+        Fork(a, f, b) => write!(m, "└[{} {} {}]", a, f, b),
+        Dfn  { s, .. } => {
+            write!(m, "{{ ")?;
+            for v in s { write!(m, "{} ", v)?; }
+            write!(m, "}}")?;
+        Ok(()) },
+        Block(s) => {
+            write!(m, "[ ")?;
+            for v in s { write!(m, "{} ", v)?; }
+            write!(m, "]")?;
+        Ok(()) }
     }
+}
 }
 
 impl Display for Stmt {
-    fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result { match self {
-        Stmt::Discard(e) => write!(m, "{}·", e),
-        Stmt::Return(e) => write!(m, "{}◘", e),
-        Stmt::Loc(e, f) => write!(m, "{}→{}·", e, displayname(f)),
-        Stmt::Mut(e, f) => write!(m, "{}↔{}·", e, displayname(f)),
-        Stmt::DelLoc(f) => write!(m, "→{}·", displayname(f)),
-        Stmt::DelMut(f) => write!(m, "↔{}·", displayname(f)),
-        Stmt::Cond(i, t) => write!(m, "{}?{}", i, t),
-    }}
+fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result { match self {
+    Stmt::Discard(e) => write!(m, "{}·", e),
+    Stmt::Return(e) => write!(m, "{}◘", e),
+    Stmt::Loc(e, f) => write!(m, "{}→{}·", e, display(f)),
+    Stmt::Mut(e, f) => write!(m, "{}↔{}·", e, display(f)),
+    Stmt::DelLoc(f) => write!(m, "→{}·", display(f)),
+    Stmt::DelMut(f) => write!(m, "↔{}·", display(f)),
+    Stmt::Cond(i, t) => write!(m, "{}?{}", i, t),
+}}
 }
 
-
-fn displayname(bytes: &[u8]) -> String {
+fn display(bytes: &[u8]) -> String {
     if bytes.contains(&b' ') {
         format!("\"{}\"", tochars(bytes).replace('"', "\\\""))
     } else { tochars(bytes) }
@@ -108,49 +104,49 @@ fn word_cst(t: &mut&[Tok], mut morphemes: usize) -> Option<(Role, Expr)>{
 fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
     if *morphemes == 0 {return None}
     let (rol, val) = match t.first()? {
-        Tok::VarSet(v) => { step(t); (Verb, Expr::SetVar(v.clone())) },
-        Tok::VarCng(v) => { step(t); (Verb, Expr::CngVar(v.clone())) },
-        Tok::VarAv1(name) => { step(t);
+        Tok::VSet(v) => { step(t); (Verb, SetVar(v.c())) },
+        Tok::VMut(v) => { step(t); (Verb, MutVar(v.c())) },
+        Tok::VAv1(name) => { step(t);
             let word = word(t, morphemes);
             match word {
-                Some((_role, word)) => (Verb, Expr::Aav1{ v: name.clone(), g: Box::new(word) }),
-                None => (Verb, Expr::Var(name.clone())),
+                Some((_role, word)) => (Verb, Aav1(name.c(), bx(word))),
+                None => (Verb, Var(name.c())),
             }
         },
         Tok::Just(b!('┘')) => { step(t);
             let a = word_full(t).map_or(NAN, |x| x.1);
             let f = word_full(t).map_or(NAN, |x| x.1);
             let b = word_full(t).map_or(NAN, |x| x.1);
-            (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
+            (Verb, Fork(bx(a), bx(f), bx(b)))
         },
         Tok::Just(b!('└')) => { step(t);
             let a = word_full(t)  .map_or(NAN, |x| x.1);
             let f = word_full(t)  .map_or(NAN, |x| x.1);
             let b = word_cst(t, 1).map_or(NAN, |x| x.1);
-            (Verb, Expr::Fork{a: Box::new(a), f: Box::new(f), b: Box::new(b)})
+            (Verb, Fork(bx(a), bx(f), bx(b)))
         },
         Tok::Just(b'{') => { step(t);
             let s = block(t);
             let mut vars = HashSet::new();
             for i in &s { i.capture(&mut vars) }
             if let Some(Tok::Just(b'}')) = t.first() { step(t); }
-            (Verb, Expr::Dfn {s, cap: vars})
+            (Verb, Dfn {s, cap: vars})
         },
         Tok::Just(b'[') => { step(t);
             let s = block(t);
             if let Some(Tok::Just(b']')) = t.first() { step(t); }
-            (Noun, Expr::Block {s})
+            (Noun, Block(s))
         }
-        Tok::VarVerb(v) | Tok::VarAv2(v) => { step(t); (Verb, Expr::Var(v.clone())) },
+        Tok::VVerb(v) | Tok::VAv2(v) => { step(t); (Verb, Var(v.c())) },
         Tok::Just(b'(') => { step(t);
-            let expr = phrase_to_expr(phrase(t)).unwrap_or(Expr::Snd(vec![]));
+            let expr = phrase_to_expr(phrase(t)).unwrap_or(Snd(vec![]));
             if let Some(Tok::Just(b')')) = t.first() { step(t); }
             (Noun, expr)
         },
         Tok::Just(b!('♪')) => { step(t);
             let (rol, arg) = word_full(t).unwrap_or((Noun, NAN));
             (Noun, match rol {
-                Noun => Expr::Snd(vec![arg]),
+                Noun => Snd(vec![arg]),
                 Verb => arg
             })
         },
@@ -161,19 +157,13 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
             let e = phrase_to_expr(p);
             (if *s == b!('┌') {Verb} else {Noun}, e.unwrap_or(NAN))
         },
-        tok => if let Some(p) = value_token(tok.clone()) {
-            step(t); (Noun, p)
-        } else {return None}
+        tok => if let Some(p) = value_token(tok.c()) { step(t); (Noun, p) } else {return None}
     };
-    if *morphemes > 1 { if let Some(Tok::VarAv2(n)) = t.first() {
+    if *morphemes > 1 { if let Some(Tok::VAv2(n)) = t.first() {
         *morphemes -= 1;
         step(t);
         let word = word(t, morphemes);
-        return Some((Verb, Expr::Aav2{
-            f: Box::new(val),
-            v: n.clone(),
-            g: Box::new(word.map_or(NAN, |x| x.1)),
-        }))
+        return Some((Verb, Aav2( bx(val), n.c(), bx(word.map_or(NAN, |x| x.1)) )))
     }}
     Some((rol, val))
 }
@@ -199,134 +189,104 @@ pub fn phrase(t: &mut&[Tok]) -> Vec<(Role, Expr)> {
 fn strand(iter: &mut iter::Peekable<alloc::vec::IntoIter<(Role, Expr)>>) -> Option<Expr> {
     let mut evs = Vec::new();
     while let Some((Noun, v)) = iter.peek() {
-        evs.push(v.clone()); iter.next();
+        evs.push(v.c()); iter.next();
     }
-    (!evs.is_empty()).then(|| if evs.len() == 1 { evs[0].clone() } else { Expr::Snd(evs) })
+    (!evs.is_empty()).then(|| if evs.len() == 1 { evs[0].c() } else { Snd(evs) })
 }
 
 
 fn phrase_to_expr(things: Vec<(Role, Expr)>) -> Option<Expr> {
     let mut iter = things.into_iter().peekable();
-    Some(if let Some(start) = strand(&mut iter) {
-        // Function application
+    Some(if let Some(start) = strand(&mut iter) { // Function application
         let mut value = start;
-        while let Some((Verb, ef)) = iter.next() {
-            value = if let Some(ev) = strand(&mut iter) {  // dyad
-                Expr::Afn2 {a: Box::new(value), f: Box::new(ef), b: Box::new(ev)}
-            } else {  // monad
-                Expr::Afn1 {a: Box::new(value), f: Box::new(ef)}
-            }
-        }
-        value
-    } else { match iter.next() {
-        Some((Verb, ef)) => {
-            // Train
-            let mut value = if let Some(b) = strand(&mut iter) {
-                Expr::Bind {f: Box::new(ef), b: Box::new(b)}
-            } else { ef };
-            while let Some((Verb, ef)) = iter.next() {
-                value = if let Some(b) = strand(&mut iter) {  // dyad
-                    Expr::Trn3 {a: Box::new(value), f: Box::new(ef), b: Box::new(b)}
-                } else {  // monad
-                    Expr::Trn2 {a: Box::new(value), f: Box::new(ef)}
-                }
-            }
-            value
-        },
-        Some((Noun, _)) => unreachable!(),
-        None => return None
-    }})
+        while let Some((Verb, ef)) = iter.next() { value = match strand(&mut iter) {
+            Some(ev) => Afn2(bx(value), bx(ef), bx(ev)),
+            None     => Afn1(bx(value), bx(ef)),
+        }}
+    value } else if let Some((Verb, f)) = iter.next() { // Train
+        let mut value = if let Some(b) = strand(&mut iter) { Bind(bx(f), bx(b)) } else { f };
+        while let Some((Verb, f)) = iter.next() { value = match strand(&mut iter) {
+            Some(b) => Trn3(bx(value), bx(f), bx(b)),
+            None    => Trn2(bx(value), bx(f))
+        }}
+    value } else { return None })
 }
-
 
 fn numberise(mut num: i64) -> Expr {
     if num % 2 == 1 { num = 1-num; }
-    Expr::Int(num / 2)
+    Int(num / 2)
 }
 
 fn value_token(chr: Tok) -> Option<Expr> {
     Some(match chr {
-        Tok::Just(c @ b'0'..=b'9') => Expr::Int(i64::from(c - b'0')),
-        Tok::Just(b!('Φ')) => Expr::Int(10),
-        Tok::Just(b!('Θ')) => Expr::Int(-1),
-        Tok::Just(b!('∞')) => Expr::Flt(c64::new(f64::INFINITY, 0.)),
-        Tok::Just(b!('Γ')) => Expr::Flt(c64::i()),
+        Tok::Just(c @ b'0'..=b'9') => Int(i64::from(c - b'0')),
+        Tok::Just(b!('Φ')) => Int(10),
+        Tok::Just(b!('Θ')) => Int(-1),
+        Tok::Just(b!('∞')) => Flt(c64::new(f64::INFINITY, 0.)),
+        Tok::Just(b!('Γ')) => Flt(c64::i()),
         Tok::Just(b!('█')) => NAN,
-        Tok::Just(b!('φ')) => Expr::Snd(Vec::new()),
-        Tok::VarNoun(x) => Expr::Var(x),
-        Tok::Chr(x) => Expr::Int(i64::from(x)),
-        Tok::Chr2(x, y) => Expr::Snd(vec![Expr::Int(i64::from(x)), Expr::Int(i64::from(y))]),
+        Tok::Just(b!('φ')) => Snd(Vec::new()),
+        Tok::VNoun(x) => Var(x),
+        Tok::Chr(x) => Int(i64::from(x)),
+        Tok::Chr2(x, y) => Snd(vec![Int(i64::from(x)), Int(i64::from(y))]),
         Tok::Num2(   y, z) => numberise(                       i64::from(y)*253 + i64::from(z)),
         Tok::Num3(x, y, z) => numberise(i64::from(x)*253*253 + i64::from(y)*253 + i64::from(z)),
         Tok::Num(l) => {
             let mut num = 0;
             for i in l { num = num*253 + i64::from(i) }
-            numberise(num)
-        }
+        numberise(num) }
         Tok::HNum(x) => {
             let num = core::str::from_utf8(&x).unwrap().parse::<f64>().unwrap();
-            if num == num as i64 as f64 {
-                Expr::Int(num as i64)
-            } else {
-                Expr::Flt(c64::new(num, 0.))
-            }
+            if num == num as i64 as f64 { Int(num as i64) } else { Flt(c64::new(num, 0.)) }
         },
-        Tok::Str(x) => Expr::Snd(x.iter().map(|&x| Expr::Int(i64::from(x))).collect()),
+        Tok::Str(x) => Snd(x.iter().map(|&x| Int(i64::from(x))).collect()),
         _ => return None,
     })
 }
 
 impl Expr {
-fn capture(&self, vars: &mut HashSet<Bstr>) { // yeah...
-    match self {
-        Expr::Var(n) | Expr::SetVar(n) | Expr::CngVar(n) => { vars.insert(n.clone()); },
-        Expr::Int(_) | Expr::Flt(_) => (),
-        Expr::Snd(l) => for i in l { i.capture(vars) }
-        Expr::Afn1 { a, f    } => { a.capture(vars); f.capture(vars); },
-        Expr::Afn2 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
-        Expr::Aav1 {    v, g } => { vars.insert(v.clone()); g.capture(vars); },
-        Expr::Aav2 { f, v, g } => { vars.insert(v.clone()); f.capture(vars); g.capture(vars); },
-        Expr::Bind { f, b } => { f.capture(vars); b.capture(vars); },
-        Expr::Trn2 { a, f } => { a.capture(vars); f.capture(vars); },
-        Expr::Trn3 { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
-        Expr::Fork { a, f, b } => { a.capture(vars); f.capture(vars); b.capture(vars); },
-        Expr::Dfn { cap, .. } => { vars.extend(cap.iter().cloned()); }
-        Expr::Block { s } => { for i in s {i.capture(vars)} }
-    }
+fn capture(&self, vars: &mut HashSet<Bstr>) { match self { // yeah...
+    Var(n) | SetVar(n) | MutVar(n) => { vars.insert(n.c()); },
+    Int(_) | Flt(_) => (),
+    Snd(l) => for i in l { i.capture(vars) }
+    Afn1(a, f)    => { a.capture(vars); f.capture(vars); },
+    Afn2(a, f, b) => { a.capture(vars); f.capture(vars); b.capture(vars); },
+    Aav1(v, g)    => { vars.insert(v.c()); g.capture(vars); },
+    Aav2(f, v, g) => { vars.insert(v.c()); f.capture(vars); g.capture(vars); },
+    Bind(f, b)    => { f.capture(vars); b.capture(vars); },
+    Trn2(a, f)    => { a.capture(vars); f.capture(vars); },
+    Trn3(a, f, b) => { a.capture(vars); f.capture(vars); b.capture(vars); },
+    Fork(a, f, b) => { a.capture(vars); f.capture(vars); b.capture(vars); },
+    Dfn { cap, .. } => { vars.extend(cap.iter().cloned()); }
+    Block(s) => { for i in s {i.capture(vars)} }
+}}
 }
-}
-
 
 impl Stmt {
-    fn capture(&self, vars: &mut HashSet<Bstr>) {
-        match self {
-            Stmt::Discard(e) => { e.capture(vars); },
-            Stmt::Return(e) => { e.capture(vars); },
-            Stmt::Loc(e, _) =>  { e.capture(vars); },
-            Stmt::Mut(e, _) =>  { e.capture(vars); },
-            Stmt::DelLoc(_) => { },
-            Stmt::DelMut(_) => { },
-            Stmt::Cond(i, t) => { i.capture(vars); t.capture(vars); },
-        }
-    }
+fn capture(&self, vars: &mut HashSet<Bstr>) { match self {
+    Self::Discard(e) | Self::Return(e) | Self::Loc(e, _) | Self::Mut(e, _) => {
+        e.capture(vars); },
+    Self::DelLoc(_) | Self::DelMut(_) => { },
+    Self::Cond(i, t) => { i.capture(vars); t.capture(vars); },
+}}
 }
 
 fn parse_stmt(t: &mut&[Tok], expr: Option<Expr>) -> Option<Stmt> {
     Some(match t.first() {
-        Some(Tok::VarSetStmt(v)) => { step(t); match expr {
-            Some(e) => Stmt::Loc(e, v.clone()),
-            None    => Stmt::DelLoc(v.clone()),
+        Some(Tok::VSetS(v)) => { step(t); match expr {
+            Some(e) => Stmt::Loc(e, v.c()),
+            None    => Stmt::DelLoc(v.c()),
         }},
-        Some(Tok::VarCngStmt(v)) => { step(t); match expr {
-            Some(e) => Stmt::Mut(e, v.clone()),
-            None    => Stmt::DelMut(v.clone()),
+        Some(Tok::VMutS(v)) => { step(t); match expr {
+            Some(e) => Stmt::Mut(e, v.c()),
+            None    => Stmt::DelMut(v.c()),
         }},
-        Some(Tok::Just(b!('◘'))) => { step(t); Stmt::Return(expr.unwrap_or(NAN)) },
+        Some(Tok::Just(b!('◘'))) => { step(t); Stmt::Return (expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('·'))) => { step(t); Stmt::Discard(expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('}'']'))) | None => { Stmt::Return(expr.unwrap_or(NAN)) },
         Some(Tok::Just(b!('?'))) => { step(t);
             let ev2 = phrase_to_expr(phrase(t));
-            Stmt::Cond(expr.unwrap_or(NAN), Box::new(parse_stmt(t, ev2)?))
+            Stmt::Cond(expr.unwrap_or(NAN), bx(parse_stmt(t, ev2)?))
         },
         _ => return None,
     })

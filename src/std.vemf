@@ -40,14 +40,14 @@ _Ö_ë─Ö
 
 .inenlist╬.inpair─♫
 
-:incycle╬•_╘:inreplist─§
+:incycle╬_╘:inreplist─§
 
 .intakeleft─↑
 .intakeright─↓
 
 .inravel╬§╜↑─¶
-.indropleft─♂│♂1╬•_╘♂─♂
-.indropright─♀│♀1╬•_╘♀─♀
+.indropleft─♂│♂1╬_╘♂─♂
+.indropright─♀│♀1╬_╘♀─♀
 
 .inshape─▬▬╬▬╜↑─▬
 
@@ -73,8 +73,8 @@ _Ö_ë─Ö
 
 ┼:insqrt╬/╙^─√
 
-│+1╬•_╘.inbinsup─▲
-│-1╬•_╘.inbinsdown─▼
+│+1╬_╘.inbinsup─▲
+│-1╬_╘.inbinsdown─▼
 
 .ingradedown╬┼:inlt─<
 │▬:inlen╬┼:ineq─=
@@ -109,7 +109,7 @@ _Ö_ë─Ö
 ┼¢╬├²╝+√─¢
 
 .inindex─@│@0╬@─@
-││~▼╓@╬┴•_╘@─¡
+││~▼╓@╬┴_╘@─¡
 
 :ingetfill╬:insetfill─▐
 ┼.inisnan─▄
@@ -140,7 +140,7 @@ _Ö_ë─Ö
 │├~▲↕╓╘↑╬↑─↑
 
 .inpick─á┼├á1@╬á─á
-(│~á╓@)╬•_╘(~╜á)╓╘@─å
+(│~á╓@)╬_╘(~╜á)╓╘@─å
 (~╜┴┴:insample)╓╘@─à
 
 :incomplex─í┼│í0╬í─í
@@ -150,7 +150,7 @@ _Ö_ë─Ö
 
 .inreplicate─‼│♣╖‼╬‼─‼
 
-┌┼.intocp╬•_╛.inencode─ê
+┌┼.intocp╬_╛.inencode─ê
 ┌┼.infromcp╬{α▐0↓(β~▲)*(β♠╤*♠,1)+}─ë
 (┴╖.^)╙*╧+─è│è2╬è─è
 ┼.inbrepr╬{α∟β▲⌡Ñ1↕┴^β┴÷α%β▐0}─é
@@ -182,8 +182,8 @@ _Ö_ë─Ö
 
 '3486─_¶
 
-•_╘(┴~╙%)╓└↓,♀─»(»1)╬»─»
-•_╘(┴~╙%)╓└♂,↑─«(«1)╬«─«
+_╘(┴~╙%)╓└↓,♀─»(»1)╬»─»
+_╘(┴~╙%)╓└♂,↑─«(«1)╬«─«
 
 (:incall█)╬.incall─$
 

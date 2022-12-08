@@ -17,6 +17,8 @@ pub use run::{Env, Val, c64, io::{Interface, NoIO}};
 pub type Bstr = smallvec::SmallVec<[u8; 16]>;
 pub use token::rewrite;
 
+pub fn bx<T>(x: T) -> alloc::boxed::Box<T> { alloc::boxed::Box::new(x) }
+
 mod prelude {
     pub use alloc::vec::Vec;
     pub use alloc::string::{String, ToString};
@@ -28,7 +30,15 @@ mod prelude {
     pub use alloc::{vec, format};
 
     pub use crate::Bstr;
-    pub use smallvec::smallvec;
+    pub use smallvec::smallvec as bstr;
+
+    // vemf does a lot of cloning. i got tired of the same 8 characters appearing so often
+    pub trait ShorterClone: Clone {
+        fn c(&self) -> Self { self.clone() }
+    }
+    impl<T> ShorterClone for T where T: Clone {}
+
+    pub use crate::bx;
 
     #[cfg(feature="std")] pub use std::collections::HashMap;
     #[cfg(feature="std")] pub use std::collections::HashSet;

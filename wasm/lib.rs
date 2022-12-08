@@ -1,6 +1,6 @@
 use std::cell::{RefCell, RefMut};
 
-use vemf::{self, Env, codepage, Val};
+use vemf::{self, Env, codepage, Val, bx};
 use wasm_bindgen::prelude::*;
 
 struct Output<'io> {
@@ -30,15 +30,15 @@ impl<'io> std::io::Write for Handle<'io> {
 #[wasm_bindgen]
 pub fn evaluate(s: &str, fmt: &str) -> String {
     let outbuf = RefCell::new(Vec::new());
-    let mut env = Env::new(Box::new(rand::thread_rng()));
-    env.interface = Box::new(Output {bufref: &outbuf});
+    let mut env = Env::new(bx(rand::thread_rng()));
+    env.interface = bx(Output {bufref: &outbuf});
     env.include_stdlib();
     let mut out = String::new();
     env.include_string(s).format( &mut out,
         &fmt.chars()
         .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
         .collect::<Vec<_>>()[..]).unwrap();
-    env.interface = Box::new(vemf::NoIO);
+    env.interface = bx(vemf::NoIO);
     let borrow = outbuf.borrow();
     String::from_utf8_lossy(&borrow).into_owned() + &out
 }

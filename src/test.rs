@@ -1,4 +1,5 @@
 use rand::rngs::mock::StepRng;
+use crate::prelude::*;
 
 #[test]
 fn test() -> Result<(), String> {
@@ -6,7 +7,7 @@ fn test() -> Result<(), String> {
     println!("doing doc tests...");
     let mut tested = 0;
     let mut failed = 0;
-    let mut env = super::run::Env::new(Box::new(StepRng::new(0, 1)));
+    let mut env = super::run::Env::new(bx(StepRng::new(0, 1)));
     env.include_stdlib();
     for (n, line) in code.lines().enumerate() {
         if let Some(line) = line.strip_prefix("> ") {

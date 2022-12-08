@@ -1,6 +1,6 @@
 use std::{path::PathBuf, io::{Read, Write}, fs::File};
 use clap::Parser;
-use vemf::{Bstr, codepage, Val, Env, FromIoWrite};
+use vemf::{Bstr, codepage, Val, Env, FromIoWrite, bx};
 
 #[derive(Parser)]
 #[clap(dont_collapse_args_in_usage = true)]
@@ -47,9 +47,9 @@ fn fmtstring(format: &str) -> Vec<Val> {
 
 fn main() {
     let args = Args::parse();
-    let mut state = Env::new(Box::new(rand::thread_rng()));
+    let mut state = Env::new(bx(rand::thread_rng()));
     if !args.no_stdlib { state.include_stdlib(); }
-    state.interface = Box::new(vemf::StdIO {});
+    state.interface = bx(vemf::StdIO {});
     if let Some(path) = args.filename {
         if args.rewrite { return rewrite(path); }
         let arguments = state.include_args(&args.arguments);

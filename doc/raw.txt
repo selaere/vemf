@@ -1911,7 +1911,8 @@ see also: |Parse Base|
 :ascii: 'o,
 :type: verb
 #1 Parse
-convert the string α to a number, or |None|
+convert the string/character α to a number, or |None|
+> `4º ≡ 4
 > "123"º ≡ '123
 > "123.45"º ≡ '123.45
 > "123+5i"º ≡ 5í'123

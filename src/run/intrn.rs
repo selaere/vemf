@@ -60,7 +60,7 @@ func!(@env, _a :loadintrinsics => {
 
 func!(@env, a :set b => {
     let name = a.iterf().filter_map(|x| x.try_int().map(|x| x as u8)).collect::<Bstr>();
-    env.set_local(name, b.clone()); b
+    env.set_local(name, b.c()); b
 });
 func!(@env, a :get => {
     let name = a.iterf().filter_map(|x| x.try_int().map(|x| x as u8)).collect::<Bstr>();
@@ -228,7 +228,9 @@ func!(a :format b? => {
 });
 func!(a :numfmt => if !a.is_scalar() {NAN} else { 
     format!("{a}").chars().map(|x| Int(x as i64)).collect() });
-func!(a :parse => a.display_string().parse::<c64>().map(Num).unwrap_or(NAN));
+func!(a :parse => if let Some(a @ 0x30..=0x39) = a.try_int() { Int(a - 0x30) } else {
+    a.display_string().parse::<c64>().map(Num).unwrap_or(NAN)
+});
 
 func!(a :fromcp => { if a.is_nan() {return NAN}; a.try_int()
     .and_then(|x| u8::try_from(x).ok())

@@ -12,29 +12,29 @@ impl Val {
     }}
 
     pub fn fill(&self) -> Val { match self {
-        Num(_) | Int(_) => self.clone(),
-        Lis { fill, .. } => (**fill).clone(),
+        Num(_) | Int(_) => self.c(),
+        Lis { fill, .. } => (**fill).c(),
         _ => NAN, // good enough
     }}
 
     pub fn indexval(&self, env: &mut Env, index: Val) -> Val {
         match self {
-            Num(_) | Int(_) => self.clone(), // unchanged
+            Num(_) | Int(_) => self.c(), // unchanged
             Lis { l, fill } => 
-                if index.is_nan() {(**fill).clone()} 
+                if index.is_nan() {(**fill).c()} 
                 else if let Some(index) = index.try_int() {
-                    if index < 0 { return (**fill).clone() }
-                    l.get(index as usize).cloned().unwrap_or_else(|| (**fill).clone())
-                } else {(**fill).clone()},
+                    if index < 0 { return (**fill).c() }
+                    l.get(index as usize).cloned().unwrap_or_else(|| (**fill).c())
+                } else {(**fill).c()},
             x => x.monad(env, index)
         }
     }
 
     pub fn index(&self, env: &mut Env, index: usize) -> Val {
         match self {
-            Num(_) | Int(_) => self.clone(), // unchanged
+            Num(_) | Int(_) => self.c(), // unchanged
             Lis { l, fill } => {
-                l.get(index).cloned().unwrap_or_else(|| (**fill).clone())
+                l.get(index).cloned().unwrap_or_else(|| (**fill).c())
             },
             x => x.monad(env, Int(index as i64))
         }
@@ -42,14 +42,14 @@ impl Val {
 
     pub fn iterinf<'r, 'io>(self, env: &'r mut Env<'io>) -> Box<dyn InconvenientIter<'r, 'io> + 'r> {
         if self.is_infinite() {
-            Box::new(InfIter { i: 0, value: self, env })
+            bx(InfIter { i: 0, value: self, env })
         } else if let Lis{l, ..} = self {
             match Rc::try_unwrap(l) {
-                Ok(l) => Box::new(l.into_iter()),
+                Ok(l) => bx(l.into_iter()),
                 // https://smallcultfollowing.com/babysteps/blog/2018/09/02/rust-pattern-iterating-an-over-a-rc-vec-t/
-                Err(l) => Box::new((0..l.len()).map(move |x| l[x].clone()))
+                Err(l) => bx((0..l.len()).map(move |x| l[x].c()))
             }
-        } else { Box::new(iter::once(self)) }
+        } else { bx(iter::once(self)) }
     }
 
     pub fn lis(vec: Vec<Val>) -> Val {
@@ -64,9 +64,9 @@ impl Val {
     // never be infinite AND it doesnt need a &mut env which is more convenient most of the time
     pub fn iterf<'v>(&'v self) -> Box<dyn GoodIter<&'v Val> + 'v> {
         if let Lis{l, ..} = self {
-            Box::new(l.iter())
+            bx(l.iter())
         } else {
-            Box::new(iter::once(self))
+            bx(iter::once(self))
         }
     }
 
@@ -74,17 +74,17 @@ impl Val {
     pub fn into_iterf(self) -> Box<dyn GoodIter<Val>> {
         if let Lis{l, ..} = self {
             match Rc::try_unwrap(l) {
-                Ok(l) => Box::new(l.into_iter()),
-                Err(l) => Box::new((0..l.len()).map(move |x| l[x].clone()))
+                Ok(l) => bx(l.into_iter()),
+                Err(l) => bx((0..l.len()).map(move |x| l[x].c()))
             }
-        } else { Box::new(iter::once(self)) }
+        } else { bx(iter::once(self)) }
     }
 
     pub fn itertake(self, env: &mut Env, len: usize) -> Box<dyn GoodIter<Val>> {
         if self.is_infinite() {
-            Box::new(self.iterinf(env).take(len).collect::<Vec<_>>().into_iter())
+            bx(self.iterinf(env).take(len).collect::<Vec<_>>().into_iter())
         } else {
-            Box::new(self.into_iterf().take(len))
+            bx(self.into_iterf().take(len))
         }
     }
 
@@ -102,14 +102,14 @@ func!(@env, a :index b => {
     let mut a = a;
     if b.is_nan() { return a.fill() }
     for n in 0..b.len() {
-        if a.is_scalar() { return a.clone(); }
+        if a.is_scalar() { return a.c(); }
         let i = b.index(env, n);
         if i.is_nan() {
             if n+1 == b.len() {return a}
             return match a {
                 Lis {l, ..} => {
                     let slice = b.iterinf(env).skip(n+1).collect::<Val>();
-                    l.iter().map(|x| index(env, x.clone(), Some(slice.clone()))).collect::<Val>()
+                    l.iter().map(|x| index(env, x.c(), Some(slice.c()))).collect::<Val>()
                 }
                 _ => iter::empty::<Val>().collect()
             };
@@ -145,9 +145,9 @@ pub fn iiota(prefix: Vec<i64>, arg: &[i64]) -> Val {
         return prefix.into_iter().map(Int).collect()
     }
     let iter: Box<dyn Iterator<Item=i64>> = if arg[0] > 0 {
-        Box::new(0..arg[0])
+        bx(0..arg[0])
     } else {
-        Box::new((0..arg[0].abs()).rev())
+        bx((0..arg[0].abs()).rev())
     };
     Val::lis(iter.map(|i| iiota([&prefix[..], &[i]].concat(), &arg[1..])).collect())
 }
@@ -155,9 +155,9 @@ pub fn iiota(prefix: Vec<i64>, arg: &[i64]) -> Val {
 
 pub fn iota_scalar(arg: i64) -> Val {
     let iter: Box<dyn Iterator<Item=i64>> = if arg > 0 {
-        Box::new(0..arg)
+        bx(0..arg)
     } else {
-        Box::new((0..arg.abs()).rev())
+        bx((0..arg.abs()).rev())
     };
     Val::lis(iter.map(Int).collect())
 }
@@ -252,7 +252,7 @@ pub fn reshape(env: &mut Env, a: Val, b: Val, isright: bool) -> Val {
 }
 
 pub fn ireshape(a: &mut dyn Iterator<Item=Val>, b: &[usize], fill: &Val) -> Val {
-    if b.is_empty() {return a.next().unwrap_or_else(|| fill.clone())}
+    if b.is_empty() {return a.next().unwrap_or_else(|| fill.c())}
     let (pre, suf) = (b[0], &b[1..]);
     (0..pre).map(move |_| ireshape(a, suf, fill)).collect()
 }
@@ -298,8 +298,8 @@ pub fn ireplicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
     for (l,r) in a.into_iterf().zip(b.itertake(env, len).chain(iter::repeat(bfill))) {
         if let Some(n) = r.try_int() {
             if n != 0 {
-                let val = if n > 0 {l} else {afill.clone()};
-                for _ in 0..(n.abs() - 1) { lis.push(val.clone()); }
+                let val = if n > 0 {l} else {afill.c()};
+                for _ in 0..(n.abs() - 1) { lis.push(val.c()); }
                 lis.push(val);
             }
         } else {
@@ -322,13 +322,13 @@ func!(a :gradedown => if let Lis {l, ..} = a {
 } else { Val::lis(vec![Int(0)]) } );
 
 func!( a :sortup => if let Lis {l, ..} = a {
-    let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).clone());
+    let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).c());
     list.sort_by(|a, b| a.cmpval(b));
     Val::lis(list)
 } else { Val::lis(vec![a]) } );
 
 func!(a :sortdown => if let Lis {l, ..} = a {
-    let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).clone());
+    let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).c());
     list.sort_by(|a, b| a.cmpval(b).reverse());
     Val::lis(list)
 } else { Val::lis(vec![a]) });
@@ -353,7 +353,7 @@ func!( @env, a :group b => {
                 if i >= lis.len() {
                     lis.resize(i + 1, Vec::new());
                 }
-                lis[i].push(l.clone());
+                lis[i].push(l.c());
             };
         }
     }
