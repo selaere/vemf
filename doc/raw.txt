@@ -315,7 +315,7 @@ whitespace
 :ascii: 'E
 :type: verb
 #2 Drop
-return the list α, with β elements removed from the left. β-pervasive. if β is negative, `β¢` elements are removed from the right instead, like |Drop Right|. if β is equal or greater than the length, all elements are removed; an empty list is returned.
+return the list α, with β elements removed from the left. β-pervasive. if β is negative, `β¢` elements are removed from the right instead (see |Drop Right|). if β is equal or greater than the length, all elements are removed; an empty list is returned.
 > "testing"♂3 ≡ "ting"
 > "testing"♂_3 ≡ "test"
 > "testing"♂9 ≡ φ
@@ -327,7 +327,7 @@ drop 1 element from the left
 :ascii: 'D
 :type: verb
 #2 Drop Right
-returns the list α, with β elements removed from the right. β-pervasive. if β is negative, `β¢` elements are removed from the left instead, like |Drop Left|. if β is equal or greater than the length, all elements are removed; an empty list is returned.
+returns the list α, with β elements removed from the right. β-pervasive. if β is negative, `β¢` elements are removed from the left instead (see |Drop Left|). if β is equal or greater than the length, all elements are removed; an empty list is returned.
 > "testing"♀3 ≡ "test"
 > "testing"♀_3 ≡ "ting"
 > "testing"♀9 ≡ φ
@@ -1927,6 +1927,13 @@ convert the string α in base β to a number. behaviour unspecified for bases no
 > "A5A5"º'16 ≡ '42405
 see also: |Represent Base|
 ---
+:char: ¿
+:ascii: '?
+:type: verb
+#2 Select
+index α with every item in β. equivalent to `╘@`.
+> "abc""def""ghi"¿(22)(10)(11)(00) ≡ "idea"
+---
 :char: ⌐
 :ascii: 'bl
 :type: verb
@@ -1989,7 +1996,7 @@ calculates gcd(α, β). scalar.
 get the last element of the list in α
 > "aeiou"¡ ≡ `u
 > 123¡ ≡ 3
-#2 Select
+#2 Translate
 index the array α for every scalar in α. equivalent to `┼┴@`.
 > 13524¡" aeiouy" ≡ "aiueo"
 ---
