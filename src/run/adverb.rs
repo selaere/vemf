@@ -1,7 +1,7 @@
 use super::{Val, Env, NAN};
 use crate::prelude::*;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Hash)]
 pub enum AvT {
     Swap, Const, Monadic,
     Each, EachLeft, Conform, Extend,

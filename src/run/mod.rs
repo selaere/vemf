@@ -47,7 +47,6 @@ pub enum Val {
     Func(Func)
 }
 
-
 use Val::{Lis, Num, Int};
 impl Default for Val {
     fn default() -> Self { NAN }

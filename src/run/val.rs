@@ -189,3 +189,29 @@ fn encode_flt(mut a: f64, b: Val) -> Val {
     list[0] = Val::flt(a);
     Val::lis(list)
 }
+
+impl core::hash::Hash for Val {
+fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
+    core::mem::discriminant(self).hash(state);
+    match self {
+        Num(mut n) => {
+            if n.is_nan() { n = c64 {re: f64::NAN, im: f64::NAN}; }
+            fn normalize(x: f64) -> f64 { if x == 0. { 0.0 } else {x} }
+            state.write(&normalize(n.re).to_ne_bytes());
+            state.write(&normalize(n.im).to_ne_bytes());
+        },
+        Int(n) => state.write_i64(*n),
+        Lis { l, fill } => (fill, l).hash(state),
+        Val::FSet(n) | Val::FCng(n) => n.hash(state),
+        Val::Bind { f, b } => (f, b).hash(state),
+        Val::Trn2 { a, f } => (a, f).hash(state),
+        Val::Trn3 { a, f, b } | Val::Fork { a, f, b } => (a, f, b).hash(state),
+        Val::Av(t, f, g) => (t, f, g).hash(state),
+        Val::AvBuilder(t) => t.hash(state),
+        Val::Err(x) => x.hash(state),
+        // these are hashed by reference
+        Val::Dfn { loc, s } => (Rc::as_ptr(loc), s.as_ptr()).hash(state),
+        Val::Func(x) => (*x as usize).hash(state),
+    }
+}
+}

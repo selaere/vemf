@@ -376,3 +376,14 @@ func!(a :find b => {
     }
     Val::lis(res)
 });
+
+func!(a :occcount => {
+    let mut map = HashMap::new();
+    let mut lis = Vec::with_capacity(a.len());
+    for i in a.into_iterf() {
+        let reference = map.entry(i).or_insert(0);
+        lis.push(Int(*reference));
+        *reference += 1;
+    }
+    Val::lis(lis)
+});

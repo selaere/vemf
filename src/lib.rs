@@ -25,24 +25,17 @@ mod prelude {
     pub use alloc::boxed::Box;
     pub use alloc::rc::Rc;
     pub use core::iter;
-
+    
     pub use {b, or_nan, func};
     pub use alloc::{vec, format};
-
-    pub use crate::Bstr;
     pub use smallvec::smallvec as bstr;
+    pub use crate::{Bstr, bx};
 
     // vemf does a lot of cloning. i got tired of the same 8 characters appearing so often
-    pub trait ShorterClone: Clone {
-        fn c(&self) -> Self { self.clone() }
-    }
+    pub trait ShorterClone: Clone { fn c(&self) -> Self { self.clone() } }
     impl<T> ShorterClone for T where T: Clone {}
 
-    pub use crate::bx;
+    #[cfg(feature="std")] pub use std::collections::{HashMap, HashSet};
 
-    #[cfg(feature="std")] pub use std::collections::HashMap;
-    #[cfg(feature="std")] pub use std::collections::HashSet;
-
-    #[cfg(not(feature="std"))] pub use hashbrown::HashMap;
-    #[cfg(not(feature="std"))] pub use hashbrown::HashSet;
+    #[cfg(not(feature="std"))] pub use hashbrown::{HashMap, HashSet};
 }
