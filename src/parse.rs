@@ -113,12 +113,6 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
                 None => (Verb, Var(name.c())),
             }
         },
-        Tok::Just(b!('┘')) => { step(t);
-            let a = word_full(t).map_or(NAN, |x| x.1);
-            let f = word_full(t).map_or(NAN, |x| x.1);
-            let b = word_full(t).map_or(NAN, |x| x.1);
-            (Verb, Fork(bx(a), bx(f), bx(b)))
-        },
         Tok::Just(b!('└')) => { step(t);
             let a = word_full(t)  .map_or(NAN, |x| x.1);
             let f = word_full(t)  .map_or(NAN, |x| x.1);
