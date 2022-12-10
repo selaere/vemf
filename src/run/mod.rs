@@ -152,7 +152,9 @@ impl<'io> Env<'io> {
                 f.monad(self, a)
             },
             Expr::Afn2(a, f, b) => {
-                let a = eval!(a); let f = eval!(f); let b = eval!(b);
+                let a = eval!(a); let f = eval!(f); 
+                if let Val::FSet(_) | Val::FCng(_) = f { f.monad(self, a); return eval!(b) }
+                let b = eval!(b);
                 f.dyad(self, a, b)
             },
             Expr::SetVar(v) => Val::FSet(v.c()),
