@@ -274,7 +274,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="verb"><a href="#A5">Ñ</a></td>
 <td class="verb"><a href="#A6">ª</a></td>
 <td class="verb"><a href="#A7">º</a></td>
-<td class="none"><a href="#A8">¿</a></td>
+<td class="verb"><a href="#A8">¿</a></td>
 <td class="verb"><a href="#A9">⌐</a></td>
 <td class="verb"><a href="#AA">¬</a></td>
 <td class="verb"><a href="#AB">½</a></td>
@@ -282,8 +282,8 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="verb"><a href="#AD">¡</a></td>
 <td class="verb"><a href="#AE">«</a></td>
 <td class="verb"><a href="#AF">»</a></td></tr>
-<tr><td class="none"><a href="#B0">░</a></td>
-<td class="none"><a href="#B1">▒</a></td>
+<tr><td class="literal"><a href="#B0">░</a></td>
+<td class="literal"><a href="#B1">▒</a></td>
 <td class="none"><a href="#B2">▓</a></td>
 <td class="mgroup"><a href="#B3">│</a></td>
 <td class="mgroup"><a href="#B4">┤</a></td>
@@ -360,7 +360,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="verb"><a href="#FB">√</a></td>
 <td class="verb"><a href="#FC">ⁿ</a></td>
 <td class="verb"><a href="#FD">²</a></td>
-<td class="none"><a href="#FE">■</a></td>
+<td class="literal"><a href="#FE">■</a></td>
 <td class="none"><a href="#FF">⎕</a></td></tr>
 </table></div></div>
 </nav><main>
@@ -375,7 +375,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>3-1 ≡ 2
 5- ≡ _5
 5--3 ≡ _8</pre>
-<p>, where <code>_5</code> and <code>_8</code> are nouns meaning -5 and -8 respectively.</p>
+<p>, where <code>_5</code> and <code>_8</code> are nouns meaning −5 and −8 respectively.</p>
 <p>almost every function has two different variants that do different things. even <code>+</code>! monadic <code>α+</code> <a href="#Sum">Sum</a> adds all the items in a list:</p>
 <pre>123+ ≡ 6</pre>
 <p>uh, hm. yes. this is not the number one hundred twenty-three. consecutive nouns (strands) form a list, and <code>1</code>, <code>2</code>, <code>3</code> are nouns. the sum of all of those is 6.</p>
@@ -604,10 +604,11 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>print α and return β</p>
 <pre>"Calculating the square root of two..."☻2√</pre>
 <h2 class="literal" id="03"><code>♥</code> (0x03, <code>'c2</code>)</h2>
-<h3 id="2-Character Literal"><code>♥ab</code> 2-Character Literal</h3>
-<p>a 2-character literal</p>
+<h3 id="Digraph Literal"><code>♥ab</code> Digraph Literal</h3>
+<p>a 2 character literal.</p>
 <pre>♥() ≡ `(`)
 ♥012 ≡ (`0`1)2</pre>
+<p>see also: <a href="#Character Literal">Character Literal</a></p>
 <h2 class="verb" id="04"><code>♦</code> (0x04, <code>'T</code>)</h2>
 <h3 id="Transpose"><code>α♦</code> Transpose</h3>
 <p>transpose a nested list. the shape will be the minimum of the lengths of the elements, or <code>╕~ñ;</code></p>
@@ -633,6 +634,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h3 id="Return"><code>x◘</code> Return</h3>
 <p>returns x, breaking out of the enclosing function</p>
 <pre>0{4·5◘6} ≡ 5</pre>
+<p>see also: <a href="#Discard">Discard</a>, <a href="#Then">Then</a></p>
 <h2 class="prefix" id="09"><code>○</code> (0x09, <code>',</code>)</h2>
 <h3 id="2-Adverb"><code>○name</code> 2-Adverb</h3>
 <p>the variable <code>name</code> with 2-adverb role</p>
@@ -643,7 +645,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>whitespace</p>
 <h2 class="verb" id="0B"><code>♂</code> (0x0B, <code>'E</code>)</h2>
 <h3 id="Drop"><code>α♂β</code> Drop</h3>
-<p>return the list α, with β elements removed from the left. β-pervasive. if β is negative, <code>β¢</code> elements are removed from the right instead, like <a href="#Drop Right">Drop Right</a>. if β is equal or greater than the length, all elements are removed; an empty list is returned.</p>
+<p>return the list α, with β elements removed from the left. β-pervasive. if β is negative, <code>β¢</code> elements are removed from the right instead (see <a href="#Drop Right">Drop Right</a>). if β is equal or greater than the length, all elements are removed; an empty list is returned.</p>
 <pre>"testing"♂3 ≡ "ting"
 "testing"♂_3 ≡ "test"
 "testing"♂9 ≡ φ</pre>
@@ -652,7 +654,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>"testing"♂ ≡ "esting"</pre>
 <h2 class="verb" id="0C"><code>♀</code> (0x0C, <code>'D</code>)</h2>
 <h3 id="Drop Right"><code>α♀β</code> Drop Right</h3>
-<p>returns the list α, with β elements removed from the right. β-pervasive. if β is negative, <code>β¢</code> elements are removed from the left instead, like <a href="#Drop Left">Drop Left</a>. if β is equal or greater than the length, all elements are removed; an empty list is returned.</p>
+<p>returns the list α, with β elements removed from the right. β-pervasive. if β is negative, <code>β¢</code> elements are removed from the left instead (see <a href="#Drop Left">Drop Left</a>). if β is equal or greater than the length, all elements are removed; an empty list is returned.</p>
 <pre>"testing"♀3 ≡ "test"
 "testing"♀_3 ≡ "ting"
 "testing"♀9 ≡ φ</pre>
@@ -838,6 +840,8 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h3 id="Local"><code>α→nameβ</code> Local</h3>
 <p>sets a variable to α in the local scope and returns β.</p>
 <pre>1→a2→b3→c a+b+c ≡ 6</pre>
+<p>this function, along with <a href="#Mutate">Mutate</a>, are special verbs in that if they are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:</p>
+<pre>1→a 2→b (ab)+ ≡ 3</pre>
 <p>see also: <a href="#Local Statement">Local Statement</a></p>
 <h2 class="verb" id="1C"><code>∟</code> (0x1C, <code>'L</code>)</h2>
 <h3 id="Natural Logarithm"><code>α∟</code> Natural Logarithm</h3>
@@ -1062,14 +1066,14 @@ _1%_2 ≡ 1</pre>
 <p>see also: <a href="#Pair">Pair</a>, <a href="#Append">Append</a>, <a href="#Prepend">Prepend</a></p>
 <h2 class="verb" id="2D"><code>-</code> (0x2D)</h2>
 <h3 id="Negate"><code>α-</code> Negate</h3>
-<p>calculate -α. scalar</p>
+<p>calculate −α. scalar</p>
 <pre>1- ≡ '-1
 Φ- ≡ '-10
 2--2 ≡ _4
 123- ≡ _1_2_3
 3-- ≡ 3</pre>
 <h3 id="Subtract"><code>α-β</code> Subtract</h3>
-<p>calculate α - β. scalar</p>
+<p>calculate α − β. scalar</p>
 <pre>3-2 ≡ 1
 4-1 ≡ 3
 3-0 ≡ 3</pre>
@@ -1093,47 +1097,47 @@ _1%_2 ≡ 1</pre>
 <h3 id="One"><code>1</code> One</h3>
 <p>the integer 1</p>
 <h3 id="Minus One"><code>_1</code> Minus One</h3>
-<p>the integer -1</p>
+<p>the integer −1</p>
 <h2 class="noun" id="32"><code>2</code> (0x32)</h2>
 <h3 id="Two"><code>2</code> Two</h3>
 <p>the integer 2</p>
 <h3 id="Minus Two"><code>_2</code> Minus Two</h3>
-<p>the integer -2</p>
+<p>the integer −2</p>
 <h2 class="noun" id="33"><code>3</code> (0x33)</h2>
 <h3 id="Three"><code>3</code> Three</h3>
 <p>the integer 3</p>
 <h3 id="Minus Three"><code>_3</code> Minus Three</h3>
-<p>the integer -3</p>
+<p>the integer −3</p>
 <h2 class="noun" id="34"><code>4</code> (0x34)</h2>
 <h3 id="Four"><code>4</code> Four</h3>
 <p>the integer 4</p>
 <h3 id="Minus Four"><code>_4</code> Minus Four</h3>
-<p>the integer -4</p>
+<p>the integer −4</p>
 <h2 class="noun" id="35"><code>5</code> (0x35)</h2>
 <h3 id="Five"><code>5</code> Five</h3>
 <p>the integer 5</p>
 <h3 id="Minus Five"><code>_5</code> Minus Five</h3>
-<p>the integer -5</p>
+<p>the integer −5</p>
 <h2 class="noun" id="36"><code>6</code> (0x36)</h2>
 <h3 id="Six"><code>6</code> Six</h3>
 <p>the integer 6</p>
 <h3 id="Minus Six"><code>_6</code> Minus Six</h3>
-<p>the integer -6</p>
+<p>the integer −6</p>
 <h2 class="noun" id="37"><code>7</code> (0x37)</h2>
 <h3 id="Seven"><code>7</code> Seven</h3>
 <p>the integer 7</p>
 <h3 id="Minus Seven"><code>_7</code> Minus Seven</h3>
-<p>the integer -7</p>
+<p>the integer −7</p>
 <h2 class="noun" id="38"><code>8</code> (0x38)</h2>
 <h3 id="Eight"><code>8</code> Eight</h3>
 <p>the integer 8</p>
 <h3 id="Minus Eight"><code>_8</code> Minus Eight</h3>
-<p>the integer -8</p>
+<p>the integer −8</p>
 <h2 class="noun" id="39"><code>9</code> (0x39)</h2>
 <h3 id="Nine"><code>9</code> Nine</h3>
 <p>the integer 9</p>
 <h3 id="Minus Nine"><code>_9</code> Minus Nine</h3>
-<p>the integer -9</p>
+<p>the integer −9</p>
 <h2 class="prefix" id="3A"><code>:</code> (0x3A)</h2>
 <h3 id="Verb"><code>:name</code> Verb</h3>
 <p>the variable <code>name</code> with verb role</p>
@@ -1212,17 +1216,17 @@ _1%_2 ≡ 1</pre>
 <pre>"aeiou"@2 ≡ `i
 4321@1 ≡ 3
 (12)(34)(56)(78)@2 ≡ 56</pre>
-<p>if α is a function, it will be called with the index</p>
+<p>if α is a function, it will be called with the index:</p>
 <pre>(-)@3 ≡ _3
-(*3-2)@5 ≡ '13</pre>
+(*3-2)@5 ≡ '13
+(♠)@"bee" ≡ "eeb"</pre>
 <p>if the index is outside the list's domain [0, α~), or if it's null, it uses its fill</p>
 <pre>123@5 ≡ █
 123▐0@5 ≡ 0
 123▐0@█ ≡ 0</pre>
-<p>when β is a list, this indexes at depth, so that <code>l@20 ≡ l@2@0</code></p>
+<p>when α and β are lists, this indexes at depth, so that <code>l@20 ≡ l@2@0</code></p>
 <pre>(12)(34)(56)(78)@20 ≡ 5
 (12)(34)(56)(78)@21 ≡ 6
-(↕♠)@62 ≡ 3
 (+3)(-2)(½)(÷8)@27 ≡ '3.5</pre>
 <p>in this case, null selects all the items. this can be useful for retrieving columns of a matrix</p>
 <pre>123@♪█ ≡ 123
@@ -1346,7 +1350,7 @@ _1%_2 ≡ 1</pre>
 <pre>`a ≡ '97
 `b ≡ '98
 `⌡ ≡ '245</pre>
-<p>see also: <a href="#Two Character Literal">Two Character Literal</a></p>
+<p>see also: <a href="#Digraph Literal">Digraph Literal</a></p>
 <h2 class="var" id="61"><code>a</code> (0x61)</h2>
 <h3 id=""><code>a</code> </h3>
 <p>a general-purpose variable. by default, 12</p>
@@ -1659,7 +1663,7 @@ _2Ä0 ≡ π½-</pre>
 5Å3 ≡ 2</pre>
 <h2 class="verb" id="90"><code>É</code> (0x90, <code>'e+</code>)</h2>
 <h3 id="Write"><code>αÉβ</code> Write</h3>
-<p>write a string α to output stream β, that will be utf-8 encoded. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
+<p>write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
 <h3 id="Write Stdout"><code>αÉ</code> Write Stdout</h3>
 <p>write a string α to output stream 0. equivalent to <code>É0</code>.</p>
 <p>see also: <a href="#Print">Print</a></p>
@@ -1734,7 +1738,7 @@ _2Ä0 ≡ π½-</pre>
 75420542545ÿ ≡ 10203401▐0</pre>
 <h2 class="verb" id="99"><code>Ö</code> (0x99, <code>'o+</code>)</h2>
 <h3 id="Read"><code>αÖβ</code> Read</h3>
-<p>read α bytes from input stream β and decode them as utf-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER</p>
+<p>read α bytes from input stream β and decode them from utf-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.</p>
 <p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
 <p>may return <a href="#None">None</a> in case of an IO error.</p>
 <h3 id="Read Stdin"><code>αÖ</code> Read Stdin</h3>
@@ -1744,6 +1748,7 @@ _2Ä0 ≡ π½-</pre>
 <p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
 <p>may return <a href="#None">None</a> in case of an IO error.</p>
 <h3 id="Read Bytes from Stdin"><code>α_Ö</code> Read Bytes from Stdin</h3>
+<p>read from input stream 0. equivalent to <code>_Ö0</code>.</p>
 <h2 class="verb" id="9A"><code>Ü</code> (0x9A, <code>'u+</code>)</h2>
 <h3 id="Group"><code>αÜβ</code> Group</h3>
 <p>pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the <a href="#Empty List">Empty List</a>. if β is <a href="#None">None</a>, the element will be ignored.</p>
@@ -1869,8 +1874,9 @@ _2Ñ0 ≡ 0</pre>
 <p>see also: <a href="#Parse Base">Parse Base</a></p>
 <h2 class="verb" id="A7"><code>º</code> (0xA7, <code>'o,</code>)</h2>
 <h3 id="Parse"><code>αº</code> Parse</h3>
-<p>convert the string α to a number, or <a href="#None">None</a></p>
-<pre>"123"º ≡ '123
+<p>convert the string/character α to a number, or <a href="#None">None</a></p>
+<pre>`4º ≡ 4
+"123"º ≡ '123
 "123.45"º ≡ '123.45
 "123+5i"º ≡ 5í'123</pre>
 <p>see also: <a href="#Represent">Represent</a></p>
@@ -1880,6 +1886,10 @@ _2Ñ0 ≡ 0</pre>
 "bee"º'36 ≡ '14774
 "A5A5"º'16 ≡ '42405</pre>
 <p>see also: <a href="#Represent Base">Represent Base</a></p>
+<h2 class="verb" id="A8"><code>¿</code> (0xA8, <code>'?</code>)</h2>
+<h3 id="Select"><code>α¿β</code> Select</h3>
+<p>index α with every item in β. equivalent to <code>╘@</code>.</p>
+<pre>"abc""def""ghi"¿(22)(10)(11)(00) ≡ "idea"</pre>
 <h2 class="verb" id="A9"><code>⌐</code> (0xA9, <code>'bl</code>)</h2>
 <h3 id="Bool"><code>α⌐</code> Bool</h3>
 <p>returns 1 if <code>α~0</code>, otherwise 0. scalar.</p>
@@ -1928,8 +1938,8 @@ _2Ñ0 ≡ 0</pre>
 <p>get the last element of the list in α</p>
 <pre>"aeiou"¡ ≡ `u
 123¡ ≡ 3</pre>
-<h3 id="Select"><code>α¡β</code> Select</h3>
-<p>index the array α for every scalar in α. equivalent to <code>┼┴@</code>.</p>
+<h3 id="Translate"><code>α¡β</code> Translate</h3>
+<p>index the array α for every scalar in α. equivalent to <code>_╛┴@</code>.</p>
 <pre>13524¡" aeiouy" ≡ "aiueo"</pre>
 <h2 class="verb" id="AE"><code>«</code> (0xAE, <code>'rl</code>)</h2>
 <h3 id="Rotate Left"><code>α«β</code> Rotate Left</h3>
@@ -1955,6 +1965,12 @@ _2Ñ0 ≡ 0</pre>
 <h3 id="Rotate Right Once"><code>α»β</code> Rotate Right Once</h3>
 <p>equivalent to <code>»1</code></p>
 <pre>12345» ≡ 51234</pre>
+<h2 class="literal" id="B0"><code>░</code> (0xB0, <code>'l2</code>)</h2>
+<h3 id="Short Literal"><code>░☺☻</code> Short Literal</h3>
+<p>shorthand for a <a href="#Integer Literal">Integer Literal</a> with 2 digits (the closing <code>■</code> is implied)</p>
+<h2 class="literal" id="B1"><code>▒</code> (0xB1, <code>'l3</code>)</h2>
+<h3 id="Long Literal"><code>▒☺☻♥</code> Long Literal</h3>
+<p>shorthand for a <a href="#Integer Literal">Integer Literal</a> with 3 digits (the closing <code>■</code> is implied)</p>
 <h2 class="noun" id="DB"><code>█</code> (0xDB, <code>'N</code>)</h2>
 <h3 id="None"><code>█</code> None</h3>
 <p>none, null, nil, NaN. used as a dummy value sometimes.</p>
@@ -2019,14 +2035,14 @@ _2Ñ0 ≡ 0</pre>
 <p>the list of arguments passed in the command line (not including the executable name, flags or the script filename)</p>
 <h2 class="noun" id="E8"><code>Φ</code> (0xE8, <code>'X 'f+</code>)</h2>
 <h3 id="Ten"><code>Φ</code> Ten</h3>
-<p>the number 10</p>
+<p>the integer 10</p>
 <pre>Φ ≡ '10</pre>
 <h3 id="Minus Ten"><code>_Φ</code> Minus Ten</h3>
-<p>the number -10</p>
+<p>the integer −10</p>
 <pre>_Φ ≡ '-10</pre>
 <h2 class="noun" id="E9"><code>Θ</code> (0xE9, <code>'Q 't+</code>)</h2>
 <h3 id="Minus One"><code>Θ</code> Minus One</h3>
-<p>the number -1</p>
+<p>the number −1</p>
 <pre>Θ ≡ '-1</pre>
 <h2 class="noun" id="EB"><code>δ</code> (0xEB, <code>'D 'd-</code>)</h2>
 <h3 id="Arguments"><code>δ</code> Arguments</h3>
@@ -2072,12 +2088,12 @@ _2Ñ0 ≡ 0</pre>
 <p>see also: <a href="#Equals">Equals</a></p>
 <h2 class="verb" id="F1"><code>±</code> (0xF1, <code>'+</code>)</h2>
 <h3 id="Signum"><code>α±</code> Signum</h3>
-<p>returns the signum of α. this is -1 for negative numbers, 1 for positive numbers, and 0 for zero. for complex numbers, this is generalized as <code>α/abs(α)</code> or <code>¢╓/</code></p>
+<p>returns the signum of α. this is −1 for negative numbers, 1 for positive numbers, and 0 for zero. for complex numbers, this is generalized as <code>α/abs(α)</code> or <code>¢╓/</code></p>
 <pre>5± ≡ 1
 0± ≡ 0
 _3± ≡ Θ</pre>
 <h3 id="Approximately Equal"><code>α±β</code> Approximately Equal</h3>
-<p>checks that the floating point numbers α and β are almost equal. this is computed a relative and absolute tolerance of 2^-32, or roughly <code>{α¢β/(1αβ ¢) ≤ ('32-%) &#x7C;}</code></p>
+<p>checks that the floating point numbers α and β are almost (more-or-less) equal. this is computed as a relative and absolute tolerance of 2 to the power of −32, or roughly <code>{α¢β/(1αβ ¢) ≤ ('32-%) &#x7C;}</code></p>
 <pre>3±3 ≡ 1
 3±'3.0000000001 ≡ 1
 3±'3.001 ≡ 0
@@ -2157,8 +2173,9 @@ _1÷_2 ≡ 1</pre>
 ¨things¨words¨concepts ≡ "things""words""concepts"</pre>
 <h2 class="stmt" id="FA"><code>·</code> (0xFA, <code>'&</code>)</h2>
 <h3 id="Discard"><code>a·</code> Discard</h3>
-<p>discards the value <code>a</code> and continues with the function or program.</p>
+<p>statement that discards the value <code>a</code> and continues with the function or program.</p>
 <pre>0{4·5·6} ≡ 6</pre>
+<p>see also: <a href="#Return">Return</a></p>
 <h2 class="verb" id="FB"><code>√</code> (0xFB, <code>'V</code>)</h2>
 <h3 id="Square Root"><code>α√</code> Square Root</h3>
 <p>calculate the square root</p>
@@ -2189,6 +2206,24 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Binomial Coefficient"><code>α²β</code> Binomial Coefficient</h3>
 <p>calculate the binomial coefficient <code>α choose β</code></p>
 <pre>4²012345 ≡ 146410</pre>
+<h2 class="literal" id="FE"><code>■</code> (0xFE, <code>'il</code>)</h2>
+<h3 id="Integer Literal"><code>■☺☻♥♦■</code> Integer Literal</h3>
+<p>a convenient literal syntax for large integers. characters are read until the next <code>■</code> or end of file, interpreted as their position in the codepage and interpreted in base 253. if this number is even, it represents <code>n½</code>, otherwise, <code>1-n½</code>.</p>
+<p>let's represent the number 123456789. for this, we must encode the number multiplied by 2 (246913578) in base 253, flipping because <a href="#Encode Base">Encode Base</a> uses big endian by default:</p>
+<pre>    '123456789¼é'253♠
+(15 62 121 252)</pre>
+<p>and then, represent those as characters:</p>
+<pre>    '15'62'121'252ⁿ5☻·
+"☼>yⁿ"</pre>
+<p>if we try it out, </p>
+<pre>■☼>yⁿ■ ≡ '123456789</pre>
+<p>you don't actually need <code>¤</code> (0x00) for all integers, zeroes can be replaced by using <code>²</code> (0xFD) and adjusting the previous character:</p>
+<pre>■ab¤c■ ≡ ■aa²c■</pre>
+<p><code>■</code> is mostly useful when using large numbers. for smaller numbers, there are more efficient ways of representing them:</p>
+<p>- for −10 ≤ x ≤ 255, you can use <a href="#Character Literal">Character Literal</a>s</p>
+<p>- for −32130 ≤ x ≤ 32131, you can use <a href="#Short Literal">Short Literal</a>s</p>
+<p>- for −8129269 ≤ x ≤ 8129269, you can use <a href="#Long Literal">Long Literal</a>s</p>
+<p>- if your number happens to be in the lowercase ascii list or has a trivial computation, use that</p>
 <h2 class="adverb1" id="B8"><code>╕</code> (0xB8, <code>'|</code>)</h2>
 <h3 id="Each"><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
@@ -2224,17 +2259,31 @@ _1÷_2 ≡ 1</pre>
 123╛;1 ≡ (11)(12)(13)</pre>
 <p>see also: <a href="#Each Right">Each Right</a></p>
 <h3 id="Each Left"><code>α╛G</code> Each Left</h3>
-<p>monadically, it is the same as <a href="#Each">Each</a>:</p>
+<p>monadically, this is the same as <a href="#Each">Each</a>:</p>
 <pre>123╛; ≡ (11)(22)(33)</pre>
+<h3 id="Extend"><code>α_╛Gβ</code> Extend</h3>
+<p>call G to every scalar in α, keeping the list's structure, while passing β in each iteration.</p>
+<pre>(123)(45)6 _╛, 78 ≡ (├178├278├378)(├478├578)├678</pre>
+<p>see also: <a href="#Extend Right">Extend Right</a></p>
+<h3 id="Extend"><code>α_╛G</code> Extend</h3>
+<p>monadically, it is the same as <a href="#Scalar">Scalar</a>:</p>
+<pre>(123)(45)6 _╛♫ ≡ (♪1♪2♪3)(♪4♪5)♪6</pre>
 <h2 class="adverb1" id="D4"><code>╘</code> (0xD4, <code>'{</code>)</h2>
 <h3 id="Each Right"><code>α╘Gβ</code> Each Right</h3>
 <p>iterates through β, passing α in each iteration</p>
 <pre>123╘♫456 ≡ (├1234)(├1235)(├1236)</pre>
 <p>see also: <a href="#Each Left">Each Left</a></p>
 <h3 id="Each Right"><code>α╘G</code> Each Right</h3>
-<p>monadically, it acts like <code>┴╘f</code>; iterates through α, passing α in each iteration</p>
+<p>monadically, it acts like <code>┴╘f</code>; iterates through α, passing it in each iteration</p>
 <pre>123╘* ≡ ((123)(246)(369))
 123╘╛, ≡ (│11│21│31)(│12│22│32)(│13│23│33)</pre>
+<h3 id="Extend Right"><code>α_╘Gβ</code> Extend Right</h3>
+<p>call G to every scalar in β, keeping the list's structure, while passing α in each iteration.</p>
+<pre>78 _╘, (123)(45)6 ≡ (├781├782├783)(├784├785)├786</pre>
+<p>see also: <a href="#Extend">Extend</a></p>
+<h3 id="Extend"><code>α_╘G</code> Extend</h3>
+<p>monadically, this is equivalent to <code>α_╘Gα</code>:</p>
+<pre>(123)4 _╘, ≡ ( (├12341) (├12342) (├12343) ) (├12344)</pre>
 <h2 class="adverb1" id="D1"><code>╤</code> (0xD1, <code>'\</code>)</h2>
 <h3 id="Scan"><code>α╤G</code> Scan</h3>
 <p><a href="#Reduce">Reduce</a>, but keeping the intermediate results. the first element will be left unchanged.</p>
@@ -2357,29 +2406,29 @@ _1÷_2 ≡ 1</pre>
 <p>equivalent to <code>αFGβ</code>.</p>
 <h2 class="adverb2" id="D3"><code>╙</code> (0xD3, <code>'(</code>)</h2>
 <h3 id="At Right"><code>αF╙G</code> At Right</h3>
-<p>equivalent to <code>aF</code></p>
+<p>equivalent to <code>aF</code>.</p>
 <h3 id="At Right"><code>αF╙Gβ</code> At Right</h3>
-<p>equivalent to <code>αF(βG)</code></p>
+<p>equivalent to <code>αF(βG)</code>.</p>
 <h2 class="adverb2" id="B7"><code>╖</code> (0xB7, <code>']</code>)</h2>
 <h3 id="On Left"><code>αF╖G</code> On Left</h3>
-<p>equivalent to <code>αFGα</code></p>
+<p>equivalent to <code>αFGα</code>.</p>
 <h3 id="On Left"><code>αF╖Gβ</code> On Left</h3>
-<p>equivalent to <code>αFβGβ</code></p>
+<p>equivalent to <code>αFβGβ</code>.</p>
 <h2 class="adverb2" id="D6"><code>╓</code> (0xD6, <code>'[</code>)</h2>
 <h3 id="On Right"><code>αF╓G</code> On Right</h3>
-<p>equivalent to <code>αF(αG)</code></p>
+<p>equivalent to <code>αF(αG)</code>.</p>
 <h3 id="On Right"><code>αF╓Gβ</code> On Right</h3>
-<p>equivalent to <code>αF(αGβ)</code></p>
+<p>equivalent to <code>αF(αGβ)</code>.</p>
 <h2 class="adverb2" id="BC"><code>╝</code> (0xBC, <code>'ov</code>)</h2>
 <h3 id="Over"><code>αF╝G</code> Over</h3>
-<p>equivalent to <code>αFG</code></p>
+<p>equivalent to <code>αFG</code>.</p>
 <h3 id="Over"><code>αF╝Gβ</code> Over</h3>
-<p>equivalent to <code>αFG(βF)</code></p>
+<p>equivalent to <code>αFG(βF)</code>.</p>
 <h2 class="literal" id="C0"><code>└</code> (0xC0, <code>'K</code>)</h2>
 <h3 id="Fork"><code>α└FGH</code> Fork</h3>
-<p>equivalent to <code>αFG(αH)</code></p>
+<p>equivalent to <code>αFG(αH)</code>.</p>
 <h3 id="Fork"><code>α└FGHβ</code> Fork</h3>
-<p>equivalent to <code>αFβG(αHβ)</code></p>
+<p>equivalent to <code>αFβG(αHβ)</code>.</p>
 <h2 class="literal" id="C4"><code>─</code> (0xC4, <code>''</code>)</h2>
 <h3 id="Local Statement"><code>a─name</code> Local Statement</h3>
 <p>like <code>→name</code> <a href="#Local">Local</a> but acts as a statement and sets the contents of the body.</p>

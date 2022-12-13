@@ -101,6 +101,7 @@ impl<'r, 'io, F> InconvenientIter<'r, 'io> for F where F: GoodIter<Val> {}
 func!(@env, a :index b => {
     let mut a = a;
     if b.is_nan() { return a.fill() }
+    if a.is_infinite() { return a.monad(env, b) }
     for n in 0..b.len() {
         if a.is_scalar() { return a.c(); }
         let i = b.index(env, n);

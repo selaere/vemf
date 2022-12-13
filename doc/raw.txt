@@ -9,7 +9,7 @@ functions may be called with one argument (monadic) or two (dyadic). here you ca
 > 3-1 ≡ 2
 > 5- ≡ _5
 > 5--3 ≡ _8
-, where `_5` and `_8` are nouns meaning -5 and -8 respectively.
+, where `_5` and `_8` are nouns meaning −5 and −8 respectively.
 almost every function has two different variants that do different things. even `+`! monadic `α+` |Sum| adds all the items in a list:
 > 123+ ≡ 6
 uh, hm. yes. this is not the number one hundred twenty-three. consecutive nouns (strands) form a list, and `1`, `2`, `3` are nouns. the sum of all of those is 6.
@@ -253,10 +253,11 @@ print α and return β
 :char: ♥
 :ascii: 'c2
 :type: literal
-#♥ab 2-Character Literal
-a 2-character literal
+#♥ab Digraph Literal
+a 2 character literal.
 > ♥() ≡ `(`)
 > ♥012 ≡ (`0`1)2
+see also: |Character Literal|
 ---
 :char: ♦
 :ascii: 'T
@@ -297,6 +298,7 @@ see also: |Dyadic Adverb|
 #x◘ Return
 returns x, breaking out of the enclosing function
 > 0{4·5◘6} ≡ 5
+see also: |Discard|, |Then|
 ---
 :char: ○
 :ascii: ',
@@ -821,14 +823,14 @@ see also: |Pair|, |Append|, |Prepend|
 :char: -
 :type: verb
 #1 Negate
-calculate -α. scalar
+calculate −α. scalar
 > 1- ≡ '-1
 > Φ- ≡ '-10
 > 2--2 ≡ _4
 > 123- ≡ _1_2_3
 > 3-- ≡ 3
 #2 Subtract
-calculate α - β. scalar
+calculate α − β. scalar
 > 3-2 ≡ 1
 > 4-1 ≡ 3
 > 3-0 ≡ 3
@@ -860,63 +862,63 @@ the integer 0
 #0 One
 the integer 1
 #_0 Minus One
-the integer -1
+the integer −1
 ---
 :char: 2
 :type: noun
 #0 Two
 the integer 2
 #_0 Minus Two
-the integer -2
+the integer −2
 ---
 :char: 3
 :type: noun
 #0 Three
 the integer 3
 #_0 Minus Three
-the integer -3
+the integer −3
 ---
 :char: 4
 :type: noun
 #0 Four
 the integer 4
 #_0 Minus Four
-the integer -4
+the integer −4
 ---
 :char: 5
 :type: noun
 #0 Five
 the integer 5
 #_0 Minus Five
-the integer -5
+the integer −5
 ---
 :char: 6
 :type: noun
 #0 Six
 the integer 6
 #_0 Minus Six
-the integer -6
+the integer −6
 ---
 :char: 7
 :type: noun
 #0 Seven
 the integer 7
 #_0 Minus Seven
-the integer -7
+the integer −7
 ---
 :char: 8
 :type: noun
 #0 Eight
 the integer 8
 #_0 Minus Eight
-the integer -8
+the integer −8
 ---
 :char: 9
 :type: noun
 #0 Nine
 the integer 9
 #_0 Minus Nine
-the integer -9
+the integer −9
 ---
 :char: :
 :type: prefix
@@ -1009,17 +1011,17 @@ get the element in list α at index β
 > "aeiou"@2 ≡ `i
 > 4321@1 ≡ 3
 > (12)(34)(56)(78)@2 ≡ 56
-if α is a function, it will be called with the index
+if α is a function, it will be called with the index:
 > (-)@3 ≡ _3
 > (*3-2)@5 ≡ '13
+> (♠)@"bee" ≡ "eeb"
 if the index is outside the list's domain [0, α~), or if it's null, it uses its fill
 > 123@5 ≡ █
 > 123▐0@5 ≡ 0
 > 123▐0@█ ≡ 0
-when β is a list, this indexes at depth, so that `l@20 ≡ l@2@0`
+when α and β are lists, this indexes at depth, so that `l@20 ≡ l@2@0`
 > (12)(34)(56)(78)@20 ≡ 5
 > (12)(34)(56)(78)@21 ≡ 6
-> (↕♠)@62 ≡ 3
 > (+3)(-2)(½)(÷8)@27 ≡ '3.5
 in this case, null selects all the items. this can be useful for retrieving columns of a matrix
 > 123@♪█ ≡ 123
@@ -1207,7 +1209,7 @@ the position of `a` in the codepage
 > `a ≡ '97
 > `b ≡ '98
 > `⌡ ≡ '245
-see also: |Two Character Literal|
+see also: |Digraph Literal|
 ---
 :char: a
 :type: var
@@ -1997,7 +1999,7 @@ get the last element of the list in α
 > "aeiou"¡ ≡ `u
 > 123¡ ≡ 3
 #2 Translate
-index the array α for every scalar in α. equivalent to `┼┴@`.
+index the array α for every scalar in α. equivalent to `_╛┴@`.
 > 13524¡" aeiouy" ≡ "aiueo"
 ---
 :char: «
@@ -2029,6 +2031,18 @@ if β is negative, this acts like |Rotate Left|.
 #2 Rotate Right Once
 equivalent to `»1`
 > 12345» ≡ 51234
+---
+:char: ░
+:ascii: 'l2
+:type: literal
+#░☺☻ Short Literal
+shorthand for a |Integer Literal| with 2 digits (the closing `■` is implied)
+---
+:char: ▒
+:ascii: 'l3
+:type: literal
+#▒☺☻♥ Long Literal
+shorthand for a |Integer Literal| with 3 digits (the closing `■` is implied)
 ---
 :char: █
 :ascii: 'N
@@ -2135,17 +2149,17 @@ the list of arguments passed in the command line (not including the executable n
 :ascii: 'X 'f+
 :type: noun
 #0 Ten
-the number 10
+the integer 10
 > Φ ≡ '10
 #_0 Minus Ten
-the number -10
+the integer −10
 > _Φ ≡ '-10
 ---
 :char: Θ
 :ascii: 'Q 't+
 :type: noun
 #0 Minus One
-the number -1
+the number −1
 > Θ ≡ '-1
 ---
 :char: δ
@@ -2212,12 +2226,12 @@ see also: |Equals|
 :ascii: '+
 :type: verb
 #1 Signum
-returns the signum of α. this is -1 for negative numbers, 1 for positive numbers, and 0 for zero. for complex numbers, this is generalized as `α/abs(α)` or `¢╓/`
+returns the signum of α. this is −1 for negative numbers, 1 for positive numbers, and 0 for zero. for complex numbers, this is generalized as `α/abs(α)` or `¢╓/`
 > 5± ≡ 1
 > 0± ≡ 0
 > _3± ≡ Θ
 #2 Approximately Equal
-checks that the floating point numbers α and β are almost equal. this is computed a relative and absolute tolerance of 2^-32, or roughly `{α¢β/(1αβ ¢) ≤ ('32-%) &#x7C;}`
+checks that the floating point numbers α and β are almost (more-or-less) equal. this is computed as a relative and absolute tolerance of 2 to the power of −32, or roughly `{α¢β/(1αβ ¢) ≤ ('32-%) &#x7C;}`
 > 3±3 ≡ 1
 > 3±'3.0000000001 ≡ 1
 > 3±'3.001 ≡ 0
@@ -2324,8 +2338,9 @@ the identifier `name` as a string.
 :ascii: '&
 :type: stmt
 #a· Discard
-discards the value `a` and continues with the function or program.
+statement that discards the value `a` and continues with the function or program.
 > 0{4·5·6} ≡ 6
+see also: |Return|
 ---
 :char: √
 :ascii: 'V
@@ -2365,6 +2380,27 @@ equivalent to `^2`
 #2 Binomial Coefficient
 calculate the binomial coefficient `α choose β`
 > 4²012345 ≡ 146410
+---
+:char: ■
+:ascii: 'il
+:type: literal
+#■☺☻♥♦■ Integer Literal
+a convenient literal syntax for large integers. characters are read until the next `■` or end of file, interpreted as their position in the codepage and interpreted in base 253. if this number is even, it represents `n½`, otherwise, `1-n½`.
+let's represent the number 123456789. for this, we must encode the number multiplied by 2 (246913578) in base 253, flipping because |Encode Base| uses big endian by default:
+>     '123456789¼é'253♠
+> (15 62 121 252)
+and then, represent those as characters:
+>     '15'62'121'252ⁿ5☻·
+> "☼>yⁿ"
+if we try it out, 
+> ■☼>yⁿ■ ≡ '123456789
+you don't actually need `¤` (0x00) for all integers, zeroes can be replaced by using `²` (0xFD) and adjusting the previous character:
+> ■ab¤c■ ≡ ■aa²c■
+`■` is mostly useful when using large numbers. for smaller numbers, there are more efficient ways of representing them:
+- for −10 ≤ x ≤ 255, you can use |Character Literal|s
+- for −32130 ≤ x ≤ 32131, you can use |Short Literal|s
+- for −8129269 ≤ x ≤ 8129269, you can use |Long Literal|s
+- if your number happens to be in the lowercase ascii list or has a trivial computation, use that
 ---
 :char: ╕
 :ascii: '|
@@ -2409,8 +2445,15 @@ iterates through α, passing β in each iteration
 > 123╛;1 ≡ (11)(12)(13)
 see also: |Each Right|
 #1a1 Each Left
-monadically, it is the same as |Each|:
+monadically, this is the same as |Each|:
 > 123╛; ≡ (11)(22)(33)
+#_2a1 Extend
+call G to every scalar in α, keeping the list's structure, while passing β in each iteration.
+> (123)(45)6 _╛, 78 ≡ (├178├278├378)(├478├578)├678
+see also: |Extend Right|
+#_1a1 Extend
+monadically, it is the same as |Scalar|:
+> (123)(45)6 _╛♫ ≡ (♪1♪2♪3)(♪4♪5)♪6
 ---
 :char: ╘
 :ascii: '{
@@ -2420,9 +2463,16 @@ iterates through β, passing α in each iteration
 > 123╘♫456 ≡ (├1234)(├1235)(├1236)
 see also: |Each Left|
 #1a1 Each Right
-monadically, it acts like `┴╘f`; iterates through α, passing α in each iteration
+monadically, it acts like `┴╘f`; iterates through α, passing it in each iteration
 > 123╘* ≡ ((123)(246)(369))
 > 123╘╛, ≡ (│11│21│31)(│12│22│32)(│13│23│33)
+#_2a1 Extend Right
+call G to every scalar in β, keeping the list's structure, while passing α in each iteration.
+> 78 _╘, (123)(45)6 ≡ (├781├782├783)(├784├785)├786
+see also: |Extend|
+#_1a1 Extend
+monadically, this is equivalent to `α_╘Gα`:
+> (123)4 _╘, ≡ ( (├12341) (├12342) (├12343) ) (├12344)
 ---
 :char: ╤
 :ascii: '\
@@ -2590,41 +2640,41 @@ equivalent to `αFGβ`.
 :ascii: '(
 :type: adverb2
 #1a2 At Right
-equivalent to `aF`
+equivalent to `aF`.
 #2a2 At Right
-equivalent to `αF(βG)`
+equivalent to `αF(βG)`.
 ---
 :char: ╖
 :ascii: ']
 :type: adverb2
 #1a2 On Left
-equivalent to `αFGα`
+equivalent to `αFGα`.
 #2a2 On Left
-equivalent to `αFβGβ`
+equivalent to `αFβGβ`.
 ---
 :char: ╓
 :ascii: '[
 :type: adverb2
 #1a2 On Right
-equivalent to `αF(αG)`
+equivalent to `αF(αG)`.
 #2a2 On Right
-equivalent to `αF(αGβ)`
+equivalent to `αF(αGβ)`.
 ---
 :char: ╝
 :ascii: 'ov
 :type: adverb2
 #1a2 Over
-equivalent to `αFG`
+equivalent to `αFG`.
 #2a2 Over
-equivalent to `αFG(βF)`
+equivalent to `αFG(βF)`.
 ---
 :char: └
 :ascii: 'K
 :type: literal
 #α└FGH Fork
-equivalent to `αFG(αH)`
+equivalent to `αFG(αH)`.
 #α└FGHβ Fork
-equivalent to `αFβG(αHβ)`
+equivalent to `αFβG(αHβ)`.
 ---
 :char: ─
 :ascii: ''

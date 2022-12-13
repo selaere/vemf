@@ -290,6 +290,7 @@ fn escape_2c(c: [u8; 2]) -> Option<u8> {
         b"vl"=>b!('╬'), b"wn"=>b!('╫'), b"sc"=>b!('┼'), b"s2"=>b!('╪'), b"qd"=>b!('⎕'),
         b"su"=>b!('╦'), b"sp"=>b!('╥'), b"mo"=>b!('┬'), b"co"=>b!('╒'), b"il"=>b!('■'),
         b"ov"=>b!('╝'), b"dr"=>b!('╗'), b"in"=>b!('ε'), b"sq"=>b!('²'), b"fm"=>b!('ⁿ'),
+        b"l2"=>b!('░'), b"l3"=>b!('▒'), b"l4"=>b!('▓'),
         // ↓ most of these will be changed probably
         b"x1"=>b!('╚'), b"x2"=>b!('╔'), b"x3"=>b!('┐'), b"x4"=>b!('┘'),
         _ => return None,
