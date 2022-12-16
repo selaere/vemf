@@ -122,14 +122,15 @@ impl<'a> alloc::fmt::Write for Indent<'a> {
 
 impl Val {
     pub fn display_string(&self) -> String {
-        if self.is_nan() { return String::new() }
-        self.try_int().map_or_else(|| match self {
-            Lis { l, .. } => l.iter().enumerate().map(
-                |(i,x)| x.try_int().map_or_else(
-                    | | x.display_string() + if i == l.len()-1 {""} else {"\n"},
-                    |n| char::from_u32(n as u32).into_iter().collect::<String>())
-            ).collect(),
-            otherwise => format!("{}", otherwise),
-        }, |n| format!("{}", n))
+        if let Some(n) = self.try_c() {
+            if n.is_nan() { String::new() }
+            else if n.im != 0. { format!("{}{:+}i", n.re, n.im) }
+            else { format!("{}", n.re) }
+        } else if let Lis { l, .. } = self {
+            l.iter().enumerate().map( |(i,x)| x.try_int().map_or_else(
+                | | x.display_string() + if i == l.len()-1 {""} else {"\n"},
+                |n| char::from_u32(n as u32).into_iter().collect::<String>()
+            )).collect()
+        } else { format!("{}", self) }
     }
 }

@@ -112,8 +112,14 @@ _Ö_ë─Ö
 ╘@─¿
 ││~▼╓@╬_╛┴@─¡
 
+.inuntil─╩
+.inuntilscan─╦
+.inpower─╨
+.inpowerscan─╥
+
 :ingetfill╬:insetfill─▐
-┼.inisnan─▄
+┌┼.inisnan ╬ ╕►╨█ ─▄
+│▄¬ ╬ ╕│►¬╨█─▀
 .inreverse─♠
 
 ┼:inceil─⌠
@@ -121,11 +127,6 @@ _Ö_ë─Ö
 ┼:infloor─⌡
 
 .informat─ⁿ
-
-.inuntil─╩
-.inuntilscan─╦
-.inpower─╨
-.inpowerscan─╥
 
 ╛(◄▄)╨►─▌(▐╓▌)╬▌─▌
 
@@ -163,15 +164,14 @@ _Ö_ë─Ö
 
 ╞(Ñ▲↕)╖╛│=+▐0─ÿ
 
-╘├╛≡‼¡─ó
-╘├╛≡‼~─ò
-│▄¬ ╬ ╘├╛≡‼≈─ε
+               ╘├╛≡‼¡─ó
+(╟▬2ñ↕╕;╓╕@) ╬ ╘├╛≡‼~─ò
+               ╘├╛≡‼≈─ε
 :inocccount─û
 
 (│û¬╓‼) ╬ ┌┴ε╓‼─∩
-(╟▬2ñ↕╕;╓╕@) ╬ │┴ε¬╓‼ ─\
+((╛≈█)╓‼) ╬ │┴ε¬╓‼ ─\
 
-((╛≈█)╓‼) ╬ ╕│►¬╨█─▀
 ╧╕¬(►φ)─♦
 
 "0123456789abcdefghijklmnopqrstuvwxyz"─base

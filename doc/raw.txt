@@ -265,6 +265,7 @@ see also: |Character Literal|
 #1 Transpose
 transpose a nested list. the shape will be the minimum of the lengths of the elements, or `╕~ñ;`
 > (123)(456)(789)♦ ≡ (147)(258)(369)
+> ("one""two")("three""four")♦ ≡ ("one""three")("two""four")
 ---
 :char: ♣
 :ascii: 'dm
@@ -1170,11 +1171,9 @@ list of statements that are executed until a |Return| or the end is found, and r
 ---
 :char: \
 :type: verb
-#1 Diagonal
-get the diagonal of length `α▬2ñ` of a list α
-> "bus""red""are"\ ≡ "bee"
-> .►↑55\ ≡ '0'6'12'18'24
-> (100)(020)(003)\ ≡ 123
+#1 Filter Holes
+remove |None|s in the list α.
+> █12█345██67█89\ ≡ 123456789
 #2 Set Difference
 return α without the items in β
 > "hello world i am a vemf test"\`  ≡ "helloworldiamavemftest"
@@ -1614,7 +1613,7 @@ get the argument (or phase or angle) of the complex number α. scalar.
 > _2íÄ ≡ π½-
 > 2í2Ä ≡ π/4
 #2 Atan2
-calculate atan2(α, β). this is literally `íÄ`. scalar.
+calculate atan2(α, β). equivalent to `íÄ`. scalar.
 > 0Ä2 ≡ 0
 > 2Ä0 ≡ π½
 > 0Ä_2 ≡ π
@@ -1706,6 +1705,11 @@ compute boolean NOR of α and β. scalar. equivalent to `&#x7c;¬`.
 :char: ò
 :ascii: 'o`
 :type: verb
+#1 Diagonal
+get the diagonal of length `α▬2ñ` of a list α
+> "bus""red""are"ò ≡ "bee"
+> .►↑55ò ≡ '0'6'12'18'24
+> (100)(020)(003)ò ≡ 123
 #2 Count
 count the number of occurences of β in α. β-pervasive.
 > 012073167140ò0123456789 ≡ 3311101200
@@ -1790,10 +1794,10 @@ finds all non-overlapping occurances of sublist β in α. returns a list of the 
 this is similar to using |Windows| and |Match| `α(►~)╫≡β` but this does not include overlapping matches
 > "asininity"£"ini" ≡ ██012████
 > "asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!
-it's also in a bit more convenient format: same length as the original string, and you can do `=0` to find the starts of matches or |Is Not None| `ɛ` to find all the matched characters:
+it's also in a bit more convenient format: same length as the original string, and you can do `=0` to find the starts of matches or |Is Some| `▀` to find all the matched characters:
 > "sus sus amongus"£"sus"   ≡ 012█012████████
 > "sus sus amongus"£"sus"=0 ≡ 100010000000000
-> "sus sus amongus"£"sus"ɛ  ≡ 111011100000000
+> "sus sus amongus"£"sus"▀  ≡ 111011100000000
 see also: |Equals|, |Windows|, |Split|
 ---
 :char: ¥
@@ -1804,6 +1808,7 @@ splits a list α at all the ocurrences of the sublist β
 > "bee bees apioids"¥` ◄ ≡ "bee""bees""apioids"
 > "bee bees apioids"¥`,  ≡ ♪"bee bees apioids"
 > "one, two, three"¥", " ≡ "one""two""three"
+see also: |Find|
 #1 Split Newlines
 splits at newlines (byte 0x0A). same as `¥Φ`. won't strip out carriage returns.
 ---
@@ -2058,6 +2063,11 @@ see also: |Is None|, |Is Not None|, |Fill Holes|, |Replace Holes|, |Filter Holes
 1 if α is none, otherwise 0. scalar.
 > █▄ ≡ 1
 > 12█456█78▄ ≡ 001000100
+see also: |Is Some|
+#2 Denullify
+if β is not 0, return |None|, otherwise α. scalar.
+> 123456789▄010103102 ≡ 1█3█5██8█
+see also: |Nullify|
 ---
 :char: ▌
 :ascii: 'hl
@@ -2082,12 +2092,16 @@ returns the list α with the fill changed.
 :char: ▀
 :ascii: 'hu
 :type: verb
-#1 Filter Holes
-remove |None|s in the list α.
-> █12█345██67█89▀ ≡ 123456789
+#1 Is Some
+check if α is not null. same as `¬▄`. scalar.
+> █▀ ≡ 0
+> 1▀ ≡ 1
+> 12█456█78▀ ≡ 110111011
+see also: |Is None|
 #2 Nullify
 if β is 0, return |None|, otherwise α. scalar.
 > 123456789▀010103102 ≡ █2█4█67█9
+see also: |Denullify|
 ---
 :char: α
 :ascii: 'A
@@ -2192,9 +2206,6 @@ literal for an empty list with |None| fill
 for every item in the list β, check if it is in α
 > 012073167140ε0123456789 ≡ 1111101100
 > 012073167140ε4 ≡ 1
-#1 Is Not None
-check if α is not null. same as `¬▄`
-> 12█456█78ε ≡ 110111011
 ---
 :char: ∩
 :ascii: 'is
@@ -2230,12 +2241,15 @@ returns the signum of α. this is −1 for negative numbers, 1 for positive numb
 > 5± ≡ 1
 > 0± ≡ 0
 > _3± ≡ Θ
+> 4í± ≡ Γ
+> 2í2± ≡ π/4ì
 #2 Approximately Equal
 checks that the floating point numbers α and β are almost (more-or-less) equal. this is computed as a relative and absolute tolerance of 2 to the power of −32, or roughly `{α¢β/(1αβ ¢) ≤ ('32-%) &#x7C;}`
 > 3±3 ≡ 1
 > 3±'3.0000000001 ≡ 1
 > 3±'3.001 ≡ 0
 > 3±4 ≡ 0
+see also: |Matches|
 ---
 :char: ≥
 :ascii: '>
@@ -2269,28 +2283,31 @@ see also: |Greater Than Or Equal|, |Less Than|
 :ascii: 'cl
 :type: verb
 #1 Ceiling
-round up α
+round up α. scalar.
 > '3.1⌠ ≡ 4
 > '3.9⌠ ≡ 4
 >    4⌠ ≡ 4
+see also: |Floor|, |Round|, |Euclidean Division|
 ---
 :char: ⌡
 :ascii: 'fl
 :type: verb
 #1 Floor
-round down α
+round down α. scalar.
 > '3.1⌡ ≡ 3
 > '3.9⌡ ≡ 3
 >    4⌡ ≡ 4
+see also: |Ceiling|, |Round|
 ---
 :char: ÷
 :ascii: '%
 :type: verb
 #1 Round
-rounds α to the closest integer. may do round-half-to-even rounding
+rounds α to the closest integer. may do round-half-to-even rounding. scalar.
 > '3.1÷ ≡ 3
 > '3.9÷ ≡ 4
 >    4÷ ≡ 4
+see also: |Floor|, |Ceiling|
 #2 Euclidean Division
 calculates the euclidean division of α and β, which will always be an integer. for positive β, this is the same as floor division `α/β⌡`. for any α and β, `β*(α÷β) + (α%β) ≡ α`.
 > '345÷Φ ≡ '34
@@ -2299,7 +2316,7 @@ calculates the euclidean division of α and β, which will always be an integer.
 > 1÷_2 ≡ 0
 > _1÷2 ≡ _1
 > _1÷_2 ≡ 1
-see also: |Remainder|
+see also: |Remainder|, |Floor|, |Divide|
 ---
 :char: ≈
 :ascii: '~
@@ -2346,10 +2363,11 @@ see also: |Return|
 :ascii: 'V
 :type: verb
 #1 Square Root
-calculate the square root
+calculate the square root of α. scalar.
 > 2√ ≡ '1.4142135623730951
+> '1'4'9'16√ ≡ 1234
 #2 Root
-calculate the βth root of α
+calculate the βth root of α. scalar.
 > 2√3^3 ≡ 2
 ---
 :char: ⁿ
@@ -2374,11 +2392,11 @@ you can also use multiple of these in a list, like `ⁿ84` (line-separated list 
 :ascii: 'z, 'sq
 :type: verb
 #1 Square
-equivalent to `^2`
+equivalent to `^2`. scalar.
 > 4² ≡ '16
 > 0² ≡ 0
 #2 Binomial Coefficient
-calculate the binomial coefficient `α choose β`
+calculate the binomial coefficient `α choose β`. scalar.
 > 4²012345 ≡ 146410
 ---
 :char: ■
@@ -2408,7 +2426,7 @@ you don't actually need `¤` (0x00) for all integers, zeroes can be replaced by 
 #1a1 Each
 call G with each item in α.
 > 123╕▲ ≡ 234
-> 123╕(,0) ≡ │10│20│30
+> 123╕(,0) ≡ (10)(20)(30)
 #2a1 Each
 if both α and β are lists, pair the items up.
 > 123╕,456 ≡ (14)(25)(36)

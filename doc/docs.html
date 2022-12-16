@@ -612,7 +612,8 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h2 class="verb" id="04"><code>♦</code> (0x04, <code>'T</code>)</h2>
 <h3 id="Transpose"><code>α♦</code> Transpose</h3>
 <p>transpose a nested list. the shape will be the minimum of the lengths of the elements, or <code>╕~ñ;</code></p>
-<pre>(123)(456)(789)♦ ≡ (147)(258)(369)</pre>
+<pre>(123)(456)(789)♦ ≡ (147)(258)(369)
+("one""two")("three""four")♦ ≡ ("one""three")("two""four")</pre>
 <h2 class="verb" id="05"><code>♣</code> (0x05, <code>'dm</code>)</h2>
 <h3 id="Domain"><code>α♣</code> Domain</h3>
 <p>get the domain of a list, or list of indices. same as <code>~↕</code>.</p>
@@ -1319,11 +1320,9 @@ _1%_2 ≡ 1</pre>
 <pre>6─a a%3=0?[/3═a "a is now ",(aⁿ] ≡ "a is now 2"
 [1+1=2?"yay"◘"oh no"]Ç ≡ "YAY"</pre>
 <h2 class="verb" id="5C"><code>\</code> (0x5C)</h2>
-<h3 id="Diagonal"><code>α\</code> Diagonal</h3>
-<p>get the diagonal of length <code>α▬2ñ</code> of a list α</p>
-<pre>"bus""red""are"\ ≡ "bee"
-.►↑55\ ≡ '0'6'12'18'24
-(100)(020)(003)\ ≡ 123</pre>
+<h3 id="Filter Holes"><code>α\</code> Filter Holes</h3>
+<p>remove <a href="#None">None</a>s in the list α.</p>
+<pre>█12█345██67█89\ ≡ 123456789</pre>
 <h3 id="Set Difference"><code>α\β</code> Set Difference</h3>
 <p>return α without the items in β</p>
 <pre>"hello world i am a vemf test"\`  ≡ "helloworldiamavemftest"
@@ -1647,7 +1646,7 @@ _2Ä ≡ π
 _2íÄ ≡ π½-
 2í2Ä ≡ π/4</pre>
 <h3 id="Atan2"><code>αÄβ</code> Atan2</h3>
-<p>calculate atan2(α, β). this is literally <code>íÄ</code>. scalar.</p>
+<p>calculate atan2(α, β). equivalent to <code>íÄ</code>. scalar.</p>
 <pre>0Ä2 ≡ 0
 2Ä0 ≡ π½
 0Ä_2 ≡ π
@@ -1718,6 +1717,11 @@ _2Ä0 ≡ π½-</pre>
 1ö0 ≡ 0
 1ö1 ≡ 0</pre>
 <h2 class="verb" id="95"><code>ò</code> (0x95, <code>'o`</code>)</h2>
+<h3 id="Diagonal"><code>αò</code> Diagonal</h3>
+<p>get the diagonal of length <code>α▬2ñ</code> of a list α</p>
+<pre>"bus""red""are"ò ≡ "bee"
+.►↑55ò ≡ '0'6'12'18'24
+(100)(020)(003)ò ≡ 123</pre>
 <h3 id="Count"><code>αòβ</code> Count</h3>
 <p>count the number of occurences of β in α. β-pervasive.</p>
 <pre>012073167140ò0123456789 ≡ 3311101200</pre>
@@ -1781,10 +1785,10 @@ _4¢ ≡ 4
 <p>this is similar to using <a href="#Windows">Windows</a> and <a href="#Match">Match</a> <code>α(►~)╫≡β</code> but this does not include overlapping matches</p>
 <pre>"asininity"£"ini" ≡ ██012████
 "asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!</pre>
-<p>it's also in a bit more convenient format: same length as the original string, and you can do <code>=0</code> to find the starts of matches or <a href="#Is Not None">Is Not None</a> <code>ɛ</code> to find all the matched characters:</p>
+<p>it's also in a bit more convenient format: same length as the original string, and you can do <code>=0</code> to find the starts of matches or <a href="#Is Some">Is Some</a> <code>▀</code> to find all the matched characters:</p>
 <pre>"sus sus amongus"£"sus"   ≡ 012█012████████
 "sus sus amongus"£"sus"=0 ≡ 100010000000000
-"sus sus amongus"£"sus"ɛ  ≡ 111011100000000</pre>
+"sus sus amongus"£"sus"▀  ≡ 111011100000000</pre>
 <p>see also: <a href="#Equals">Equals</a>, <a href="#Windows">Windows</a>, <a href="#Split">Split</a></p>
 <h2 class="verb" id="9D"><code>¥</code> (0x9D, <code>'Y</code>)</h2>
 <h3 id="Split"><code>α¥β</code> Split</h3>
@@ -1792,6 +1796,7 @@ _4¢ ≡ 4
 <pre>"bee bees apioids"¥` ◄ ≡ "bee""bees""apioids"
 "bee bees apioids"¥`,  ≡ ♪"bee bees apioids"
 "one, two, three"¥", " ≡ "one""two""three"</pre>
+<p>see also: <a href="#Find">Find</a></p>
 <h3 id="Split Newlines"><code>α¥</code> Split Newlines</h3>
 <p>splits at newlines (byte 0x0A). same as <code>¥Φ</code>. won't strip out carriage returns.</p>
 <h2 class="verb" id="9E"><code>₧</code> (0x9E, <code>'pt</code>)</h2>
@@ -1980,6 +1985,11 @@ _2Ñ0 ≡ 0</pre>
 <p>1 if α is none, otherwise 0. scalar.</p>
 <pre>█▄ ≡ 1
 12█456█78▄ ≡ 001000100</pre>
+<p>see also: <a href="#Is Some">Is Some</a></p>
+<h3 id="Denullify"><code>α▄β</code> Denullify</h3>
+<p>if β is not 0, return <a href="#None">None</a>, otherwise α. scalar.</p>
+<pre>123456789▄010103102 ≡ 1█3█5██8█</pre>
+<p>see also: <a href="#Nullify">Nullify</a></p>
 <h2 class="verb" id="DD"><code>▌</code> (0xDD, <code>'hl</code>)</h2>
 <h3 id="Fill Holes"><code>α▌</code> Fill Holes</h3>
 <p>replace <a href="#None">None</a>s in the list α with its fill.</p>
@@ -1995,12 +2005,16 @@ _2Ñ0 ≡ 0</pre>
 <p>returns the list α with the fill changed.</p>
 <pre>123▐1▐ ≡ 1</pre>
 <h2 class="verb" id="DF"><code>▀</code> (0xDF, <code>'hu</code>)</h2>
-<h3 id="Filter Holes"><code>α▀</code> Filter Holes</h3>
-<p>remove <a href="#None">None</a>s in the list α.</p>
-<pre>█12█345██67█89▀ ≡ 123456789</pre>
+<h3 id="Is Some"><code>α▀</code> Is Some</h3>
+<p>check if α is not null. same as <code>¬▄</code>. scalar.</p>
+<pre>█▀ ≡ 0
+1▀ ≡ 1
+12█456█78▀ ≡ 110111011</pre>
+<p>see also: <a href="#Is None">Is None</a></p>
 <h3 id="Nullify"><code>α▀β</code> Nullify</h3>
 <p>if β is 0, return <a href="#None">None</a>, otherwise α. scalar.</p>
 <pre>123456789▀010103102 ≡ █2█4█67█9</pre>
+<p>see also: <a href="#Denullify">Denullify</a></p>
 <h2 class="var" id="E0"><code>α</code> (0xE0, <code>'A</code>)</h2>
 <h3 id="Alpha"><code>α</code> Alpha</h3>
 <p>the left argument. if not in a function definition, the first argument passed in the command line, or <code>δ@0</code></p>
@@ -2063,9 +2077,6 @@ _2Ñ0 ≡ 0</pre>
 <p>for every item in the list β, check if it is in α</p>
 <pre>012073167140ε0123456789 ≡ 1111101100
 012073167140ε4 ≡ 1</pre>
-<h3 id="Is Not None"><code>αε</code> Is Not None</h3>
-<p>check if α is not null. same as <code>¬▄</code></p>
-<pre>12█456█78ε ≡ 110111011</pre>
 <h2 class="verb" id="EF"><code>∩</code> (0xEF, <code>'is</code>)</h2>
 <h3 id="Unique"><code>α∩</code> Unique</h3>
 <p>remove duplicates from α</p>
@@ -2091,13 +2102,16 @@ _2Ñ0 ≡ 0</pre>
 <p>returns the signum of α. this is −1 for negative numbers, 1 for positive numbers, and 0 for zero. for complex numbers, this is generalized as <code>α/abs(α)</code> or <code>¢╓/</code></p>
 <pre>5± ≡ 1
 0± ≡ 0
-_3± ≡ Θ</pre>
+_3± ≡ Θ
+4í± ≡ Γ
+2í2± ≡ π/4ì</pre>
 <h3 id="Approximately Equal"><code>α±β</code> Approximately Equal</h3>
 <p>checks that the floating point numbers α and β are almost (more-or-less) equal. this is computed as a relative and absolute tolerance of 2 to the power of −32, or roughly <code>{α¢β/(1αβ ¢) ≤ ('32-%) &#x7C;}</code></p>
 <pre>3±3 ≡ 1
 3±'3.0000000001 ≡ 1
 3±'3.001 ≡ 0
 3±4 ≡ 0</pre>
+<p>see also: <a href="#Matches">Matches</a></p>
 <h2 class="verb" id="F2"><code>≥</code> (0xF2, <code>'></code>)</h2>
 <h3 id="Sort Up"><code>α≥</code> Sort Up</h3>
 <p>sorts the list α in ascending order</p>
@@ -2122,22 +2136,25 @@ _3± ≡ Θ</pre>
 <p>see also: <a href="#Greater Than Or Equal">Greater Than Or Equal</a>, <a href="#Less Than">Less Than</a></p>
 <h2 class="verb" id="F4"><code>⌠</code> (0xF4, <code>'cl</code>)</h2>
 <h3 id="Ceiling"><code>α⌠</code> Ceiling</h3>
-<p>round up α</p>
+<p>round up α. scalar.</p>
 <pre>'3.1⌠ ≡ 4
 '3.9⌠ ≡ 4
    4⌠ ≡ 4</pre>
+<p>see also: <a href="#Floor">Floor</a>, <a href="#Round">Round</a>, <a href="#Euclidean Division">Euclidean Division</a></p>
 <h2 class="verb" id="F5"><code>⌡</code> (0xF5, <code>'fl</code>)</h2>
 <h3 id="Floor"><code>α⌡</code> Floor</h3>
-<p>round down α</p>
+<p>round down α. scalar.</p>
 <pre>'3.1⌡ ≡ 3
 '3.9⌡ ≡ 3
    4⌡ ≡ 4</pre>
+<p>see also: <a href="#Ceiling">Ceiling</a>, <a href="#Round">Round</a></p>
 <h2 class="verb" id="F6"><code>÷</code> (0xF6, <code>'%</code>)</h2>
 <h3 id="Round"><code>α÷</code> Round</h3>
-<p>rounds α to the closest integer. may do round-half-to-even rounding</p>
+<p>rounds α to the closest integer. may do round-half-to-even rounding. scalar.</p>
 <pre>'3.1÷ ≡ 3
 '3.9÷ ≡ 4
    4÷ ≡ 4</pre>
+<p>see also: <a href="#Floor">Floor</a>, <a href="#Ceiling">Ceiling</a></p>
 <h3 id="Euclidean Division"><code>α÷β</code> Euclidean Division</h3>
 <p>calculates the euclidean division of α and β, which will always be an integer. for positive β, this is the same as floor division <code>α/β⌡</code>. for any α and β, <code>β*(α÷β) + (α%β) ≡ α</code>.</p>
 <pre>'345÷Φ ≡ '34
@@ -2146,7 +2163,7 @@ _3± ≡ Θ</pre>
 1÷_2 ≡ 0
 _1÷2 ≡ _1
 _1÷_2 ≡ 1</pre>
-<p>see also: <a href="#Remainder">Remainder</a></p>
+<p>see also: <a href="#Remainder">Remainder</a>, <a href="#Floor">Floor</a>, <a href="#Divide">Divide</a></p>
 <h2 class="verb" id="F7"><code>≈</code> (0xF7, <code>'~</code>)</h2>
 <h3 id="Is Empty"><code>α≈</code> Is Empty</h3>
 <p>returns 1 if the length of α is not 0, otherwise 0</p>
@@ -2178,10 +2195,11 @@ _1÷_2 ≡ 1</pre>
 <p>see also: <a href="#Return">Return</a></p>
 <h2 class="verb" id="FB"><code>√</code> (0xFB, <code>'V</code>)</h2>
 <h3 id="Square Root"><code>α√</code> Square Root</h3>
-<p>calculate the square root</p>
-<pre>2√ ≡ '1.4142135623730951</pre>
+<p>calculate the square root of α. scalar.</p>
+<pre>2√ ≡ '1.4142135623730951
+'1'4'9'16√ ≡ 1234</pre>
 <h3 id="Root"><code>α√β</code> Root</h3>
-<p>calculate the βth root of α</p>
+<p>calculate the βth root of α. scalar.</p>
 <pre>2√3^3 ≡ 2</pre>
 <h2 class="verb" id="FC"><code>ⁿ</code> (0xFC, <code>'n, 'ft</code>)</h2>
 <h3 id="Format"><code>αⁿ</code> Format</h3>
@@ -2200,11 +2218,11 @@ _1÷_2 ≡ 1</pre>
 <p>you can also use multiple of these in a list, like <code>ⁿ84</code> (line-separated list of strings)</p>
 <h2 class="verb" id="FD"><code>²</code> (0xFD, <code>'z, 'sq</code>)</h2>
 <h3 id="Square"><code>α²</code> Square</h3>
-<p>equivalent to <code>^2</code></p>
+<p>equivalent to <code>^2</code>. scalar.</p>
 <pre>4² ≡ '16
 0² ≡ 0</pre>
 <h3 id="Binomial Coefficient"><code>α²β</code> Binomial Coefficient</h3>
-<p>calculate the binomial coefficient <code>α choose β</code></p>
+<p>calculate the binomial coefficient <code>α choose β</code>. scalar.</p>
 <pre>4²012345 ≡ 146410</pre>
 <h2 class="literal" id="FE"><code>■</code> (0xFE, <code>'il</code>)</h2>
 <h3 id="Integer Literal"><code>■☺☻♥♦■</code> Integer Literal</h3>
@@ -2228,7 +2246,7 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Each"><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
 <pre>123╕▲ ≡ 234
-123╕(,0) ≡ │10│20│30</pre>
+123╕(,0) ≡ (10)(20)(30)</pre>
 <h3 id="Each"><code>α╕Gβ</code> Each</h3>
 <p>if both α and β are lists, pair the items up.</p>
 <pre>123╕,456 ≡ (14)(25)(36)</pre>

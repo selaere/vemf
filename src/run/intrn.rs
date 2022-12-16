@@ -160,6 +160,7 @@ func!(a :floor => match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.floor()), 
 func!(a :sign  => match a { Int(a) => Int(a.signum()), Num(a) => {
     if a == c64::new(0., 0.) { Int(0) } 
     else if a.im == 0. { Int(a.re.signum() as i64) }
+    else if a.re == 0. { Num(c64::new(0., a.im.signum()))}
     else { Num(c64::from_polar(1., a.arg())) }
 }, _ => NAN });
 
