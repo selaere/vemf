@@ -1,8 +1,18 @@
 use crate::prelude::*;
 
 pub trait Interface<'io> {
-    fn read     (&mut self, stm: usize, buf: &mut [u8])    -> Option<usize>;
+    /// read from input stream `stm` into a slice `buf`. used by `αÖβ` and `α_Öβ` when α is 
+    /// non-negative and finite. corresponds to `Read::read(_, buf)`. this method is required, but
+    /// feel free to return None if you don't have output capabilities
+    fn read(&mut self, stm: usize, buf: &mut [u8])    -> Option<usize>;
+    /// write to output stream `stm` a slice of bytes `slice`. used by `É` `_É` and `☻``☺` (to 
+    /// stream 0). corresponds to `Write::write(_, buf)`. this method is required, but
+    /// feel free to return None if you don't have input capabilities
     fn write    (&mut self, stm: usize, slice: &[u8])      -> Option<usize>;
+    /// read a line from input stream `stm`. used by `αÖβ` and `α_Öβ` when α is negative.
+    /// corresponds to like `Read::read_until(_, b'\n', buf)`
+    /// the default definition is inefficient but it's the best way of doing this generically,
+    /// implementers SHOULD implement this better.
     fn read_line(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
         let mut a: [u8; 1] = [0];
         let original_len = buf.len();
@@ -12,6 +22,8 @@ pub trait Interface<'io> {
         }
         Some(buf.len() - original_len)
     }
+    /// read all from input stream `stm`. used by `∞Öβ` and `∞_Öβ`.
+    /// corresponds to Read::read_to_end(_, buf).
     fn read_to_end(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
         let mut tmp = [0; 256];
         let original_len = buf.len();
@@ -33,7 +45,7 @@ impl<'io> Interface<'io> for NoIO {
     fn read_to_end(&mut self, _: usize, _: &mut Vec<u8>) -> Option<usize> { None }
 }
 
-#[cfg(feature = "std")]
+#[cfg(any(feature = "std", test))]
 pub fn io_result(ioresult: std::io::Result<usize>) -> Option<usize> { match ioresult {
     Ok(n) => Some(n),
     Err(e) if e.kind() == std::io::ErrorKind::Interrupted => Some(0),

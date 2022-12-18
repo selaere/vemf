@@ -245,10 +245,12 @@ print α to standard output, and return β
 #1 Print Line
 print α to standard output, with a training newline (0x0A)
 > "Hello, World!"☻
-see also: |Print|
+see also: |Print|, |Write|
 #2 Print Line
 print α and return β
 > "Calculating the square root of two..."☻2√
+#_12 Print Formatted
+prints `αⁿ` or `αⁿβ` and returns α unchanged. useful when debugging trains. equivalent to `ⁿ╖☻`
 ---
 :char: ♥
 :ascii: 'c2
@@ -1819,6 +1821,11 @@ splits at newlines (byte 0x0A). same as `¥Φ`. won't strip out carriage returns
 partition the list α at indexes β
 > 0123456789₧46 ≡ (0123)(45)(6789)
 > 0123456789₧0469Φ ≡ ()(0123)(45)(678)(♪9)()
+#1 Parts
+get a list of the real and imaginary parts of α. scalar. equivalent to `└ù♫ú`
+> 4í_2 ₧ ≡ _2 4
+> 4₧ ≡ 4 0
+> 456_30í_2_3024₧ ≡ │_24│_35│06│2_3│40
 ---
 :char: ƒ
 :ascii: 'F 'f,
@@ -2054,7 +2061,7 @@ shorthand for a |Integer Literal| with 3 digits (the closing `■` is implied)
 :type: noun
 #0 None
 none, null, nil, NaN. used as a dummy value sometimes.
-see also: |Is None|, |Is Not None|, |Fill Holes|, |Replace Holes|, |Filter Holes|, |Nullify|
+see also: |Is None|, |Is Some|, |Fill Holes|, |Replace Holes|, |Filter Holes|, |Nullify|
 ---
 :char: ▄
 :ascii: 'hd

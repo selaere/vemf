@@ -599,10 +599,12 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h3 id="Print Line"><code>α☻</code> Print Line</h3>
 <p>print α to standard output, with a training newline (0x0A)</p>
 <pre>"Hello, World!"☻</pre>
-<p>see also: <a href="#Print">Print</a></p>
+<p>see also: <a href="#Print">Print</a>, <a href="#Write">Write</a></p>
 <h3 id="Print Line"><code>α☻β</code> Print Line</h3>
 <p>print α and return β</p>
 <pre>"Calculating the square root of two..."☻2√</pre>
+<h3 id="Print Formatted"><code>α_☻</code> <code>α_☻β</code> Print Formatted</h3>
+<p>prints <code>αⁿ</code> or <code>αⁿβ</code> and returns α unchanged. useful when debugging trains. equivalent to <code>ⁿ╖☻</code></p>
 <h2 class="literal" id="03"><code>♥</code> (0x03, <code>'c2</code>)</h2>
 <h3 id="Digraph Literal"><code>♥ab</code> Digraph Literal</h3>
 <p>a 2 character literal.</p>
@@ -1804,6 +1806,11 @@ _4¢ ≡ 4
 <p>partition the list α at indexes β</p>
 <pre>0123456789₧46 ≡ (0123)(45)(6789)
 0123456789₧0469Φ ≡ ()(0123)(45)(678)(♪9)()</pre>
+<h3 id="Parts"><code>α₧</code> Parts</h3>
+<p>get a list of the real and imaginary parts of α. scalar. equivalent to <code>└ù♫ú</code></p>
+<pre>4í_2 ₧ ≡ _2 4
+4₧ ≡ 4 0
+456_30í_2_3024₧ ≡ │_24│_35│06│2_3│40</pre>
 <h2 class="verb_var" id="9F"><code>ƒ</code> (0x9F, <code>'F 'f,</code>)</h2>
 <h3 id="Self"><code>αƒ</code> <code>αƒβ</code> Self</h3>
 <p>the function being executed. if not in a function definition, undefined. useful for recursive functions.</p>
@@ -1979,7 +1986,7 @@ _2Ñ0 ≡ 0</pre>
 <h2 class="noun" id="DB"><code>█</code> (0xDB, <code>'N</code>)</h2>
 <h3 id="None"><code>█</code> None</h3>
 <p>none, null, nil, NaN. used as a dummy value sometimes.</p>
-<p>see also: <a href="#Is None">Is None</a>, <a href="#Is Not None">Is Not None</a>, <a href="#Fill Holes">Fill Holes</a>, <a href="#Replace Holes">Replace Holes</a>, <a href="#Filter Holes">Filter Holes</a>, <a href="#Nullify">Nullify</a></p>
+<p>see also: <a href="#Is None">Is None</a>, <a href="#Is Some">Is Some</a>, <a href="#Fill Holes">Fill Holes</a>, <a href="#Replace Holes">Replace Holes</a>, <a href="#Filter Holes">Filter Holes</a>, <a href="#Nullify">Nullify</a></p>
 <h2 class="verb" id="DC"><code>▄</code> (0xDC, <code>'hd</code>)</h2>
 <h3 id="Is None"><code>α▄</code> Is None</h3>
 <p>1 if α is none, otherwise 0. scalar.</p>
