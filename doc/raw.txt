@@ -447,7 +447,7 @@ make a new list with a prefix shape of β, where the elements are taken from α 
 > .►¶33 ≡ (012)(345)(678)
 > "testing"¶'21 ≡ "testingtestingtesting"
 |Take| is similar to |Reshape|, but it does not repeat elements, using the fill instead.
-when there is a single |None| in β, it will be computed in order to fit all the elements; the ceiling division of the product of the non-|None| elements of β and the length of α, or `β▀*/(α~)⌠`
+when there is a single |None| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-|None| elements of β and the length of α, or `β▀*/(α~)⌠`)
 > "testing"¶2█ ≡ "test""ingt"
 > "testing"¶█2 ≡ "te""st""in""gt"
 see also: |Take|, |Take Right|, |Cycle|
@@ -456,11 +456,11 @@ see also: |Take|, |Take Right|, |Cycle|
 :ascii: 'ss
 :type: verb
 #1 Cycle
-it returns α repeated infinitely as an infinite list. more precisely, it returns a function that, given an argument `x`, returns the element of α at index `x % (α~)`
+return α repeated infinitely as an infinite list. more precisely, it returns a function that, given an argument `x`, returns the element of α at index `x % (α~)`
 > 4↕§┴¡0123456789 ≡ 0123012301
 > 4↕§@_1 ≡ 3
 #2 Repeat
-it repeats the list α, β times. right-pervasive.
+repeat the list α, β times. right-pervasive.
 > "testing"§3 ≡ "testingtestingtesting"
 > 6§3 ≡ 666
 ---
@@ -506,38 +506,38 @@ the range used is [α, β]. note that this means the resulting array is of lengt
 :ascii: 'W
 :type: verb
 #2 Take
-make a new list with a prefix shape of β, where the elements are taken from α in order. it truncates if α is longer than the elements needed (`β*`), and uses the fill of α if α is shorter.
+make a new list with a prefix shape of β, where the elements are taken from α in order. this truncates if α is longer than the elements needed (`β*`), and uses the fill of α if α is shorter.
 > 9↕↑55 ≡ (01234)(5678█)(█████)(█████)(█████)
 > '99↕↑33 ≡ (012)(345)(678)
 > .►↑33 ≡ (012)(345)(678)
 > "testing"▐` ↑'21 ≡ "testing              "
 > "testing"↑3 ≡ "tes"
-|Reshape|, is similar, but it cycles through the array instead of using the fill
-when there is a single |None| in β, it will be computed in order to fit all the elements; the ceiling division of the product of the non-|None| elements of β and the length of α, or `β▀*/(α~)⌠`
+|Reshape|, is similar, but it cycles through the array instead of using the fill.
+when there is a single |None| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-|None| elements of β and the length of α, or `β▀*/(α~)⌠`)
 > "testing"▐`_↑2█ ≡ "test""ing_"
 > "testing"▐`_↑█2 ≡ "te""st""in""g_"
-see also: |Reshape|, |Take Right|
+see also: |Reshape|, |Take Right|, |Drop|
 #1 Prefixes
-get the prefixes of the list α; take for every item in `β~▲↕`.
-> "testing"↑ ≡ "" "t" "te" "tes" "test" "testi" "testin" "testing"
-this list includes the empty list and the unmodified argument. those elements can be removed, as needed, easily enough, with |Behead| and |Curtail|.
+get the prefixes of the list α; take for every item in `β♣▲` (without the empty list, but with the unmodified argument: you can remove it with |Behead|.)
+> "testing"↑ ≡ "t" "te" "tes" "test" "testi" "testin" "testing"
 see also: |Suffixes|
 ---
 :char: ↓
 :ascii: 'S
 :type: verb
 #2 Take Right
-|Take| but it takes from the back
+make a new list with a prefix shape of β, where the elements are taken from α in reverse order. this truncates if α is longer than the elements needed (`β*`), and uses the fill of α if α is shorter.
 > 9↕↓55 ≡ (█████)(█████)(█████)(█0123)(45678)
 > 9↕↓23 ≡ (345)(678)
+when there is a single |None| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-|None| elements of β and the length of α, or `β▀*/(α~)⌠`)
 > "testing"↓3 ≡ "ing"
 > "testing"▐` ↓'21 ≡ "              testing"
 > "testing"▐`_↓2█ ≡ "_tes""ting"
 > "testing"▐`_↓█2 ≡ "_t""es""ti""ng"
 see also: |Take|, |Reshape|
 #1 Suffixes
-get the suffixes of α; take right for every item in `β~▲↕`.
-> "testing"↓ ≡ "" "g" "ng" "ing" "ting" "sting" "esting" "testing"
+get the suffixes of the list α; take for every item in `β♣▲` (without the empty list, but with the unmodified argument: you can remove it with |Curtail|.)
+> "testing"↓ ≡ "g" "ng" "ing" "ting" "sting" "esting" "testing"
 see also: |Prefixes|
 ---
 :char: ←

@@ -149,8 +149,7 @@ pub fn tokenize(mut t: &[u8]) -> Vec<Tok> {
 
 
 fn rewrite_token(first: Option<u8>, t: &mut &[u8]) -> Option<Bstr> {
-    let first = first?;
-    Some(match first {
+    Some(match first? {
         b'"' => rewrite_string(t),
         b!('■') => {
             let mut buf = bstr![b!('■')];
