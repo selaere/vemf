@@ -751,17 +751,17 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 .►¶33 ≡ (012)(345)(678)
 "testing"¶'21 ≡ "testingtestingtesting"</pre>
 <p><a href="#Take">Take</a> is similar to <a href="#Reshape">Reshape</a>, but it does not repeat elements, using the fill instead.</p>
-<p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements; the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code></p>
+<p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code>)</p>
 <pre>"testing"¶2█ ≡ "test""ingt"
 "testing"¶█2 ≡ "te""st""in""gt"</pre>
 <p>see also: <a href="#Take">Take</a>, <a href="#Take Right">Take Right</a>, <a href="#Cycle">Cycle</a></p>
 <h2 class="verb" id="15"><code>§</code> (0x15, <code>'ss</code>)</h2>
 <h3 id="Cycle"><code>α§</code> Cycle</h3>
-<p>it returns α repeated infinitely as an infinite list. more precisely, it returns a function that, given an argument <code>x</code>, returns the element of α at index <code>x % (α~)</code></p>
+<p>return α repeated infinitely as an infinite list. more precisely, it returns a function that, given an argument <code>x</code>, returns the element of α at index <code>x % (α~)</code></p>
 <pre>4↕§┴¡0123456789 ≡ 0123012301
 4↕§@_1 ≡ 3</pre>
 <h3 id="Repeat"><code>α§β</code> Repeat</h3>
-<p>it repeats the list α, β times. right-pervasive.</p>
+<p>repeat the list α, β times. right-pervasive.</p>
 <pre>"testing"§3 ≡ "testingtestingtesting"
 6§3 ≡ 666</pre>
 <h2 class="verb" id="16"><code>▬</code> (0x16, <code>'M 'sh</code>)</h2>
@@ -798,35 +798,35 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>2↨8 ≡ 2345678</pre>
 <h2 class="verb" id="18"><code>↑</code> (0x18, <code>'W</code>)</h2>
 <h3 id="Take"><code>α↑β</code> Take</h3>
-<p>make a new list with a prefix shape of β, where the elements are taken from α in order. it truncates if α is longer than the elements needed (<code>β*</code>), and uses the fill of α if α is shorter.</p>
+<p>make a new list with a prefix shape of β, where the elements are taken from α in order. this truncates if α is longer than the elements needed (<code>β*</code>), and uses the fill of α if α is shorter.</p>
 <pre>9↕↑55 ≡ (01234)(5678█)(█████)(█████)(█████)
 '99↕↑33 ≡ (012)(345)(678)
 .►↑33 ≡ (012)(345)(678)
 "testing"▐` ↑'21 ≡ "testing              "
 "testing"↑3 ≡ "tes"</pre>
-<p><a href="#Reshape">Reshape</a>, is similar, but it cycles through the array instead of using the fill</p>
-<p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements; the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code></p>
+<p><a href="#Reshape">Reshape</a>, is similar, but it cycles through the array instead of using the fill.</p>
+<p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code>)</p>
 <pre>"testing"▐`_↑2█ ≡ "test""ing_"
 "testing"▐`_↑█2 ≡ "te""st""in""g_"</pre>
-<p>see also: <a href="#Reshape">Reshape</a>, <a href="#Take Right">Take Right</a></p>
+<p>see also: <a href="#Reshape">Reshape</a>, <a href="#Take Right">Take Right</a>, <a href="#Drop">Drop</a></p>
 <h3 id="Prefixes"><code>α↑</code> Prefixes</h3>
-<p>get the prefixes of the list α; take for every item in <code>β~▲↕</code>.</p>
-<pre>"testing"↑ ≡ "" "t" "te" "tes" "test" "testi" "testin" "testing"</pre>
-<p>this list includes the empty list and the unmodified argument. those elements can be removed, as needed, easily enough, with <a href="#Behead">Behead</a> and <a href="#Curtail">Curtail</a>.</p>
+<p>get the prefixes of the list α; take for every item in <code>β♣▲</code> (without the empty list, but with the unmodified argument: you can remove it with <a href="#Behead">Behead</a>.)</p>
+<pre>"testing"↑ ≡ "t" "te" "tes" "test" "testi" "testin" "testing"</pre>
 <p>see also: <a href="#Suffixes">Suffixes</a></p>
 <h2 class="verb" id="19"><code>↓</code> (0x19, <code>'S</code>)</h2>
 <h3 id="Take Right"><code>α↓β</code> Take Right</h3>
-<p><a href="#Take">Take</a> but it takes from the back</p>
+<p>make a new list with a prefix shape of β, where the elements are taken from α in reverse order. this truncates if α is longer than the elements needed (<code>β*</code>), and uses the fill of α if α is shorter.</p>
 <pre>9↕↓55 ≡ (█████)(█████)(█████)(█0123)(45678)
-9↕↓23 ≡ (345)(678)
-"testing"↓3 ≡ "ing"
+9↕↓23 ≡ (345)(678)</pre>
+<p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code>)</p>
+<pre>"testing"↓3 ≡ "ing"
 "testing"▐` ↓'21 ≡ "              testing"
 "testing"▐`_↓2█ ≡ "_tes""ting"
 "testing"▐`_↓█2 ≡ "_t""es""ti""ng"</pre>
 <p>see also: <a href="#Take">Take</a>, <a href="#Reshape">Reshape</a></p>
 <h3 id="Suffixes"><code>α↓</code> Suffixes</h3>
-<p>get the suffixes of α; take right for every item in <code>β~▲↕</code>.</p>
-<pre>"testing"↓ ≡ "" "g" "ng" "ing" "ting" "sting" "esting" "testing"</pre>
+<p>get the suffixes of the list α; take for every item in <code>β♣▲</code> (without the empty list, but with the unmodified argument: you can remove it with <a href="#Curtail">Curtail</a>.)</p>
+<pre>"testing"↓ ≡ "g" "ng" "ing" "ting" "sting" "esting" "testing"</pre>
 <p>see also: <a href="#Prefixes">Prefixes</a></p>
 <h2 class="verb" id="1A"><code>←</code> (0x1A, <code>'vr</code>)</h2>
 <h3 id="Get"><code>α←</code> Get</h3>
@@ -915,6 +915,12 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 7! ≡ '5040
 Φ! ≡ '3628800
 '-0.5! ± π√</pre>
+<h3 id="Permute"><code>α!β</code> Permute</h3>
+<p>number of β-permutations in α items. also known as the falling factorial, descending factorial, pochhammer symbol, or the nPr key in your calculator. equivalent to <code>-╓!╝/</code> or <code>{α!/(α-β!)}</code></p>
+<pre>1!1 ≡ 1
+3!2 ≡ '6
+4!3 ≡ '24
+8!3 ≡ '336</pre>
 <h2 class="literal" id="22"><code>"</code> (0x22)</h2>
 <h3 id="Quotes"><code>"abcd"</code> Quotes</h3>
 <p>string literal; every character until the next <code>"</code> will be put into a list with <a href="#None">None</a> fill</p>

@@ -13,9 +13,7 @@ macro_rules! func {
     (@$env:tt, $a:ident :$name:ident => $contents:expr) => {
         pub fn $name($env: &mut $crate::Env, $a: Val, _: Option<Val>) -> Val { $contents }
     };
-    ($a:ident : $($x:tt)+) => {
-        func!(@_, $a :$($x)+);
-    };
+    ($a:ident : $($x:tt)+) => { func!(@_, $a :$($x)+); };
 }
 
 macro_rules! intfunc {
@@ -35,7 +33,7 @@ func!(@env, _a :loadintrinsics => {
         env.set_local(name, Val::Func($name))
     } );* }}
     load_func!(
-        add, sub, mul, div, dive, rem, pow, log, lt, eq, gt, and, or, max, min, atan2, approx, band, bor, bxor, gamma, gcd, lcm, binom, abs, neg, ln, exp, sin, asin, cos, acos, tan, atan, sqrt, round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
+        add, sub, mul, div, dive, rem, pow, log, lt, eq, gt, and, or, max, min, atan2, approx, band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp, sin, asin, cos, acos, tan, atan, sqrt, round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
         left, right, get, set, call,
         shape, len, index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, matches,
         print, println, output, input, fromutf8, toutf8, fromcp, tocp, exit, format, numfmt, parse,
@@ -87,12 +85,10 @@ func!(a :rem b => match (a, b) {
     (Int(a), Int(b)) => Int(a.rem_euclid(b)),
     (a, b) => {
         let (a, b) = (a.as_c(), b.as_c());
-        // this definition is probably not very useful for imaginary numbers
         let mut r = a % b;
         if r.re < 0.0 { r += b.re.abs(); }
         if r.im < 0.0 { r += b.im.abs(); }
-        Num(r)
-    },
+    Num(r) },
 });
 intfunc!(a :dive b => if b == 0 {NAN} else { Int(a.div_euclid(b)) });
 func!(a :pow b => match (a, b) {
@@ -127,10 +123,10 @@ func!(a :atan2 b => {
     Val::flt(f64::atan2(y.re + x.im, x.re - y.im))
 });
 func!(a :approx b => Val::bool(Val::approx(&a, &b)));
+func!(a :isnan    => Val::bool(a.is_nan()));
 intfunc!(a :gcd b    => Int(num_integer::gcd(a, b)));
 intfunc!(a :lcm b    => Int(num_integer::lcm(a, b)));
 intfunc!(a :binom b  => Int(num_integer::binomial(a, b)));
-func!(   a :isnan    => Val::bool(a.is_nan()));
 intfunc!(a :band b   => Int(a & b));
 intfunc!(a :bor b    => Int(a | b));
 intfunc!(a :bxor b   => Int(a ^ b));
@@ -153,7 +149,7 @@ func!(a :acos  => Num(a.as_c().acos()));
 func!(a :tan   => Num(a.as_c().tan() ));
 func!(a :atan  => Num(a.as_c().atan()));
 func!(a :sqrt  => Num(a.as_c().sqrt()));
-func!(a :gamma => Val::flt(libm::tgamma(a.as_c().re)));
+func!(a :fact  => Val::flt(libm::tgamma(a.as_c().re + 1.)));
 func!(a :round => match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.round()), _ => NAN });
 func!(a :ceil  => match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.ceil()) , _ => NAN });
 func!(a :floor => match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.floor()), _ => NAN });
@@ -193,15 +189,13 @@ func!(@env, a :input b => {
     let chars = or_nan!(a.try_int().and_then(|x| isize::try_from(x).ok()));
     let stm =   or_nan!(b.try_int().and_then(|x| usize::try_from(x).ok()));
     let mut buf;
-    let size = or_nan!(
-        if chars < 0 { // read line
-            buf = Vec::with_capacity(128); env.interface.read_line(stm, &mut buf)
-        } else if chars == isize::MAX { // don't allocate an infinite buffer
-            buf = Vec::with_capacity(128); env.interface.read_to_end(stm, &mut buf)
-        } else {
-            buf = vec![0; chars as usize]; env.interface.read(stm, &mut buf)
-        }
-    );
+    let size = or_nan!(if chars < 0 { // read line
+        buf = Vec::with_capacity(128); env.interface.read_line(stm, &mut buf)
+    } else if chars == isize::MAX { // don't allocate an infinite buffer
+        buf = Vec::with_capacity(128); env.interface.read_to_end(stm, &mut buf)
+    } else {
+        buf = vec![0; chars as usize]; env.interface.read(stm, &mut buf)
+    });
     buf.into_iter().take(size).map(|i| Int(i64::from(i))).collect()
 });
 func!(a :fromutf8 => String::from_utf8_lossy(

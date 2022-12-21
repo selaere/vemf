@@ -648,6 +648,12 @@ get the factorial of α. this is extended to reals with the gamma function, Γ(�
 > 7! ≡ '5040
 > Φ! ≡ '3628800
 > '-0.5! ± π√
+#2 Permute
+number of β-permutations in α items. also known as the falling factorial, descending factorial, pochhammer symbol, or the nPr key in your calculator. equivalent to `-╓!╝/` or `{α!/(α-β!)}`
+> 1!1 ≡ 1
+> 3!2 ≡ '6
+> 4!3 ≡ '24
+> 8!3 ≡ '336
 ---
 :char: "
 :type: literal

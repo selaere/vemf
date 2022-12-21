@@ -220,6 +220,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Tok::Just(b!('Γ')) => Flt(c64::i()),
         Tok::Just(b!('█')) => NAN,
         Tok::Just(b!('φ')) => Snd(Vec::new()),
+        Tok::Just(b!('π')) => Flt(c64::new(core::f64::consts::PI, 0.)),
         Tok::VNoun(x) => Var(x),
         Tok::Chr(x) => Int(i64::from(x)),
         Tok::Chr2(x, y) => Snd(vec![Int(i64::from(x)), Int(i64::from(y))]),
