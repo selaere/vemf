@@ -34,7 +34,7 @@ func!(@env, _a :loadintrinsics => {
     } );* }}
     load_func!(
         add, sub, mul, div, dive, rem, pow, log, lt, eq, gt, and, or, max, min, atan2, approx, band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp, sin, asin, cos, acos, tan, atan, sqrt, round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
-        left, right, get, set, call,
+        left, right, get, set, call, islist,
         shape, len, index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, matches,
         print, println, output, input, fromutf8, toutf8, fromcp, tocp, exit, format, numfmt, parse,
         takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find, uio,
@@ -66,6 +66,7 @@ func!(@env, a :get => {
 });
 func!(a :left => a);
 func!(a :right b? => b.unwrap_or(a));
+func!(a :islist => Val::bool(!a.is_scalar()));
 
 func!(a :add b => match (a, b) {
     (Int(a), Int(b)) => Int(a.saturating_add(b)),
@@ -170,14 +171,12 @@ func!(a :arg   => Val::flt(a.as_c().arg()));
 func!(a :matches b => Val::bool(a == b));
 
 func!(@env, a :print b? => {
-    let _= env.interface.write(0, a.display_string().as_bytes());
-    b.unwrap_or(a)
-});
+    _ = env.interface.write(0, a.display_string().as_bytes());
+b.unwrap_or(a) });
 func!(@env, a :println b? => {
-    let _= env.interface.write(0, a.display_string().as_bytes());
-    let _= env.interface.write(0, b"\n");
-    b.unwrap_or(a)
-});
+    _ = env.interface.write(0, a.display_string().as_bytes());
+    _ = env.interface.write(0, b"\n");
+b.unwrap_or(a) });
 func!(@env, a :output b => {
     let stm = or_nan!(b.try_int().and_then(|x| usize::try_from(x).ok()));
     let bytes = a.iterf()
@@ -212,8 +211,8 @@ func!(a :toutf8 => a.iterf()
 func!(@env, a :exit => if let Some(n) = a.try_int() {
     Val::Err(n as i32)
 } else {
-    let _= env.interface.write(0, a.display_string().as_bytes());
-    let _= env.interface.write(0, b"\n");
+    _ = env.interface.write(0, a.display_string().as_bytes());
+    _ = env.interface.write(0, b"\n");
     Val::Err(1)
 });
 func!(a :format b? => {

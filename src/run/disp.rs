@@ -64,7 +64,7 @@ pub fn format(&self, f: &mut impl Write, slice: &[Val]) -> FResult {
                     Ok((l, fill)) => {
                         f.write_char('(')?;
                         for (n, j) in l.iter().enumerate() {
-                            let _ = write!(f, "{: >width$}", j, width=col_lens[n]);
+                            _ = write!(f, "{: >width$}", j, width=col_lens[n]);
                             if n != l.len()-1 {f.write_char(' ')?;}
                         }; f.write_char(')')?;
                         if !fill.is_nan() { write!(f, "▐")?; fill.format(f, rest)?; }

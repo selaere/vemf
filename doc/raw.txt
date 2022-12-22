@@ -2222,6 +2222,11 @@ literal for an empty list with |None| fill
 :char: ε
 :ascii: 'in 'e-
 :type: verb
+#1 Is List
+returns 0 if α is a scalar, otherwise 1
+> 4ε ≡ 0
+> 456ε ≡ 1
+> (▲)ε ≡ 1
 #2 Contains
 for every item in the list β, check if it is in α
 > 012073167140ε0123456789 ≡ 1111101100

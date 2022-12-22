@@ -70,7 +70,7 @@ fn repl(mut env: Env, args: Args) {
     println!("welcome to vemf repl. enjoy your stay");
     loop {
         print!("    ");
-        let _ = std::io::stdout().flush();
+        _ = std::io::stdout().flush();
         let mut code = String::new();
         std::io::stdin().read_line(&mut code).expect("error while reading from stdin");
         if args.rewrite { println!(" r: {}", codepage::tochars(&vemf::rewrite(

@@ -202,7 +202,7 @@ impl<'io> Env<'io> {
             }
         }}
         match stmt {
-            Stmt::Discard(expr) => { let _ = eval!(expr); },
+            Stmt::Discard(expr) => { _ = eval!(expr); },
             Stmt::Loc(a, v) => { let a = eval!(a); self.set_local(v.c(), a); },
             Stmt::Mut(a, v) => { let a = eval!(a); self.mutate_var(v, a); },
             Stmt::DelLoc(v) => { self.locals_mut().remove(v); },
