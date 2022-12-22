@@ -1723,11 +1723,18 @@ count the number of occurences of β in α. β-pervasive.
 > 012073167140ò0123456789 ≡ 3311101200
 ---
 :char: û
-:ascii: 'o^
+:ascii: 'u^
 :type: verb
 #1 Occurence Count
 for every element of α, count the number of occurences of that element in the prefix before that element.
 > 320110433250û ≡ 000011012102
+therefore, `û¬` detects if an element is the first in the array:
+> 320110433250û¬ ≡ 111100100010
+> 320110433250(û¬)╓‼ ≡ 320145  ' same as α∩
+#2 Unique Index Of
+for every element in β, find the index of the first unused match in α, or |None|.
+> 22235 û 223357 ≡ 013█4█
+> 3333 û 3323 ≡ 01█2
 ---
 :char: ù
 :ascii: 'u`

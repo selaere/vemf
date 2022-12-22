@@ -37,7 +37,7 @@ func!(@env, _a :loadintrinsics => {
         left, right, get, set, call,
         shape, len, index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, matches,
         print, println, output, input, fromutf8, toutf8, fromcp, tocp, exit, format, numfmt, parse,
-        takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find,
+        takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find, uio,
         reverse, gradeup, gradedown, sortup, sortdown, binsup, binsdown, encode, group, occcount,
     );
     macro_rules! load_av {($($name:ident,)*) => { $( {

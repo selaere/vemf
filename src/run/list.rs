@@ -382,9 +382,20 @@ func!(a :occcount => {
     let mut map = HashMap::new();
     let mut lis = Vec::with_capacity(a.len());
     for i in a.into_iterf() {
-        let reference = map.entry(i).or_insert(0);
-        lis.push(Int(*reference));
-        *reference += 1;
+        let ptr = map.entry(i).or_insert(0);
+        lis.push(Int(*ptr));
+        *ptr += 1;
     }
     Val::lis(lis)
+});
+
+func!(a :uio b => {
+    let mut used_matches = vec![false; a.len()];
+    b.into_iterf().map(|i| {
+        for (n, j) in a.iterf().enumerate() { if !used_matches[n] && i == *j {
+            used_matches[n] = true;
+            return Int(n as _)
+        }}
+        NAN
+    }).collect()
 });
