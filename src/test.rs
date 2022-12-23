@@ -35,9 +35,9 @@ fn docs() -> Result<(), String> {
             }
         }
     }
-    println!("failed {}/{} tests", failed, tested);
+    println!("failed {failed}/{tested} tests");
     if failed != 0 {
-        Err(format!("failed {}/{} tests", failed, tested))
+        Err(format!("failed {failed}/{tested} tests"))
     } else {Ok(())}
 }
 #[allow(clippy::type_complexity)]
@@ -102,7 +102,7 @@ fn input_output() -> Result<(), ()> {
 
 fn dispbytes(a: &[u8]) -> String { a.iter().map(|x| match x {
     b'\\' => r"\\".to_string(), b'\"' => "\\\"".to_string(), b'\n' => "\\n".to_string(),
-    b'\0'..=b'\x1F' | b'\x7F'..=b'\xFF' => format!("\\x{:02x}", x),
+    b'\0'..=b'\x1F' | b'\x7F'..=b'\xFF' => format!("\\x{x:02x}"),
     _ => char::from(*x).to_string()
 }).collect() }
 

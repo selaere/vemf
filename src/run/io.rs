@@ -75,8 +75,8 @@ pub fn io_result(ioresult: std::io::Result<usize>) -> Option<usize> { match iore
 #[cfg(feature="std")] use core::fmt::{Result as FResult, Error as FError};
 #[cfg(feature="std")] pub struct FromIoWrite<T: std::io::Write>(pub T);
 #[cfg(feature="std")] impl<T: std::io::Write> std::fmt::Write for FromIoWrite<T> {
-    fn write_str (&mut self, s: &str) -> FResult { write!(self.0, "{}", s).map_err(|_| FError) }
-    fn write_char(&mut self, c: char) -> FResult { write!(self.0, "{}", c).map_err(|_| FError) }
+    fn write_str (&mut self, s: &str) -> FResult { write!(self.0, "{s}").map_err(|_| FError) }
+    fn write_char(&mut self, c: char) -> FResult { write!(self.0, "{c}").map_err(|_| FError) }
     fn write_fmt(&mut self, args: core::fmt::Arguments<'_>) -> FResult {
         self.0.write_fmt(args).map_err(|_| FError)
     }

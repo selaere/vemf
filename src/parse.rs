@@ -46,31 +46,31 @@ impl Display for Expr {
 fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
     match self {
         Var(v) => write!(m, ".{}", display(v)),
-        Int(n) => write!(m, "'{}", n),
-        Flt(n) => write!(m, "'{}", n),
+        Int(n) => write!(m, "'{n}"),
+        Flt(n) => write!(m, "'{n}"),
         Snd(l) => {
             write!(m, "(")?;
-            for v in l { write!(m, "{}", v)?; }
+            for v in l { write!(m, "{v}")?; }
             write!(m, ")")?;
         Ok(()) },
-        Afn1(a, f) => write!(m, "({} {})", a, f),
-        Afn2(a, f, b) => write!(m, "({} {} {})", a, f, b),
+        Afn1(a, f) => write!(m, "({a} {f})"),
+        Afn2(a, f, b) => write!(m, "({a} {f} {b})"),
         SetVar(v) => write!(m, "→{}", display(v)),
         MutVar(v) => write!(m, "↔{}", display(v)),
         Aav1(v, g) => write!(m, "[•{} {}]", display(v), g),
         Aav2(f, v, g) => write!(m, "[{} ○{} {}]", f, display(v), g),
-        Bind(f, b) => write!(m, "[{} with {}]", f, b),
-        Trn2(a, f) => write!(m, "[{} {}]", a, f),
-        Trn3(a, f, b) => write!(m, "[{} {} {}]", a, f, b),
-        Fork(a, f, b) => write!(m, "└[{} {} {}]", a, f, b),
+        Bind(f, b) => write!(m, "[{f} with {b}]"),
+        Trn2(a, f) => write!(m, "[{a} {f}]"),
+        Trn3(a, f, b) => write!(m, "[{a} {f} {b}]"),
+        Fork(a, f, b) => write!(m, "└[{a} {f} {b}]"),
         Dfn  { s, .. } => {
             write!(m, "{{ ")?;
-            for v in s { write!(m, "{} ", v)?; }
+            for v in s { write!(m, "{v} ")?; }
             write!(m, "}}")?;
         Ok(()) },
         Block(s) => {
             write!(m, "[ ")?;
-            for v in s { write!(m, "{} ", v)?; }
+            for v in s { write!(m, "{v} ")?; }
             write!(m, "]")?;
         Ok(()) }
     }
@@ -79,13 +79,13 @@ fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
 
 impl Display for Stmt {
 fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result { match self {
-    Stmt::Discard(e) => write!(m, "{}·", e),
-    Stmt::Return(e) => write!(m, "{}◘", e),
+    Stmt::Discard(e) => write!(m, "{e}·"),
+    Stmt::Return(e) => write!(m, "{e}◘"),
     Stmt::Loc(e, f) => write!(m, "{}→{}·", e, display(f)),
     Stmt::Mut(e, f) => write!(m, "{}↔{}·", e, display(f)),
     Stmt::DelLoc(f) => write!(m, "→{}·", display(f)),
     Stmt::DelMut(f) => write!(m, "↔{}·", display(f)),
-    Stmt::Cond(i, t) => write!(m, "{}?{}", i, t),
+    Stmt::Cond(i, t) => write!(m, "{i}?{t}"),
 }}
 }
 

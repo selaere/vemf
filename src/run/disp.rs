@@ -14,11 +14,11 @@ pub fn format(&self, f: &mut impl Write, slice: &[Val]) -> FResult {
     match slice.first().and_then(|x| x.try_int()) {
         Some(0) => return write!(f, "{}", self.display_string()),
         Some(1) => if self.is_scalar() { return write!(f, "{self}"); }
-        Some(2) => if let Some(n) = self.try_int() { return write!(f, "{}", n) }
+        Some(2) => if let Some(n) = self.try_int() { return write!(f, "{n}") }
         Some(3) => if let Some(c) = self.try_int() { return match char::from_u32(c as u32) {
             Some('\x00'..='\x1F' | '\x7F'..='\u{9F}' | '\\') =>
                 write!(f, "\\{}", tochar(c as u8)),
-            Some(c) => write!(f, "{}", c), None => write!(f, "\u{FFFD}"),
+            Some(c) => write!(f, "{c}"), None => write!(f, "\u{FFFD}"),
         }},
         Some(4) => if let Lis{l, ..} = self { 'give_up: {
             let mut string = String::with_capacity(l.len());
@@ -28,14 +28,14 @@ pub fn format(&self, f: &mut impl Write, slice: &[Val]) -> FResult {
                 Some(Some(c)) => string.push(c), Some(None) => string.push('\u{FFFD}'),
                 None => break 'give_up,
             }}
-            return write!(f, "\"{}\"", string);
+            return write!(f, "\"{string}\"");
         }}
         Some(5) => if let Lis{l, ..} = self { 'give_up: {
             let mut string = String::with_capacity(l.len());
             for x in l.iter() { if let Some(c) = x.try_int() { 
                 string.push(c.try_into().map_or('\u{FFFD}', tochar));
             } else { break 'give_up; } }
-            return write!(f, "\"{}\"", string);
+            return write!(f, "\"{string}\"");
         }}
         Some(8) => if let Lis{l, fill} = self { 
             let mut indent = Indent(f, 1);
@@ -85,17 +85,17 @@ pub fn format(&self, f: &mut impl Write, slice: &[Val]) -> FResult {
             write!(f, "{}", n.re)?;
             if n.im != 0. { write!(f, "{:+}i", n.im)? };
         Ok(()) },
-        Int(n) => write!(f, "{}", n),
+        Int(n) => write!(f, "{n}"),
         Lis { l, fill } => {
             let mut iter = l.iter();
             write!(f, "(")?;
             if let Some(i) = iter.next() { i.format(f, slice)?; }
             for i in iter { write!(f, " ")?; i.format(f, slice)?; }
             write!(f, ")")?;
-            if !fill.is_nan() { write!(f, "▐{}", &fill)?; }
+            if !fill.is_nan() { write!(f, "▐{fill}")?; }
         Ok(()) },
         Val::FSet(x) => write!(f, "→{}", crate::codepage::tochars(x)),
-        Val::Err(x) => write!(f, "ERROR ERROR {}", x),
+        Val::Err(x) => write!(f, "ERROR ERROR {x}"),
         _ => write!(f, "<function>"),
     }
 }}
@@ -131,6 +131,6 @@ impl Val {
                 | | x.display_string() + if i == l.len()-1 {""} else {"\n"},
                 |n| char::from_u32(n as u32).into_iter().collect::<String>()
             )).collect()
-        } else { format!("{}", self) }
+        } else { format!("{self}") }
     }
 }

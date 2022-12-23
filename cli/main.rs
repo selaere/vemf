@@ -1,37 +1,15 @@
-use std::{path::PathBuf, io::{Read, Write}, fs::File};
-use clap::Parser;
+use std::{path::{PathBuf, Path}, io::{Read, Write}, fs::File};
 use vemf::{Bstr, codepage, Val, Env, FromIoWrite, bx};
 
-#[derive(Parser)]
-#[clap(dont_collapse_args_in_usage = true)]
-#[clap(mut_arg("help", |a| a.help("print help information")))]
-struct Args {
-    /// filename of the file that will be read.
-    /// if not given, opens up a REPL.
-    #[clap(index = 1)]
+struct Options {
     filename: Option<PathBuf>,
-
-    /// arguments given to the script. sets α, β and δ accordingly
-    #[clap(index = 2)]
     arguments: Vec<String>,
-
-    /// whether to include the standard library
-    #[clap(long)]
     no_stdlib: bool,
-
-    /// how to format the output. use like dyadic ⁿ. ignored in repl mode.
-    #[clap(short, long, default_value = "0")]
     format: String,
-
-    /// if given, prints to stdout the file, rewritten without ' escapes
-    #[clap(short, long)]
     rewrite: bool,
-    /*
-    #[clap(short, long)]
-    input: Vec<String>,*/
 }
 
-fn rewrite(path: PathBuf) {
+fn rewrite(path: &Path) {
     let mut code = String::new();
     File::open(path).unwrap().read_to_string(&mut code).unwrap();
     println!("{}", codepage::tochars_ln(
@@ -45,15 +23,67 @@ fn fmtstring(format: &str) -> Vec<Val> {
         .collect::<Vec<_>>()
 }
 
+fn parse_args() -> Options {
+    let mut iter = std::env::args();
+    let mut structure = Options{
+        filename: None,
+        arguments: vec![],
+        no_stdlib: false,
+        format: String::from("0"),
+        rewrite: false
+    };
+    _ = iter.next();
+    loop {
+        let arg = iter.next();
+        match arg.as_deref() {
+            Some("-f" | "--format") => {
+                structure.format = iter.next().unwrap_or_else(|| String::from(""));
+            }
+            Some("-h" | "--help") => {
+                println!("\
+usage: vemf [options] [filename] [arguments]
+  <filename>: filename of the file that will be executed. optional. if not given, opens up a REPL
+  <arguments>: arguments given to the script. all arguments after the filename will be passed to \
+the script unchanged. sets α, β and δ accordingly.
+  -h/--help: print this
+  -f/--format <format>: how to format the output, 0 by default. use like dyadic ⁿ. ignored in repl \
+mode.
+  -r/--rewrite: if given, print to stdout the file, rewritten without ' escapes
+  --no-stdlib: do not use the standard library\
+");
+                std::process::exit(0);
+            },
+            Some("-r" | "--rewrite") => { structure.rewrite   = true; }
+            Some("--no-stdlib")      => { structure.no_stdlib = true; }
+            Some(x) if x.starts_with('-') => {
+                panic!("unrecognized option {x}")
+            }
+            Some(_) => {
+                structure.filename = Some(PathBuf::from(arg.unwrap()));
+                structure.arguments.extend(iter.by_ref());
+                break                
+            }/*if structure.filename.is_none() {
+                structure.filename = Some(PathBuf::from(arg.unwrap()));
+            } else {
+                structure.arguments.push(arg.unwrap());
+            }*/
+            None => break,
+        }
+    }
+    structure
+}
+
 fn main() {
-    let args = Args::parse();
+    let opts = parse_args();//Options::parse();
     let mut state = Env::new(bx(rand::thread_rng()));
-    if !args.no_stdlib { state.include_stdlib(); }
+    if !opts.no_stdlib { state.include_stdlib(); }
     state.interface = bx(vemf::StdIO {});
-    if let Some(path) = args.filename {
-        if args.rewrite { return rewrite(path); }
-        let arguments = state.include_args(&args.arguments);
-        let mut res = state.include_file(&mut File::open(path).unwrap()).unwrap();
+    if let Some(ref path) = opts.filename {
+        if opts.rewrite { return rewrite(path); }
+        let arguments = state.include_args(&opts.arguments);
+        let mut res = state.include_file(&mut File::open(path).unwrap_or_else(|e|
+            panic!("error while opening file {}: {}", path.display(), e)
+        )).unwrap();
         if let Val::Err(x) = res { std::process::exit(x); }
         if res.is_infinite() { res = res.call(
             &mut state,
@@ -61,12 +91,12 @@ fn main() {
             arguments.get(1).cloned()
         ); }
         if let Val::Err(x) = res { std::process::exit(x); }
-        res.format(&mut FromIoWrite(std::io::stdout()), &fmtstring(&args.format)).unwrap();
+        res.format(&mut FromIoWrite(std::io::stdout()), &fmtstring(&opts.format)).unwrap();
         println!();
-    } else { repl(state, args); }
+    } else { repl(state, opts); }
 }
 
-fn repl(mut env: Env, args: Args) {
+fn repl(mut env: Env, args: Options) {
     println!("welcome to vemf repl. enjoy your stay");
     loop {
         print!("    ");
@@ -87,7 +117,7 @@ fn repl(mut env: Env, args: Args) {
             println!(); continue;
         }
         let val = env.include_string(&code);
-        if !val.is_nan() { println!("{}", val); }
+        if !val.is_nan() { println!("{val}"); }
         env.set_local(Bstr::from(&b"__"[..]), val);
     }
 }

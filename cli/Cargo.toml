@@ -10,9 +10,3 @@ path = "main.rs"
 [dependencies]
 vemf = { path = "..", features = ["std"] }
 rand = { version = "0.8", features = ["std"] }
-
-# command line argument parsing
-[dependencies.clap]
-version = "3.2"
-features = ["std", "derive", "wrap_help"]
-default-features = false
