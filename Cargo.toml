@@ -6,6 +6,11 @@ edition = "2021"
 [lib]
 path = "src/lib.rs"
 
+[[bin]]
+name = "vemf"
+path = "src/main.rs"
+required-features = ["bin"]
+
 [dependencies]
 # small byte strings
 smallvec = { version = "1.10", features = ["union"] }
@@ -22,6 +27,7 @@ hashbrown = "0.13"
 
 [features]
 std = []
+bin = ["std", "rand/std", "rand/std_rng"]
 
 [workspace]
-members = ["cli", "wasm"]
+members = ["wasm"]

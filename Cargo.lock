@@ -207,14 +207,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "vemfcli"
-version = "0.1.0"
-dependencies = [
- "rand",
- "vemf",
-]
-
-[[package]]
 name = "vemfwasm"
 version = "0.1.0"
 dependencies = [

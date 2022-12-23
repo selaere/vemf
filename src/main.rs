@@ -25,7 +25,7 @@ fn fmtstring(format: &str) -> Vec<Val> {
 
 fn parse_args() -> Options {
     let mut iter = std::env::args();
-    let mut structure = Options{
+    let mut opts = Options{
         filename: None,
         arguments: vec![],
         no_stdlib: false,
@@ -37,7 +37,7 @@ fn parse_args() -> Options {
         let arg = iter.next();
         match arg.as_deref() {
             Some("-f" | "--format") => {
-                structure.format = iter.next().unwrap_or_else(|| String::from(""));
+                opts.format = iter.next().unwrap_or_else(|| String::from(""));
             }
             Some("-h" | "--help") => {
                 println!("\
@@ -53,28 +53,24 @@ mode.
 ");
                 std::process::exit(0);
             },
-            Some("-r" | "--rewrite") => { structure.rewrite   = true; }
-            Some("--no-stdlib")      => { structure.no_stdlib = true; }
+            Some("-r" | "--rewrite") => { opts.rewrite   = true; }
+            Some("--no-stdlib")      => { opts.no_stdlib = true; }
             Some(x) if x.starts_with('-') => {
                 panic!("unrecognized option {x}")
             }
             Some(_) => {
-                structure.filename = Some(PathBuf::from(arg.unwrap()));
-                structure.arguments.extend(iter.by_ref());
+                opts.filename = Some(PathBuf::from(arg.unwrap()));
+                opts.arguments.extend(iter.by_ref());
                 break                
-            }/*if structure.filename.is_none() {
-                structure.filename = Some(PathBuf::from(arg.unwrap()));
-            } else {
-                structure.arguments.push(arg.unwrap());
-            }*/
+            }
             None => break,
         }
     }
-    structure
+    opts
 }
 
 fn main() {
-    let opts = parse_args();//Options::parse();
+    let opts = parse_args();
     let mut state = Env::new(bx(rand::thread_rng()));
     if !opts.no_stdlib { state.include_stdlib(); }
     state.interface = bx(vemf::StdIO {});
