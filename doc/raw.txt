@@ -145,6 +145,8 @@ there are two types of adverbs. 1-adverbs, like `┴G` |Selfie|/|Swap|, take one
 > 4²╝+5 ≡ 4²+(5²)
 > 4²╝▲ ≡ 4²▲  ' same as train (²▲)
 2-adverb precedence is right-to-left.
+additionally, 1-adverbs can be used before 2-adverbs, and this applies them to the left operand:
+> `a-┴╓/`b ≡ `a(┴-)╓/`b
 TODO example
 adverbs applied to their operands act like verbs, so you can set them just like verbs:
 > ²╝+─discrim 4:discrim5 ≡ '41
@@ -180,6 +182,7 @@ this is also useful for applying a function conditionally:
 # Combinators
 combinators call their operands in different ways. they are one of the main ways functions are defined; combinators are the "glue" that joins different functions.
 vemf has a lot of different combinators! here's a summary:
+> NAME         : MONADIC, DYADIC
 > atop      +/ : α+/    , α+β/
 > commute   ┴/ : α/α    , β/α
 > atleft   +╜/ : α+/    , α+/β
@@ -204,8 +207,8 @@ we can set our function to a variable and use it.
 this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly:
 > {α*(α▲)½}─triang 6:triang ≡ '21
 > {α▲*α½}─triang 6:triang ≡ '21  ' multiplication is commutative
-but the tacit form is simpler (and shorter, and somewhat faster)
-here is another way of representing this that i can test automatically
+but the tacit form is simpler (and shorter, and somewhat faster).
+here is another way of representing all the combinators that i can test automatically
 > ♫,;`(,`)─F ♫,;`[,`]─G ♫,;`{,`}─H ≡ █
 > (`a┴G)   (`a┴G`b)    ≡ "[aa]"    "[ba]"
 > (`aF╜G)  (`aF╜G`b)   ≡ "[(a)]"   "[(a)b]"
@@ -220,7 +223,7 @@ here is another way of representing this that i can test automatically
 i dont like parentheses. i dont like the fact that occasionally i have to use them to make things work. i dont like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as `+2` gains two characters when used with an adverb `(+2)╜/`. or with nested list literals `(123)(45)(6789)`:
 > 7 (+2)╙/ 3 ≡ 7 │+2╙/ 3
 > (123)(45)(6789) ≡ ├123│45╞6789
-the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use.
+the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use. here are all the groupers:
 > 2 3 4 5 6 7 8 9 Φ
 > │ ├ ╞ ╟ ╠ ┤ ╡ ╢ ╣
 TODO TODO
@@ -344,7 +347,7 @@ drop 1 element from the right
 :ascii: ':
 :type: literal
 #♪a Enclosed
-for a noun `a`, literal for a list with the one argument. same as `(α♫)`
+for a noun `a`, literal for a list with the one argument. same as `(a♫)`
 #♪F Nominalize
 for a verb F, interpret it as a noun
 ---

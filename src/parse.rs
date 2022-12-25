@@ -103,7 +103,7 @@ fn word_cst(t: &mut&[Tok], mut morphemes: usize) -> Option<(Role, Expr)>{
 
 fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
     if *morphemes == 0 {return None}
-    let (rol, val) = match t.first()? {
+    let (rol, mut val) = match t.first()? {
         Tok::VSet(v) => { step(t); (Verb, SetVar(v.c())) },
         Tok::VMut(v) => { step(t); (Verb, MutVar(v.c())) },
         Tok::VAv1(name) => { step(t);
@@ -114,9 +114,9 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
             }
         },
         Tok::Just(b!('└')) => { step(t);
-            let a = word_full(t)  .map_or(NAN, |x| x.1);
-            let f = word_full(t)  .map_or(NAN, |x| x.1);
-            let b = word_cst(t, 1).map_or(NAN, |x| x.1);
+            let a = word_full(t).map_or(NAN, |x| x.1);
+            let f = word_full(t).map_or(NAN, |x| x.1);
+            let b = word_full(t).map_or(NAN, |x| x.1);
             (Verb, Fork(bx(a), bx(f), bx(b)))
         },
         Tok::Just(b'{') => { step(t);
@@ -131,7 +131,7 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
             if let Some(Tok::Just(b']')) = t.first() { step(t); }
             (Noun, Block(s))
         }
-        Tok::VVerb(v) | Tok::VAv2(v) => { step(t); (Verb, Var(v.c())) },
+        Tok::VVerb(v) => { step(t); (Verb, Var(v.c())) },
         Tok::Just(b'(') => { step(t);
             let expr = phrase_to_expr(phrase(t)).unwrap_or(Snd(vec![]));
             if let Some(Tok::Just(b')')) = t.first() { step(t); }
@@ -153,10 +153,11 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
         },
         tok => if let Some(p) = value_token(tok.c()) { step(t); (Noun, p) } else {return None}
     };
-    if *morphemes > 1 { if let Some(Tok::VAv2(n)) = t.first() {
+    if *morphemes > 1 { if let Some(Tok::VAv2(l, n)) = t.first() {
         *morphemes -= 1;
         step(t);
         let word = word(t, morphemes);
+        for i in l.iter().rev() { val = Aav1(i.c(), bx(val)) }
         return Some((Verb, Aav2( bx(val), n.c(), bx(word.map_or(NAN, |x| x.1)) )))
     }}
     Some((rol, val))

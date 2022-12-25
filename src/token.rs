@@ -3,10 +3,10 @@ use crate::prelude::*;
 #[derive(Debug, Clone)]
 pub enum Tok {
     Just(u8), White(u8), Comment(Bstr),
-    VNoun(Bstr), VVerb(Bstr), VAv1(Bstr), VAv2(Bstr),
+    VNoun(Bstr), VVerb(Bstr), VAv1(Bstr), VAv2(Vec<Bstr>, Bstr),
     VSet(Bstr), VMut(Bstr), VSetS(Bstr), VMutS(Bstr),
     Chr(u8), Chr2(u8, u8), Num2(u8, u8), Num3(u8, u8, u8),
-    Num(Bstr), HNum(Bstr), Str(Bstr),
+    Num(Bstr), HNum(Bstr), Str(Bstr)
 }
 use Tok::*;
 
@@ -92,7 +92,7 @@ fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
             match c {
                 c @ short_verb!() => VVerb(bstr![b'_', c]),
                 c @ short_av1!()  => VAv1(bstr![b'_', c]),
-                c @ short_av2!()  => VAv2(bstr![b'_', c]),
+                c @ short_av2!()  => VAv2(vec![], bstr![b'_', c]),
                 c => VNoun(bstr![b'_', c]),
             }
         }
@@ -122,14 +122,14 @@ fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
             Some(a) => return token(do_escape(a, t).or_else(|| step(t)), t),
         },
         Some(b!('.')) => VNoun(ident(t)), Some(b!(':')) => VVerb(ident(t)),
-        Some(b!('•')) => VAv1 (ident(t)), Some(b!('○')) => VAv2 (ident(t)),
+        Some(b!('•')) => VAv1 (ident(t)), Some(b!('○')) => VAv2 (vec![], ident(t)),
         Some(b!('─')) => VSetS(ident(t)), Some(b!('═')) => VMutS(ident(t)),
         Some(b!('→')) => VSet (ident(t)), Some(b!('↔')) => VMut (ident(t)),
         Some(b!('¨')) => Str  (ident(t)),
         Some(c @ (b' ' | b'\n')) => White(c),
         Some(c @ (short_verb!() | b'A'..=b'Z')) => VVerb(bstr![c]),
         Some(c @ short_av1!())   => VAv1 (bstr![c]),
-        Some(c @ short_av2!())   => VAv2 (bstr![c]),
+        Some(c @ short_av2!())   => VAv2 (vec![], bstr![c]),
         Some(c @ short_noun!())  => VNoun(bstr![c]),
         Some(b!('σ')) => VNoun(bstr![b!('['), b!('α')]),
         Some(b!('μ')) => VNoun(bstr![b!('['), b!('β')]),
@@ -140,8 +140,14 @@ fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
 
 pub fn tokenize(mut t: &[u8]) -> Vec<Tok> {
     let mut toks = Vec::new();
-    while let Some(tok) = token(step(&mut t), &mut t) {
+    while let Some(mut tok) = token(step(&mut t), &mut t) {
         if let White(_) | Comment(_) = tok { continue; }
+        if let VAv2(v, _) = &mut tok {
+            while let Some(VAv1(_)) = toks.last() {
+                let Some(VAv1(l)) = toks.pop() else {unreachable!()};
+                v.push(l);
+            }
+        }
         toks.push(tok);
     }
     toks
