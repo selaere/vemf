@@ -25,7 +25,7 @@ macro_rules! intfunc {
     };
 }
 
-func!(@env, _a :loadintrinsics => {
+pub fn load_intrinsics(env: &mut super::Env) {
     use list::*; use super::val::encode;
     macro_rules! load_func {($($name:ident,)*) => { $( {
         let mut name = Bstr::from(&b"in"[..]);
@@ -53,8 +53,8 @@ func!(@env, _a :loadintrinsics => {
         until, untilscan, power, powerscan, untilcmp, untilscancmp,
         drill,
         cycle,
-    ); Int(1)
-});
+    );
+}
 
 func!(@env, a :set b => {
     let name = a.iterf().filter_map(|x| x.try_int().map(|x| x as u8)).collect::<Bstr>();

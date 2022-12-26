@@ -1,6 +1,6 @@
 use crate::prelude::*;
 use iter::FusedIterator;
-use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb, intrn::left};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb, func::left};
 
 impl Val {
 

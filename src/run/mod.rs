@@ -1,4 +1,4 @@
-#[macro_use] mod intrn; mod list; mod adverb; mod disp; mod val; pub mod io;
+#[macro_use] mod func; mod list; mod adverb; mod disp; mod val; pub mod io;
 
 use crate::parse::{Expr, Stmt};
 use crate::prelude::*;
@@ -239,7 +239,7 @@ impl<'io> Env<'io> {
     }
 
     pub fn include_stdlib(&mut self) {
-        self.set_local(Bstr::from(&b"loadintrinsics"[..]), Val::Func(intrn::loadintrinsics));
+        func::load_intrinsics(self);
         self.include_string(STDLIB);
         //self.set_local(Bstr::from(&b"sus"[..]), Val::Func(intrn::add));
     }

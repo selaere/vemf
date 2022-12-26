@@ -17,7 +17,6 @@ macro_rules! adverb {
     };
 }
 
-
 adverb!(@env, a .swap g b => g.dyad(env, b.unwrap_or_else(|| a.c()), a));
 adverb!(@_ , _a .constant g _b => (**g).c() );
 adverb!(@env, a .monadic g _b => g.monad(env, a) );
