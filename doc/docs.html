@@ -507,6 +507,8 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>4²╝+5 ≡ 4²+(5²)
 4²╝▲ ≡ 4²▲  ' same as train (²▲)</pre>
 <p>2-adverb precedence is right-to-left.</p>
+<p>additionally, 1-adverbs can be used before 2-adverbs, and this applies them to the left operand:</p>
+<pre>`a-┴╓/`b ≡ `a(┴-)╓/`b</pre>
 <p>TODO example</p>
 <p>adverbs applied to their operands act like verbs, so you can set them just like verbs:</p>
 <pre>²╝+─discrim 4:discrim5 ≡ '41
@@ -542,7 +544,8 @@ h2>code { background-color: inherit; white-space: pre; }
 <h3 id="Combinators">Combinators</h3>
 <p>combinators call their operands in different ways. they are one of the main ways functions are defined; combinators are the "glue" that joins different functions.</p>
 <p>vemf has a lot of different combinators! here's a summary:</p>
-<pre>atop      +/ : α+/    , α+β/
+<pre>NAME         : MONADIC, DYADIC
+atop      +/ : α+/    , α+β/
 commute   ┴/ : α/α    , β/α
 atleft   +╜/ : α+/    , α+/β
 atright  +╙/ : α/     , α/(β+)
@@ -566,8 +569,8 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly:</p>
 <pre>{α*(α▲)½}─triang 6:triang ≡ '21
 {α▲*α½}─triang 6:triang ≡ '21  ' multiplication is commutative</pre>
-<p>but the tacit form is simpler (and shorter, and somewhat faster)</p>
-<p>here is another way of representing this that i can test automatically</p>
+<p>but the tacit form is simpler (and shorter, and somewhat faster).</p>
+<p>here is another way of representing all the combinators that i can test automatically</p>
 <pre>♫,;`(,`)─F ♫,;`[,`]─G ♫,;`{,`}─H ≡ █
 (`a┴G)   (`a┴G`b)    ≡ "[aa]"    "[ba]"
 (`aF╜G)  (`aF╜G`b)   ≡ "[(a)]"   "[(a)b]"
@@ -581,7 +584,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>i dont like parentheses. i dont like the fact that occasionally i have to use them to make things work. i dont like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as <code>+2</code> gains two characters when used with an adverb <code>(+2)╜/</code>. or with nested list literals <code>(123)(45)(6789)</code>:</p>
 <pre>7 (+2)╙/ 3 ≡ 7 │+2╙/ 3
 (123)(45)(6789) ≡ ├123│45╞6789</pre>
-<p>the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use.</p>
+<p>the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use. here are all the groupers:</p>
 <pre>2 3 4 5 6 7 8 9 Φ
 │ ├ ╞ ╟ ╠ ┤ ╡ ╢ ╣</pre>
 <p>TODO TODO</p>
@@ -666,7 +669,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>"testing"♀ ≡ "testin"</pre>
 <h2 class="literal" id="0D"><code>♪</code> (0x0D, <code>':</code>)</h2>
 <h3 id="Enclosed"><code>♪a</code> Enclosed</h3>
-<p>for a noun <code>a</code>, literal for a list with the one argument. same as <code>(α♫)</code></p>
+<p>for a noun <code>a</code>, literal for a list with the one argument. same as <code>(a♫)</code></p>
 <h3 id="Nominalize"><code>♪F</code> Nominalize</h3>
 <p>for a verb F, interpret it as a noun</p>
 <h2 class="verb" id="0E"><code>♫</code> (0x0E, <code>';</code>)</h2>
@@ -1733,10 +1736,17 @@ _2Ä0 ≡ π½-</pre>
 <h3 id="Count"><code>αòβ</code> Count</h3>
 <p>count the number of occurences of β in α. β-pervasive.</p>
 <pre>012073167140ò0123456789 ≡ 3311101200</pre>
-<h2 class="verb" id="96"><code>û</code> (0x96, <code>'o^</code>)</h2>
+<h2 class="verb" id="96"><code>û</code> (0x96, <code>'u^</code>)</h2>
 <h3 id="Occurence Count"><code>αû</code> Occurence Count</h3>
 <p>for every element of α, count the number of occurences of that element in the prefix before that element.</p>
 <pre>320110433250û ≡ 000011012102</pre>
+<p>therefore, <code>û¬</code> detects if an element is the first in the array:</p>
+<pre>320110433250û¬ ≡ 111100100010
+320110433250(û¬)╓‼ ≡ 320145  ' same as α∩</pre>
+<h3 id="Unique Index Of"><code>αûβ</code> Unique Index Of</h3>
+<p>for every element in β, find the index of the first unused match in α, or <a href="#None">None</a>.</p>
+<pre>22235 û 223357 ≡ 013█4█
+3333 û 3323 ≡ 01█2</pre>
 <h2 class="verb" id="97"><code>ù</code> (0x97, <code>'u`</code>)</h2>
 <h3 id="Real Part"><code>αù</code> Real Part</h3>
 <p>get the real part of a complex number α. scalar.</p>
@@ -2086,6 +2096,11 @@ _2Ñ0 ≡ 0</pre>
 <p>literal for an empty list with <a href="#None">None</a> fill</p>
 <pre>φ~ ≡ 0</pre>
 <h2 class="verb" id="EE"><code>ε</code> (0xEE, <code>'in 'e-</code>)</h2>
+<h3 id="Is List"><code>αε</code> Is List</h3>
+<p>returns 0 if α is a scalar, otherwise 1</p>
+<pre>4ε ≡ 0
+456ε ≡ 1
+(▲)ε ≡ 1</pre>
 <h3 id="Contains"><code>αεβ</code> Contains</h3>
 <p>for every item in the list β, check if it is in α</p>
 <pre>012073167140ε0123456789 ≡ 1111101100
@@ -2389,17 +2404,25 @@ _1÷_2 ≡ 1</pre>
 <h2 class="adverb2" id="CB"><code>╦</code> (0xCB, <code>'su</code>)</h2>
 <h3 id="Scan Until"><code>αF╦G</code> Scan Until</h3>
 <p>call a function G repeatedly, returning all the different iterations, until F passes. F is passed the current iteration as α and the last iteration as β.</p>
-<pre>'100(&lt;5)╦½ ≡ '100'50'25'12.5'6.25</pre>
+<pre>'100(&lt;5)╦½ ≡ '100'50'25'12.5'6.25'3.125</pre>
 <h3 id="Scan Until"><code>αF╦Gβ</code> Scan Until</h3>
+<p>bind β to G</p>
+<h3 id="Scan Until Compare"><code>αF_╦G</code> Scan Until Compare</h3>
+<p>call a function G repeatedly, returning all the different iterations, until <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β. <code>=╩</code> (or <code>≡╩</code>) is the fixed-point combinator:</p>
+<pre>1=_╦(/▲) ↑'12 *_f⌡/_f ≡ '1.000'2.000'1.500'1.666'1.600'1.625'1.615'1.619'1.617'1.618'1.617'1.618</pre>
+<h3 id="Scan Until Compare"><code>αF_╦Gβ</code> Scan Until Compare</h3>
 <p>bind β to G</p>
 <h2 class="adverb2" id="CA"><code>╩</code> (0xCA, <code>'U</code>)</h2>
 <h3 id="Until"><code>αF╩G</code> Until</h3>
-<p>call a function G repeatedly, returning the first result where F passes. F is passed the current iteration as α and the last iteration as β.</p>
-<pre>'100(&lt;5)╩½ ≡ '6.25
-'100(&lt;1)╩½ ≡ '1.5625</pre>
-<p><code>=╩</code> (or <code>≡╩</code>) is the fixed-point combinator:</p>
-<pre>1=╩(/▲) ≡ 5√▲½  ' golden ratio</pre>
+<p>call a function G repeatedly, returning the first result where <code>αF</code> passes.</p>
+<pre>'100(&lt;5)╩½ ≡ '3.125
+'100(&lt;1)╩½ ≡ '0.78125</pre>
 <h3 id="Until"><code>αF╩Gβ</code> Until</h3>
+<p>bind β to G</p>
+<h3 id="Until Compare"><code>αF_╩G</code> Until Compare</h3>
+<p>call a function G repeatedly, returning the first result where <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β. <code>=╩</code> (or <code>≡╩</code>) is the fixed-point combinator:</p>
+<pre>1=_╩(/▲) ≡ 5√▲½  ' golden ratio</pre>
+<h3 id="Until Compare"><code>αF_╩Gβ</code> Until Compare</h3>
 <p>bind β to G</p>
 <h2 class="adverb2" id="D2"><code>╥</code> (0xD2, <code>'sp</code>)</h2>
 <h3 id="Scan Power"><code>F╥G</code> Scan Power</h3>

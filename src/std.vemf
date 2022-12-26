@@ -112,10 +112,9 @@ _Ö_ë─Ö
 ╘@─¿
 ││~▼╓@╬_╛┴@─¡
 
-.inuntil─╩
-.inuntilscan─╦
-.inpower─╨
-.inpowerscan─╥
+.inuntil─╩ .inuntilscan─╦
+.inuntilcmp─_╩ .inuntilscancmp─_╦
+.inpower─╨ .inpowerscan─╥
 
 :ingetfill╬:insetfill─▐
 .inisnan┼ ╬ ╕►╨█ ─▄

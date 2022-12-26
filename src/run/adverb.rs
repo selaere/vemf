@@ -7,7 +7,7 @@ pub enum AvT {
     Each, EachLeft, Conform, Extend,
     Scan, ScanPairs, Reduce, Stencil, Valences,
     Overleft, Overright, Over, Forkleft, Forkright,
-    Until, UntilScan, Power, PowerScan,
+    Until, UntilScan, Power, PowerScan, UntilCmp, UntilScanCmp,
     Drill,
     Cycle,
 }
@@ -37,12 +37,14 @@ pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>, f: Option<&Rc<Val>>, g
         Self::Overright => { let r = b.map(|b| fg.monad(env, b)); g.call(env, a, r) },
         Self::Forkleft  => { let l = fg.call(env, a.c(), b.c()); g.dyad(env, l, b.unwrap_or(a)) },
         Self::Forkright => { let r = fg.call(env, a.c(), b); g.dyad(env, a, r) },
-        Self::Until =>     until(env, a, b, fg, g),
-        Self::UntilScan => until_scan(env, a, b, fg, g),
-        Self::Power =>     power(env, a, b, fg, g),
-        Self::PowerScan => power_scan(env, a, b, fg, g),
-        Self::Drill     => drill(env, a, b, fg, g),
-        Self::Cycle     => cycle(env, a, g),
+        Self::Until        => until(env, a, b, fg, g),
+        Self::UntilScan    => until_scan(env, a, b, fg, g),
+        Self::UntilCmp     => until_cmp(env, a, b, fg, g),
+        Self::UntilScanCmp => until_scan_cmp(env, a, b, fg, g),
+        Self::Power        => power(env, a, b, fg, g),
+        Self::PowerScan    => power_scan(env, a, b, fg, g),
+        Self::Drill        => drill(env, a, b, fg, g),
+        Self::Cycle        => cycle(env, a, g),
     }
 }
 }
@@ -153,6 +155,24 @@ pub fn reduce(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>) -> Val {
 pub fn until_scan(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
     let mut values = vec![a.c()];
     let mut val = a;
+    while !f.monad(env, val.c()).as_bool() {
+        val = g.call(env, val.c(), b.c());
+        values.push(val.c());
+    }
+    Val::lis(values)
+}
+
+pub fn until(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
+    let mut val = a;
+    while !f.monad(env, val.c()).as_bool() {
+        val = g.call(env, val.c(), b.c());
+    }
+    val
+}
+
+pub fn until_scan_cmp(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
+    let mut values = vec![a.c()];
+    let mut val = a;
     loop {
         let tried = g.call(env, val.c(), b.c());
         if f.dyad(env, tried.c(), val).as_bool() { break }
@@ -162,7 +182,7 @@ pub fn until_scan(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val
     Val::lis(values)
 }
 
-pub fn until(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
+pub fn until_cmp(env: &mut Env, a: Val, b: Option<Val>, f: &Rc<Val>, g: &Rc<Val>) -> Val {
     let mut val = a;
     loop {
         let tried = g.call(env, val.c(), b.c());
@@ -231,27 +251,14 @@ pub fn drill_iter(
     g: &Rc<Val>,
 ) -> Val {
     let index = iter.next();
-    if let Some(index) = index {
-        if index.is_nan() { return a; }
-        let index = match index.try_int().and_then(|x|->Option<usize> { x.try_into().ok() }) {
-            Some(i) => i, None => return a,
-        };
-        if let Val::Lis{l, fill} = a {
-            let mut v = match Rc::try_unwrap(l) {
-                Ok(l) => l,
-                Err(l) => l.to_vec(),
-            };
-            if v.len() <= index {
-                v.resize(index+1, (*fill).c());
-            }
-            v[index] = drill_iter(env, core::mem::take(&mut v[index]), b, iter, g);
-            Val::lis_fill(v, (*fill).c())
-        } else {
-            g.call(env, a, b)
-        }
-    } else {
-        g.call(env, a, b)
-    }
+    let Some(index) = index else { return g.call(env, a, b); };
+    if index.is_nan() { return a; }
+    let Some(index) = index.try_int().and_then(|x| usize::try_from(x).ok() ) else {return a};
+    let Val::Lis{l, fill} = a else { return g.call(env, a, b); };
+    let mut v = match Rc::try_unwrap(l) { Ok(l) => l, Err(l) => l.to_vec(), };
+    if v.len() <= index { v.resize(index+1, (*fill).c()); }
+    v[index] = drill_iter(env, core::mem::take(&mut v[index]), b, iter, g);
+    Val::lis_fill(v, (*fill).c())
 }
 
 pub fn cycle(env: &mut Env, a: Val, g: &Rc<Val>) -> Val {

@@ -50,7 +50,7 @@ func!(@env, _a :loadintrinsics => {
         Each, EachLeft, Conform, Extend,
         Scan, ScanPairs, Reduce, Stencil, Valences,
         Overleft, Overright, Over, Forkleft, Forkright,
-        Until, UntilScan, Power, PowerScan,
+        Until, UntilScan, Power, PowerScan, UntilCmp, UntilScanCmp,
         Drill,
         Cycle,
     ); Int(1)
