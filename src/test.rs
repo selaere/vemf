@@ -4,15 +4,16 @@ use alloc::collections::VecDeque;
 use rand::rngs;
 use crate::{prelude::*, run::io::io_result};
 
+const DOCS: &str = include_str!("../doc/raw.txt");
+
 #[test]
 fn docs() -> Result<(), String> {
-    let code: &str = include_str!("../doc/raw.txt");
     println!("doing doc tests...");
     let mut tested = 0;
     let mut failed = 0;
     let mut env = super::run::Env::new(bx(rngs::mock::StepRng::new(0, 0)));
     env.include_stdlib();
-    for (n, line) in code.lines().enumerate() {
+    for (n, line) in DOCS.lines().enumerate() {
         if let Some(line) = line.strip_prefix("> ") {
             if let Some((i, o)) = line.split_once(" ≡ ") {
                 let left = env.include_string(i);
@@ -21,7 +22,7 @@ fn docs() -> Result<(), String> {
                     println!("test failed line {} ``{i} ≡ {o}``: {left} ≢ {right}", n+1);
                     failed += 1;
                 } else {
-                    println!("test passed line {} ``{i} : {o}``", n+1);
+                    //println!("test passed line {} ``{i} : {o}``", n+1);
                 }
                 tested += 1;
             } else if let Some((i, o)) = line.split_once(" ± ") {
@@ -40,6 +41,27 @@ fn docs() -> Result<(), String> {
         Err(format!("failed {failed}/{tested} tests"))
     } else {Ok(())}
 }
+
+#[test]
+fn docs_escapes() {
+    use crate::codepage::{tobyte, tochars, tochar};
+    let mut trolls = Vec::new();
+    for page in DOCS.split("\n---\n") {
+        let Some(char) = page.lines().flat_map(|x| x.strip_prefix(":char: ")).next() else {continue};
+        let Some(escape) = page.lines().flat_map(|x| x.strip_prefix(":ascii: ")).next() else {continue};
+        for e in escape.split(' ') {
+            let re = crate::rewrite(
+                &iter::once(b'"').chain(e.bytes()).chain(iter::once(b'"')).collect::<Vec<u8>>()[..]
+            );
+            let th = tobyte(char.chars().next().unwrap()).unwrap();
+            if re[..] != [b'"', th, b'"'] {
+                trolls.push(format!("{} != \"{}\"", tochars(&re), tochar(th)));
+            }
+        }
+    }
+    if !trolls.is_empty() { panic!("{}", trolls.join("\n")) }
+}
+
 #[allow(clippy::type_complexity)]
 struct IO<'io> (&'io RefCell<(VecDeque<u8>, VecDeque<u8>, Vec<u8>, Vec<u8>)>);
 impl<'io> crate::Interface<'io> for IO<'io> {

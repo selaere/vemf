@@ -2203,7 +2203,7 @@ the number −1
 > Θ ≡ '-1
 ---
 :char: δ
-:ascii: 'D 'd-
+:ascii: 'd-
 :type: noun
 #0 Arguments
 the list of arguments passed in the command line (not including the executable name, flags or the script filename)
@@ -2674,7 +2674,7 @@ for a searched list of length `n` and window length `k`, the number of windows w
 see also: |Scan Pairs|
 ---
 :char: ╗
-:ascii: 'dp
+:ascii: 'dr
 :type: adverb2
 #1a2 Drill
 returns a list `α` with an item modified. the function G is run on item `αF`.
