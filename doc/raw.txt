@@ -707,6 +707,9 @@ get 2 to the power of α. scalar.
 #2 Remainder
 returns the remainder of α divided by β. scalar.
 > 7%5 ≡ 2
+> 2%5 ≡ 2
+> _3%5 ≡ 2
+> 4%0 ≡ █
 > '20↕%3 ≡ 0120120120 1201201201
 > '20↕-9└÷♫%3≡(_3_3_3_2_2_2ΘΘΘ00011122233)(01201201201201201201) ≡ 1
 this is euclidean modulo; it always gives a positive result such that `β*(a÷β) + (α%β) ≡ α`.

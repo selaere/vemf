@@ -83,7 +83,7 @@ func!(a :mul b => match (a, b) {
 });
 func!(a :div b => Num(a.as_c().fdiv(b.as_c())));
 func!(a :rem b => match (a, b) {
-    (Int(a), Int(b)) => Int(a.rem_euclid(b)),
+    (Int(a), Int(b)) => if b == 0 {NAN} else { Int(a.rem_euclid(b)) },
     (a, b) => {
         let (a, b) = (a.as_c(), b.as_c());
         let mut r = a % b;
