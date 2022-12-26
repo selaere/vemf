@@ -117,7 +117,7 @@ impl Val {
             }
 
             Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.rc()), a.rc()),
-            Val::Av(t, f, g) => t.call(env, a, b, f.as_ref(), g),
+            Val::Av(t, f, g) => t(env, a, b, f.as_ref(), g),
             Val::Func(f) => f(env, a, b),
         }
     }
@@ -204,8 +204,8 @@ fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
         Val::Bind { f, b } => (f, b).hash(state),
         Val::Trn2 { a, f } => (a, f).hash(state),
         Val::Trn3 { a, f, b } | Val::Fork { a, f, b } => (a, f, b).hash(state),
-        Val::Av(t, f, g) => (t, f, g).hash(state),
-        Val::AvBuilder(t) => t.hash(state),
+        Val::Av(t, f, g) => (*t as usize, f, g).hash(state),
+        Val::AvBuilder(t) => (*t as usize).hash(state),
         Val::Err(x) => x.hash(state),
         // these are hashed by reference
         Val::Dfn { loc, s } => (Rc::as_ptr(loc), s.as_ptr()).hash(state),

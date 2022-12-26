@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use super::{Val::{self, Num, Int}, NAN, adverb::AvT, c64, val::complexcmp, list};
+use super::{Val::{self, Num, Int}, NAN, adverb, c64, val::complexcmp, list};
 
 #[macro_export]
 macro_rules! func {
@@ -43,16 +43,16 @@ func!(@env, _a :loadintrinsics => {
     macro_rules! load_av {($($name:ident,)*) => { $( {
         let mut name = Bstr::from(&b"in"[..]);
         name.extend(stringify!($name).to_ascii_lowercase().bytes());
-        env.set_local(name, Val::AvBuilder(AvT::$name))
+        env.set_local(name, Val::AvBuilder(adverb::$name))
     } );* }}
     load_av!(
-        Swap, Const, Monadic,
-        Each, EachLeft, Conform, Extend,
-        Scan, ScanPairs, Reduce, Stencil, Valences,
-        Overleft, Overright, Over, Forkleft, Forkright,
-        Until, UntilScan, Power, PowerScan, UntilCmp, UntilScanCmp,
-        Drill,
-        Cycle,
+        swap, constant, monadic,
+        each, eachleft, conform, extend,
+        scan, scanpairs, reduce, stencil, valences,
+        overleft, overright, over, forkleft, forkright,
+        until, untilscan, power, powerscan, untilcmp, untilscancmp,
+        drill,
+        cycle,
     ); Int(1)
 });
 

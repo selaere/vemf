@@ -1,6 +1,6 @@
 use crate::prelude::*;
 use iter::FusedIterator;
-use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb::AvT, intrn::left};
+use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb, intrn::left};
 
 impl Val {
 
@@ -173,7 +173,7 @@ func!(a :iota => match a {
         Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>()),
     Num(n) => if n.is_infinite() {Val::Func(left)} else {iota_scalar(n.re as i64)},
     Int(n) => iota_scalar(n),
-    _ => Val::Av(AvT::Const, None, NAN.rc()),
+    _ => Val::Av(adverb::constant, None, NAN.rc()),
 });
 func!(a :pair b => Val::lis(vec![a, b]));
 func!(a :enlist => Val::lis(vec![a]));
@@ -228,7 +228,9 @@ pub fn reshape(env: &mut Env, a: Val, b: Val, isright: bool) -> Val {
     if let Some(index) = spot {
         fn divceil(x: usize, y: usize) -> usize {x / y + usize::from(x % y != 0)}
         let num = divceil(
-            match &a { Val::Av(AvT::Cycle, _, c) => c.len(), e => e.len() },
+            match &a { 
+                Val::Av(t, _, c) if *t as usize == adverb::cycle as usize => c.len(),
+                e => e.len() },
             product.unsigned_abs(),
         );
         shape[index] = num;
