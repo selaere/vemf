@@ -251,7 +251,7 @@ print α to standard output, with a training newline (0x0A)
 see also: |Print|, |Write|
 #2 Print Line
 print α and return β
-> "Calculating the square root of two..."☻2√
+> "Calculating the square root of two..."☻2√ ≡ '1.4142135623730951
 #_12 Print Formatted
 prints `αⁿ` or `αⁿβ` and returns α unchanged. useful when debugging trains. equivalent to `ⁿ╖☻`
 ---
@@ -995,10 +995,14 @@ get the depth of the deepest element in α. same as `▬~`
 > (1234)((56)(78))(90)= ≡ 3
 see also: |Shape|
 #2 Equals
-return 1 if α = β, else 0. scalar. two NaNs compare equal.
+return 1 if α = β, else 0. scalar.
 > 5=3 ≡ 0
 > 3=3 ≡ 1
 > 3=5 ≡ 0
+> 123454321234=2 ≡ 010000010100
+> "words words words"=`  ≡ 00000100000100000
+two NaNs compare equal:
+> █=█ ≡ 1
 ---
 :char: >
 :type: verb
@@ -1683,19 +1687,20 @@ join the lists in α with the separator β
 :char: Æ
 :ascii: 'aE
 :type: verb
-#1 Extend Infinitely
-turn α into an infinite list
+#1 Extend
+turn α into an infinite list, where the items outside the list are α's fill. equivalent to `{┴@α}`
 > 123+45 ≡ 57
 > 123+(45▐0) ≡ 57
 > 123+(45▐0Æ) ≡ 573
 > 123+(45Æ) ≡ 57█
 > 123Æ~ ≡ ∞
-#2 Extend
-extend α to the length of β
-> 12345Æ234 ≡ 123
-> 12345Æ"bee" ≡ 123
-> 12345Æ"long long" ≡ 12345████
-> 12345▐0Æ"long long" ≡ 123450000
+> 123Æ@5 ≡ █
+#2 Extend with Fill
+turn α into an infinite list, where the items outside the list are β. equivalent to `▐Æ`
+> 123+(45Æ0) ≡ 573
+> 123Æ0@5 ≡ 0
+> 123Æ█@5 ≡ █
+> 123Æ456@_2 ≡ 456
 ---
 :char: ô
 :ascii: 'o^
@@ -2669,7 +2674,7 @@ bind β to G
 :char: ╥
 :ascii: 'sp
 :type: adverb2
-#a2 Scan Power
+#1a2 Scan Power
 call a function G repeatedly, `αF` times. F will be executed with the arguments. this will return a list of length `αf+1`, including the original value.
 > '100 7╥½ ≡ '100'50'25'12.5'6.25'3.125'1.5625'0.78125
 #2a2 Scan Power
@@ -2678,7 +2683,7 @@ bind β to F and G
 :char: ╨
 :ascii: 'P
 :type: adverb2
-#a2 Power
+#1a2 Power
 call a function G repeatedly, `αF` times. F will be executed with the arguments.
 > '100 7╨½ ≡ '0.78125
 #2a2 Power
@@ -2694,6 +2699,8 @@ apply a function G to each successive slice ("window") of length `αF` of the li
 for a searched list of length `n` and window length `k`, the number of windows will be `n-k+1Ñ0` (even for `k=0`):
 > "thing"0╫► ≡ ()()()()()()
 see also: |Scan Pairs|
+#2a2 Power
+bind β to G
 ---
 :char: ╗
 :ascii: 'dr
@@ -2769,7 +2776,7 @@ if there is nothing in the statement body, the variable will be removed from the
 :char: ═
 :ascii: '"
 :type: literal
-#a═ Mutate Statement
+#a═name Mutate Statement
 like `↔name` |Mutate| but acts as a statement and changes the contents of the body.
 > 3─n 4─m *2═n n ≡ 6
 if there is nothing in the statement body, the variable will be removed from its scope.

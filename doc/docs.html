@@ -605,7 +605,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>see also: <a href="#Print">Print</a>, <a href="#Write">Write</a></p>
 <h3 id="Print Line"><code>α☻β</code> Print Line</h3>
 <p>print α and return β</p>
-<pre>"Calculating the square root of two..."☻2√</pre>
+<pre>"Calculating the square root of two..."☻2√ ≡ '1.4142135623730951</pre>
 <h3 id="Print Formatted"><code>α_☻</code> <code>α_☻β</code> Print Formatted</h3>
 <p>prints <code>αⁿ</code> or <code>αⁿβ</code> and returns α unchanged. useful when debugging trains. equivalent to <code>ⁿ╖☻</code></p>
 <h2 class="verb" id="03"><code>♥</code> (0x03, <code>'cx</code>)</h2>
@@ -1206,10 +1206,14 @@ _1%_2 ≡ 1</pre>
 (1234)((56)(78))(90)= ≡ 3</pre>
 <p>see also: <a href="#Shape">Shape</a></p>
 <h3 id="Equals"><code>α=β</code> Equals</h3>
-<p>return 1 if α = β, else 0. scalar. two NaNs compare equal.</p>
+<p>return 1 if α = β, else 0. scalar.</p>
 <pre>5=3 ≡ 0
 3=3 ≡ 1
-3=5 ≡ 0</pre>
+3=5 ≡ 0
+123454321234=2 ≡ 010000010100
+"words words words"=`  ≡ 00000100000100000</pre>
+<p>two NaNs compare equal:</p>
+<pre>█=█ ≡ 1</pre>
 <h2 class="verb" id="3E"><code>></code> (0x3E)</h2>
 <h3 id="Grade Up"><code>α></code> Grade Up</h3>
 <p>Grade Up can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α~↕</code> according to α</p>
@@ -1704,19 +1708,20 @@ _2Ä0 ≡ π½-</pre>
 123ªæ", " ≡ "1, 2, 3"
 "Hello"æ`f ≡ "Hfeflflfo"</pre>
 <h2 class="verb" id="92"><code>Æ</code> (0x92, <code>'aE</code>)</h2>
-<h3 id="Extend Infinitely"><code>αÆ</code> Extend Infinitely</h3>
-<p>turn α into an infinite list</p>
+<h3 id="Extend"><code>αÆ</code> Extend</h3>
+<p>turn α into an infinite list, where the items outside the list are α's fill. equivalent to <code>{┴@α}</code></p>
 <pre>123+45 ≡ 57
 123+(45▐0) ≡ 57
 123+(45▐0Æ) ≡ 573
 123+(45Æ) ≡ 57█
-123Æ~ ≡ ∞</pre>
-<h3 id="Extend"><code>αÆβ</code> Extend</h3>
-<p>extend α to the length of β</p>
-<pre>12345Æ234 ≡ 123
-12345Æ"bee" ≡ 123
-12345Æ"long long" ≡ 12345████
-12345▐0Æ"long long" ≡ 123450000</pre>
+123Æ~ ≡ ∞
+123Æ@5 ≡ █</pre>
+<h3 id="Extend with Fill"><code>αÆβ</code> Extend with Fill</h3>
+<p>turn α into an infinite list, where the items outside the list are β. equivalent to <code>▐Æ</code></p>
+<pre>123+(45Æ0) ≡ 573
+123Æ0@5 ≡ 0
+123Æ█@5 ≡ █
+123Æ456@_2 ≡ 456</pre>
 <h2 class="verb" id="93"><code>ô</code> (0x93, <code>'o^</code>)</h2>
 <h3 id="Cosine"><code>αô</code> Cosine</h3>
 <p>calculate <code>cos α</code>. scalar.</p>
@@ -2447,13 +2452,13 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Until Compare"><code>αF_╩Gβ</code> Until Compare</h3>
 <p>bind β to G</p>
 <h2 class="adverb2" id="D2"><code>╥</code> (0xD2, <code>'sp</code>)</h2>
-<h3 id="Scan Power"><code>F╥G</code> Scan Power</h3>
+<h3 id="Scan Power"><code>αF╥G</code> Scan Power</h3>
 <p>call a function G repeatedly, <code>αF</code> times. F will be executed with the arguments. this will return a list of length <code>αf+1</code>, including the original value.</p>
 <pre>'100 7╥½ ≡ '100'50'25'12.5'6.25'3.125'1.5625'0.78125</pre>
 <h3 id="Scan Power"><code>αF╥Gβ</code> Scan Power</h3>
 <p>bind β to F and G</p>
 <h2 class="adverb2" id="D0"><code>╨</code> (0xD0, <code>'P</code>)</h2>
-<h3 id="Power"><code>F╨G</code> Power</h3>
+<h3 id="Power"><code>αF╨G</code> Power</h3>
 <p>call a function G repeatedly, <code>αF</code> times. F will be executed with the arguments.</p>
 <pre>'100 7╨½ ≡ '0.78125</pre>
 <h3 id="Power"><code>αF╨Gβ</code> Power</h3>
@@ -2466,6 +2471,8 @@ _1÷_2 ≡ 1</pre>
 <p>for a searched list of length <code>n</code> and window length <code>k</code>, the number of windows will be <code>n-k+1Ñ0</code> (even for <code>k=0</code>):</p>
 <pre>"thing"0╫► ≡ ()()()()()()</pre>
 <p>see also: <a href="#Scan Pairs">Scan Pairs</a></p>
+<h3 id="Power"><code>αF╫Gβ</code> Power</h3>
+<p>bind β to G</p>
 <h2 class="adverb2" id="BB"><code>╗</code> (0xBB, <code>'dr</code>)</h2>
 <h3 id="Drill"><code>αF╗G</code> Drill</h3>
 <p>returns a list <code>α</code> with an item modified. the function G is run on item <code>αF</code>.</p>
@@ -2514,7 +2521,7 @@ _1÷_2 ≡ 1</pre>
 <p>if there is nothing in the statement body, the variable will be removed from the local scope.</p>
 <pre>4─a0{5─a ─a a} ≡ 4</pre>
 <h2 class="literal" id="CD"><code>═</code> (0xCD, <code>'"</code>)</h2>
-<h3 id="Mutate Statement"><code>a═</code> Mutate Statement</h3>
+<h3 id="Mutate Statement"><code>a═name</code> Mutate Statement</h3>
 <p>like <code>↔name</code> <a href="#Mutate">Mutate</a> but acts as a statement and changes the contents of the body.</p>
 <pre>3─n 4─m *2═n n ≡ 6</pre>
 <p>if there is nothing in the statement body, the variable will be removed from its scope.</p>

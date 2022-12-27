@@ -33,7 +33,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
         env.set_local(name, Val::Func($name))
     } );* }}
     load_func!(
-        add, sub, mul, div, dive, rem, pow, log, lt, eq, gt, and, or, max, min, atan2, approx, band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp, sin, asin, cos, acos, tan, atan, sqrt, round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
+        add, sub, mul, div, dive, rem, pow, log, lt, gt, and, or, max, min, atan2, approx, band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp, sin, asin, cos, acos, tan, atan, sqrt, round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
         left, right, get, set, call, islist,
         shape, len, index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, matches,
         print, println, output, input, fromutf8, toutf8, fromcp, tocp, exit, format, numfmt, parse,
@@ -100,10 +100,6 @@ func!(a :log b => Num(a.as_c().log(b.as_c().norm())));
 func!(a :lt b => match (a, b) {
     (Int(a), Int(b)) => Val::bool(a < b),
     (a, b) => a.try_c().zip(b.try_c()).map_or(NAN, |(a, b)| Val::bool(complexcmp(a, b).is_lt()))
-});
-func!(a :eq b => match (a, b) {
-    (Int(a), Int(b)) => Val::bool(a == b),
-    (a, b) => a.try_c().zip(b.try_c()).map_or(NAN, |(a, b)| Val::bool(a == b))
 });
 func!(a :gt b => match (a, b) {
     (Int(a), Int(b)) => Val::bool(a > b),
