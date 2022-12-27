@@ -109,7 +109,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <tr><td class="none"><a href="#00">¤</a></td>
 <td class="verb"><a href="#01">☺</a></td>
 <td class="verb"><a href="#02">☻</a></td>
-<td class="literal"><a href="#03">♥</a></td>
+<td class="verb"><a href="#03">♥</a></td>
 <td class="verb"><a href="#04">♦</a></td>
 <td class="verb"><a href="#05">♣</a></td>
 <td class="verb"><a href="#06">♠</a></td>
@@ -284,7 +284,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="verb"><a href="#AF">»</a></td></tr>
 <tr><td class="literal"><a href="#B0">░</a></td>
 <td class="literal"><a href="#B1">▒</a></td>
-<td class="none"><a href="#B2">▓</a></td>
+<td class="literal"><a href="#B2">▓</a></td>
 <td class="mgroup"><a href="#B3">│</a></td>
 <td class="mgroup"><a href="#B4">┤</a></td>
 <td class="mgroup"><a href="#B5">╡</a></td>
@@ -608,12 +608,20 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>"Calculating the square root of two..."☻2√</pre>
 <h3 id="Print Formatted"><code>α_☻</code> <code>α_☻β</code> Print Formatted</h3>
 <p>prints <code>αⁿ</code> or <code>αⁿβ</code> and returns α unchanged. useful when debugging trains. equivalent to <code>ⁿ╖☻</code></p>
-<h2 class="literal" id="03"><code>♥</code> (0x03, <code>'c2</code>)</h2>
-<h3 id="Digraph Literal"><code>♥ab</code> Digraph Literal</h3>
-<p>a 2 character literal.</p>
-<pre>♥() ≡ `(`)
-♥012 ≡ (`0`1)2</pre>
-<p>see also: <a href="#Character Literal">Character Literal</a></p>
+<h2 class="verb" id="03"><code>♥</code> (0x03, <code>'cx</code>)</h2>
+<h3 id="Pairs"><code>α♥</code> Pairs</h3>
+<p>split α into pairs, using the fill of α if a pair isn't full. equivalent to <code>♥2</code></p>
+<pre>123456789♥ ≡ (12)(34)(56)(78)(9█)
+123456789▐1♥ ≡ (12)(34)(56)(78)(91)
+"things"♥ ≡ "th""in""gs"</pre>
+<h3 id="Chunks"><code>α♥β</code> Chunks</h3>
+<p>split α into β-sized chunks, using the fill of α if a group isn't full. for scalar β, this is the same as <code>α↑█β</code> (see <a href="#Take">Take</a>):</p>
+<pre>123456789♥3 ≡ (123)(456)(789)
+123456789♥4 ≡ (1234)(5678)(9███)
+123456789▐0♥4 ≡ (1234)(5678)(9000)</pre>
+<p>if β is a list, <code>α♥β</code> reshapes into groups of <code>β*</code> and reshapes them. equivalent to <code>α↑(█,β)</code></p>
+<pre>123456789♥22 ≡ (│12│34)(│56│78)(│9█│██)
+"chunk brick block"▐` ♥23 ≡ ("chu""nk ")("bri""ck ")("blo""ck ")</pre>
 <h2 class="verb" id="04"><code>♦</code> (0x04, <code>'T</code>)</h2>
 <h3 id="Transpose"><code>α♦</code> Transpose</h3>
 <p>transpose a nested list. the shape will be the minimum of the lengths of the elements, or <code>╕~ñ;</code></p>
@@ -725,6 +733,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 "misisipi"‼11212121 ≡ "mississippi"</pre>
 <p>replicate also works with scalars and infinite lists</p>
 <pre>12345678‼2 ≡ 1122334455667788
+"cake"‼3 ≡ "cccaaakkkeee"
 "abcdef"‼.► ≡ "bccdddeeeefffff"</pre>
 <p>if β is longer than α, remaining elements are ignored; if α is longer than β, β's fill is used for the remaining elements</p>
 <pre>"abcdef"‼10101 ≡ "ace"
@@ -810,7 +819,11 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p><a href="#Reshape">Reshape</a>, is similar, but it cycles through the array instead of using the fill.</p>
 <p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code>)</p>
 <pre>"testing"▐`_↑2█ ≡ "test""ing_"
-"testing"▐`_↑█2 ≡ "te""st""in""g_"</pre>
+"testing"▐`_↑█2 ≡ "te""st""in""g_"
+"testing"▐`_↑█3 ≡ "tes""tin""g__"</pre>
+<p>these last cases can be replaced by <a href="#Chunks">Chunks</a> or <a href="#Pairs">Pairs</a>:</p>
+<pre>"testing"▐`_♥3 ≡ "tes""tin""g__"
+"testing"▐`_♥ ≡ "te""st""in""g_"</pre>
 <p>see also: <a href="#Reshape">Reshape</a>, <a href="#Take Right">Take Right</a>, <a href="#Drop">Drop</a></p>
 <h3 id="Prefixes"><code>α↑</code> Prefixes</h3>
 <p>get the prefixes of the list α; take for every item in <code>β♣▲</code> (without the empty list, but with the unmodified argument: you can remove it with <a href="#Behead">Behead</a>.)</p>
@@ -966,6 +979,9 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h3 id="Remainder"><code>α%β</code> Remainder</h3>
 <p>returns the remainder of α divided by β. scalar.</p>
 <pre>7%5 ≡ 2
+2%5 ≡ 2
+_3%5 ≡ 2
+4%0 ≡ █
 '20↕%3 ≡ 0120120120 1201201201
 '20↕-9└÷♫%3≡(_3_3_3_2_2_2ΘΘΘ00011122233)(01201201201201201201) ≡ 1</pre>
 <p>this is euclidean modulo; it always gives a positive result such that <code>β*(a÷β) + (α%β) ≡ α</code>.</p>
@@ -1865,7 +1881,7 @@ _4¢ ≡ 4
 <pre>3í4ú ≡ 3
 3ú ≡ 0</pre>
 <h2 class="verb" id="A4"><code>ñ</code> (0xA4, <code>'n- 'n~</code>)</h2>
-<h3 id="Min"><code>αñβ</code> Min</h3>
+<h3 id="Minimum"><code>αñβ</code> Minimum</h3>
 <p>return the lowest number between α and β. scalar.</p>
 <pre>0ñ2 ≡ 0
 _3ñ0 ≡ _3
@@ -1999,6 +2015,12 @@ _2Ñ0 ≡ 0</pre>
 <h2 class="literal" id="B1"><code>▒</code> (0xB1, <code>'l3</code>)</h2>
 <h3 id="Long Literal"><code>▒☺☻♥</code> Long Literal</h3>
 <p>shorthand for a <a href="#Integer Literal">Integer Literal</a> with 3 digits (the closing <code>■</code> is implied)</p>
+<h2 class="literal" id="B2"><code>▓</code> (0xB2, <code>'l4 'c2</code>)</h2>
+<h3 id="Digraph Literal"><code>▓ab</code> Digraph Literal</h3>
+<p>a 2 character literal.</p>
+<pre>▓() ≡ `(`)
+▓012 ≡ (`0`1)2</pre>
+<p>see also: <a href="#Character Literal">Character Literal</a></p>
 <h2 class="noun" id="DB"><code>█</code> (0xDB, <code>'N</code>)</h2>
 <h3 id="None"><code>█</code> None</h3>
 <p>none, null, nil, NaN. used as a dummy value sometimes.</p>
@@ -2081,7 +2103,7 @@ _2Ñ0 ≡ 0</pre>
 <h3 id="Minus One"><code>Θ</code> Minus One</h3>
 <p>the number −1</p>
 <pre>Θ ≡ '-1</pre>
-<h2 class="noun" id="EB"><code>δ</code> (0xEB, <code>'D 'd-</code>)</h2>
+<h2 class="noun" id="EB"><code>δ</code> (0xEB, <code>'d-</code>)</h2>
 <h3 id="Arguments"><code>δ</code> Arguments</h3>
 <p>the list of arguments passed in the command line (not including the executable name, flags or the script filename)</p>
 <h2 class="noun" id="EC"><code>∞</code> (0xEC, <code>'if</code>)</h2>
@@ -2444,7 +2466,7 @@ _1÷_2 ≡ 1</pre>
 <p>for a searched list of length <code>n</code> and window length <code>k</code>, the number of windows will be <code>n-k+1Ñ0</code> (even for <code>k=0</code>):</p>
 <pre>"thing"0╫► ≡ ()()()()()()</pre>
 <p>see also: <a href="#Scan Pairs">Scan Pairs</a></p>
-<h2 class="adverb2" id="BB"><code>╗</code> (0xBB, <code>'dp</code>)</h2>
+<h2 class="adverb2" id="BB"><code>╗</code> (0xBB, <code>'dr</code>)</h2>
 <h3 id="Drill"><code>αF╗G</code> Drill</h3>
 <p>returns a list <code>α</code> with an item modified. the function G is run on item <code>αF</code>.</p>
 <pre>(123)(456)(789) φ╗▲ ≡ (234)(567)(89Φ)

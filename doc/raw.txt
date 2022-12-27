@@ -256,13 +256,21 @@ print α and return β
 prints `αⁿ` or `αⁿβ` and returns α unchanged. useful when debugging trains. equivalent to `ⁿ╖☻`
 ---
 :char: ♥
-:ascii: 'c2
-:type: literal
-#♥ab Digraph Literal
-a 2 character literal.
-> ♥() ≡ `(`)
-> ♥012 ≡ (`0`1)2
-see also: |Character Literal|
+:ascii: 'cx
+:type: verb
+#1 Pairs
+split α into pairs, using the fill of α if a pair isn't full. equivalent to `♥2`
+> 123456789♥ ≡ (12)(34)(56)(78)(9█)
+> 123456789▐1♥ ≡ (12)(34)(56)(78)(91)
+> "things"♥ ≡ "th""in""gs"
+#2 Chunks
+split α into β-sized chunks, using the fill of α if a group isn't full. for scalar β, this is the same as `α↑█β` (see |Take|):
+> 123456789♥3 ≡ (123)(456)(789)
+> 123456789♥4 ≡ (1234)(5678)(9███)
+> 123456789▐0♥4 ≡ (1234)(5678)(9000)
+if β is a list, `α♥β` reshapes into groups of `β*` and reshapes them. equivalent to `α↑(█,β)`
+> 123456789♥22 ≡ (│12│34)(│56│78)(│9█│██)
+> "chunk brick block"▐` ♥23 ≡ ("chu""nk ")("bri""ck ")("blo""ck ")
 ---
 :char: ♦
 :ascii: 'T
@@ -418,6 +426,7 @@ it pairs up the elements of α and β, and returns a new list where each element
 > "misisipi"‼11212121 ≡ "mississippi"
 replicate also works with scalars and infinite lists
 > 12345678‼2 ≡ 1122334455667788
+> "cake"‼3 ≡ "cccaaakkkeee"
 > "abcdef"‼.► ≡ "bccdddeeeefffff"
 if β is longer than α, remaining elements are ignored; if α is longer than β, β's fill is used for the remaining elements
 > "abcdef"‼10101 ≡ "ace"
@@ -519,6 +528,10 @@ make a new list with a prefix shape of β, where the elements are taken from α 
 when there is a single |None| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-|None| elements of β and the length of α, or `β▀*/(α~)⌠`)
 > "testing"▐`_↑2█ ≡ "test""ing_"
 > "testing"▐`_↑█2 ≡ "te""st""in""g_"
+> "testing"▐`_↑█3 ≡ "tes""tin""g__"
+these last cases can be replaced by |Chunks| or |Pairs|:
+> "testing"▐`_♥3 ≡ "tes""tin""g__"
+> "testing"▐`_♥ ≡ "te""st""in""g_"
 see also: |Reshape|, |Take Right|, |Drop|
 #1 Prefixes
 get the prefixes of the list α; take for every item in `β♣▲` (without the empty list, but with the unmodified argument: you can remove it with |Behead|.)
@@ -1901,7 +1914,7 @@ get the imaginary part of a complex number α. scalar.
 :char: ñ
 :ascii: 'n- 'n~
 :type: verb
-#2 Min
+#2 Minimum
 return the lowest number between α and β. scalar.
 > 0ñ2 ≡ 0
 > _3ñ0 ≡ _3
@@ -2074,6 +2087,15 @@ shorthand for a |Integer Literal| with 2 digits (the closing `■` is implied)
 :type: literal
 #▒☺☻♥ Long Literal
 shorthand for a |Integer Literal| with 3 digits (the closing `■` is implied)
+---
+:char: ▓
+:ascii: 'l4 'c2
+:type: literal
+#▓ab Digraph Literal
+a 2 character literal.
+> ▓() ≡ `(`)
+> ▓012 ≡ (`0`1)2
+see also: |Character Literal|
 ---
 :char: █
 :ascii: 'N
