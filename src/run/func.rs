@@ -46,7 +46,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
         env.set_local(name, Val::AvBuilder(adverb::$name))
     } );* }}
     load_av!(
-        swap, constant, monadic,
+        swap, constant, monadic, bind, atop,
         each, eachleft, conform, extend,
         scan, scanpairs, reduce, stencil, valences,
         overleft, overright, over, forkleft, forkright,
@@ -94,6 +94,7 @@ func!(a :rem b => match (a, b) {
 intfunc!(a :dive b => if b == 0 {NAN} else { Int(a.div_euclid(b)) });
 func!(a :pow b => match (a, b) {
     (Int(a), Int(b)) if b >= 0 => Int(a.saturating_pow(b as u32)),
+    (a, Int(b @ -0x80000000..=0x7FFFFFFF)) => Num(a.as_c().powi(b as i32)),
     (a, b) => Num(a.as_c().powc(b.as_c())),
 });
 func!(a :log b => Num(a.as_c().log(b.as_c().norm())));

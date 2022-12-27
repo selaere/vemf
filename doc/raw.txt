@@ -2721,6 +2721,9 @@ bind β to F
 equivalent to `αFG`.
 #2a2 At Left
 equivalent to `αFGβ`.
+#_a2 Atop
+adverb form of atop, same as the 2-train `FG`. `αF_╜G` is equivalent to `αFG`, and `αF_╜Gβ` is equivalent to `αFβG`. useful when composing functions tacitly.
+see also: |Trains|
 ---
 :char: ╙
 :ascii: '(
@@ -2729,6 +2732,9 @@ equivalent to `αFGβ`.
 equivalent to `aF`.
 #2a2 At Right
 equivalent to `αF(βG)`.
+#_a2 Bind
+adverb form of bind, same as the train `Gf`, where `f` is F interpreted as a noun, (or rather, `.F`). note that the arguments are reversed. `αF_╙G` and `αF_╙Gβ` are equivalent to `αGf`; this ignores the second operand. useful when composing functions tacitly.
+see also: |Trains|
 ---
 :char: ╖
 :ascii: ']

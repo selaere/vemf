@@ -26,7 +26,8 @@ adverb!(@env, a f .over g b => {
     let r = b.map(|b| f.monad(env, b));
     g.call(env, l, r)
 });
-
+adverb!(@env, a f .bind g _b => g.dyad(env, a, (**f).c()));
+adverb!(@env, a f .atop g b  => { let x = f.call(env, a, b); g.monad(env, x) });
 adverb!(@env, a f .overleft  g b => { let l = f.monad(env, a); g.call(env, l, b) });
 adverb!(@env, a f .overright g b => { let r = b.map(|b| f.monad(env, b)); g.call(env, a, r) });
 adverb!(@env, a f .forkleft  g b => { let l = f.call(env, a.c(), b.c()); g.dyad(env, l, b.unwrap_or(a)) });
@@ -39,9 +40,7 @@ adverb!(@env, a .each g b =>
         if (a.is_infinite() && b.is_infinite())
         || (a.is_infinite() && b.is_scalar()  )
         || (a.is_scalar()   && b.is_infinite()) {
-            Val::Fork { a: a.rc(), 
-                        f: Val::Av(conform, None, Rc::clone(g)).rc(), 
-                        b: b.rc() }
+            Val::Fork(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc(), b.rc())
         } else if a.is_scalar() {
             b.into_iterf().map(|x| g.dyad(env, a.c(), x)).collect()
         } else if b.is_scalar() {
@@ -59,9 +58,9 @@ adverb!(@env, a .eachleft g b =>
         g.call(env, a, b)
     } else if a.is_infinite() {
         if let Some(b) = b {
-            Val::Fork { a: a.rc(), f: Rc::clone(g), b: b.rc() }
+            Val::Fork(a.rc(), Rc::clone(g), b.rc())
         } else {
-            Val::Trn2 { a: a.rc(), f: Rc::clone(g) }
+            Val::atop(a.rc(), Rc::clone(g))
         }
     } else { a.into_iterf().map(|x| g.call(env, x, b.c())).collect() }
 );
@@ -73,9 +72,7 @@ adverb!(@env, a .conform g b =>
         if (a.is_infinite() && b.is_infinite())
         || (a.is_infinite() && b.is_scalar())
         || (a.is_scalar() && b.is_infinite()) {
-            Val::Fork { a: a.rc(), 
-                        f: Val::Av(conform, None, Rc::clone(g)).rc(), 
-                        b: b.rc() }
+            Val::Fork(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc(), b.rc())
         } else if a.is_scalar() {
             b.into_iterf().map(|x| conform(env, a.c(), Some(x), None, g)).collect()
         } else if b.is_scalar() {
@@ -94,9 +91,9 @@ adverb!(@env, a .extend g b =>
         g.call(env, a, b)
     } else if a.is_infinite() { 
         if let Some(b) = b {
-            Val::Fork { a: a.rc(), f: Val::Av(conform, None, Rc::clone(g)).rc(), b: b.rc() }
+            Val::Fork(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc(), b.rc())
         } else {
-            Val::Trn2 { a: a.rc(), f: Val::Av(conform, None, Rc::clone(g)).rc() }
+            Val::atop(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc())
         }
     } else { a.into_iterf().map(|x| extend(env, x, b.c(), None, g)).collect()}
 );

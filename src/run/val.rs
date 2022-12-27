@@ -1,7 +1,7 @@
 use core::cmp::Ordering;
 
 use super::Val::{self, Num, Int, Lis};
-use super::{NAN, c64, Env};
+use super::{NAN, c64, Env, adverb};
 use crate::prelude::*;
 
 impl Val {
@@ -101,21 +101,11 @@ impl Val {
                 env.stack.pop();
                 val
             },
-            Val::Bind { f: aa, b: bb } => aa.dyad(env, a, (**bb).c()),
-            Val::Trn2 { a: aa, f: ff } => {
-                let x = aa.call(env, a, b);
-                ff.monad(env, x)
-            },
-            Val::Trn3 { a: aa, f: ff, b: bb } => {
-                let x = aa.call(env, a, b);
-                ff.dyad(env, x, (**bb).c())
-            },
-            Val::Fork { a: aa, f: ff, b: bb } => {
+            Val::Fork(aa, ff, bb) => {
                 let l = aa.call(env, a.c(), b.c());
                 let r = bb.call(env, a, b);
                 ff.dyad(env, l, r)
             }
-
             Val::AvBuilder(t) => Val::Av(*t, b.map(|x| x.rc()), a.rc()),
             Val::Av(t, f, g) => t(env, a, b, f.as_ref(), g),
             Val::Func(f) => f(env, a, b),
@@ -123,6 +113,9 @@ impl Val {
     }
 
     pub fn rc(self) -> Rc<Self> { Rc::new(self) }
+
+    pub fn atop(a: Rc<Val>, f: Rc<Val>) -> Val { Val::Av(adverb::atop, Some(a), f) }
+    pub fn bind(f: Rc<Val>, b: Rc<Val>) -> Val { Val::Av(adverb::bind, Some(b), f) }
 
 }
 
@@ -201,9 +194,7 @@ fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
         Int(n) => state.write_i64(*n),
         Lis { l, fill } => (fill, l).hash(state),
         Val::FSet(n) | Val::FCng(n) => n.hash(state),
-        Val::Bind { f, b } => (f, b).hash(state),
-        Val::Trn2 { a, f } => (a, f).hash(state),
-        Val::Trn3 { a, f, b } | Val::Fork { a, f, b } => (a, f, b).hash(state),
+        Val::Fork(a, f, b) => (a, f, b).hash(state),
         Val::Av(t, f, g) => (*t as usize, f, g).hash(state),
         Val::AvBuilder(t) => (*t as usize).hash(state),
         Val::Err(x) => x.hash(state),

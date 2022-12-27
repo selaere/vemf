@@ -4,12 +4,10 @@
 .invalences─╬
 
 .inconstant─╒
-.inswap─┴
-.inmonadic─┬
-.inoverleft─╜
-.inoverright─╙
-.inforkleft─╖
-.inforkright─╓
+.inswap─┴ .inmonadic─┬
+.inoverleft─╜ .inoverright─╙
+.inforkleft─╖ .inforkright─╓
+.inatop─_╜ .inbind─_╙
 .inover─╝
 
 .ineach─╕
@@ -192,7 +190,7 @@ _╘(┴~╙%)╓└♂,↑─«(«1)╬«─«
 (£└(=0╤+)▀▄)╓Ü▐█─¥│¥Φ╬¥─¥
 (┼└ù♫ú) ╬ └(┴ÿ╜~╙↑╤+)╓Ü↑├►~▲─₧
 
-{┴@α}─Æ Æ╬(▐Æ)─Æ
+┴:_╙♪┴@─Æ Æ╬(▐Æ)─Æ
 
 .indrill─╗
 

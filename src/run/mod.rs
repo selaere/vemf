@@ -37,10 +37,7 @@ pub enum Val {
     Lis { l: Rc<Vec<Val>>, fill: Rc<Val> },
     FSet(Bstr), FCng(Bstr),
     Dfn { loc: Rc<HashMap<Bstr, Val>>, s: Rc<[Stmt]> },
-    Bind{ f: Rc<Val>, b: Rc<Val> },
-    Trn2{ a: Rc<Val>, f: Rc<Val> },
-    Trn3{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
-    Fork{ a: Rc<Val>, f: Rc<Val>, b: Rc<Val> },
+    Fork(Rc<Val>, Rc<Val>, Rc<Val>),
     Av(AvT, Option<Rc<Val>>, Rc<Val>),
     AvBuilder(AvT),
     Err(i32), // exit code
@@ -169,19 +166,19 @@ impl<'io> Env<'io> {
             },
             Expr::Bind(f, b) => {
                 let f = eval!(&f.c()); let b = eval!(&b.c());
-                Val::Bind{f: f.rc(), b: b.rc()}
+                Val::bind(f.rc(), b.rc())
             },
             Expr::Trn2(a, f) => {
                 let a = eval!(&a.c()); let f = eval!(&f.c());
-                Val::Trn2{a: a.rc(), f: f.rc()}
+                Val::atop(a.rc(), f.rc())
             },
             Expr::Trn3(a, f, b) => {
                 let a = eval!(&a.c()); let f = eval!(&f.c()); let b = eval!(&b.c());
-                Val::Trn3{a: a.rc(), f: f.rc(), b: b.rc()}
+                Val::atop(a.rc(), Val::bind(f.rc(), b.rc()).rc())
             },
             Expr::Fork(a, f, b) => {
                 let a = eval!(&a.c()); let f = eval!(&f.c()); let b = eval!(&b.c());
-                Val::Fork{a: a.rc(), f: f.rc(), b: b.rc()}
+                Val::Fork(a.rc(), f.rc(), b.rc())
             },
             Expr::Dfn { s, cap } => {
                 let mut locals = HashMap::with_capacity(cap.len());
