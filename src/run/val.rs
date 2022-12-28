@@ -10,7 +10,7 @@ impl Val {
     
     pub fn bool(b: bool) -> Val { Int(i64::from(b)) }
 
-    //pub fn is_list(&self) -> bool { matches!(self, Lis {..})}
+    pub fn is_list(&self) -> bool { matches!(self, Lis {..})}
 
     pub fn is_nan(&self) -> bool { match self { Num(n) => n.is_nan(), _ => false }}
 

@@ -1654,13 +1654,16 @@ calculate atan2(α, β). equivalent to `íÄ`. scalar.
 :ascii: 'aO
 :type: verb
 #1 Radians
-converts α radians to degrees. scalar.
+converts α radians to degrees. equivalent to `*├'180/π`. scalar.
 > 2*πÅ ≡ '360
 > πÅ ≡ '180
 > π½Å ≡ '90
 > π¼Å ≡ '360
+#2 Absolute Difference
+calculate the absolute difference of α and β. equivalent to `-¢`. scalar.
 > 3Å5 ≡ 2
 > 5Å3 ≡ 2
+> Φ↕Å3 ≡ 3210123456
 ---
 :char: É
 :ascii: 'e+
@@ -2393,7 +2396,7 @@ equivalent to `≡¬`
 :ascii: 'dg
 :type: verb
 #1 As Degrees
-converts α degrees to radians.
+converts α degrees to radians. equivalent to `*├π/'180`. scalar.
 > 0° ≡ 0
 > '90° ≡ π½
 > '180° ≡ π
@@ -2706,13 +2709,36 @@ bind β to G
 :ascii: 'dr
 :type: adverb2
 #1a2 Drill
-returns a list `α` with an item modified. the function G is run on item `αF`.
+return a list `α` with an item modified. the function G is run on item `αF`.
 > (123)(456)(789) φ╗▲ ≡ (234)(567)(89Φ)
 > (123)(456)(789) 0╗▲ ≡ (234)(456)(789)
-> (123)(456)(789) (12)╗▲ ≡ (123)(457)(789)
 > "x../xo./..o"(#`.)╗`x ≡ "xx./xo./..o"
+if the result of `αF` is a list, it can modify items deep in a nested list:
+> (123)(456)(789) (12)╗▲ ≡ (123)(457)(789)
 #2a2 Drill
 bind β to F
+---
+:char: ╔
+:ascii: 'am
+:type: adverb2
+#1a2 Amend
+return a list where the items at indices `αF` are modified by `G`.
+> "hello world"(46789)╔Ç ≡ "hellO WORLd"
+the whole list of the items to be modified is passed to G (`α¿(αF)G`) and its result is used to replace the items in α. this function is useful for modifying sublists (or substrings) in a list:
+> "big brown fox"(4↕9)╔» ≡ "big nbrow fox"
+> "big brown fox"(4↕9)╔(«2) ≡ "big ownbr fox"
+> "big brown fox"(4↕9)╔"green" ≡ "big green fox"
+> 0123456789(3↨7)╔▲ ≡ 0124567889
+but there's no requirement that `αF` is contiguous, or in order:
+> ". . . . . "(723904)╔"cheese" ≡ "s hee .c.e"
+> 0123456789(681942)╔▼ ≡ 0013355778
+if the result list from G is shorter than `αF`, the last indices will be removed from the list:
+> "big brown fox"(4↕9)╔"blue" ≡ "big blue fox"
+> 0248Φ(124)╔φ ≡ 08
+and if the result list from G is longer than `αF`, the last values will be inserted after the last one:
+> "big brown fox"(4↕9)╔(‼2) ≡ "big bbrroowwnn fox"
+#2a2 Amend
+bind β to F and G
 ---
 :char: ╜
 :ascii: ')

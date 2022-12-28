@@ -307,7 +307,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="mgroup"><a href="#C6">╞</a></td>
 <td class="mgroup"><a href="#C7">╟</a></td>
 <td class="none"><a href="#C8">╚</a></td>
-<td class="none"><a href="#C9">╔</a></td>
+<td class="adverb2"><a href="#C9">╔</a></td>
 <td class="adverb2"><a href="#CA">╩</a></td>
 <td class="adverb2"><a href="#CB">╦</a></td>
 <td class="mgroup"><a href="#CC">╠</a></td>
@@ -1684,13 +1684,16 @@ _2íÄ ≡ π½-
 _2Ä0 ≡ π½-</pre>
 <h2 class="verb" id="8F"><code>Å</code> (0x8F, <code>'aO</code>)</h2>
 <h3 id="Radians"><code>αÅ</code> Radians</h3>
-<p>converts α radians to degrees. scalar.</p>
+<p>converts α radians to degrees. equivalent to <code>*├'180/π</code>. scalar.</p>
 <pre>2*πÅ ≡ '360
 πÅ ≡ '180
 π½Å ≡ '90
-π¼Å ≡ '360
-3Å5 ≡ 2
-5Å3 ≡ 2</pre>
+π¼Å ≡ '360</pre>
+<h3 id="Absolute Difference"><code>αÅβ</code> Absolute Difference</h3>
+<p>calculate the absolute difference of α and β. equivalent to <code>-¢</code>. scalar.</p>
+<pre>3Å5 ≡ 2
+5Å3 ≡ 2
+Φ↕Å3 ≡ 3210123456</pre>
 <h2 class="verb" id="90"><code>É</code> (0x90, <code>'e+</code>)</h2>
 <h3 id="Write"><code>αÉβ</code> Write</h3>
 <p>write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
@@ -2231,7 +2234,7 @@ _1÷_2 ≡ 1</pre>
 (+)≈(+) ≡ 1</pre>
 <h2 class="verb" id="F8"><code>°</code> (0xF8, <code>'dg</code>)</h2>
 <h3 id="As Degrees"><code>α°</code> As Degrees</h3>
-<p>converts α degrees to radians.</p>
+<p>converts α degrees to radians. equivalent to <code>*├π/'180</code>. scalar.</p>
 <pre>0° ≡ 0
 '90° ≡ π½
 '180° ≡ π
@@ -2475,23 +2478,49 @@ _1÷_2 ≡ 1</pre>
 <p>bind β to G</p>
 <h2 class="adverb2" id="BB"><code>╗</code> (0xBB, <code>'dr</code>)</h2>
 <h3 id="Drill"><code>αF╗G</code> Drill</h3>
-<p>returns a list <code>α</code> with an item modified. the function G is run on item <code>αF</code>.</p>
+<p>return a list <code>α</code> with an item modified. the function G is run on item <code>αF</code>.</p>
 <pre>(123)(456)(789) φ╗▲ ≡ (234)(567)(89Φ)
 (123)(456)(789) 0╗▲ ≡ (234)(456)(789)
-(123)(456)(789) (12)╗▲ ≡ (123)(457)(789)
 "x../xo./..o"(#`.)╗`x ≡ "xx./xo./..o"</pre>
+<p>if the result of <code>αF</code> is a list, it can modify items deep in a nested list:</p>
+<pre>(123)(456)(789) (12)╗▲ ≡ (123)(457)(789)</pre>
 <h3 id="Drill"><code>αF╗Gβ</code> Drill</h3>
 <p>bind β to F</p>
+<h2 class="adverb2" id="C9"><code>╔</code> (0xC9, <code>'am</code>)</h2>
+<h3 id="Amend"><code>αF╔G</code> Amend</h3>
+<p>return a list where the items at indices <code>αF</code> are modified by <code>G</code>.</p>
+<pre>"hello world"(46789)╔Ç ≡ "hellO WORLd"</pre>
+<p>the whole list of the items to be modified is passed to G (<code>α¿(αF)G</code>) and its result is used to replace the items in α. this function is useful for modifying sublists (or substrings) in a list:</p>
+<pre>"big brown fox"(4↕9)╔» ≡ "big nbrow fox"
+"big brown fox"(4↕9)╔(«2) ≡ "big ownbr fox"
+"big brown fox"(4↕9)╔"green" ≡ "big green fox"
+0123456789(3↨7)╔▲ ≡ 0124567889</pre>
+<p>but there's no requirement that <code>αF</code> is contiguous, or in order:</p>
+<pre>". . . . . "(723904)╔"cheese" ≡ "s hee .c.e"
+0123456789(681942)╔▼ ≡ 0013355778</pre>
+<p>if the result list from G is shorter than <code>αF</code>, the last indices will be removed from the list:</p>
+<pre>"big brown fox"(4↕9)╔"blue" ≡ "big blue fox"
+0248Φ(124)╔φ ≡ 08</pre>
+<p>and if the result list from G is longer than <code>αF</code>, the last values will be inserted after the last one:</p>
+<pre>"big brown fox"(4↕9)╔(‼2) ≡ "big bbrroowwnn fox"</pre>
+<h3 id="Amend"><code>αF╔Gβ</code> Amend</h3>
+<p>bind β to F and G</p>
 <h2 class="adverb2" id="BD"><code>╜</code> (0xBD, <code>')</code>)</h2>
 <h3 id="At Left"><code>αF╜G</code> At Left</h3>
 <p>equivalent to <code>αFG</code>.</p>
 <h3 id="At Left"><code>αF╜Gβ</code> At Left</h3>
 <p>equivalent to <code>αFGβ</code>.</p>
+<h3 id="Atop"><code>F_╜G</code> Atop</h3>
+<p>adverb form of atop, same as the 2-train <code>FG</code>. <code>αF_╜G</code> is equivalent to <code>αFG</code>, and <code>αF_╜Gβ</code> is equivalent to <code>αFβG</code>. useful when composing functions tacitly.</p>
+<p>see also: <a href="#Trains">Trains</a></p>
 <h2 class="adverb2" id="D3"><code>╙</code> (0xD3, <code>'(</code>)</h2>
 <h3 id="At Right"><code>αF╙G</code> At Right</h3>
 <p>equivalent to <code>aF</code>.</p>
 <h3 id="At Right"><code>αF╙Gβ</code> At Right</h3>
 <p>equivalent to <code>αF(βG)</code>.</p>
+<h3 id="Bind"><code>F_╙G</code> Bind</h3>
+<p>adverb form of bind, same as the train <code>Gf</code>, where <code>f</code> is F interpreted as a noun, (or rather, <code>.F</code>). note that the arguments are reversed. <code>αF_╙G</code> and <code>αF_╙Gβ</code> are equivalent to <code>αGf</code>; this ignores the second operand. useful when composing functions tacitly.</p>
+<p>see also: <a href="#Trains">Trains</a></p>
 <h2 class="adverb2" id="B7"><code>╖</code> (0xB7, <code>']</code>)</h2>
 <h3 id="On Left"><code>αF╖G</code> On Left</h3>
 <p>equivalent to <code>αFGα</code>.</p>

@@ -51,8 +51,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
         scan, scanpairs, reduce, stencil, valences,
         overleft, overright, over, forkleft, forkright,
         until, untilscan, power, powerscan, untilcmp, untilscancmp,
-        drill,
-        cycle,
+        drill, amend, cycle,
     );
 }
 

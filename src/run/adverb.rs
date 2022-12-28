@@ -225,13 +225,43 @@ pub fn drill_iter(
     let index = iter.next();
     let Some(index) = index else { return g.call(env, a, b); };
     if index.is_nan() { return a; }
-    let Some(index) = index.try_int().and_then(|x| usize::try_from(x).ok() ) else {return a};
+    let Some(index) = index.try_int().and_then(|x| usize::try_from(x).ok()) else {return a};
     let Val::Lis{l, fill} = a else { return g.call(env, a, b); };
     let mut v = match Rc::try_unwrap(l) { Ok(l) => l, Err(l) => l.to_vec(), };
     if v.len() <= index { v.resize(index+1, (*fill).c()); }
     v[index] = drill_iter(env, core::mem::take(&mut v[index]), b, iter, g);
     Val::lis_fill(v, (*fill).c())
 }
+
+adverb!(@env, a f .amend g b => {
+    let Some(indices) = f.call(env, a.c(), b.c()).iterf()
+        .map(|x| x.try_int().and_then(|x| usize::try_from(x).ok()))
+        .collect::<Option<Vec<usize>>>() else {return a};
+    let Val::Lis{l, fill} = a else { return a; };
+    let mut l = match Rc::try_unwrap(l) { Ok(l) => l, Err(l) => l.to_vec(), };
+    let before = indices.iter().copied().map(|i| l.get(i).unwrap_or(&fill).c()).collect::<Val>();
+    let after = g.call(env, before, b);
+    if !after.is_list() {
+        let max = indices.iter().max();
+        if let Some(&max) = max { if l.len() <= max { l.resize(max, (*fill).c()); }}
+        for i in indices.into_iter() { l[i] = after.c(); }
+    } else {
+        let (mut niter, mut viter) = (indices.iter(), after.into_iterf());
+        while let Some(new) = viter.next() {
+            if let Some(&i) = niter.next() { // replace items:
+                if l.len() <= i { l.resize(i+1, (*fill).c()) }
+                l[i] = new;
+            } else { // insert items:
+                let right = l.split_off(indices.last().copied().unwrap_or(l.len()-1) + 1);
+                l.push(new); l.extend(viter); l.extend(right);
+            break; }
+        } // remove items:
+        let to_be_removed = niter.copied().collect::<HashSet<_>>();
+        let mut iter = 0..; 
+        l.retain(|_| !to_be_removed.contains(&iter.next().unwrap()));
+    }
+    Val::Lis { l: Rc::new(l), fill }
+});
 
 adverb!(@env, a .cycle g _b => {
     a.try_int().map_or(NAN, |a| g.index(env, (a as usize) % g.len()))
