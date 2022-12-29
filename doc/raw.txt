@@ -2065,7 +2065,7 @@ moves the last β elements of the list α to the front. β-pervasive.
 > 12345«6 ≡ 23451
 if β is negative, this acts like |Rotate Right|.
 > 12345«_3 ≡ 34512
-#2 Rotate Left Once
+#1 Rotate Left Once
 equivalent to `«1`
 > 12345« ≡ 23451
 ---
@@ -2080,7 +2080,7 @@ moves the first β elements of the list α to the back. β-pervasive.
 > 12345»6 ≡ 51234
 if β is negative, this acts like |Rotate Left|.
 > 12345»_3 ≡ 45123
-#2 Rotate Right Once
+#1 Rotate Right Once
 equivalent to `»1`
 > 12345» ≡ 51234
 ---
@@ -2349,6 +2349,17 @@ round up α. scalar.
 > '3.9⌠ ≡ 4
 >    4⌠ ≡ 4
 see also: |Floor|, |Round|, |Euclidean Division|
+#2 Shift Right
+returns a list of the same length as α, with every item shifted to the right by β, using the fill of α to fill the blanks. β-pervasive.
+> 12345678⌠3 ≡ ███12345
+> 87654321▐0⌠5 ≡ 00000876
+> "yeah!!!"▐` ⌠4 ≡ "    yea"
+> "yeah!!!"▐` ⌠2 ≡ "  yeah!"
+a negative β acts like |Shift Left|:
+> "yeah!!!"▐` ⌠_2 ≡ "ah!!!  "
+and if `α~≤β`, the whole list will be filled:
+> 12345678⌠8 ≡ ████████
+see also: |Shift Left|, |Rotate Right|
 ---
 :char: ⌡
 :ascii: 'fl
@@ -2359,6 +2370,17 @@ round down α. scalar.
 > '3.9⌡ ≡ 3
 >    4⌡ ≡ 4
 see also: |Ceiling|, |Round|
+#2 Shift Left
+returns a list of the same length as α, with every item shifted to the left by β, using the fill of α to fill the blanks. β-pervasive.
+> 12345678⌡3 ≡ 45678███
+> 87654321▐0⌡5 ≡ 32100000
+> "yeah!!!"▐` ⌡4 ≡ "!!!    "
+> "yeah!!!"▐` ⌡2 ≡ "ah!!!  "
+a negative β acts like |Shift Left|:
+> "yeah!!!"▐` ⌡_2 ≡ "  yeah!"
+and if `α~≤β`, the whole list will be filled:
+> 12345678⌡8 ≡ ████████
+see also: |Shift Right|, |Rotate Left|
 ---
 :char: ÷
 :ascii: '%

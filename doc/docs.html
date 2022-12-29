@@ -2002,7 +2002,7 @@ _2Ñ0 ≡ 0</pre>
 12345«6 ≡ 23451</pre>
 <p>if β is negative, this acts like <a href="#Rotate Right">Rotate Right</a>.</p>
 <pre>12345«_3 ≡ 34512</pre>
-<h3 id="Rotate Left Once"><code>α«β</code> Rotate Left Once</h3>
+<h3 id="Rotate Left Once"><code>α«</code> Rotate Left Once</h3>
 <p>equivalent to <code>«1</code></p>
 <pre>12345« ≡ 23451</pre>
 <h2 class="verb" id="AF"><code>»</code> (0xAF, <code>'rr</code>)</h2>
@@ -2014,7 +2014,7 @@ _2Ñ0 ≡ 0</pre>
 12345»6 ≡ 51234</pre>
 <p>if β is negative, this acts like <a href="#Rotate Left">Rotate Left</a>.</p>
 <pre>12345»_3 ≡ 45123</pre>
-<h3 id="Rotate Right Once"><code>α»β</code> Rotate Right Once</h3>
+<h3 id="Rotate Right Once"><code>α»</code> Rotate Right Once</h3>
 <p>equivalent to <code>»1</code></p>
 <pre>12345» ≡ 51234</pre>
 <h2 class="literal" id="B0"><code>░</code> (0xB0, <code>'l2</code>)</h2>
@@ -2199,6 +2199,17 @@ _3± ≡ Θ
 '3.9⌠ ≡ 4
    4⌠ ≡ 4</pre>
 <p>see also: <a href="#Floor">Floor</a>, <a href="#Round">Round</a>, <a href="#Euclidean Division">Euclidean Division</a></p>
+<h3 id="Shift Right"><code>α⌠β</code> Shift Right</h3>
+<p>returns a list of the same length as α, with every item shifted to the right by β, using the fill of α to fill the blanks. β-pervasive.</p>
+<pre>12345678⌠3 ≡ ███12345
+87654321▐0⌠5 ≡ 00000876
+"yeah!!!"▐` ⌠4 ≡ "    yea"
+"yeah!!!"▐` ⌠2 ≡ "  yeah!"</pre>
+<p>a negative β acts like <a href="#Shift Left">Shift Left</a>:</p>
+<pre>"yeah!!!"▐` ⌠_2 ≡ "ah!!!  "</pre>
+<p>and if <code>α~≤β</code>, the whole list will be filled:</p>
+<pre>12345678⌠8 ≡ ████████</pre>
+<p>see also: <a href="#Shift Left">Shift Left</a>, <a href="#Rotate Right">Rotate Right</a></p>
 <h2 class="verb" id="F5"><code>⌡</code> (0xF5, <code>'fl</code>)</h2>
 <h3 id="Floor"><code>α⌡</code> Floor</h3>
 <p>round down α. scalar.</p>
@@ -2206,6 +2217,17 @@ _3± ≡ Θ
 '3.9⌡ ≡ 3
    4⌡ ≡ 4</pre>
 <p>see also: <a href="#Ceiling">Ceiling</a>, <a href="#Round">Round</a></p>
+<h3 id="Shift Left"><code>α⌡β</code> Shift Left</h3>
+<p>returns a list of the same length as α, with every item shifted to the left by β, using the fill of α to fill the blanks. β-pervasive.</p>
+<pre>12345678⌡3 ≡ 45678███
+87654321▐0⌡5 ≡ 32100000
+"yeah!!!"▐` ⌡4 ≡ "!!!    "
+"yeah!!!"▐` ⌡2 ≡ "ah!!!  "</pre>
+<p>a negative β acts like <a href="#Shift Left">Shift Left</a>:</p>
+<pre>"yeah!!!"▐` ⌡_2 ≡ "  yeah!"</pre>
+<p>and if <code>α~≤β</code>, the whole list will be filled:</p>
+<pre>12345678⌡8 ≡ ████████</pre>
+<p>see also: <a href="#Shift Right">Shift Right</a>, <a href="#Rotate Left">Rotate Left</a></p>
 <h2 class="verb" id="F6"><code>÷</code> (0xF6, <code>'%</code>)</h2>
 <h3 id="Round"><code>α÷</code> Round</h3>
 <p>rounds α to the closest integer. may do round-half-to-even rounding. scalar.</p>
