@@ -272,23 +272,23 @@ pub fn drop(a: Val, b: i64) -> Val {
     }
 }
 
-func!(a :shape => Val::lis_fill( 
-    ishape(&a).iter().map(|x| Int(*x as i64)).collect(),
-    Int(1),
+func!(a :shape b => Val::lis_fill(
+    ishape(&a, b.try_int().unwrap_or(i64::MAX)).iter().map(|x| Int(*x as i64)).collect(),
+    Int(1)
 ));
-
-pub fn ishape(a: &Val) -> Vec<usize> {
-    if let Lis { l, .. } = a {
-        let mut shp = vec![l.len()];
-        for v in &**l {
-            let inr = ishape(v);
-            if inr.len() + 1 > shp.len() { shp.resize(inr.len() + 1, 0); }
-            for (n, &i) in inr.iter().enumerate() {
-                if shp[n+1] < i { shp[n+1] = i; };
-            }
+pub fn ishape(a: &Val, lim: i64) -> Vec<usize> {
+    if !a.is_list() { return vec![]; };
+    let mut shp = vec![a.len()];
+    if lim == 0 { return shp; }
+    //if lim < 64 {shp.resize(lim as _, 0)}
+    for v in a.iterf() {
+        let inr = ishape(v, lim-1);
+        if inr.len() + 1 > shp.len() { shp.resize(inr.len() + 1, 0); }
+        for (n, &i) in inr.iter().enumerate() {
+            if shp[n+1] < i { shp[n+1] = i; }
         }
-        shp
-    } else { vec![] }
+    }
+    shp
 }
 
 func!(@env, a :replicate b => { let fill = a.fill();
@@ -299,13 +299,11 @@ pub fn ireplicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
     let mut lis = Vec::new();
     let (afill, bfill, len) = (a.fill(), b.fill(), a.len());
     for (l,r) in a.into_iterf().zip(b.itertake(env, len).chain(iter::repeat(bfill))) {
-        if let Some(n) = r.try_int() {
-            if n != 0 {
-                let val = if n > 0 {l} else {afill.c()};
-                for _ in 0..(n.abs() - 1) { lis.push(val.c()); }
-                lis.push(val);
-            }
-        } else {
+        if let Some(n) = r.try_int() { if n != 0 {
+            let val = if n > 0 {l} else {afill.c()};
+            for _ in 0..(n.abs() - 1) { lis.push(val.c()); }
+            lis.push(val);
+        }} else {
             lis.extend(ireplicate(env, l, r).into_iter());
         }
     }
@@ -314,13 +312,13 @@ pub fn ireplicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
 
 func!(a :gradeup => if let Lis {l, ..} = a {
     let mut lis = (0..l.len()).collect::<Vec<_>>();
-    lis.sort_by(|a, b| l[*a].cmpval(&l[*b]));
+    lis.sort_by(|&a, &b| l[a].cmpval(&l[b]));
     Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
 } else { Val::lis(vec![Int(0)]) });
 
 func!(a :gradedown => if let Lis {l, ..} = a {
     let mut lis = (0..l.len()).collect::<Vec<_>>();
-    lis.sort_by(|a, b| l[*a].cmpval(&l[*b]).reverse());
+    lis.sort_by(|&a, &b| l[a].cmpval(&l[b]).reverse());
     Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
 } else { Val::lis(vec![Int(0)]) } );
 
@@ -353,9 +351,7 @@ func!( @env, a :group b => {
             if i.is_nan() { continue }
             // epic type inference fail
             if let Some(i) = i.try_int().and_then(|x|->Option<usize> {x.try_into().ok()}) {
-                if i >= lis.len() {
-                    lis.resize(i + 1, Vec::new());
-                }
+                if i >= lis.len() { lis.resize(i + 1, Vec::new()); }
                 lis[i].push(l.c());
             };
         }
