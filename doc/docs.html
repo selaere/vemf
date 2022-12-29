@@ -292,9 +292,9 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="adverb2"><a href="#B7">╖</a></td>
 <td class="adverb1"><a href="#B8">╕</a></td>
 <td class="mgroup"><a href="#B9">╣</a></td>
-<td class="none"><a href="#BA">║</a></td>
+<td class="adverb2"><a href="#BA">║</a></td>
 <td class="adverb2"><a href="#BB">╗</a></td>
-<td class="adverb2"><a href="#BC">╝</a></td>
+<td class="none"><a href="#BC">╝</a></td>
 <td class="adverb2"><a href="#BD">╜</a></td>
 <td class="adverb1"><a href="#BE">╛</a></td>
 <td class="none"><a href="#BF">┐</a></td></tr>
@@ -503,19 +503,19 @@ h2>code { background-color: inherit; white-space: pre; }
 <p>and if <a href="#Swap">Swap</a> <code>┴G</code> is called with two arguments, it returns a functions that applies <code>G</code> with its arguments flipped:</p>
 <pre>6┴-2 ≡ _4
 4┴/1 ≡ 1/4  ' reciprocal</pre>
-<p>there are two types of adverbs. 1-adverbs, like <code>┴G</code> <a href="#Selfie">Selfie</a>/<a href="#Swap">Swap</a>, take one operand after them, and the whole acts as a verb. 2-adverbs, like <code>F╝G</code> <a href="#Over">Over</a>, take two operands at both sides. Over applies <code>G</code> to each argument, and then <code>F</code>:</p>
-<pre>4²╝+5 ≡ 4²+(5²)
-4²╝▲ ≡ 4²▲  ' same as train (²▲)</pre>
+<p>there are two types of adverbs. 1-adverbs, like <code>┴G</code> <a href="#Selfie">Selfie</a>/<a href="#Swap">Swap</a>, take one operand after them, and the whole acts as a verb. 2-adverbs, like <code>F║G</code> <a href="#Over">Over</a>, take two operands at both sides. Over applies <code>G</code> to each argument, and then <code>F</code>:</p>
+<pre>4²║+5 ≡ 4²+(5²)
+4²║▲ ≡ 4²▲  ' same as train (²▲)</pre>
 <p>2-adverb precedence is right-to-left.</p>
 <p>additionally, 1-adverbs can be used before 2-adverbs, and this applies them to the left operand:</p>
 <pre>`a-┴╓/`b ≡ `a(┴-)╓/`b</pre>
 <p>TODO example</p>
 <p>adverbs applied to their operands act like verbs, so you can set them just like verbs:</p>
-<pre>²╝+─discrim 4:discrim5 ≡ '41
+<pre>²║+─discrim 4:discrim5 ≡ '41
 ┴/1─recip 4:recip ≡ 1/4</pre>
 <p>the built-in adverbs are all box-drawing symbols (though not the other way around). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:</p>
 <pre>1-adverbs: ╪┼┴┬╧╤╕╒╛╘
-2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔╝╚</pre>
+2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔╝╚║</pre>
 <p>these adverbs have a variety of functions. some of them are <a href="#Combinators">Combinators</a>, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.</p>
 <h3 id="Iteration">Iteration</h3>
 <p>vemf automatically vectorizes, so often explicit loops are not be necessary, but adverbs can be used to explicitly iterate in a certain way</p>
@@ -549,7 +549,7 @@ atop      +/ : α+/    , α+β/
 commute   ┴/ : α/α    , β/α
 atleft   +╜/ : α+/    , α+/β
 atright  +╙/ : α/     , α/(β+)
-over     +╝/ : α+/    , α+/(β+)
+over     +║/ : α+/    , α+/(β+)
 onleft   +╖/ : α+/α   , α+β/β
 onright  +╓/ : α/(α+) , α/(α+β)
 fork    └+/* : α+/(α*), α+β/(α*β)</pre>
@@ -577,7 +577,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 (`aF╙G)  (`aF╙G`b)   ≡ "[a]"     "[a(b)]"
 (`aF╖G)  (`aF╖G`b)   ≡ "[(a)a]"  "[(ab)b]"
 (`aF╓G)  (`aF╓G`b)   ≡ "[a(a)]"  "[a(ab)]"
-(`aF╝G)  (`aF╝G`b)   ≡ "[(a)]"   "[(a)(b)]"
+(`aF║G)  (`aF║G`b)   ≡ "[(a)]"   "[(a)(b)]"
 (`a└FGH) (`a└FGH`b)  ≡ "[(a){a}]""[(ab){ab}]"
 (`aF╜H╙G)(`aF╜H╙G`b) ≡ "[(a)]"   "[(a){b}]"</pre>
 <h2 id="Groups">Groups</h2>
@@ -932,7 +932,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 Φ! ≡ '3628800
 '-0.5! ± π√</pre>
 <h3 id="Permute"><code>α!β</code> Permute</h3>
-<p>number of β-permutations in α items. also known as the falling factorial, descending factorial, pochhammer symbol, or the nPr key in your calculator. equivalent to <code>-╓!╝/</code> or <code>{α!/(α-β!)}</code></p>
+<p>number of β-permutations in α items. also known as the falling factorial, descending factorial, pochhammer symbol, or the nPr key in your calculator. equivalent to <code>-╓!║/</code> or <code>{α!/(α-β!)}</code></p>
 <pre>1!1 ≡ 1
 3!2 ≡ '6
 4!3 ≡ '24
@@ -1643,7 +1643,7 @@ _1%_2 ≡ 1</pre>
 0ï ± 0
 1ï ± π½</pre>
 <h3 id="Xor"><code>αïβ</code> Xor</h3>
-<p>calculate boolean XOR of α and β. scalar. equivalent to <code>⌐╝~</code></p>
+<p>calculate boolean XOR of α and β. scalar. equivalent to <code>⌐║~</code></p>
 <pre>0ï0 ≡ 0
 0ï1 ≡ 1
 1ï0 ≡ 1
@@ -2573,10 +2573,10 @@ _1÷_2 ≡ 1</pre>
 <p>equivalent to <code>αF(αG)</code>.</p>
 <h3 id="On Right"><code>αF╓Gβ</code> On Right</h3>
 <p>equivalent to <code>αF(αGβ)</code>.</p>
-<h2 class="adverb2" id="BC"><code>╝</code> (0xBC, <code>'ov</code>)</h2>
-<h3 id="Over"><code>αF╝G</code> Over</h3>
+<h2 class="adverb2" id="BA"><code>║</code> (0xBA, <code>'ov</code>)</h2>
+<h3 id="Over"><code>αF║G</code> Over</h3>
 <p>equivalent to <code>αFG</code>.</p>
-<h3 id="Over"><code>αF╝Gβ</code> Over</h3>
+<h3 id="Over"><code>αF║Gβ</code> Over</h3>
 <p>equivalent to <code>αFG(βF)</code>.</p>
 <h2 class="literal" id="C0"><code>└</code> (0xC0, <code>'K</code>)</h2>
 <h3 id="Fork"><code>α└FGH</code> Fork</h3>

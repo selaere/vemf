@@ -141,19 +141,19 @@ adverbs are like verbs for verbs. take one of the most basic: |Selfie| `┴G` ta
 and if |Swap| `┴G` is called with two arguments, it returns a functions that applies `G` with its arguments flipped:
 > 6┴-2 ≡ _4
 > 4┴/1 ≡ 1/4  ' reciprocal
-there are two types of adverbs. 1-adverbs, like `┴G` |Selfie|/|Swap|, take one operand after them, and the whole acts as a verb. 2-adverbs, like `F╝G` |Over|, take two operands at both sides. Over applies `G` to each argument, and then `F`:
-> 4²╝+5 ≡ 4²+(5²)
-> 4²╝▲ ≡ 4²▲  ' same as train (²▲)
+there are two types of adverbs. 1-adverbs, like `┴G` |Selfie|/|Swap|, take one operand after them, and the whole acts as a verb. 2-adverbs, like `F║G` |Over|, take two operands at both sides. Over applies `G` to each argument, and then `F`:
+> 4²║+5 ≡ 4²+(5²)
+> 4²║▲ ≡ 4²▲  ' same as train (²▲)
 2-adverb precedence is right-to-left.
 additionally, 1-adverbs can be used before 2-adverbs, and this applies them to the left operand:
 > `a-┴╓/`b ≡ `a(┴-)╓/`b
 TODO example
 adverbs applied to their operands act like verbs, so you can set them just like verbs:
-> ²╝+─discrim 4:discrim5 ≡ '41
+> ²║+─discrim 4:discrim5 ≡ '41
 > ┴/1─recip 4:recip ≡ 1/4
 the built-in adverbs are all box-drawing symbols (though not the other way around). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:
 > 1-adverbs: ╪┼┴┬╧╤╕╒╛╘
-> 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔╝╚
+> 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║
 these adverbs have a variety of functions. some of them are |Combinators|, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.
 # Iteration
 vemf automatically vectorizes, so often explicit loops are not be necessary, but adverbs can be used to explicitly iterate in a certain way
@@ -187,7 +187,7 @@ vemf has a lot of different combinators! here's a summary:
 > commute   ┴/ : α/α    , β/α
 > atleft   +╜/ : α+/    , α+/β
 > atright  +╙/ : α/     , α/(β+)
-> over     +╝/ : α+/    , α+/(β+)
+> over     +║/ : α+/    , α+/(β+)
 > onleft   +╖/ : α+/α   , α+β/β
 > onright  +╓/ : α/(α+) , α/(α+β)
 > fork    └+/* : α+/(α*), α+β/(α*β)
@@ -215,7 +215,7 @@ here is another way of representing all the combinators that i can test automati
 > (`aF╙G)  (`aF╙G`b)   ≡ "[a]"     "[a(b)]"
 > (`aF╖G)  (`aF╖G`b)   ≡ "[(a)a]"  "[(ab)b]"
 > (`aF╓G)  (`aF╓G`b)   ≡ "[a(a)]"  "[a(ab)]"
-> (`aF╝G)  (`aF╝G`b)   ≡ "[(a)]"   "[(a)(b)]"
+> (`aF║G)  (`aF║G`b)   ≡ "[(a)]"   "[(a)(b)]"
 > (`a└FGH) (`a└FGH`b)  ≡ "[(a){a}]""[(ab){ab}]"
 > (`aF╜H╙G)(`aF╜H╙G`b) ≡ "[(a)]"   "[(a){b}]"
 ---
@@ -665,7 +665,7 @@ get the factorial of α. this is extended to reals with the gamma function, Γ(�
 > Φ! ≡ '3628800
 > '-0.5! ± π√
 #2 Permute
-number of β-permutations in α items. also known as the falling factorial, descending factorial, pochhammer symbol, or the nPr key in your calculator. equivalent to `-╓!╝/` or `{α!/(α-β!)}`
+number of β-permutations in α items. also known as the falling factorial, descending factorial, pochhammer symbol, or the nPr key in your calculator. equivalent to `-╓!║/` or `{α!/(α-β!)}`
 > 1!1 ≡ 1
 > 3!2 ≡ '6
 > 4!3 ≡ '24
@@ -1601,7 +1601,7 @@ calculate `arcsin α` or `sin⁻¹ α`. scalar.
 > 0ï ± 0
 > 1ï ± π½
 #2 Xor
-calculate boolean XOR of α and β. scalar. equivalent to `⌐╝~`
+calculate boolean XOR of α and β. scalar. equivalent to `⌐║~`
 > 0ï0 ≡ 0
 > 0ï1 ≡ 1
 > 1ï0 ≡ 1
@@ -2816,7 +2816,7 @@ equivalent to `αF(αG)`.
 #2a2 On Right
 equivalent to `αF(αGβ)`.
 ---
-:char: ╝
+:char: ║
 :ascii: 'ov
 :type: adverb2
 #1a2 Over

@@ -8,7 +8,7 @@
 .inoverleft─╜ .inoverright─╙
 .inforkleft─╖ .inforkright─╓
 .inatop─_╜ .inbind─_╙
-.inover─╝
+.inover─║
 
 .ineach─╕
 .ineachleft─╛
@@ -88,7 +88,7 @@ _Ö_ë─Ö
 ┼:incos╬:inbor ─ô
 ┼:intan╬:inband─â
 
-┼:inasin╬⌐╝~─ï
+┼:inasin╬⌐║~─ï
 ┼:inacos╬│|¬─ö
 ┼:inatan╬│&¬─ä
 
@@ -103,7 +103,7 @@ _Ö_ë─Ö
 
 .inabs─¢
 ┼:insign╬:inapprox─±
-┼¢╬├²╝+√─¢
+┼¢╬├²║+√─¢
 
 .inindex─@│@0╬@─@
 ╘@─¿
@@ -177,7 +177,7 @@ _Ö_ë─Ö
 ┼:innumfmt╬(é♠¡.base)─ª
 
 ┼:infact─!
-!╬(-╓!╝/)─!
+!╬(-╓!║/)─!
 
 '3486─_¶
 
