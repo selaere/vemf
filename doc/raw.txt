@@ -220,7 +220,7 @@ here is another way of representing all the combinators that i can test automati
 > (`aF╜H╙G)(`aF╜H╙G`b) ≡ "[(a)]"   "[(a){b}]"
 ---
 :title: Groups
-i dont like parentheses. i dont like the fact that occasionally i have to use them to make things work. i dont like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as `+2` gains two characters when used with an adverb `(+2)╜/`. or with nested list literals `(123)(45)(6789)`:
+i don't like parentheses. i don't like the fact that occasionally i have to use them to make things work. i don't like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as `+2` gains two characters when used with an adverb `(+2)╜/`. or with nested list literals `(123)(45)(6789)`:
 > 7 (+2)╙/ 3 ≡ 7 │+2╙/ 3
 > (123)(45)(6789) ≡ ├123│45╞6789
 the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use. here are all the groupers:
@@ -1047,7 +1047,7 @@ if α is a function, it will be called with the index:
 > (-)@3 ≡ _3
 > (*3-2)@5 ≡ '13
 > (♠)@"bee" ≡ "eeb"
-if the index is outside the list's domain [0, α~), or if it's null, it uses its fill
+if the index is outside the list's domain [0, α~), or if it is null, it uses its fill
 > 123@5 ≡ █
 > 123▐0@5 ≡ 0
 > 123▐0@█ ≡ 0
@@ -1387,7 +1387,7 @@ there are two ways of changing this, both equivalent: not reference the value (a
 > 123─l{,α═l}─append 4:append· l ≡ 1234
 > 123─l{─l l,α═l}─append 4:append· l ≡ 1234
 > 123─l{,α═l}─append 0{"things"─l 4:append· l} ≡ "things♦"  ' oops!
-the braces dont need to be closed at the end of file.
+the braces don't need to be closed at the end of file.
 ---
 :char: |
 :type: verb
@@ -1749,6 +1749,12 @@ compute boolean NOR of α and β. scalar. equivalent to `&#x7c;¬`.
 ---
 :char: ò
 :ascii: 'o`
+:type: verb
+#1 Eval
+evaluate the codepage string α in the current context, and return the value
+> "1+1"ò ≡ 2
+it will have access to all defined variables in the enclosing scopes, all the input and output streams and the random number generator. don't use this from untrusted sources blah blah blah blah.
+> 4─value· "6═value"ò· .value ≡ 6
 ---
 :char: û
 :ascii: 'u^
@@ -1843,7 +1849,7 @@ finds all non-overlapping occurances of sublist β in α. returns a list of the 
 this is similar to using |Scan Windows| and |Matches| `α(►~)╫≡β` but this does not include overlapping matches
 > "asininity"£"ini" ≡ ██012████
 > "asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!
-it's also in a bit more convenient format: same length as the original string, and you can do `=0` to find the starts of matches or |Is Some| `▀` to find all the matched characters:
+its format is also a bit more convenient: same length as the original string, and you can do `=0` to find the starts of matches or |Is Some| `▀` to find all the matched characters:
 > "sus sus amongus"£"sus"   ≡ 012█012████████
 > "sus sus amongus"£"sus"=0 ≡ 100010000000000
 > "sus sus amongus"£"sus"▀  ≡ 111011100000000

@@ -34,7 +34,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
     } );* }}
     load_func!(
         add, sub, mul, div, dive, rem, pow, log, lt, gt, and, or, max, min, atan2, approx, band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp, sin, asin, cos, acos, tan, atan, sqrt, round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
-        left, right, get, set, call, islist,
+        left, right, get, set, call, islist, eval,
         shape, len, index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, matches,
         print, println, output, input, fromutf8, toutf8, fromcp, tocp, exit, format, numfmt, parse,
         takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find, uio,
@@ -258,3 +258,7 @@ func!(@env, a :call b => if b.is_scalar() {
     let bb = (b.len() > 1).then(|| b.index(env, 1));
     a.call(env, aa, bb)
 });
+func!(@env, a :eval => 
+    a.iterf().map(|x| x.try_int().and_then(|x| x.try_into().ok()) )
+    .collect::<Option<Vec<u8>>>()
+    .map_or(NAN, |x| env.include_bytes(&x)));

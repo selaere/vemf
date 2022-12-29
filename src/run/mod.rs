@@ -227,8 +227,11 @@ impl<'io> Env<'io> {
         NAN
     }
     pub fn include_string(&mut self, code: &str) -> Val {
-        use crate::{token, parse, codepage};
-        let tokens = token::tokenize(&codepage::tobytes(code).unwrap()[..]);
+        self.include_bytes(&crate::codepage::tobytes(code).unwrap()[..])
+    }
+    pub fn include_bytes(&mut self, code: &[u8]) -> Val {
+        use crate::{token, parse};
+        let tokens = token::tokenize(code);
         //println!("{:?}", tokens);
         let parsed = parse::parse(&tokens);
         //for i in &parsed { println!("parsed: {}", i); }
@@ -238,7 +241,6 @@ impl<'io> Env<'io> {
     pub fn include_stdlib(&mut self) {
         func::load_intrinsics(self);
         self.include_string(STDLIB);
-        //self.set_local(Bstr::from(&b"sus"[..]), Val::Func(intrn::add));
     }
 
     #[cfg(feature = "std")]
