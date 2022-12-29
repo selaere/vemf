@@ -1902,17 +1902,29 @@ pick β times. this is the same as doing `α§βá`
 :ascii: 'i'
 :type: verb
 #1 Imaginary
-calculate `α*i`, where `i` is the imaginary unit
+calculate `α*i`, where `i` is the imaginary unit. scalar.
 > 1í ≡ Γ
 > 3í ≡ 3*Γ
 #2 Complex
-calculate `β + α*i`
+calculate `β + α*i`. scalar.
 > 1í² ± _1
 > 2í² ± _4
 > 3í2² ± '12í_5
 ---
 :char: ó
 :ascii: 'o'
+:type: verb
+#1 Signs
+calculate (-1)^α. if α is an integer, this means 1 for odd α, and −1 for even α. scalar. equivalent to `┴^Θ`
+> 012345ó ≡ 1Θ1Θ1Θ
+see also: |Minus One|
+#2 Divides
+return 1 if α is divisible by β, otherwise 0. scalar. equivalent to `%¬`
+> 0ó3 ≡ 1
+> 1ó3 ≡ 0
+> 2ó3 ≡ 0
+> 3ó3 ≡ 1
+> '20↕ó4 ≡ 10001000100010001000
 ---
 :char: ú
 :ascii: 'u'
