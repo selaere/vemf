@@ -59,7 +59,7 @@ if you want something more familiar, try `α↨` |Inclusive Iota|:
 > 5↨ ≡ 12345
 all lists have a Fill, usually |None|. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:
 > 123@3 ≡ █
-the default index is █ |None|. you can get a list with a fill with `α▐β` |Set Fill|, and query it with `α▐` |Get Fill|.
+the default fill is █ |None|. you can get a list with a fill with `α▐β` |Set Fill|, and query it with `α▐` |Get Fill|.
 > 123▐0@3 ≡ 0
 > 123▐ ≡ █
 > 123▐0▐ ≡ 0
@@ -1454,6 +1454,12 @@ returns α, changing the sign of the imaginary part
 > 2í3ü ≡ _2í3
 > Θí4ü ≡ 1í4
 > 2ü ≡ 2
+#2 Group
+pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the |Empty List|. if β is |None|, the element will be ignored.
+> "vemf programming language"ü0000█11111112222█33333333 ≡ "vemf""program""ming""language"▐φ
+> 123456789ü012012012 ≡ (147)(258)(369)▐φ
+> "bee bumblebee honeybee"ü000φ111111000φ11111000 ≡ "beebeebee""bumblehoney"▐φ
+> "eastern bumblehoneybee"ü2222222211111122222(012)(012)(012) ≡ "bee""bumblebee""eastern honeybee"▐φ
 ---
 :char: é
 :ascii: 'e'
@@ -1668,15 +1674,19 @@ calculate the absolute difference of α and β. equivalent to `-¢`. scalar.
 :char: É
 :ascii: 'e+
 :type: verb
-#2 Write
-write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or |None| if there was some IO error.
-#1 Write Stdout
-write a string α to output stream 0. equivalent to `É0`.
-see also: |Print|
-#_2 Write Bytes
-write a list of bytes α to output stream β. returns the number of bytes written, or |None| if there was some IO error.
-#_1 Write Bytes to Stdout
-write a list of bytes α to output stream 0. equivalent to `_É0`.
+#1 Is Scalar
+returns 1 if α is a scalar, otherwise 0. equivalent to `ε¬`
+> 4É ≡ 1
+> 456É ≡ 0
+> (▲)É ≡ 0
+see also: |Is List|
+#2 Excludes
+for every item in the list α, check if it is not in β. equivalent to `ε¬`
+> 0123456789É012073167140 ≡ 0000010011
+> 1 É 012073167140 ≡ 0
+> 5 É 012073167140 ≡ 1
+> "unauthorized equation"É"aeiou" ≡ 010011010101101001001
+see also: |Includes|
 ---
 :char: æ
 :ascii: 'ae
@@ -1739,15 +1749,6 @@ compute boolean NOR of α and β. scalar. equivalent to `&#x7c;¬`.
 ---
 :char: ò
 :ascii: 'o`
-:type: verb
-#1 Diagonal
-get the diagonal of length `α▬2ñ` of a list α
-> "bus""red""are"ò ≡ "bee"
-> .►↑55ò ≡ '0'6'12'18'24
-> (100)(020)(003)ò ≡ 123
-#2 Count
-count the number of occurences of β in α. β-pervasive.
-> 012073167140ò0123456789 ≡ 3311101200
 ---
 :char: û
 :ascii: 'u^
@@ -1770,6 +1771,9 @@ for every element in β, find the index of the first unused match in α, or |Non
 get the real part of a complex number α. scalar.
 > 3í4ù ≡ 4
 > 3ù ≡ 3
+#2 Count
+count the number of occurences of β in α. β-pervasive.
+> 012073167140ù0123456789 ≡ 3311101200
 ---
 :char: ÿ
 :ascii: 'y"
@@ -1799,12 +1803,15 @@ read from input stream 0. equivalent to `_Ö0`.
 :char: Ü
 :ascii: 'u+
 :type: verb
-#2 Group
-pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the |Empty List|. if β is |None|, the element will be ignored.
-> "vemf programming language"Ü0000█11111112222█33333333 ≡ "vemf""program""ming""language"▐φ
-> 123456789Ü012012012 ≡ (147)(258)(369)▐φ
-> "bee bumblebee honeybee"Ü000φ111111000φ11111000 ≡ "beebeebee""bumblehoney"▐φ
-> "eastern bumblehoneybee"Ü2222222211111122222(012)(012)(012) ≡ "bee""bumblebee""eastern honeybee"▐φ
+#2 Write
+write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or |None| if there was some IO error.
+#1 Write Stdout
+write a string α to output stream 0. equivalent to `É0`.
+see also: |Print|
+#_2 Write Bytes
+write a list of bytes α to output stream β. returns the number of bytes written, or |None| if there was some IO error.
+#_1 Write Bytes to Stdout
+write a list of bytes α to output stream 0. equivalent to `_É0`.
 ---
 :char: ¢
 :ascii: 'C
@@ -1833,14 +1840,14 @@ finds all non-overlapping occurances of sublist β in α. returns a list of the 
 > "sus sus amongus"£"sus" ≡ 012█012████████
 > "bee beebeee beebe"£"ee"  ≡ █01██01█01███01██
 > "bee beebeee beebe"£"bee" ≡ 012█012012██012██
-this is similar to using |Windows| and |Match| `α(►~)╫≡β` but this does not include overlapping matches
+this is similar to using |Scan Windows| and |Matches| `α(►~)╫≡β` but this does not include overlapping matches
 > "asininity"£"ini" ≡ ██012████
 > "asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!
 it's also in a bit more convenient format: same length as the original string, and you can do `=0` to find the starts of matches or |Is Some| `▀` to find all the matched characters:
 > "sus sus amongus"£"sus"   ≡ 012█012████████
 > "sus sus amongus"£"sus"=0 ≡ 100010000000000
 > "sus sus amongus"£"sus"▀  ≡ 111011100000000
-see also: |Equals|, |Windows|, |Split|
+see also: |Equals|, |Scan Windows|, |Split|
 ---
 :char: ¥
 :ascii: 'Y
@@ -1906,10 +1913,6 @@ calculate `β + α*i`
 ---
 :char: ó
 :ascii: 'o'
-:type: verb
-#2 Index of Last
-find the last exact match in the list and return its index, or else |None|. β-pervasive.
-> 012073167140ó0123456789 ≡ '11 925Φ█78██
 ---
 :char: ú
 :ascii: 'u'
@@ -1918,6 +1921,9 @@ find the last exact match in the list and return its index, or else |None|. β-p
 get the imaginary part of a complex number α. scalar.
 > 3í4ú ≡ 3
 > 3ú ≡ 0
+#2 Index of Last
+find the last exact match in the list and return its index, or else |None|. β-pervasive.
+> 012073167140ú0123456789 ≡ '11 925Φ█78██
 ---
 :char: ñ
 :ascii: 'n- 'n~
@@ -1984,6 +1990,11 @@ see also: |Represent Base|
 :char: ¿
 :ascii: '?
 :type: verb
+#1 Diagonal
+get the diagonal of length `α▬2ñ` of a list α
+> "bus""red""are"¿ ≡ "bee"
+> .►↑55¿ ≡ '0'6'12'18'24
+> (100)(020)(003)¿ ≡ 123
 #2 Select
 index α with every item in β. equivalent to `╘@`.
 > "abc""def""ghi"¿(22)(10)(11)(00) ≡ "idea"
@@ -2263,10 +2274,15 @@ returns 0 if α is a scalar, otherwise 1
 > 4ε ≡ 0
 > 456ε ≡ 1
 > (▲)ε ≡ 1
-#2 Contains
-for every item in the list β, check if it is in α
-> 012073167140ε0123456789 ≡ 1111101100
-> 012073167140ε4 ≡ 1
+see also: |Is Scalar|
+#2 Includes
+for every item in the list α, check if it is in β. equivalent to `╛(╘≡&#x7C;)`
+> 0123456789ε012073167140 ≡ 1111101100
+> 1 ε 012073167140 ≡ 1
+> 5 ε 012073167140 ≡ 0
+> "unauthorized equation"ε"aeiou" ≡ 101100101010010110110
+> "unauthorized equation"(ε*'32-)╓+"aeiou" ≡ "UnAUthOrIzEd EqUAtIOn"
+see also: |Excludes|
 ---
 :char: ∩
 :ascii: 'is

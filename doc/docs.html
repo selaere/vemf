@@ -255,7 +255,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="verb"><a href="#92">Æ</a></td>
 <td class="verb"><a href="#93">ô</a></td>
 <td class="verb"><a href="#94">ö</a></td>
-<td class="verb"><a href="#95">ò</a></td>
+<td class=""><a href="#95">ò</a></td>
 <td class="verb"><a href="#96">û</a></td>
 <td class="verb"><a href="#97">ù</a></td>
 <td class="verb"><a href="#98">ÿ</a></td>
@@ -268,7 +268,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="verb_var"><a href="#9F">ƒ</a></td></tr>
 <tr><td class="verb"><a href="#A0">á</a></td>
 <td class="verb"><a href="#A1">í</a></td>
-<td class="verb"><a href="#A2">ó</a></td>
+<td class=""><a href="#A2">ó</a></td>
 <td class="verb"><a href="#A3">ú</a></td>
 <td class="verb"><a href="#A4">ñ</a></td>
 <td class="verb"><a href="#A5">Ñ</a></td>
@@ -424,7 +424,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>5↨ ≡ 12345</pre>
 <p>all lists have a Fill, usually <a href="#None">None</a>. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:</p>
 <pre>123@3 ≡ █</pre>
-<p>the default index is █ <a href="#None">None</a>. you can get a list with a fill with <code>α▐β</code> <a href="#Set Fill">Set Fill</a>, and query it with <code>α▐</code> <a href="#Get Fill">Get Fill</a>.</p>
+<p>the default fill is █ <a href="#None">None</a>. you can get a list with a fill with <code>α▐β</code> <a href="#Set Fill">Set Fill</a>, and query it with <code>α▐</code> <a href="#Get Fill">Get Fill</a>.</p>
 <pre>123▐0@3 ≡ 0
 123▐ ≡ █
 123▐0▐ ≡ 0</pre>
@@ -1526,6 +1526,12 @@ _1%_2 ≡ 1</pre>
 <pre>2í3ü ≡ _2í3
 Θí4ü ≡ 1í4
 2ü ≡ 2</pre>
+<h3 id="Group"><code>αüβ</code> Group</h3>
+<p>pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the <a href="#Empty List">Empty List</a>. if β is <a href="#None">None</a>, the element will be ignored.</p>
+<pre>"vemf programming language"ü0000█11111112222█33333333 ≡ "vemf""program""ming""language"▐φ
+123456789ü012012012 ≡ (147)(258)(369)▐φ
+"bee bumblebee honeybee"ü000φ111111000φ11111000 ≡ "beebeebee""bumblehoney"▐φ
+"eastern bumblehoneybee"ü2222222211111122222(012)(012)(012) ≡ "bee""bumblebee""eastern honeybee"▐φ</pre>
 <h2 class="verb" id="82"><code>é</code> (0x82, <code>'e'</code>)</h2>
 <h3 id="Bits"><code>αé</code> Bits</h3>
 <p>get the internal representation of the integer α in little-endian order. this will be a 64-element list of bits with fill 0. scalar.</p>
@@ -1695,15 +1701,19 @@ _2Ä0 ≡ π½-</pre>
 5Å3 ≡ 2
 Φ↕Å3 ≡ 3210123456</pre>
 <h2 class="verb" id="90"><code>É</code> (0x90, <code>'e+</code>)</h2>
-<h3 id="Write"><code>αÉβ</code> Write</h3>
-<p>write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
-<h3 id="Write Stdout"><code>αÉ</code> Write Stdout</h3>
-<p>write a string α to output stream 0. equivalent to <code>É0</code>.</p>
-<p>see also: <a href="#Print">Print</a></p>
-<h3 id="Write Bytes"><code>α_Éβ</code> Write Bytes</h3>
-<p>write a list of bytes α to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
-<h3 id="Write Bytes to Stdout"><code>α_É</code> Write Bytes to Stdout</h3>
-<p>write a list of bytes α to output stream 0. equivalent to <code>_É0</code>.</p>
+<h3 id="Is Scalar"><code>αÉ</code> Is Scalar</h3>
+<p>returns 1 if α is a scalar, otherwise 0. equivalent to <code>ε¬</code></p>
+<pre>4É ≡ 1
+456É ≡ 0
+(▲)É ≡ 0</pre>
+<p>see also: <a href="#Is List">Is List</a></p>
+<h3 id="Excludes"><code>αÉβ</code> Excludes</h3>
+<p>for every item in the list α, check if it is not in β. equivalent to <code>ε¬</code></p>
+<pre>0123456789É012073167140 ≡ 0000010011
+1 É 012073167140 ≡ 0
+5 É 012073167140 ≡ 1
+"unauthorized equation"É"aeiou" ≡ 010011010101101001001</pre>
+<p>see also: <a href="#Includes">Includes</a></p>
 <h2 class="verb" id="91"><code>æ</code> (0x91, <code>'ae</code>)</h2>
 <h3 id="Join"><code>αæβ</code> Join</h3>
 <p>join the lists in α with the separator β</p>
@@ -1751,15 +1761,8 @@ _2Ä0 ≡ π½-</pre>
 0ö1 ≡ 0
 1ö0 ≡ 0
 1ö1 ≡ 0</pre>
-<h2 class="verb" id="95"><code>ò</code> (0x95, <code>'o`</code>)</h2>
-<h3 id="Diagonal"><code>αò</code> Diagonal</h3>
-<p>get the diagonal of length <code>α▬2ñ</code> of a list α</p>
-<pre>"bus""red""are"ò ≡ "bee"
-.►↑55ò ≡ '0'6'12'18'24
-(100)(020)(003)ò ≡ 123</pre>
-<h3 id="Count"><code>αòβ</code> Count</h3>
-<p>count the number of occurences of β in α. β-pervasive.</p>
-<pre>012073167140ò0123456789 ≡ 3311101200</pre>
+<h2 class="" id="95"><code>ò</code> (0x95, <code>'o`</code>)</h2>
+ 
 <h2 class="verb" id="96"><code>û</code> (0x96, <code>'u^</code>)</h2>
 <h3 id="Occurence Count"><code>αû</code> Occurence Count</h3>
 <p>for every element of α, count the number of occurences of that element in the prefix before that element.</p>
@@ -1776,6 +1779,9 @@ _2Ä0 ≡ π½-</pre>
 <p>get the real part of a complex number α. scalar.</p>
 <pre>3í4ù ≡ 4
 3ù ≡ 3</pre>
+<h3 id="Count"><code>αùβ</code> Count</h3>
+<p>count the number of occurences of β in α. β-pervasive.</p>
+<pre>012073167140ù0123456789 ≡ 3311101200</pre>
 <h2 class="verb" id="98"><code>ÿ</code> (0x98, <code>'y"</code>)</h2>
 <h3 id="Deindices"><code>αÿ</code> Deindices</h3>
 <p>a list of length <code>αÑ</code> with fill 0, where the value of an element <code>i</code> is the amount of occurences of <code>i</code> in α</p>
@@ -1796,12 +1802,15 @@ _2Ä0 ≡ π½-</pre>
 <h3 id="Read Bytes from Stdin"><code>α_Ö</code> Read Bytes from Stdin</h3>
 <p>read from input stream 0. equivalent to <code>_Ö0</code>.</p>
 <h2 class="verb" id="9A"><code>Ü</code> (0x9A, <code>'u+</code>)</h2>
-<h3 id="Group"><code>αÜβ</code> Group</h3>
-<p>pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the <a href="#Empty List">Empty List</a>. if β is <a href="#None">None</a>, the element will be ignored.</p>
-<pre>"vemf programming language"Ü0000█11111112222█33333333 ≡ "vemf""program""ming""language"▐φ
-123456789Ü012012012 ≡ (147)(258)(369)▐φ
-"bee bumblebee honeybee"Ü000φ111111000φ11111000 ≡ "beebeebee""bumblehoney"▐φ
-"eastern bumblehoneybee"Ü2222222211111122222(012)(012)(012) ≡ "bee""bumblebee""eastern honeybee"▐φ</pre>
+<h3 id="Write"><code>αÜβ</code> Write</h3>
+<p>write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
+<h3 id="Write Stdout"><code>αÜ</code> Write Stdout</h3>
+<p>write a string α to output stream 0. equivalent to <code>É0</code>.</p>
+<p>see also: <a href="#Print">Print</a></p>
+<h3 id="Write Bytes"><code>α_Üβ</code> Write Bytes</h3>
+<p>write a list of bytes α to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
+<h3 id="Write Bytes to Stdout"><code>α_Ü</code> Write Bytes to Stdout</h3>
+<p>write a list of bytes α to output stream 0. equivalent to <code>_É0</code>.</p>
 <h2 class="verb" id="9B"><code>¢</code> (0x9B, <code>'C</code>)</h2>
 <h3 id="Absolute"><code>α¢</code> Absolute</h3>
 <p>get the absolute value of α. for complex numbers, this is the magnitude or modulus. scalar.</p>
@@ -1824,14 +1833,14 @@ _4¢ ≡ 4
 "sus sus amongus"£"sus" ≡ 012█012████████
 "bee beebeee beebe"£"ee"  ≡ █01██01█01███01██
 "bee beebeee beebe"£"bee" ≡ 012█012012██012██</pre>
-<p>this is similar to using <a href="#Windows">Windows</a> and <a href="#Match">Match</a> <code>α(►~)╫≡β</code> but this does not include overlapping matches</p>
+<p>this is similar to using <a href="#Scan Windows">Scan Windows</a> and <a href="#Matches">Matches</a> <code>α(►~)╫≡β</code> but this does not include overlapping matches</p>
 <pre>"asininity"£"ini" ≡ ██012████
 "asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!</pre>
 <p>it's also in a bit more convenient format: same length as the original string, and you can do <code>=0</code> to find the starts of matches or <a href="#Is Some">Is Some</a> <code>▀</code> to find all the matched characters:</p>
 <pre>"sus sus amongus"£"sus"   ≡ 012█012████████
 "sus sus amongus"£"sus"=0 ≡ 100010000000000
 "sus sus amongus"£"sus"▀  ≡ 111011100000000</pre>
-<p>see also: <a href="#Equals">Equals</a>, <a href="#Windows">Windows</a>, <a href="#Split">Split</a></p>
+<p>see also: <a href="#Equals">Equals</a>, <a href="#Scan Windows">Scan Windows</a>, <a href="#Split">Split</a></p>
 <h2 class="verb" id="9D"><code>¥</code> (0x9D, <code>'Y</code>)</h2>
 <h3 id="Split"><code>α¥β</code> Split</h3>
 <p>splits a list α at all the ocurrences of the sublist β</p>
@@ -1879,15 +1888,16 @@ _4¢ ≡ 4
 <pre>1í² ± _1
 2í² ± _4
 3í2² ± '12í_5</pre>
-<h2 class="verb" id="A2"><code>ó</code> (0xA2, <code>'o'</code>)</h2>
-<h3 id="Index of Last"><code>αóβ</code> Index of Last</h3>
-<p>find the last exact match in the list and return its index, or else <a href="#None">None</a>. β-pervasive.</p>
-<pre>012073167140ó0123456789 ≡ '11 925Φ█78██</pre>
+<h2 class="" id="A2"><code>ó</code> (0xA2, <code>'o'</code>)</h2>
+ 
 <h2 class="verb" id="A3"><code>ú</code> (0xA3, <code>'u'</code>)</h2>
 <h3 id="Imaginary Part"><code>αú</code> Imaginary Part</h3>
 <p>get the imaginary part of a complex number α. scalar.</p>
 <pre>3í4ú ≡ 3
 3ú ≡ 0</pre>
+<h3 id="Index of Last"><code>αúβ</code> Index of Last</h3>
+<p>find the last exact match in the list and return its index, or else <a href="#None">None</a>. β-pervasive.</p>
+<pre>012073167140ú0123456789 ≡ '11 925Φ█78██</pre>
 <h2 class="verb" id="A4"><code>ñ</code> (0xA4, <code>'n- 'n~</code>)</h2>
 <h3 id="Minimum"><code>αñβ</code> Minimum</h3>
 <p>return the lowest number between α and β. scalar.</p>
@@ -1939,6 +1949,11 @@ _2Ñ0 ≡ 0</pre>
 "A5A5"º'16 ≡ '42405</pre>
 <p>see also: <a href="#Represent Base">Represent Base</a></p>
 <h2 class="verb" id="A8"><code>¿</code> (0xA8, <code>'?</code>)</h2>
+<h3 id="Diagonal"><code>α¿</code> Diagonal</h3>
+<p>get the diagonal of length <code>α▬2ñ</code> of a list α</p>
+<pre>"bus""red""are"¿ ≡ "bee"
+.►↑55¿ ≡ '0'6'12'18'24
+(100)(020)(003)¿ ≡ 123</pre>
 <h3 id="Select"><code>α¿β</code> Select</h3>
 <p>index α with every item in β. equivalent to <code>╘@</code>.</p>
 <pre>"abc""def""ghi"¿(22)(10)(11)(00) ≡ "idea"</pre>
@@ -2131,10 +2146,15 @@ _2Ñ0 ≡ 0</pre>
 <pre>4ε ≡ 0
 456ε ≡ 1
 (▲)ε ≡ 1</pre>
-<h3 id="Contains"><code>αεβ</code> Contains</h3>
-<p>for every item in the list β, check if it is in α</p>
-<pre>012073167140ε0123456789 ≡ 1111101100
-012073167140ε4 ≡ 1</pre>
+<p>see also: <a href="#Is Scalar">Is Scalar</a></p>
+<h3 id="Includes"><code>αεβ</code> Includes</h3>
+<p>for every item in the list α, check if it is in β. equivalent to <code>╛(╘≡&#x7C;)</code></p>
+<pre>0123456789ε012073167140 ≡ 1111101100
+1 ε 012073167140 ≡ 1
+5 ε 012073167140 ≡ 0
+"unauthorized equation"ε"aeiou" ≡ 101100101010010110110
+"unauthorized equation"(ε*'32-)╓+"aeiou" ≡ "UnAUthOrIzEd EqUAtIOn"</pre>
+<p>see also: <a href="#Excludes">Excludes</a></p>
 <h2 class="verb" id="EF"><code>∩</code> (0xEF, <code>'is</code>)</h2>
 <h3 id="Unique"><code>α∩</code> Unique</h3>
 <p>remove duplicates from α</p>
