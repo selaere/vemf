@@ -37,7 +37,7 @@ pub fn format(&self, f: &mut impl Write, slice: &[Val]) -> FResult {
             } else { break 'give_up; } }
             return write!(f, "\"{string}\"");
         }}
-        Some(8) => if let Lis{l, fill} = self { 
+        Some(7) => if let Lis{l, fill} = self { 
             let mut indent = Indent(f, 1);
             let mut iter = l.iter();
             write!(indent, "(")?;
@@ -47,7 +47,7 @@ pub fn format(&self, f: &mut impl Write, slice: &[Val]) -> FResult {
             if !fill.is_nan() { write!(indent, "▐")?; fill.format(&mut indent, rest)?; }
             return Ok(());
         }
-        Some(9) => if let Lis{l, fill} = self {
+        Some(align @ (8|9)) => if let Lis{l, fill} = self {
             let mut col_lens = Vec::new();
             let list: Vec<Result<(Vec<String>, &Val), &Val>> = l.iter().map(|i| { match i {
                 Lis{l, fill} => Ok((l.iter().enumerate().map(|(n, j)| {
@@ -64,7 +64,11 @@ pub fn format(&self, f: &mut impl Write, slice: &[Val]) -> FResult {
                     Ok((l, fill)) => {
                         f.write_char('(')?;
                         for (n, j) in l.iter().enumerate() {
-                            _ = write!(f, "{: >width$}", j, width=col_lens[n]);
+                            _ = if align == 8 {
+                                write!(f, "{: <width$}", j, width=col_lens[n])
+                            } else {
+                                write!(f, "{: >width$}", j, width=col_lens[n])
+                            };
                             if n != l.len()-1 {f.write_char(' ')?;}
                         }; f.write_char(')')?;
                         if !fill.is_nan() { write!(f, "▐")?; fill.format(f, rest)?; }

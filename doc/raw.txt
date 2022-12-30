@@ -2545,13 +2545,14 @@ format α with default settings
 when this is called with a right argument, it will be interpreted in the following way:
 - 0: print
 - 1: float
-- 2: int
-- 3: char
+- 2: integer
+- 3: unicode character
 - 4: unicode string
 - 5: codepage string
-- 8: line-separated list
-- 9: table (aligned list of lists)
-you can also use multiple of these in a list, like `ⁿ84` (line-separated list of strings)
+- 7: line-separated list
+- 8: left-aligned list of lists
+- 9: right-aligned list of lists
+you can also use multiple of these in a list, like `ⁿ74` (line-separated list of strings)
 ---
 :char: ²
 :ascii: 'z, 'sq
