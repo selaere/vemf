@@ -381,9 +381,9 @@ h2>code { background-color: inherit; white-space: pre; }
 <p>uh, hm. yes. this is not the number one hundred twenty-three. consecutive nouns (strands) form a list, and <code>1</code>, <code>2</code>, <code>3</code> are nouns. the sum of all of those is 6.</p>
 <p>if you do want the number 123, you can use <a href="#Numeric Literal">Numeric Literal</a>s by prepending <code>'</code>:</p>
 <pre>'123+1 ≡ '124</pre>
-<p>or even shorter and more obscure, we can use a <a href="#Character Literal">Character Literal</a>. <code>z</code> is the 123th character in the codepage, so:</p>
+<p>or even shorter (and more obscure), we can use a <a href="#Character Literal">Character Literal</a>. <code>z</code> is the 123th character in the codepage, so:</p>
 <pre>`z+1 ≡ '123</pre>
-<p>note that whitespace matters when using <a href="#Numeric Literal">Numeric Literal</a>s:</p>
+<p>note that whitespace matters when using numeric literals:</p>
 <pre>'12 34+ ≡ '19
 '123 4+ ≡ '127</pre>
 <p>you may use parentheses to group expressions:</p>
@@ -391,33 +391,49 @@ h2>code { background-color: inherit; white-space: pre; }
 <p>here, <code>2*3</code> is another expression that is executed before the outer one, and <code>(2*3)</code> is a noun.</p>
 <p>the mathematical operations you are familiar with are here. arithmetic <code>+-*/</code>, <code>^</code> <a href="#Exponent">Exponent</a>, <code>∟</code> <a href="#Logarithm">Logarithm</a>, and a bunch more.</p>
 <h2 id="Lists">Lists</h2>
+<p>a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting nouns next to eachother:</p>
+<pre>    123
+(1 2 3)</pre>
+<p>lists may be nested arbitrarily deep. this is a list composed of 3 lists, each with 3 items (or a 3 by 3 matrix).</p>
+<pre>    (123)(456)(789)
+((1 2 3) (4 5 6) (7 8 9))</pre>
+<p>the arguments of a list dont have to have the same length or the same type:</p>
+<pre>    (036)9 
+((0 3 6) 9)
+    (98)(123)(4567)
+((9 8) (1 2 3) (4 5 6 7))</pre>
+<p>we can get a list's length with <code>α~</code>:</p>
+<pre>123~ ≡ 3</pre>
+<p>strings are lists of characters. a string literal makes a list with all the characters inside the <a href="#Quotes">Quotes</a>, in vemf's codepage:</p>
+<pre>"abc" ≡ '97'98'99
+"♥♦♣♠" ≡ 3456
+"Hello, World!"~ ≡ '13</pre>
+<p>strings can be stranded as well:</p>
+<pre>"earth""fire""air""water"</pre>
 <p>functions that work with numbers are scalar: they automatically distribute to every number in a list. for two lists, this pairs up the elements and operates on them:</p>
 <pre>012*345 ≡ 04'10</pre>
 <p>if one argument is a list and another is a scalar, the scalar is 'distributed' to all the items in the array</p>
 <pre>63102+2 ≡ 85324
 1/234 ≡ (1/2)(1/3)(1/4)</pre>
-<p>lists may be nested arbitrarily deep. these rules are applied recursively</p>
+<p>these rules are applied recursively:</p>
 <pre>(123)(456)(789)+01(323) ≡ (123)(567)('10'10'12)</pre>
-<p>in the case of <code>01(323)</code>, it is a list of three elements: <code>0</code>, <code>1</code>, and <code>323</code>, where <code>323</code> is another list.</p>
+<p>we've seen that characters are not a separate type, and they are just their codepoints. subtracting an ascii lowercase letter by 32 makes it uppercase, so we can make a word uppercase by:</p>
+<pre>"screaming"-'32 ≡ "SCREAMING"</pre>
+<p>though there's also another function for this, <code>Ç</code> <a href="#Uppercase">Uppercase</a>, and it leaves punctuation unchanged:</p>
+<pre>"words words"Ç ≡ "WORDS WORDS"</pre>
 <p>see also: <a href="#Each">Each</a></p>
-<p>strings are lists of characters. a string literal makes a list with all the characters inside the <a href="#Quotes">Quotes</a>, in the language's codepage:</p>
-<pre>"abc" ≡ '97'98'99
-"♥♦♣♠" ≡ 3456</pre>
 <p>an element in a list can be indexed with <code>α@β</code> <a href="#Index">Index</a>, where indices start with 0:</p>
 <pre>2468@2 ≡ 6
 2468@0 ≡ 2
 2468@ ≡ 2 ' monadic @ is First
 (123)(456)(789)@2 ≡ 789
 (123)(456)(789)@21 ≡ 8</pre>
-<p><code>α~</code> gets a list's length:</p>
-<pre>123~ ≡ 3
-"Hello, World!"~ ≡ '13</pre>
 <p><code>α,β</code> <a href="#Concatenate">Concatenate</a>s lists:</p>
 <pre>123,456 ≡ 123456
+1,234 ≡ 1234
 (12)(34),56 ≡ (12)(34)56</pre>
 <p>and <code>α♫β</code> creates a <a href="#Pair">Pair</a>:</p>
-<pre>12,34 ≡ 1234
-12♫34 ≡ (12)(34)</pre>
+<pre>123♫456 ≡ (123)(456)</pre>
 <p><code>α↕</code> <a href="#Iota">Iota</a> returns all the integers from 0 up to α:</p>
 <pre>5↕ ≡ 01234</pre>
 <p>if you want something more familiar, try <code>α↨</code> <a href="#Inclusive Iota">Inclusive Iota</a>:</p>
@@ -526,12 +542,12 @@ h2>code { background-color: inherit; white-space: pre; }
 <p><code>α╛Gβ</code> <a href="#Each Left">Each Left</a> and <code>α╘Gβ</code> <a href="#Each Right">Each Right</a> iterates through one argument, while passing the other argument:</p>
 <pre>123╛,456 ≡ (1456)(2456)(3456)
 123╘,456 ≡ (1234)(1235)(1236)</pre>
-<p>using both <a href="#Each Left">Each Left</a> and <a href="#Each Right">Each Right</a> we get something similar to APL's outer product:</p>
+<p>using both Each Left and Each Right we get something similar to APL's outer product, or a cartesian product:</p>
 <pre>123╘╛,456 ≡ ((14)(24)(34))((15)(25)(35))((16)(26)(36))
 123╛╘,456 ≡ ((14)(15)(16))((24)(25)(26))((34)(35)(36))</pre>
-<p><code>α╧G</code> <a href="#Reduce">Reduce</a> is akin to applying G between every element in α: </p>
+<p><code>α╧G</code> <a href="#Reduce">Reduce</a> is like applying G between every element in α: </p>
 <pre>2345╧+ ≡ 2+3+4+5</pre>
-<p>this is similar to the monadic use, <code>α+</code> <a href="#Sum">Sum</a>. in fact, <code>*</code> <code>,</code> <code>&</code> <code>&#x7c;</code> <code>ñ</code> <code>Ñ</code> all act the same way: the monad is the reduction of the dyad.</p>
+<p>this is similar to the monadic use of addition, <code>α+</code> <a href="#Sum">Sum</a>. in fact, <code>*</code> <code>,</code> <code>&</code> <code>&#x7c;</code> <code>ñ</code> <code>Ñ</code> all act the same way: the monad is the reduction of the dyad.</p>
 <p><code>α╤G</code> <a href="#Scan">Scan</a> gives the intermediate results:</p>
 <pre>2345╤+ ≡ (2)(2+3)(2+3+4)(2+3+4+5)
 00100010011020╤+ ≡ 00111122234466</pre>
@@ -1121,51 +1137,71 @@ _1%_2 ≡ 1</pre>
 <h2 class="noun" id="30"><code>0</code> (0x30)</h2>
 <h3 id="Zero"><code>0</code> Zero</h3>
 <p>the integer 0</p>
+<h3 id=""><code>.0</code> </h3>
+<p>the number <code>0.01</code>, or <code>'100/</code></p>
 <h2 class="noun" id="31"><code>1</code> (0x31)</h2>
 <h3 id="One"><code>1</code> One</h3>
 <p>the integer 1</p>
 <h3 id="Minus One"><code>_1</code> Minus One</h3>
 <p>the integer −1</p>
+<h3 id=""><code>.1</code> </h3>
+<p>the number <code>0.1</code>, or <code>Φ/</code></p>
 <h2 class="noun" id="32"><code>2</code> (0x32)</h2>
 <h3 id="Two"><code>2</code> Two</h3>
 <p>the integer 2</p>
 <h3 id="Minus Two"><code>_2</code> Minus Two</h3>
 <p>the integer −2</p>
+<h3 id=""><code>.2</code> </h3>
+<p>the number <code>0.2</code>, or <code>5/</code></p>
 <h2 class="noun" id="33"><code>3</code> (0x33)</h2>
 <h3 id="Three"><code>3</code> Three</h3>
 <p>the integer 3</p>
 <h3 id="Minus Three"><code>_3</code> Minus Three</h3>
 <p>the integer −3</p>
+<h3 id=""><code>.3</code> </h3>
+<p>the number <code>0.3</code>, or <code>3/Φ</code></p>
 <h2 class="noun" id="34"><code>4</code> (0x34)</h2>
 <h3 id="Four"><code>4</code> Four</h3>
 <p>the integer 4</p>
 <h3 id="Minus Four"><code>_4</code> Minus Four</h3>
 <p>the integer −4</p>
+<h3 id=""><code>.4</code> </h3>
+<p>the number <code>0.4</code>, or <code>2/5</code></p>
 <h2 class="noun" id="35"><code>5</code> (0x35)</h2>
 <h3 id="Five"><code>5</code> Five</h3>
 <p>the integer 5</p>
 <h3 id="Minus Five"><code>_5</code> Minus Five</h3>
 <p>the integer −5</p>
+<h3 id=""><code>.5</code> </h3>
+<p>the number <code>0.5</code>, or <code>5/Φ</code></p>
 <h2 class="noun" id="36"><code>6</code> (0x36)</h2>
 <h3 id="Six"><code>6</code> Six</h3>
 <p>the integer 6</p>
 <h3 id="Minus Six"><code>_6</code> Minus Six</h3>
 <p>the integer −6</p>
+<h3 id=""><code>.6</code> </h3>
+<p>the number <code>0.6</code>, or <code>3/5</code></p>
 <h2 class="noun" id="37"><code>7</code> (0x37)</h2>
 <h3 id="Seven"><code>7</code> Seven</h3>
 <p>the integer 7</p>
 <h3 id="Minus Seven"><code>_7</code> Minus Seven</h3>
 <p>the integer −7</p>
+<h3 id=""><code>.7</code> </h3>
+<p>the number <code>0.7</code>, or <code>7/Φ</code></p>
 <h2 class="noun" id="38"><code>8</code> (0x38)</h2>
 <h3 id="Eight"><code>8</code> Eight</h3>
 <p>the integer 8</p>
 <h3 id="Minus Eight"><code>_8</code> Minus Eight</h3>
 <p>the integer −8</p>
+<h3 id=""><code>.8</code> </h3>
+<p>the number <code>0.8</code>, or <code>4/5</code></p>
 <h2 class="noun" id="39"><code>9</code> (0x39)</h2>
 <h3 id="Nine"><code>9</code> Nine</h3>
 <p>the integer 9</p>
 <h3 id="Minus Nine"><code>_9</code> Minus Nine</h3>
 <p>the integer −9</p>
+<h3 id=""><code>.9</code> </h3>
+<p>the number <code>0.9</code>, or <code>9/Φ</code></p>
 <h2 class="prefix" id="3A"><code>:</code> (0x3A)</h2>
 <h3 id="Verb"><code>:name</code> Verb</h3>
 <p>the variable <code>name</code> with verb role</p>
@@ -2112,11 +2148,17 @@ _2Ñ0 ≡ 0</pre>
 <p>the imaginary constant i</p>
 <pre>Γ ≡ Θ√</pre>
 <h3 id="Negative Imaginary Constant"><code>_Γ</code> Negative Imaginary Constant</h3>
-<p>-i</p>
+<p>the complex number -i, or <code>Γ-</code></p>
+<h3 id="Euler–Mascheroni Constant"><code>.Γ</code> Euler–Mascheroni Constant</h3>
+<p>the number <code>0.5772156649015329</code></p>
 <h2 class="noun" id="E3"><code>π</code> (0xE3, <code>'p- 'pi</code>)</h2>
 <h3 id="Pi"><code>π</code> Pi</h3>
 <p>archimedes constant, ratio of a semicircle to its radius, or at least the best approximation possible in 64-bit floating point.</p>
 <pre>π ≡ '3.141592653589793</pre>
+<h3 id="Tau"><code>_π</code> Tau</h3>
+<p>the number <code>6.283185307179586</code>, or <code>π*2</code></p>
+<h3 id="Pi Halves"><code>.π</code> Pi Halves</h3>
+<p>the number <code>1.5707963267948966</code>, or <code>π/2</code></p>
 <h2 class="var" id="E4"><code>Σ</code> (0xE4, <code>'s+</code>)</h2>
 <h3 id="Arity"><code>Σ</code> Arity</h3>
 <p>the number of arguments passed (1 or 2). if not in a function definition, the number of arguments passed in the command-line (<code>δ~</code>, may not be 1 or 2).</p>
@@ -2136,6 +2178,8 @@ _2Ñ0 ≡ 0</pre>
 <h3 id="Minus Ten"><code>_Φ</code> Minus Ten</h3>
 <p>the integer −10</p>
 <pre>_Φ ≡ '-10</pre>
+<h3 id="Euler's Number"><code>.Φ</code> Euler's Number</h3>
+<p>the number <code>2.718281828459045</code></p>
 <h2 class="noun" id="E9"><code>Θ</code> (0xE9, <code>'Q 't+</code>)</h2>
 <h3 id="Minus One"><code>Θ</code> Minus One</h3>
 <p>the number −1</p>
@@ -2154,6 +2198,10 @@ _2Ñ0 ≡ 0</pre>
 <h3 id="Empty List"><code>φ</code> Empty List</h3>
 <p>literal for an empty list with <a href="#None">None</a> fill</p>
 <pre>φ~ ≡ 0</pre>
+<h3 id="Golden Ratio"><code>.φ</code> Golden Ratio</h3>
+<p>the number <code>1.618033988749895</code>, or <code>5√▲½</code></p>
+<h3 id="Golden Ratio"><code>.φ</code> Golden Ratio</h3>
+<p>the number <code>-0.6180339887498949</code>, or <code>5√▼-½</code></p>
 <h2 class="verb" id="EE"><code>ε</code> (0xEE, <code>'in 'e-</code>)</h2>
 <h3 id="Is List"><code>αε</code> Is List</h3>
 <p>returns 0 if α is a scalar, otherwise 1</p>
@@ -2614,31 +2662,65 @@ _1÷_2 ≡ 1</pre>
 <h2 class="mgroup" id="DA"><code>┌</code> (0xDA, <code>'g1</code>)</h2>
 <h3 id="1-Group"><code>┌m</code> 1-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.┌</code> </h3>
+<p>the number <code>1.5</code>, or <code>3/2</code></p>
+<h3 id=""><code>_┌</code> </h3>
+<p>the number <code>-0.5</code>, or <code>Θ½</code></p>
 <h2 class="mgroup" id="B3"><code>│</code> (0xB3, <code>'g2</code>)</h2>
 <h3 id="2-Group"><code>│mn</code> 2-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.│</code> </h3>
+<p>the number <code>0.6666666666666666</code>, or <code>2/3</code></p>
+<h3 id=""><code>_│</code> </h3>
+<p>the number <code>1.4142135623730951</code>, or <code>2√</code></p>
 <h2 class="mgroup" id="C3"><code>├</code> (0xC3, <code>'g3</code>)</h2>
 <h3 id="3-Group"><code>├mno</code> 3-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.├</code> </h3>
+<p>the number <code>0.3333333333333333</code>, or <code>1/3</code></p>
+<h3 id=""><code>_├</code> </h3>
+<p>the number <code>1.7320508075688772</code>, or <code>3√</code></p>
 <h2 class="mgroup" id="C6"><code>╞</code> (0xC6, <code>'g4</code>)</h2>
 <h3 id="4-Group"><code>╞mnop</code> 4-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.╞</code> </h3>
+<p>the number <code>0.25</code>, or <code>1/4</code></p>
+<h3 id=""><code>_╞</code> </h3>
+<p>the number <code>420</code></p>
 <h2 class="mgroup" id="C7"><code>╟</code> (0xC7, <code>'g5</code>)</h2>
 <h3 id="5-Group"><code>╟mnopq</code> 5-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.╟</code> </h3>
+<p>the number <code>0.75</code>, or <code>3/4</code></p>
+<h3 id=""><code>_╟</code> </h3>
+<p>the number <code>2.23606797749979</code>, <code>5√</code></p>
 <h2 class="mgroup" id="CC"><code>╠</code> (0xCC, <code>'g6</code>)</h2>
 <h3 id="6-Group"><code>╠mnopqr</code> 6-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.╠</code> </h3>
+<p>the number <code>0.16666666666666666</code>, or <code>1/6</code></p>
+<h3 id=""><code>_╠</code> </h3>
+<p>the number <code>360</code></p>
 <h2 class="mgroup" id="B4"><code>┤</code> (0xB4, <code>'g7</code>)</h2>
 <h3 id="7-Group"><code>┤mnopqrs</code> 7-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.┤</code> </h3>
+<p>the number <code>0.14285714285714285</code>, or <code>1/7</code></p>
+<h3 id=""><code>_┤</code> </h3>
+<p>the number <code>273.15</code></p>
 <h2 class="mgroup" id="B5"><code>╡</code> (0xB5, <code>'g8</code>)</h2>
 <h3 id="8-Group"><code>╡mnopqrst</code> 8-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.╡</code> </h3>
+<p>the number <code>0.125</code>, or <code>1/8</code></p>
 <h2 class="mgroup" id="B6"><code>╢</code> (0xB6, <code>'g9</code>)</h2>
 <h3 id="9-Group"><code>╢mnopqrstu</code> 9-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.╢</code> </h3>
+<p>the number <code>0.1111111111111111</code>, or <code>1/9</code></p>
 <h2 class="mgroup" id="B9"><code>╣</code> (0xB9, <code>'g0</code>)</h2>
 <h3 id="10-Group"><code>╣mnopqrstuv</code> 10-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
+<h3 id=""><code>.╣</code> </h3>
+<p>the number <code>2.5</code>, or <code>5/2</code></p>
 </main></div></body></html>

@@ -80,7 +80,11 @@ func!(a :mul b => match (a, b) {
     (Int(a), Int(b)) => Int(a.saturating_mul(b)),
     (a, b) => Num(a.as_c() * b.as_c()),
 });
-func!(a :div b => Num(a.as_c().fdiv(b.as_c())));
+func!(a :div b => if b.as_c().im == 0. {
+    Num(a.as_c().unscale(b.as_c().re))
+} else {
+    Num(a.as_c().fdiv(b.as_c()))
+});
 func!(a :rem b => match (a, b) {
     (Int(a), Int(b)) => if b == 0 {NAN} else { Int(a.rem_euclid(b)) },
     (a, b) => {

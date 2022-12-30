@@ -15,9 +15,9 @@ almost every function has two different variants that do different things. even 
 uh, hm. yes. this is not the number one hundred twenty-three. consecutive nouns (strands) form a list, and `1`, `2`, `3` are nouns. the sum of all of those is 6.
 if you do want the number 123, you can use |Numeric Literal|s by prepending `'`:
 > '123+1 ≡ '124
-or even shorter and more obscure, we can use a |Character Literal|. `z` is the 123th character in the codepage, so:
+or even shorter (and more obscure), we can use a |Character Literal|. `z` is the 123th character in the codepage, so:
 > `z+1 ≡ '123
-note that whitespace matters when using |Numeric Literal|s:
+note that whitespace matters when using numeric literals:
 > '12 34+ ≡ '19
 > '123 4+ ≡ '127
 you may use parentheses to group expressions:
@@ -26,33 +26,49 @@ here, `2*3` is another expression that is executed before the outer one, and `(2
 the mathematical operations you are familiar with are here. arithmetic `+-*/`, `^` |Exponent|, `∟` |Logarithm|, and a bunch more.
 ---
 :title: Lists
+a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting nouns next to eachother:
+>     123
+> (1 2 3)
+lists may be nested arbitrarily deep. this is a list composed of 3 lists, each with 3 items (or a 3 by 3 matrix).
+>     (123)(456)(789)
+> ((1 2 3) (4 5 6) (7 8 9))
+the arguments of a list dont have to have the same length or the same type:
+>     (036)9 
+> ((0 3 6) 9)
+>     (98)(123)(4567)
+> ((9 8) (1 2 3) (4 5 6 7))
+we can get a list's length with `α~`:
+> 123~ ≡ 3
+strings are lists of characters. a string literal makes a list with all the characters inside the |Quotes|, in vemf's codepage:
+> "abc" ≡ '97'98'99
+> "♥♦♣♠" ≡ 3456
+> "Hello, World!"~ ≡ '13
+strings can be stranded as well:
+> "earth""fire""air""water"
 functions that work with numbers are scalar: they automatically distribute to every number in a list. for two lists, this pairs up the elements and operates on them:
 > 012*345 ≡ 04'10
 if one argument is a list and another is a scalar, the scalar is 'distributed' to all the items in the array
 > 63102+2 ≡ 85324
 > 1/234 ≡ (1/2)(1/3)(1/4)
-lists may be nested arbitrarily deep. these rules are applied recursively
+these rules are applied recursively:
 > (123)(456)(789)+01(323) ≡ (123)(567)('10'10'12)
-in the case of `01(323)`, it is a list of three elements: `0`, `1`, and `323`, where `323` is another list.
+we've seen that characters are not a separate type, and they are just their codepoints. subtracting an ascii lowercase letter by 32 makes it uppercase, so we can make a word uppercase by:
+> "screaming"-'32 ≡ "SCREAMING"
+though there's also another function for this, `Ç` |Uppercase|, and it leaves punctuation unchanged:
+> "words words"Ç ≡ "WORDS WORDS"
 see also: |Each|
-strings are lists of characters. a string literal makes a list with all the characters inside the |Quotes|, in the language's codepage:
-> "abc" ≡ '97'98'99
-> "♥♦♣♠" ≡ 3456
 an element in a list can be indexed with `α@β` |Index|, where indices start with 0:
 > 2468@2 ≡ 6
 > 2468@0 ≡ 2
 > 2468@ ≡ 2 ' monadic @ is First
 > (123)(456)(789)@2 ≡ 789
 > (123)(456)(789)@21 ≡ 8
-`α~` gets a list's length:
-> 123~ ≡ 3
-> "Hello, World!"~ ≡ '13
 `α,β` |Concatenate|s lists:
 > 123,456 ≡ 123456
+> 1,234 ≡ 1234
 > (12)(34),56 ≡ (12)(34)56
 and `α♫β` creates a |Pair|:
-> 12,34 ≡ 1234
-> 12♫34 ≡ (12)(34)
+> 123♫456 ≡ (123)(456)
 `α↕` |Iota| returns all the integers from 0 up to α:
 > 5↕ ≡ 01234
 if you want something more familiar, try `α↨` |Inclusive Iota|:
@@ -164,12 +180,12 @@ vemf automatically vectorizes, so often explicit loops are not be necessary, but
 `α╛Gβ` |Each Left| and `α╘Gβ` |Each Right| iterates through one argument, while passing the other argument:
 > 123╛,456 ≡ (1456)(2456)(3456)
 > 123╘,456 ≡ (1234)(1235)(1236)
-using both |Each Left| and |Each Right| we get something similar to APL's outer product:
+using both Each Left and Each Right we get something similar to APL's outer product, or a cartesian product:
 > 123╘╛,456 ≡ ((14)(24)(34))((15)(25)(35))((16)(26)(36))
 > 123╛╘,456 ≡ ((14)(15)(16))((24)(25)(26))((34)(35)(36))
-`α╧G` |Reduce| is akin to applying G between every element in α: 
+`α╧G` |Reduce| is like applying G between every element in α: 
 > 2345╧+ ≡ 2+3+4+5
-this is similar to the monadic use, `α+` |Sum|. in fact, `*` `,` `&` `&#x7c;` `ñ` `Ñ` all act the same way: the monad is the reduction of the dyad.
+this is similar to the monadic use of addition, `α+` |Sum|. in fact, `*` `,` `&` `&#x7c;` `ñ` `Ñ` all act the same way: the monad is the reduction of the dyad.
 `α╤G` |Scan| gives the intermediate results:
 > 2345╤+ ≡ (2)(2+3)(2+3+4)(2+3+4+5)
 > 00100010011020╤+ ≡ 00111122234466
@@ -884,6 +900,8 @@ calculate α / β. scalar
 :type: noun
 #0 Zero
 the integer 0
+#.0 
+the number `0.01`, or `'100/`
 ---
 :char: 1
 :type: noun
@@ -891,6 +909,8 @@ the integer 0
 the integer 1
 #_0 Minus One
 the integer −1
+#.0 
+the number `0.1`, or `Φ/`
 ---
 :char: 2
 :type: noun
@@ -898,6 +918,8 @@ the integer −1
 the integer 2
 #_0 Minus Two
 the integer −2
+#.0
+the number `0.2`, or `5/`
 ---
 :char: 3
 :type: noun
@@ -905,6 +927,8 @@ the integer −2
 the integer 3
 #_0 Minus Three
 the integer −3
+#.0
+the number `0.3`, or `3/Φ`
 ---
 :char: 4
 :type: noun
@@ -912,6 +936,8 @@ the integer −3
 the integer 4
 #_0 Minus Four
 the integer −4
+#.0
+the number `0.4`, or `2/5`
 ---
 :char: 5
 :type: noun
@@ -919,6 +945,8 @@ the integer −4
 the integer 5
 #_0 Minus Five
 the integer −5
+#.0
+the number `0.5`, or `5/Φ`
 ---
 :char: 6
 :type: noun
@@ -926,6 +954,8 @@ the integer −5
 the integer 6
 #_0 Minus Six
 the integer −6
+#.0
+the number `0.6`, or `3/5`
 ---
 :char: 7
 :type: noun
@@ -933,6 +963,8 @@ the integer −6
 the integer 7
 #_0 Minus Seven
 the integer −7
+#.0
+the number `0.7`, or `7/Φ`
 ---
 :char: 8
 :type: noun
@@ -940,6 +972,8 @@ the integer −7
 the integer 8
 #_0 Minus Eight
 the integer −8
+#.0
+the number `0.8`, or `4/5`
 ---
 :char: 9
 :type: noun
@@ -947,6 +981,8 @@ the integer −8
 the integer 9
 #_0 Minus Nine
 the integer −9
+#.0
+the number `0.9`, or `9/Φ`
 ---
 :char: :
 :type: prefix
@@ -2211,7 +2247,9 @@ the right argument. if not in a function definition, the second argument passed 
 the imaginary constant i
 > Γ ≡ Θ√
 #_0 Negative Imaginary Constant
--i
+the complex number -i, or `Γ-`
+#.0 Euler–Mascheroni Constant
+the number `0.5772156649015329`
 ---
 :char: π
 :ascii: 'p- 'pi
@@ -2219,6 +2257,10 @@ the imaginary constant i
 #0 Pi
 archimedes constant, ratio of a semicircle to its radius, or at least the best approximation possible in 64-bit floating point.
 > π ≡ '3.141592653589793
+#_0 Tau
+the number `6.283185307179586`, or `π*2`
+#.0 Pi Halves
+the number `1.5707963267948966`, or `π/2`
 ---
 :char: Σ
 :ascii: 's+
@@ -2253,6 +2295,8 @@ the integer 10
 #_0 Minus Ten
 the integer −10
 > _Φ ≡ '-10
+#.0 Euler's Number
+the number `2.718281828459045`
 ---
 :char: Θ
 :ascii: 'Q 't+
@@ -2283,6 +2327,10 @@ negative infinity
 #0 Empty List
 literal for an empty list with |None| fill
 > φ~ ≡ 0
+#.0 Golden Ratio
+the number `1.618033988749895`, or `5√▲½`
+#.0 Golden Ratio
+the number `-0.6180339887498949`, or `5√▼-½`
 ---
 :char: ε
 :ascii: 'in 'e-
@@ -2875,57 +2923,91 @@ if there is nothing in the statement body, the variable will be removed from its
 :type: mgroup
 #┌m 1-Group
 see |Groups|
+#.0
+the number `1.5`, or `3/2`
+#_0
+the number `-0.5`, or `Θ½`
 ---
 :char: │
 :ascii: 'g2
 :type: mgroup
 #│mn 2-Group
 see |Groups|
+#.0
+the number `0.6666666666666666`, or `2/3`
+#_0
+the number `1.4142135623730951`, or `2√`
 ---
 :char: ├
 :ascii: 'g3
 :type: mgroup
 #├mno 3-Group
 see |Groups|
+#.0
+the number `0.3333333333333333`, or `1/3`
+#_0
+the number `1.7320508075688772`, or `3√`
 ---
 :char: ╞
 :ascii: 'g4
 :type: mgroup
 #╞mnop 4-Group
 see |Groups|
+#.0
+the number `0.25`, or `1/4`
+#_0
+the number `420`
 ---
 :char: ╟
 :ascii: 'g5
 :type: mgroup
 #╟mnopq 5-Group
 see |Groups|
+#.0
+the number `0.75`, or `3/4`
+#_0
+the number `2.23606797749979`, `5√`
 ---
 :char: ╠
 :ascii: 'g6
 :type: mgroup
 #╠mnopqr 6-Group
 see |Groups|
+#.0
+the number `0.16666666666666666`, or `1/6`
+#_0
+the number `360`
 ---
 :char: ┤
 :ascii: 'g7
 :type: mgroup
 #┤mnopqrs 7-Group
 see |Groups|
+#.0
+the number `0.14285714285714285`, or `1/7`
+#_0
+the number `273.15`
 ---
 :char: ╡
 :ascii: 'g8
 :type: mgroup
 #╡mnopqrst 8-Group
 see |Groups|
+#.0
+the number `0.125`, or `1/8`
 ---
 :char: ╢
 :ascii: 'g9
 :type: mgroup
 #╢mnopqrstu 9-Group
 see |Groups|
+#.0
+the number `0.1111111111111111`, or `1/9`
 ---
 :char: ╣
 :ascii: 'g0
 :type: mgroup
 #╣mnopqrstuv 10-Group
 see |Groups|
+#.0
+the number `2.5`, or `5/2`
