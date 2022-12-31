@@ -79,6 +79,22 @@ td>a {
     color: #000;
     text-decoration: none;
 }
+h2, h3 { position: relative; }
+.h::before {
+    content: "¶  ";
+    font-size: 0.8em;
+}
+h3:hover > .h, h2:hover > .h { display: inline; }
+.h {
+    color: #777;
+    position: absolute;
+    left: -0.7em;
+    display: none;
+    box-sizing: border-box;
+    text-decoration: none;
+    top: -0.07em;
+}
+.prose    { background-color: #f9f9f9; }
 h2>code { background-color: inherit; white-space: pre; }
 .var      { background-color: #ebe; }
 .noun     { background-color: #aae; }

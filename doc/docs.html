@@ -79,6 +79,22 @@ td>a {
     color: #000;
     text-decoration: none;
 }
+h2, h3 { position: relative; }
+.h::before {
+    content: "¶  ";
+    font-size: 0.8em;
+}
+h3:hover > .h, h2:hover > .h { display: inline; }
+.h {
+    color: #777;
+    position: absolute;
+    left: -0.7em;
+    display: none;
+    box-sizing: border-box;
+    text-decoration: none;
+    top: -0.07em;
+}
+.prose    { background-color: #f9f9f9; }
 h2>code { background-color: inherit; white-space: pre; }
 .var      { background-color: #ebe; }
 .noun     { background-color: #aae; }
@@ -364,7 +380,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="none"><a href="#FF">⎕</a></td></tr>
 </table></div></div>
 </nav><main>
-<h2 id="Basics">Basics</h2>
+<h2 class=prose id="Basics"><a class=h href="#Basics"></a>Basics</h2>
 <p>expressions in vemf are sequences of Nouns and Verbs. if it helps, when you hear "noun" think "value", and when you hear "verb" think "operator"</p>
 <p>here the verb <code>+</code> <a href="#Add">Add</a> is called with a left argument <code>1</code> and with a right argument <code>2</code>. <code>1</code> and <code>2</code> are nouns, and <code>+</code> is a verb.</p>
 <pre>1+2 ≡ 3</pre>
@@ -390,7 +406,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>1+(2*3) ≡ 7</pre>
 <p>here, <code>2*3</code> is another expression that is executed before the outer one, and <code>(2*3)</code> is a noun.</p>
 <p>the mathematical operations you are familiar with are here. arithmetic <code>+-*/</code>, <code>^</code> <a href="#Exponent">Exponent</a>, <code>∟</code> <a href="#Logarithm">Logarithm</a>, and a bunch more.</p>
-<h2 id="Lists">Lists</h2>
+<h2 class=prose id="Lists"><a class=h href="#Lists"></a>Lists</h2>
 <p>a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting nouns next to eachother:</p>
 <pre>    123
 (1 2 3)</pre>
@@ -459,7 +475,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <p><code>↑</code>, <code>↓</code> and <code>¶</code> with a list right argument can reshape, or create a nested list with those dimensions:</p>
 <pre>0123456789↑33 ≡ (012)(345)(678)
 0123456789↓33 ≡ (123)(456)(789)</pre>
-<h2 id="Variables">Variables</h2>
+<h2 class=prose id="Variables"><a class=h href="#Variables"></a>Variables</h2>
 <p>variables can be set with <code>→name</code> and retrieved with <code>.name</code></p>
 <pre>2*3→six 1-.six ≡ _5</pre>
 <p>, or as a verb as <code>:name</code></p>
@@ -478,7 +494,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <p>there is another kind of assignment: <code>─</code> <a href="#Local Statement">Local Statement</a> (that is a box drawing character, not a minus sign <code>-</code>), useful for defining verbs. we'll learn more about statements in the <a href="#Blocks">Blocks</a> section.</p>
 <pre>+ ─add 4:add5 ≡ 9</pre>
 <p>this example may seem mundane, but statement assignments are very useful with trains.</p>
-<h2 id="Trains">Trains</h2>
+<h2 class=prose id="Trains"><a class=h href="#Trains"></a>Trains</h2>
 <p>when a verb is the start of an expression, it will result in a derived function, or train.</p>
 <pre>(+)→add 4:add5 ≡ 9</pre>
 <p><code>Fβ</code> is a Bind. it calls F with β as a right argument, ignoring whatever was passed to the right.</p>
@@ -510,7 +526,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>5+9/2 ≡ 7
 6↨* ≡ '720</pre>
 <p>trains are mostly useful when defining functions or when used in adverbs.</p>
-<h2 id="Adverbs">Adverbs</h2>
+<h2 class=prose id="Adverbs"><a class=h href="#Adverbs"></a>Adverbs</h2>
 <p>adverbs are like verbs for verbs. take one of the most basic: <a href="#Selfie">Selfie</a> <code>┴G</code> takes a function <code>G</code> and returns a function that applies <code>G</code> with the same argument used twice:</p>
 <pre>123┴+ ≡ 246
 123┴* ≡ 149
@@ -533,7 +549,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>1-adverbs: ╪┼┴┬╧╤╕╒╛╘
 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║</pre>
 <p>these adverbs have a variety of functions. some of them are <a href="#Combinators">Combinators</a>, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.</p>
-<h3 id="Iteration">Iteration</h3>
+<h3 id="Iteration"><a class=h href="#Iteration"></a>Iteration</h3>
 <p>vemf automatically vectorizes, so often explicit loops are not be necessary, but adverbs can be used to explicitly iterate in a certain way</p>
 <p><code>α╕G</code> <a href="#Each">Each</a> applies G to every item in α:</p>
 <pre>(123)(45)(6789)"aaaaaa"╕~ ≡ 3246</pre>
@@ -557,7 +573,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>' if length is 3, uppercase (`Ç`)
 "and""a""big""bee""started""approaching"╕(~=3)╨Ç ≡ "AND""a""BIG""BEE""started""approaching"</pre>
 <p><code>αF╩G</code> <a href="#Until">Until</a> calls G until <code>αF</code> returns not 0.</p>
-<h3 id="Combinators">Combinators</h3>
+<h3 id="Combinators"><a class=h href="#Combinators"></a>Combinators</h3>
 <p>combinators call their operands in different ways. they are one of the main ways functions are defined; combinators are the "glue" that joins different functions.</p>
 <p>vemf has a lot of different combinators! here's a summary:</p>
 <pre>NAME         : MONADIC, DYADIC
@@ -596,7 +612,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 (`aF║G)  (`aF║G`b)   ≡ "[(a)]"   "[(a)(b)]"
 (`a└FGH) (`a└FGH`b)  ≡ "[(a){a}]""[(ab){ab}]"
 (`aF╜H╙G)(`aF╜H╙G`b) ≡ "[(a)]"   "[(a){b}]"</pre>
-<h2 id="Groups">Groups</h2>
+<h2 class=prose id="Groups"><a class=h href="#Groups"></a>Groups</h2>
 <p>i don't like parentheses. i don't like the fact that occasionally i have to use them to make things work. i don't like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as <code>+2</code> gains two characters when used with an adverb <code>(+2)╜/</code>. or with nested list literals <code>(123)(45)(6789)</code>:</p>
 <pre>7 (+2)╙/ 3 ≡ 7 │+2╙/ 3
 (123)(45)(6789) ≡ ├123│45╞6789</pre>
@@ -604,33 +620,33 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>2 3 4 5 6 7 8 9 Φ
 │ ├ ╞ ╟ ╠ ┤ ╡ ╢ ╣</pre>
 <p>TODO TODO</p>
-<h2 id="Blocks">Blocks</h2>
+<h2 class=prose id="Blocks"><a class=h href="#Blocks"></a>Blocks</h2>
 <p>TODO</p>
-<h2 class="verb" id="01"><code>☺</code> (0x01, <code>'pr</code>)</h2>
-<h3 id="Print"><code>α☺</code> Print</h3>
+<h2 class="verb" id="01"><a class=h href="#01"></a><code>☺</code> (0x01, <code>'pr</code>)</h2>
+<h3 id="Print"><a class=h href="#Print"></a><code>α☺</code> Print</h3>
 <p>print α to standard output</p>
 <pre>"Hello, "☺·"World!◙"☺</pre>
 <p>see also: <a href="#Print Line">Print Line</a></p>
-<h3 id="Print"><code>α☺β</code> Print</h3>
+<h3 id="Print"><a class=h href="#Print"></a><code>α☺β</code> Print</h3>
 <p>print α to standard output, and return β</p>
 <pre>"Hello, "☺"World!◙"☺</pre>
-<h2 class="verb" id="02"><code>☻</code> (0x02, <code>'# 'pl</code>)</h2>
-<h3 id="Print Line"><code>α☻</code> Print Line</h3>
+<h2 class="verb" id="02"><a class=h href="#02"></a><code>☻</code> (0x02, <code>'# 'pl</code>)</h2>
+<h3 id="Print Line"><a class=h href="#Print Line"></a><code>α☻</code> Print Line</h3>
 <p>print α to standard output, with a training newline (0x0A)</p>
 <pre>"Hello, World!"☻</pre>
 <p>see also: <a href="#Print">Print</a>, <a href="#Write">Write</a></p>
-<h3 id="Print Line"><code>α☻β</code> Print Line</h3>
+<h3 id="Print Line"><a class=h href="#Print Line"></a><code>α☻β</code> Print Line</h3>
 <p>print α and return β</p>
 <pre>"Calculating the square root of two..."☻2√ ≡ '1.4142135623730951</pre>
-<h3 id="Print Formatted"><code>α_☻</code> <code>α_☻β</code> Print Formatted</h3>
+<h3 id="Print Formatted"><a class=h href="#Print Formatted"></a><code>α_☻</code> <code>α_☻β</code> Print Formatted</h3>
 <p>prints <code>αⁿ</code> or <code>αⁿβ</code> and returns α unchanged. useful when debugging trains. equivalent to <code>ⁿ╖☻</code></p>
-<h2 class="verb" id="03"><code>♥</code> (0x03, <code>'cx</code>)</h2>
-<h3 id="Pairs"><code>α♥</code> Pairs</h3>
+<h2 class="verb" id="03"><a class=h href="#03"></a><code>♥</code> (0x03, <code>'cx</code>)</h2>
+<h3 id="Pairs"><a class=h href="#Pairs"></a><code>α♥</code> Pairs</h3>
 <p>split α into pairs, using the fill of α if a pair isn't full. equivalent to <code>♥2</code></p>
 <pre>123456789♥ ≡ (12)(34)(56)(78)(9█)
 123456789▐1♥ ≡ (12)(34)(56)(78)(91)
 "things"♥ ≡ "th""in""gs"</pre>
-<h3 id="Chunks"><code>α♥β</code> Chunks</h3>
+<h3 id="Chunks"><a class=h href="#Chunks"></a><code>α♥β</code> Chunks</h3>
 <p>split α into β-sized chunks, using the fill of α if a group isn't full. for scalar β, this is the same as <code>α↑█β</code> (see <a href="#Take">Take</a>):</p>
 <pre>123456789♥3 ≡ (123)(456)(789)
 123456789♥4 ≡ (1234)(5678)(9███)
@@ -638,90 +654,90 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>if β is a list, <code>α♥β</code> reshapes into groups of <code>β*</code> and reshapes them. equivalent to <code>α↑(█,β)</code></p>
 <pre>123456789♥22 ≡ (│12│34)(│56│78)(│9█│██)
 "chunk brick block"▐` ♥23 ≡ ("chu""nk ")("bri""ck ")("blo""ck ")</pre>
-<h2 class="verb" id="04"><code>♦</code> (0x04, <code>'T</code>)</h2>
-<h3 id="Transpose"><code>α♦</code> Transpose</h3>
+<h2 class="verb" id="04"><a class=h href="#04"></a><code>♦</code> (0x04, <code>'T</code>)</h2>
+<h3 id="Transpose"><a class=h href="#Transpose"></a><code>α♦</code> Transpose</h3>
 <p>transpose a nested list. the shape will be the minimum of the lengths of the elements, or <code>╕~ñ;</code></p>
 <pre>(123)(456)(789)♦ ≡ (147)(258)(369)
 ("one""two")("three""four")♦ ≡ ("one""three")("two""four")</pre>
-<h2 class="verb" id="05"><code>♣</code> (0x05, <code>'dm</code>)</h2>
-<h3 id="Domain"><code>α♣</code> Domain</h3>
+<h2 class="verb" id="05"><a class=h href="#05"></a><code>♣</code> (0x05, <code>'dm</code>)</h2>
+<h3 id="Domain"><a class=h href="#Domain"></a><code>α♣</code> Domain</h3>
 <p>get the domain of a list, or list of indices. same as <code>~↕</code>.</p>
 <pre>1234♣ ≡ 0123
 φ♣ ≡ φ
 (123)(456)(789)♣ ≡ 012</pre>
-<h2 class="verb" id="06"><code>♠</code> (0x06, <code>'R</code>)</h2>
-<h3 id="Reverse"><code>α♠</code> Reverse</h3>
+<h2 class="verb" id="06"><a class=h href="#06"></a><code>♠</code> (0x06, <code>'R</code>)</h2>
+<h3 id="Reverse"><a class=h href="#Reverse"></a><code>α♠</code> Reverse</h3>
 <p>reverse a list.</p>
 <pre>1234♠ ≡ 4321
 φ♠ ≡ φ
 (123)(456)(789)♠ ≡ (789)(456)(123)</pre>
-<h2 class="prefix" id="07"><code>•</code> (0x07, <code>'.</code>)</h2>
-<h3 id="1-Adverb"><code>•name</code> 1-Adverb</h3>
+<h2 class="prefix" id="07"><a class=h href="#07"></a><code>•</code> (0x07, <code>'.</code>)</h2>
+<h3 id="1-Adverb"><a class=h href="#1-Adverb"></a><code>•name</code> 1-Adverb</h3>
 <p>the variable <code>name</code> with 1-adverb role</p>
 <pre>{{αβσμ}}─d 1•d23 ≡ 1 3 2 █</pre>
 <p>see also: <a href="#Dyadic Adverb">Dyadic Adverb</a></p>
-<h2 class="stmt" id="08"><code>◘</code> (0x08, <code>'O</code>)</h2>
-<h3 id="Return"><code>x◘</code> Return</h3>
+<h2 class="stmt" id="08"><a class=h href="#08"></a><code>◘</code> (0x08, <code>'O</code>)</h2>
+<h3 id="Return"><a class=h href="#Return"></a><code>x◘</code> Return</h3>
 <p>returns x, breaking out of the enclosing function</p>
 <pre>0{4·5◘6} ≡ 5</pre>
 <p>see also: <a href="#Discard">Discard</a>, <a href="#Then">Then</a></p>
-<h2 class="prefix" id="09"><code>○</code> (0x09, <code>',</code>)</h2>
-<h3 id="2-Adverb"><code>○name</code> 2-Adverb</h3>
+<h2 class="prefix" id="09"><a class=h href="#09"></a><code>○</code> (0x09, <code>',</code>)</h2>
+<h3 id="2-Adverb"><a class=h href="#2-Adverb"></a><code>○name</code> 2-Adverb</h3>
 <p>the variable <code>name</code> with 2-adverb role</p>
 <pre>{{αβσμ}}─d12○d34 ≡ 1 4 3 2</pre>
 <p>see also: <a href="#Monadic Adverb">Monadic Adverb</a></p>
-<h2 class="literal" id="0A"><code>◙</code> (0x0A)</h2>
-<h3 id="Newline"><code>◙</code> Newline</h3>
+<h2 class="literal" id="0A"><a class=h href="#0A"></a><code>◙</code> (0x0A)</h2>
+<h3 id="Newline"><a class=h href="#Newline"></a><code>◙</code> Newline</h3>
 <p>whitespace</p>
-<h2 class="verb" id="0B"><code>♂</code> (0x0B, <code>'E</code>)</h2>
-<h3 id="Drop"><code>α♂β</code> Drop</h3>
+<h2 class="verb" id="0B"><a class=h href="#0B"></a><code>♂</code> (0x0B, <code>'E</code>)</h2>
+<h3 id="Drop"><a class=h href="#Drop"></a><code>α♂β</code> Drop</h3>
 <p>return the list α, with β elements removed from the left. β-pervasive. if β is negative, <code>β¢</code> elements are removed from the right instead (see <a href="#Drop Right">Drop Right</a>). if β is equal or greater than the length, all elements are removed; an empty list is returned.</p>
 <pre>"testing"♂3 ≡ "ting"
 "testing"♂_3 ≡ "test"
 "testing"♂9 ≡ φ</pre>
-<h3 id="Behead"><code>α♂</code> Behead</h3>
+<h3 id="Behead"><a class=h href="#Behead"></a><code>α♂</code> Behead</h3>
 <p>drop 1 element from the left</p>
 <pre>"testing"♂ ≡ "esting"</pre>
-<h2 class="verb" id="0C"><code>♀</code> (0x0C, <code>'D</code>)</h2>
-<h3 id="Drop Right"><code>α♀β</code> Drop Right</h3>
+<h2 class="verb" id="0C"><a class=h href="#0C"></a><code>♀</code> (0x0C, <code>'D</code>)</h2>
+<h3 id="Drop Right"><a class=h href="#Drop Right"></a><code>α♀β</code> Drop Right</h3>
 <p>returns the list α, with β elements removed from the right. β-pervasive. if β is negative, <code>β¢</code> elements are removed from the left instead (see <a href="#Drop Left">Drop Left</a>). if β is equal or greater than the length, all elements are removed; an empty list is returned.</p>
 <pre>"testing"♀3 ≡ "test"
 "testing"♀_3 ≡ "ting"
 "testing"♀9 ≡ φ</pre>
-<h3 id="Curtail"><code>α♀</code> Curtail</h3>
+<h3 id="Curtail"><a class=h href="#Curtail"></a><code>α♀</code> Curtail</h3>
 <p>drop 1 element from the right</p>
 <pre>"testing"♀ ≡ "testin"</pre>
-<h2 class="literal" id="0D"><code>♪</code> (0x0D, <code>':</code>)</h2>
-<h3 id="Enclosed"><code>♪a</code> Enclosed</h3>
+<h2 class="literal" id="0D"><a class=h href="#0D"></a><code>♪</code> (0x0D, <code>':</code>)</h2>
+<h3 id="Enclosed"><a class=h href="#Enclosed"></a><code>♪a</code> Enclosed</h3>
 <p>for a noun <code>a</code>, literal for a list with the one argument. same as <code>(a♫)</code></p>
-<h3 id="Nominalize"><code>♪F</code> Nominalize</h3>
+<h3 id="Nominalize"><a class=h href="#Nominalize"></a><code>♪F</code> Nominalize</h3>
 <p>for a verb F, interpret it as a noun</p>
-<h2 class="verb" id="0E"><code>♫</code> (0x0E, <code>';</code>)</h2>
-<h3 id="Enlist"><code>α♫</code> Enlist</h3>
+<h2 class="verb" id="0E"><a class=h href="#0E"></a><code>♫</code> (0x0E, <code>';</code>)</h2>
+<h3 id="Enlist"><a class=h href="#Enlist"></a><code>α♫</code> Enlist</h3>
 <p>α is enclosed into a single-element list. this is equivalent to <code>{♪α}</code></p>
 <pre>1♫ ≡ ♪1
 1♫♫♫ ≡ ♪♪♪1</pre>
-<h3 id="Pair"><code>α♫β</code> Pair</h3>
+<h3 id="Pair"><a class=h href="#Pair"></a><code>α♫β</code> Pair</h3>
 <p>create a list with the elements α and β. this is equivalent to <code>{αβ}</code>. for scalar arguments, this is the same as <a href="#Concatenate">Concatenate</a></p>
 <pre>1♫2 ≡ 12
 1♫2♫3♫4 ≡ ((12)3)4
 12♫34 ≡ (12)(34)</pre>
-<h2 class="verb" id="10"><code>►</code> (0x10, <code>'H</code>)</h2>
-<h3 id="Right"><code>α►β</code> Right</h3>
+<h2 class="verb" id="10"><a class=h href="#10"></a><code>►</code> (0x10, <code>'H</code>)</h2>
+<h3 id="Right"><a class=h href="#Right"></a><code>α►β</code> Right</h3>
 <p>returns β</p>
 <pre>1►2 ≡ 2</pre>
-<h3 id="Left"><code>α►</code> Left</h3>
+<h3 id="Left"><a class=h href="#Left"></a><code>α►</code> Left</h3>
 <p>returns α</p>
 <pre>1► ≡ 1</pre>
-<h2 class="verb" id="11"><code>◄</code> (0x11, <code>'G</code>)</h2>
-<h3 id="Left"><code>α◄β</code> Left</h3>
+<h2 class="verb" id="11"><a class=h href="#11"></a><code>◄</code> (0x11, <code>'G</code>)</h2>
+<h3 id="Left"><a class=h href="#Left"></a><code>α◄β</code> Left</h3>
 <p>returns α</p>
 <pre>1◄2 ≡ 1</pre>
-<h3 id="Left"><code>α◄</code> Left</h3>
+<h3 id="Left"><a class=h href="#Left"></a><code>α◄</code> Left</h3>
 <p>returns α</p>
 <pre>1◄ ≡ 1</pre>
-<h2 class="verb" id="12"><code>↕</code> (0x12, <code>'I</code>)</h2>
-<h3 id="Iota"><code>α↕</code> Iota</h3>
+<h2 class="verb" id="12"><a class=h href="#12"></a><code>↕</code> (0x12, <code>'I</code>)</h2>
+<h3 id="Iota"><a class=h href="#Iota"></a><code>α↕</code> Iota</h3>
 <p>when α is a scalar, the output is the range of natural numbers [0, α); starting by 0, excluding α (see <a href="#Inclusive Iota">Inclusive Iota</a>).</p>
 <pre>5↕ ≡ 01234
 Φ↕ ≡ 0123456789</pre>
@@ -738,11 +754,11 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 15↕ ≡ 5↕╕;0♫
 0123↕ ≡ φ
 φ↕ ≡ φ</pre>
-<h3 id="Range"><code>α↕β</code> Range</h3>
+<h3 id="Range"><a class=h href="#Range"></a><code>α↕β</code> Range</h3>
 <p>the range is [α, β)</p>
 <pre>2↕6 ≡ 2345</pre>
-<h2 class="verb" id="13"><code>‼</code> (0x13, <code>'!</code>)</h2>
-<h3 id="Replicate"><code>α‼β</code> Replicate</h3>
+<h2 class="verb" id="13"><a class=h href="#13"></a><code>‼</code> (0x13, <code>'!</code>)</h2>
+<h3 id="Replicate"><a class=h href="#Replicate"></a><code>α‼β</code> Replicate</h3>
 <p>it pairs up the elements of α and β, and returns a new list where each element in α is repeated by the corresponding number in β. this can be used as a filter if the elements of β are 0 or 1:</p>
 <pre>12345678‼10101010 ≡ 1357
 12345678‼110203 ≡ 1244666
@@ -760,17 +776,17 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 12345▐0‼12_34 ≡ 1220004444▐0</pre>
 <p>Replicate also works with nested lists in β, and it flattens the structure:</p>
 <pre>(123)(456)7‼(123)(210)3 ≡ 122333445777</pre>
-<h3 id="Indices"><code>α‼</code> Indices</h3>
+<h3 id="Indices"><a class=h href="#Indices"></a><code>α‼</code> Indices</h3>
 <p>replicate the <a href="#Domain">Domain</a> of α (<code>♣╖‼</code>). for a boolean list α, this finds the indices of the ones.</p>
 <pre>011010110010‼ ≡ 12467'10
 10203401‼ ≡ 02244455557</pre>
-<h2 class="verb" id="14"><code>¶</code> (0x14, <code>'$</code>)</h2>
-<h3 id="Ravel"><code>α¶</code> Ravel</h3>
+<h2 class="verb" id="14"><a class=h href="#14"></a><code>¶</code> (0x14, <code>'$</code>)</h2>
+<h3 id="Ravel"><a class=h href="#Ravel"></a><code>α¶</code> Ravel</h3>
 <p>Ravel flattens all nested lists in α, yielding a list of all the scalars:</p>
 <pre>((01)23)(45(67))(8♪9)¶ ≡ Φ↕
 ♪♪♪♪123¶ ≡ 123</pre>
 <p>see also: <a href="#Flatten">Flatten</a></p>
-<h3 id="Reshape"><code>α¶β</code> Reshape</h3>
+<h3 id="Reshape"><a class=h href="#Reshape"></a><code>α¶β</code> Reshape</h3>
 <p>make a new list with a prefix shape of β, where the elements are taken from α in order. it truncates if α is longer than the elements needed (<code>β*</code>), and repeats cyclically through the list if α is shorter</p>
 <pre>6↕¶55 ≡ (01234)(50123)(45012)(34501)(23450)
 '15↕¶33 ≡ (012)(345)(678)
@@ -783,17 +799,17 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>"testing"¶2█ ≡ "test""ingt"
 "testing"¶█2 ≡ "te""st""in""gt"</pre>
 <p>see also: <a href="#Take">Take</a>, <a href="#Take Right">Take Right</a>, <a href="#Cycle">Cycle</a></p>
-<h2 class="verb" id="15"><code>§</code> (0x15, <code>'ss</code>)</h2>
-<h3 id="Cycle"><code>α§</code> Cycle</h3>
+<h2 class="verb" id="15"><a class=h href="#15"></a><code>§</code> (0x15, <code>'ss</code>)</h2>
+<h3 id="Cycle"><a class=h href="#Cycle"></a><code>α§</code> Cycle</h3>
 <p>return α repeated infinitely as an infinite list. more precisely, it returns a function that, given an argument <code>x</code>, returns the element of α at index <code>x % (α~)</code></p>
 <pre>4↕§┴¡0123456789 ≡ 0123012301
 4↕§@_1 ≡ 3</pre>
-<h3 id="Repeat"><code>α§β</code> Repeat</h3>
+<h3 id="Repeat"><a class=h href="#Repeat"></a><code>α§β</code> Repeat</h3>
 <p>repeat the list α, β times. right-pervasive.</p>
 <pre>"testing"§3 ≡ "testingtestingtesting"
 6§3 ≡ 666</pre>
-<h2 class="verb" id="16"><code>▬</code> (0x16, <code>'M 'sh</code>)</h2>
-<h3 id="Shape"><code>α▬</code> Shape</h3>
+<h2 class="verb" id="16"><a class=h href="#16"></a><code>▬</code> (0x16, <code>'M 'sh</code>)</h2>
+<h3 id="Shape"><a class=h href="#Shape"></a><code>α▬</code> Shape</h3>
 <p>get the shape of α, that is, the maximum length for each dimension. the output will be a list with fill 1.</p>
 <pre>1▬ ≡ φ▐1
 123▬ ≡ ♪3▐1
@@ -804,15 +820,15 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 (1234)(5678)(9012)▬ ≡ 34▐1
 (123)(5678)(90)▬ ≡ 34▐1</pre>
 <p>see also: <a href="#Length">Length</a>, <a href="#Depth">Depth</a></p>
-<h3 id="Shape Up To"><code>α▬β</code> Shape Up To</h3>
+<h3 id="Shape Up To"><a class=h href="#Shape Up To"></a><code>α▬β</code> Shape Up To</h3>
 <p>get only up to a specified depth, without fill.</p>
 <pre>(1234)((56)(78))(90)▬  ≡ 342▐1
 (1234)((56)(78))(90)▬4 ≡ 3421
 (1234)((56)(78))(90)▬3 ≡ 342
 (1234)((56)(78))(90)▬2 ≡ 34
 (1234)((56)(78))(90)▬1 ≡ ♪3</pre>
-<h2 class="verb" id="17"><code>↨</code> (0x17, <code>'J</code>)</h2>
-<h3 id="Inclusive Iota"><code>α↨</code> Inclusive Iota</h3>
+<h2 class="verb" id="17"><a class=h href="#17"></a><code>↨</code> (0x17, <code>'J</code>)</h2>
+<h3 id="Inclusive Iota"><a class=h href="#Inclusive Iota"></a><code>α↨</code> Inclusive Iota</h3>
 <p>when α is a scalar, the output is the range of natural numbers [1, α]; starting by 1, including α.</p>
 <pre>5↨ ≡ 12345
 Φ↨ ≡ 123456789Φ</pre>
@@ -821,11 +837,11 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>Φ-↨ ≡ Φ987654321
 34↨ ≡ (│11│12│13│14)(│21│22│23│24)(│31│32│33│34)
 123↨ ≡ ♪((├111├112├113)(├121├122├123))</pre>
-<h3 id="Inclusive Range"><code>α↨β</code> Inclusive Range</h3>
+<h3 id="Inclusive Range"><a class=h href="#Inclusive Range"></a><code>α↨β</code> Inclusive Range</h3>
 <p>the range used is [α, β]. note that this means the resulting array is of length <code>β-α+1</code>.</p>
 <pre>2↨8 ≡ 2345678</pre>
-<h2 class="verb" id="18"><code>↑</code> (0x18, <code>'W</code>)</h2>
-<h3 id="Take"><code>α↑β</code> Take</h3>
+<h2 class="verb" id="18"><a class=h href="#18"></a><code>↑</code> (0x18, <code>'W</code>)</h2>
+<h3 id="Take"><a class=h href="#Take"></a><code>α↑β</code> Take</h3>
 <p>make a new list with a prefix shape of β, where the elements are taken from α in order. this truncates if α is longer than the elements needed (<code>β*</code>), and uses the fill of α if α is shorter.</p>
 <pre>9↕↑55 ≡ (01234)(5678█)(█████)(█████)(█████)
 '99↕↑33 ≡ (012)(345)(678)
@@ -841,12 +857,12 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>"testing"▐`_♥3 ≡ "tes""tin""g__"
 "testing"▐`_♥ ≡ "te""st""in""g_"</pre>
 <p>see also: <a href="#Reshape">Reshape</a>, <a href="#Take Right">Take Right</a>, <a href="#Drop">Drop</a></p>
-<h3 id="Prefixes"><code>α↑</code> Prefixes</h3>
+<h3 id="Prefixes"><a class=h href="#Prefixes"></a><code>α↑</code> Prefixes</h3>
 <p>get the prefixes of the list α; take for every item in <code>β♣▲</code> (without the empty list, but with the unmodified argument: you can remove it with <a href="#Behead">Behead</a>.)</p>
 <pre>"testing"↑ ≡ "t" "te" "tes" "test" "testi" "testin" "testing"</pre>
 <p>see also: <a href="#Suffixes">Suffixes</a></p>
-<h2 class="verb" id="19"><code>↓</code> (0x19, <code>'S</code>)</h2>
-<h3 id="Take Right"><code>α↓β</code> Take Right</h3>
+<h2 class="verb" id="19"><a class=h href="#19"></a><code>↓</code> (0x19, <code>'S</code>)</h2>
+<h3 id="Take Right"><a class=h href="#Take Right"></a><code>α↓β</code> Take Right</h3>
 <p>make a new list with a prefix shape of β, where the elements are taken from α in reverse order. this truncates if α is longer than the elements needed (<code>β*</code>), and uses the fill of α if α is shorter.</p>
 <pre>9↕↓55 ≡ (█████)(█████)(█████)(█0123)(45678)
 9↕↓23 ≡ (345)(678)</pre>
@@ -856,40 +872,40 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 "testing"▐`_↓2█ ≡ "_tes""ting"
 "testing"▐`_↓█2 ≡ "_t""es""ti""ng"</pre>
 <p>see also: <a href="#Take">Take</a>, <a href="#Reshape">Reshape</a></p>
-<h3 id="Suffixes"><code>α↓</code> Suffixes</h3>
+<h3 id="Suffixes"><a class=h href="#Suffixes"></a><code>α↓</code> Suffixes</h3>
 <p>get the suffixes of the list α; take for every item in <code>β♣▲</code> (without the empty list, but with the unmodified argument: you can remove it with <a href="#Curtail">Curtail</a>.)</p>
 <pre>"testing"↓ ≡ "g" "ng" "ing" "ting" "sting" "esting" "testing"</pre>
 <p>see also: <a href="#Prefixes">Prefixes</a></p>
-<h2 class="verb" id="1A"><code>←</code> (0x1A, <code>'vr</code>)</h2>
-<h3 id="Get"><code>α←</code> Get</h3>
+<h2 class="verb" id="1A"><a class=h href="#1A"></a><code>←</code> (0x1A, <code>'vr</code>)</h2>
+<h3 id="Get"><a class=h href="#Get"></a><code>α←</code> Get</h3>
 <p>get the variable with name α</p>
 <pre>"_a"← ≡ '12
 `æ─ash "ash"← ≡ `æ</pre>
-<h3 id="Set"><code>α←β</code> Set</h3>
+<h3 id="Set"><a class=h href="#Set"></a><code>α←β</code> Set</h3>
 <p>set a new local variable with name α to β</p>
 <pre>"ampersand"←`ñ·.ampersand ≡ `ñ</pre>
-<h2 class="prefix" id="1B"><code>→</code> (0x1B, <code>'^</code>)</h2>
-<h3 id="Local"><code>α→name</code> Local</h3>
+<h2 class="prefix" id="1B"><a class=h href="#1B"></a><code>→</code> (0x1B, <code>'^</code>)</h2>
+<h3 id="Local"><a class=h href="#Local"></a><code>α→name</code> Local</h3>
 <p>sets a variable to α in the local scope.</p>
 <pre>2─two .two+.two ≡ 4</pre>
-<h3 id="Local"><code>α→nameβ</code> Local</h3>
+<h3 id="Local"><a class=h href="#Local"></a><code>α→nameβ</code> Local</h3>
 <p>sets a variable to α in the local scope and returns β.</p>
 <pre>1→a2→b3→c a+b+c ≡ 6</pre>
 <p>this function, along with <a href="#Mutate">Mutate</a>, are special verbs in that if they are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:</p>
 <pre>1→a 2→b (ab)+ ≡ 3</pre>
 <p>see also: <a href="#Local Statement">Local Statement</a></p>
-<h2 class="verb" id="1C"><code>∟</code> (0x1C, <code>'L</code>)</h2>
-<h3 id="Natural Logarithm"><code>α∟</code> Natural Logarithm</h3>
+<h2 class="verb" id="1C"><a class=h href="#1C"></a><code>∟</code> (0x1C, <code>'L</code>)</h2>
+<h3 id="Natural Logarithm"><a class=h href="#Natural Logarithm"></a><code>α∟</code> Natural Logarithm</h3>
 <p>get the natural logarithm of α. scalar.</p>
 <pre>2∟^ ≡ 2
 1∟ ≡ 0
 2∟ ≡ '0.6931471805599453</pre>
-<h3 id="Logarithm"><code>α∟β</code> Logarithm</h3>
+<h3 id="Logarithm"><a class=h href="#Logarithm"></a><code>α∟β</code> Logarithm</h3>
 <p>get the logarithm base β of α. scalar.</p>
 <pre>'1000∟Φ ± 3
 Φ√∟Φ ≡ 2/</pre>
-<h2 class="prefix" id="1D"><code>↔</code> (0x1D, <code>'*</code>)</h2>
-<h3 id="Mutate"><code>α↔name</code> Mutate</h3>
+<h2 class="prefix" id="1D"><a class=h href="#1D"></a><code>↔</code> (0x1D, <code>'*</code>)</h2>
+<h3 id="Mutate"><a class=h href="#Mutate"></a><code>α↔name</code> Mutate</h3>
 <p>mutate a variable in any scope, by applying a function to it monadically. </p>
 <pre>'21→n (*2)↔n n ≡ '42</pre>
 <p>if α is a verb, it is more useful to use this as a statement (see <a href="#Mutate Statement">Mutate Statement</a>)</p>
@@ -899,29 +915,29 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>because the body of the statement includes the <a href="#Local">Local</a>s, which are syntactically just like verbs:</p>
 <pre>(3→n4→m*2)═n n ≡ 8  ' 3→n4→m*2 returns 8
 3─n 4─m *2═n n ≡ 6  ' but this works</pre>
-<h3 id="Mutate"><code>α↔nameβ</code> Mutate</h3>
+<h3 id="Mutate"><a class=h href="#Mutate"></a><code>α↔nameβ</code> Mutate</h3>
 <p>mutate a variable and return β</p>
 <p>see also: <a href="#Mutate Statement">Mutate Statement</a></p>
-<h2 class="verb" id="1E"><code>▲</code> (0x1E, <code>'bu</code>)</h2>
-<h3 id="Bump Up"><code>α▲</code> Bump Up</h3>
+<h2 class="verb" id="1E"><a class=h href="#1E"></a><code>▲</code> (0x1E, <code>'bu</code>)</h2>
+<h3 id="Bump Up"><a class=h href="#Bump Up"></a><code>α▲</code> Bump Up</h3>
 <p>increments the number by 1. equivalent to <code>+1</code>. scalar.</p>
 <pre>2▲ ≡ 3
 0▲▲▲▲▲▲ ≡ 6
 123▲ ≡ 234</pre>
 <p>see also: <a href="#Bump Down">Bump Down</a>, <a href="#Add">Add</a></p>
-<h3 id="Bins Up"><code>α▲β</code> Bins Up</h3>
+<h3 id="Bins Up"><a class=h href="#Bins Up"></a><code>α▲β</code> Bins Up</h3>
 <p>it runs a binary search. when α is a list sorted in ascending order, it finds the position of the first element in α that is less than or equal to β. you can also think of the list α as intervals of shape [x, y)</p>
 <pre>0259▲6 ≡ 3
 0259▲Θ0123456789Φ ≡ 011222333344</pre>
 <p>see also: <a href="#Bins Up">Bins Up</a></p>
-<h2 class="verb" id="1F"><code>▼</code> (0x1F, <code>'bd</code>)</h2>
-<h3 id="Bump Down"><code>α▼</code> Bump Down</h3>
+<h2 class="verb" id="1F"><a class=h href="#1F"></a><code>▼</code> (0x1F, <code>'bd</code>)</h2>
+<h3 id="Bump Down"><a class=h href="#Bump Down"></a><code>α▼</code> Bump Down</h3>
 <p>decrements the number by 1. equivalent to <code>-1</code>. scalar.</p>
 <pre>3▼ ≡ 2
 0▼▼▼▼▼▼ ≡ _6
 123▼ ≡ 012</pre>
 <p>see also: <a href="#Bump Up">Bump Up</a>, <a href="#Subtract">Subtract</a></p>
-<h3 id="Bins Down"><code>α▼β</code> Bins Down</h3>
+<h3 id="Bins Down"><a class=h href="#Bins Down"></a><code>α▼β</code> Bins Down</h3>
 <p>it runs a binary search. when α is a list sorted in descending order, it finds the position of the first element in α that is greater than or equal to β.</p>
 <pre>'18'13'8▼'20 ≡ 0
 '18'13'8▼'18 ≡ 0
@@ -929,15 +945,15 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 '18'13'8▼'12 ≡ 2
 '18'13'8▼'2 ≡ 3</pre>
 <p>see also: <a href="#Bins Down">Bins Down</a></p>
-<h2 class="literal" id="20"><code> </code> (0x20)</h2>
-<h3 id="Space"><code>&nbsp;</code> Space</h3>
+<h2 class="literal" id="20"><a class=h href="#20"></a><code> </code> (0x20)</h2>
+<h3 id="Space"><a class=h href="#Space"></a><code>&nbsp;</code> Space</h3>
 <p>whitespace. may change the parsing of some tokens:</p>
 <pre>¨things  ≡ "things"
 ¨thing s ≡ "thing"s
 '2022  ≡ ('2022)
 '202 2 ≡ ('202)(2)</pre>
-<h2 class="verb" id="21"><code>!</code> (0x21)</h2>
-<h3 id="Factorial"><code>α!</code> Factorial</h3>
+<h2 class="verb" id="21"><a class=h href="#21"></a><code>!</code> (0x21)</h2>
+<h3 id="Factorial"><a class=h href="#Factorial"></a><code>α!</code> Factorial</h3>
 <p>get the factorial of α. this is extended to reals with the gamma function, Γ(α + 1)</p>
 <pre>0! ≡ 1
 1! ≡ 1
@@ -947,14 +963,14 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 7! ≡ '5040
 Φ! ≡ '3628800
 '-0.5! ± π√</pre>
-<h3 id="Permute"><code>α!β</code> Permute</h3>
+<h3 id="Permute"><a class=h href="#Permute"></a><code>α!β</code> Permute</h3>
 <p>number of β-permutations in α items. also known as the falling factorial, descending factorial, pochhammer symbol, or the nPr key in your calculator. equivalent to <code>-╓!║/</code> or <code>{α!/(α-β!)}</code></p>
 <pre>1!1 ≡ 1
 3!2 ≡ '6
 4!3 ≡ '24
 8!3 ≡ '336</pre>
-<h2 class="literal" id="22"><code>"</code> (0x22)</h2>
-<h3 id="Quotes"><code>"abcd"</code> Quotes</h3>
+<h2 class="literal" id="22"><a class=h href="#22"></a><code>"</code> (0x22)</h2>
+<h3 id="Quotes"><a class=h href="#Quotes"></a><code>"abcd"</code> Quotes</h3>
 <p>string literal; every character until the next <code>"</code> will be put into a list with <a href="#None">None</a> fill</p>
 <pre>"" ≡ φ
 "a" ≡ ♪`a
@@ -964,35 +980,35 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>with some special characters used specially: <code>¨</code> stands for <code>"</code> (0x22) and <code>·</code> stands for <code>'</code> (0x27). <code>'</code> may be used for escaping:</p>
 <pre>"he said ¨hi¨"   ≡ "he said ",`","hi",`"
 "umlaut → 'nm ← diaeresis" ≡ "umlaut → ",`¨," ← diaeresis"</pre>
-<h2 class="verb" id="23"><code>#</code> (0x23)</h2>
-<h3 id="First True"><code>α#</code> First True</h3>
+<h2 class="verb" id="23"><a class=h href="#23"></a><code>#</code> (0x23)</h2>
+<h3 id="First True"><a class=h href="#First True"></a><code>α#</code> First True</h3>
 <p>find the first non-0 value and return its index, or else <a href="#None">None</a>.</p>
 <pre>10101010# ≡ 0
 0001010# ≡ 3
 00002010# ≡ 4
 0000000# ≡ █</pre>
-<h3 id="Index Of"><code>α#β</code> Index Of</h3>
+<h3 id="Index Of"><a class=h href="#Index Of"></a><code>α#β</code> Index Of</h3>
 <p>find the first exact match in the list and return its index, or else <a href="#None">None</a>. β-pervasive.</p>
 <pre>"hello"#`l ≡ 2
 "abcdefghijklmnopqrs"#"beeimpostor" ≡ '1'4'4'8'12'15'14'18█'14'17
 012073167140#0123456789 ≡ 0125Φ█74██</pre>
-<h2 class="verb" id="24"><code>$</code> (0x24)</h2>
-<h3 id="Call with None"><code>α$</code> Call with None</h3>
+<h2 class="verb" id="24"><a class=h href="#24"></a><code>$</code> (0x24)</h2>
+<h3 id="Call with None"><a class=h href="#Call with None"></a><code>α$</code> Call with None</h3>
 <p>calls the function α with <a href="#None">None</a> as an argument</p>
 <pre>.♫$ ≡ ♪█</pre>
-<h3 id="Call"><code>α$β</code> Call</h3>
+<h3 id="Call"><a class=h href="#Call"></a><code>α$β</code> Call</h3>
 <p>calls the function α with <code>β@0</code> and <code>β@1</code> (only if <code>β~ ≥ 2</code>) as arguments.</p>
 <pre>.+$23 ≡ 5
 .+$234 ≡ 5
 .-$2 ≡ _2
 .♫$24 ≡ 24</pre>
-<h2 class="verb" id="25"><code>%</code> (0x25)</h2>
-<h3 id="Power of Two"><code>α%</code> Power of Two</h3>
+<h2 class="verb" id="25"><a class=h href="#25"></a><code>%</code> (0x25)</h2>
+<h3 id="Power of Two"><a class=h href="#Power of Two"></a><code>α%</code> Power of Two</h3>
 <p>get 2 to the power of α. scalar.</p>
 <pre>0% ≡ 1
 4% ≡ '16
 '32% ≡ '4294967296</pre>
-<h3 id="Remainder"><code>α%β</code> Remainder</h3>
+<h3 id="Remainder"><a class=h href="#Remainder"></a><code>α%β</code> Remainder</h3>
 <p>returns the remainder of α divided by β. scalar.</p>
 <pre>7%5 ≡ 2
 2%5 ≡ 2
@@ -1005,8 +1021,8 @@ _3%5 ≡ 2
 1%_2 ≡ 1
 _1%2 ≡ 1
 _1%_2 ≡ 1</pre>
-<h2 class="verb" id="26"><code>&</code> (0x26)</h2>
-<h3 id="And"><code>α&β</code> And</h3>
+<h2 class="verb" id="26"><a class=h href="#26"></a><code>&</code> (0x26)</h2>
+<h3 id="And"><a class=h href="#And"></a><code>α&β</code> And</h3>
 <p>compute boolean AND of α and β. return 1 if both α and β are nonzero, otherwise 0. scalar.</p>
 <pre>0&0 ≡ 0
 0&1 ≡ 0
@@ -1014,7 +1030,7 @@ _1%_2 ≡ 1</pre>
 1&1 ≡ 1
 2&2 ≡ 1</pre>
 <p>see also: <a href="#Or">Or</a>, <a href="#Maximum">Maximum</a></p>
-<h3 id="All"><code>α&</code> All</h3>
+<h3 id="All"><a class=h href="#All"></a><code>α&</code> All</h3>
 <p>return 1 if all the items in α are non-zero. equivalent to <code>╧&1</code></p>
 <pre>0110101010& ≡ 0
 1111111111& ≡ 1
@@ -1022,8 +1038,8 @@ _1%_2 ≡ 1</pre>
 <p>for an empty list, this is always 1:</p>
 <pre>φ& ≡ 1</pre>
 <p>see also: <a href="#And">And</a>, <a href="#Any">Any</a></p>
-<h2 class="literal" id="27"><code>'</code> (0x27)</h2>
-<h3 id="Numeric Literal"><code>'123</code> Numeric Literal</h3>
+<h2 class="literal" id="27"><a class=h href="#27"></a><code>'</code> (0x27)</h2>
+<h3 id="Numeric Literal"><a class=h href="#Numeric Literal"></a><code>'123</code> Numeric Literal</h3>
 <p>when the following character is in the range [<code>0</code>, <code>9</code>] or the negative sign <code>-</code>, it will be interpreted as a floating point number until the next character that isn't in [<code>0</code>, <code>9</code>] or <code>.</code>.</p>
 <pre>'12 ≡ Φ+2
 '256 ≡ 2^8
@@ -1034,16 +1050,16 @@ _1%_2 ≡ 1</pre>
 '123 4 ≡ ('123)(4)
 '1234  ≡ '1234</pre>
 <p>complex number literals or scientific notation is not supported.</p>
-<h3 id="Escape"><code>'A,'ab</code> Escape</h3>
+<h3 id="Escape"><a class=h href="#Escape"></a><code>'A,'ab</code> Escape</h3>
 <p>escapes are one way to write characters outside the ascii range (characters in the range 0x20 <code> </code> to 0x7E <code>~</code>, the ones that you almost certainly have in your keyboard). you will see the escapes in the documentation of each character.</p>
 <p>there are more non-ascii characters than ascii characters in the codepage (256 - 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [<code>a</code>, <code>z</code>].</p>
 <p>the characters with single character escape sequences are the following:</p>
 <pre>!"#$%&'()*+,./:;&lt;=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
 ‼═☻¶÷·─╙╜↔±○•╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬█◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈</pre>
-<h3 id="Line Comment"><code>'&#x20;abc</code> Line Comment</h3>
+<h3 id="Line Comment"><a class=h href="#Line Comment"></a><code>'&#x20;abc</code> Line Comment</h3>
 <p>all of the characters until the next line break will be ignored.</p>
-<h2 class="literal" id="28"><code>(</code> (0x28)</h2>
-<h3 id="Opening Parenthesis"><code>(x)</code> Opening Parenthesis</h3>
+<h2 class="literal" id="28"><a class=h href="#28"></a><code>(</code> (0x28)</h2>
+<h3 id="Opening Parenthesis"><a class=h href="#Opening Parenthesis"></a><code>(x)</code> Opening Parenthesis</h3>
 <p>groups multiple words in a single noun. often used to change verb or adverb precedence,</p>
 <pre>1+2*3 ≡ 9
 1+(2*3) ≡ 7</pre>
@@ -1059,17 +1075,17 @@ _1%_2 ≡ 1</pre>
 001334│û¬╓‼ ≡ 0134</pre>
 <p>an empty parenthesis is the same as <a href="#Empty List">Empty List</a></p>
 <pre>() ≡ φ</pre>
-<h2 class="literal" id="29"><code>)</code> (0x29)</h2>
-<h3 id="Closing Parenthesis"><code>(x)</code> Closing Parenthesis</h3>
+<h2 class="literal" id="29"><a class=h href="#29"></a><code>)</code> (0x29)</h2>
+<h3 id="Closing Parenthesis"><a class=h href="#Closing Parenthesis"></a><code>(x)</code> Closing Parenthesis</h3>
 <p>closing counterpart of <a href="#Opening Parenthesis">Opening Parenthesis</a>.</p>
-<h2 class="verb" id="2A"><code>*</code> (0x2A)</h2>
-<h3 id="Multiply"><code>α*β</code> Multiply</h3>
+<h2 class="verb" id="2A"><a class=h href="#2A"></a><code>*</code> (0x2A)</h2>
+<h3 id="Multiply"><a class=h href="#Multiply"></a><code>α*β</code> Multiply</h3>
 <p>calculate α × β. scalar.</p>
 <pre>3*3 ≡ 9
 2*3 ≡ 6
 4*4 ≡ '16
 `a*`b ≡ `b*`a</pre>
-<h3 id="Product"><code>α*</code> Product</h3>
+<h3 id="Product"><a class=h href="#Product"></a><code>α*</code> Product</h3>
 <p>multiply all the items in α. equivalent to <code>╧*</code>.</p>
 <pre>234* ≡ '24
 2222* ≡ '16
@@ -1078,13 +1094,13 @@ _1%_2 ≡ 1</pre>
 <p>the empty product is the multiplicative identity, 1.</p>
 <pre>φ* ≡ 1</pre>
 <p>see also: <a href="#Reduce">Reduce</a>, <a href="#Sum">Sum</a></p>
-<h2 class="verb" id="2B"><code>+</code> (0x2B)</h2>
-<h3 id="Add"><code>α+β</code> Add</h3>
+<h2 class="verb" id="2B"><a class=h href="#2B"></a><code>+</code> (0x2B)</h2>
+<h3 id="Add"><a class=h href="#Add"></a><code>α+β</code> Add</h3>
 <p>calculate α + β. scalar.</p>
 <pre>3+2 ≡ 5
 4+3 ≡ 7
 `a+`b ≡ `b+`a</pre>
-<h3 id="Sum"><code>α+</code> Sum</h3>
+<h3 id="Sum"><a class=h href="#Sum"></a><code>α+</code> Sum</h3>
 <p>add all the items in α. equivalent to <code>╧+</code>.</p>
 <pre>1234+ ≡ '10
 (123)(456)(789)+ ≡ '12'15'18
@@ -1092,13 +1108,13 @@ _1%_2 ≡ 1</pre>
 <p>the empty sum is the additive identity, 0.</p>
 <pre>φ+ ≡ 0</pre>
 <p>see also: <a href="#Reduce">Reduce</a>, <a href="#Product">Product</a></p>
-<h2 class="verb" id="2C"><code>,</code> (0x2C)</h2>
-<h3 id="Flatten"><code>α,</code> Flatten</h3>
+<h2 class="verb" id="2C"><a class=h href="#2C"></a><code>,</code> (0x2C)</h2>
+<h3 id="Flatten"><a class=h href="#Flatten"></a><code>α,</code> Flatten</h3>
 <p>same as <a href="#Reduce">Reduce</a> <a href="#Concatenate">Concatenate</a> <code>╧,</code>. this removes one level of nesting in α.</p>
 <pre>¨foo¨bar¨bash, ≡ "foobarbash"
 ¨foo¨bar¨bash, ≡ "foobarbash"</pre>
 <p>see also: <a href="#Reshape">Reshape</a></p>
-<h3 id="Concatenate"><code>α,β</code> Concatenate</h3>
+<h3 id="Concatenate"><a class=h href="#Concatenate"></a><code>α,β</code> Concatenate</h3>
 <p>concatenate the two lists α and β</p>
 <pre>123,456 ≡ 123456
 "Hello,"," world" ≡ "Hello, world"</pre>
@@ -1108,128 +1124,128 @@ _1%_2 ≡ 1</pre>
 1,23 ≡ 123
 1,2,3 ≡ 123</pre>
 <p>see also: <a href="#Pair">Pair</a>, <a href="#Append">Append</a>, <a href="#Prepend">Prepend</a></p>
-<h2 class="verb" id="2D"><code>-</code> (0x2D)</h2>
-<h3 id="Negate"><code>α-</code> Negate</h3>
+<h2 class="verb" id="2D"><a class=h href="#2D"></a><code>-</code> (0x2D)</h2>
+<h3 id="Negate"><a class=h href="#Negate"></a><code>α-</code> Negate</h3>
 <p>calculate −α. scalar</p>
 <pre>1- ≡ '-1
 Φ- ≡ '-10
 2--2 ≡ _4
 123- ≡ _1_2_3
 3-- ≡ 3</pre>
-<h3 id="Subtract"><code>α-β</code> Subtract</h3>
+<h3 id="Subtract"><a class=h href="#Subtract"></a><code>α-β</code> Subtract</h3>
 <p>calculate α − β. scalar</p>
 <pre>3-2 ≡ 1
 4-1 ≡ 3
 3-0 ≡ 3</pre>
-<h2 class="prefix" id="2E"><code>.</code> (0x2E)</h2>
-<h3 id="Noun"><code>.name</code> Noun</h3>
+<h2 class="prefix" id="2E"><a class=h href="#2E"></a><code>.</code> (0x2E)</h2>
+<h3 id="Noun"><a class=h href="#Noun"></a><code>.name</code> Noun</h3>
 <p>the variable <code>name</code> with noun role</p>
-<h2 class="verb" id="2F"><code>/</code> (0x2F)</h2>
-<h3 id="Reciprocal"><code>α/</code> Reciprocal</h3>
+<h2 class="verb" id="2F"><a class=h href="#2F"></a><code>/</code> (0x2F)</h2>
+<h3 id="Reciprocal"><a class=h href="#Reciprocal"></a><code>α/</code> Reciprocal</h3>
 <p>get the reciprocal of α, or 1/α. scalar</p>
 <pre>6/ ≡ 1/6
 8/ ≡ '0.125</pre>
-<h3 id="Divide"><code>α/β</code> Divide</h3>
+<h3 id="Divide"><a class=h href="#Divide"></a><code>α/β</code> Divide</h3>
 <p>calculate α / β. scalar</p>
 <pre>6/2 ≡ 3
 6/3 ≡ 2
 0/0 ≡ █</pre>
-<h2 class="noun" id="30"><code>0</code> (0x30)</h2>
-<h3 id="Zero"><code>0</code> Zero</h3>
+<h2 class="noun" id="30"><a class=h href="#30"></a><code>0</code> (0x30)</h2>
+<h3 id="Zero"><a class=h href="#Zero"></a><code>0</code> Zero</h3>
 <p>the integer 0</p>
-<h3 id=""><code>.0</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.0</code> </h3>
 <p>the number <code>0.01</code>, or <code>'100/</code></p>
-<h2 class="noun" id="31"><code>1</code> (0x31)</h2>
-<h3 id="One"><code>1</code> One</h3>
+<h2 class="noun" id="31"><a class=h href="#31"></a><code>1</code> (0x31)</h2>
+<h3 id="One"><a class=h href="#One"></a><code>1</code> One</h3>
 <p>the integer 1</p>
-<h3 id="Minus One"><code>_1</code> Minus One</h3>
+<h3 id="Minus One"><a class=h href="#Minus One"></a><code>_1</code> Minus One</h3>
 <p>the integer −1</p>
-<h3 id=""><code>.1</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.1</code> </h3>
 <p>the number <code>0.1</code>, or <code>Φ/</code></p>
-<h2 class="noun" id="32"><code>2</code> (0x32)</h2>
-<h3 id="Two"><code>2</code> Two</h3>
+<h2 class="noun" id="32"><a class=h href="#32"></a><code>2</code> (0x32)</h2>
+<h3 id="Two"><a class=h href="#Two"></a><code>2</code> Two</h3>
 <p>the integer 2</p>
-<h3 id="Minus Two"><code>_2</code> Minus Two</h3>
+<h3 id="Minus Two"><a class=h href="#Minus Two"></a><code>_2</code> Minus Two</h3>
 <p>the integer −2</p>
-<h3 id=""><code>.2</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.2</code> </h3>
 <p>the number <code>0.2</code>, or <code>5/</code></p>
-<h2 class="noun" id="33"><code>3</code> (0x33)</h2>
-<h3 id="Three"><code>3</code> Three</h3>
+<h2 class="noun" id="33"><a class=h href="#33"></a><code>3</code> (0x33)</h2>
+<h3 id="Three"><a class=h href="#Three"></a><code>3</code> Three</h3>
 <p>the integer 3</p>
-<h3 id="Minus Three"><code>_3</code> Minus Three</h3>
+<h3 id="Minus Three"><a class=h href="#Minus Three"></a><code>_3</code> Minus Three</h3>
 <p>the integer −3</p>
-<h3 id=""><code>.3</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.3</code> </h3>
 <p>the number <code>0.3</code>, or <code>3/Φ</code></p>
-<h2 class="noun" id="34"><code>4</code> (0x34)</h2>
-<h3 id="Four"><code>4</code> Four</h3>
+<h2 class="noun" id="34"><a class=h href="#34"></a><code>4</code> (0x34)</h2>
+<h3 id="Four"><a class=h href="#Four"></a><code>4</code> Four</h3>
 <p>the integer 4</p>
-<h3 id="Minus Four"><code>_4</code> Minus Four</h3>
+<h3 id="Minus Four"><a class=h href="#Minus Four"></a><code>_4</code> Minus Four</h3>
 <p>the integer −4</p>
-<h3 id=""><code>.4</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.4</code> </h3>
 <p>the number <code>0.4</code>, or <code>2/5</code></p>
-<h2 class="noun" id="35"><code>5</code> (0x35)</h2>
-<h3 id="Five"><code>5</code> Five</h3>
+<h2 class="noun" id="35"><a class=h href="#35"></a><code>5</code> (0x35)</h2>
+<h3 id="Five"><a class=h href="#Five"></a><code>5</code> Five</h3>
 <p>the integer 5</p>
-<h3 id="Minus Five"><code>_5</code> Minus Five</h3>
+<h3 id="Minus Five"><a class=h href="#Minus Five"></a><code>_5</code> Minus Five</h3>
 <p>the integer −5</p>
-<h3 id=""><code>.5</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.5</code> </h3>
 <p>the number <code>0.5</code>, or <code>5/Φ</code></p>
-<h2 class="noun" id="36"><code>6</code> (0x36)</h2>
-<h3 id="Six"><code>6</code> Six</h3>
+<h2 class="noun" id="36"><a class=h href="#36"></a><code>6</code> (0x36)</h2>
+<h3 id="Six"><a class=h href="#Six"></a><code>6</code> Six</h3>
 <p>the integer 6</p>
-<h3 id="Minus Six"><code>_6</code> Minus Six</h3>
+<h3 id="Minus Six"><a class=h href="#Minus Six"></a><code>_6</code> Minus Six</h3>
 <p>the integer −6</p>
-<h3 id=""><code>.6</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.6</code> </h3>
 <p>the number <code>0.6</code>, or <code>3/5</code></p>
-<h2 class="noun" id="37"><code>7</code> (0x37)</h2>
-<h3 id="Seven"><code>7</code> Seven</h3>
+<h2 class="noun" id="37"><a class=h href="#37"></a><code>7</code> (0x37)</h2>
+<h3 id="Seven"><a class=h href="#Seven"></a><code>7</code> Seven</h3>
 <p>the integer 7</p>
-<h3 id="Minus Seven"><code>_7</code> Minus Seven</h3>
+<h3 id="Minus Seven"><a class=h href="#Minus Seven"></a><code>_7</code> Minus Seven</h3>
 <p>the integer −7</p>
-<h3 id=""><code>.7</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.7</code> </h3>
 <p>the number <code>0.7</code>, or <code>7/Φ</code></p>
-<h2 class="noun" id="38"><code>8</code> (0x38)</h2>
-<h3 id="Eight"><code>8</code> Eight</h3>
+<h2 class="noun" id="38"><a class=h href="#38"></a><code>8</code> (0x38)</h2>
+<h3 id="Eight"><a class=h href="#Eight"></a><code>8</code> Eight</h3>
 <p>the integer 8</p>
-<h3 id="Minus Eight"><code>_8</code> Minus Eight</h3>
+<h3 id="Minus Eight"><a class=h href="#Minus Eight"></a><code>_8</code> Minus Eight</h3>
 <p>the integer −8</p>
-<h3 id=""><code>.8</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.8</code> </h3>
 <p>the number <code>0.8</code>, or <code>4/5</code></p>
-<h2 class="noun" id="39"><code>9</code> (0x39)</h2>
-<h3 id="Nine"><code>9</code> Nine</h3>
+<h2 class="noun" id="39"><a class=h href="#39"></a><code>9</code> (0x39)</h2>
+<h3 id="Nine"><a class=h href="#Nine"></a><code>9</code> Nine</h3>
 <p>the integer 9</p>
-<h3 id="Minus Nine"><code>_9</code> Minus Nine</h3>
+<h3 id="Minus Nine"><a class=h href="#Minus Nine"></a><code>_9</code> Minus Nine</h3>
 <p>the integer −9</p>
-<h3 id=""><code>.9</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.9</code> </h3>
 <p>the number <code>0.9</code>, or <code>9/Φ</code></p>
-<h2 class="prefix" id="3A"><code>:</code> (0x3A)</h2>
-<h3 id="Verb"><code>:name</code> Verb</h3>
+<h2 class="prefix" id="3A"><a class=h href="#3A"></a><code>:</code> (0x3A)</h2>
+<h3 id="Verb"><a class=h href="#Verb"></a><code>:name</code> Verb</h3>
 <p>the variable <code>name</code> with verb role</p>
-<h2 class="verb" id="3B"><code>;</code> (0x3B)</h2>
-<h3 id="Duplicate"><code>α;</code> Duplicate</h3>
+<h2 class="verb" id="3B"><a class=h href="#3B"></a><code>;</code> (0x3B)</h2>
+<h3 id="Duplicate"><a class=h href="#Duplicate"></a><code>α;</code> Duplicate</h3>
 <p>forms a pair <code>αα</code>. same as <code>┴♫</code></p>
 <pre>5; ≡ 55
 123; ≡ (123)(123)</pre>
-<h3 id="Procatenate"><code>α;β</code> Procatenate</h3>
+<h3 id="Procatenate"><a class=h href="#Procatenate"></a><code>α;β</code> Procatenate</h3>
 <p>concatenates β to α. same as <code>┴,</code></p>
 <pre>5;4;3 ≡ 345
 123;456 ≡ 456123</pre>
-<h2 class="verb" id="3C"><code>&lt;</code> (0x3C)</h2>
-<h3 id="Grade Down"><code>α<</code> Grade Down</h3>
+<h2 class="verb" id="3C"><a class=h href="#3C"></a><code>&lt;</code> (0x3C)</h2>
+<h3 id="Grade Down"><a class=h href="#Grade Down"></a><code>α<</code> Grade Down</h3>
 <p>Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α~↕</code> according to α</p>
 <pre>37625&lt; ≡ 12403
 37625&lt;¡37625 ≡ 76532
 37625&lt;╖¡ ≡ 76532  ' more tacit</pre>
 <p>this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.</p>
 <p>see also: <a href="#Grade Up">Grade Up</a>, <a href="#Sort Down">Sort Down</a></p>
-<h3 id="Less Than"><code>α<β</code> Less Than</h3>
+<h3 id="Less Than"><a class=h href="#Less Than"></a><code>α<β</code> Less Than</h3>
 <p>return 1 if α &lt; b, else 0. scalar.</p>
 <pre>5&lt;3 ≡ 0
 3&lt;3 ≡ 0
 3&lt;5 ≡ 1</pre>
 <p>see also: <a href="#Less Than">Less Than</a></p>
-<h2 class="verb" id="3D"><code>=</code> (0x3D)</h2>
-<h3 id="Depth"><code>α=</code> Depth</h3>
+<h2 class="verb" id="3D"><a class=h href="#3D"></a><code>=</code> (0x3D)</h2>
+<h3 id="Depth"><a class=h href="#Depth"></a><code>α=</code> Depth</h3>
 <p>get the depth of the deepest element in α. same as <code>▬~</code></p>
 <pre>1= ≡ 0
 123= ≡ 1
@@ -1241,7 +1257,7 @@ _1%_2 ≡ 1</pre>
 (123)(5678)(90)= ≡ 2
 (1234)((56)(78))(90)= ≡ 3</pre>
 <p>see also: <a href="#Shape">Shape</a></p>
-<h3 id="Equals"><code>α=β</code> Equals</h3>
+<h3 id="Equals"><a class=h href="#Equals"></a><code>α=β</code> Equals</h3>
 <p>return 1 if α = β, else 0. scalar.</p>
 <pre>5=3 ≡ 0
 3=3 ≡ 1
@@ -1250,22 +1266,22 @@ _1%_2 ≡ 1</pre>
 "words words words"=`  ≡ 00000100000100000</pre>
 <p>two NaNs compare equal:</p>
 <pre>█=█ ≡ 1</pre>
-<h2 class="verb" id="3E"><code>></code> (0x3E)</h2>
-<h3 id="Grade Up"><code>α></code> Grade Up</h3>
+<h2 class="verb" id="3E"><a class=h href="#3E"></a><code>></code> (0x3E)</h2>
+<h3 id="Grade Up"><a class=h href="#Grade Up"></a><code>α></code> Grade Up</h3>
 <p>Grade Up can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α~↕</code> according to α</p>
 <pre>37625> ≡ 30421
 37625>¡37625 ≡ 23567
 37625>╖¡ ≡ 23567  ' more tacit</pre>
 <p>this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.</p>
 <p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Up">Sort Up</a></p>
-<h3 id="Greater Than"><code>α>β</code> Greater Than</h3>
+<h3 id="Greater Than"><a class=h href="#Greater Than"></a><code>α>β</code> Greater Than</h3>
 <p>return 1 if α > b, else 0. scalar.</p>
 <pre>5>3 ≡ 1
 3>3 ≡ 0
 3>5 ≡ 0</pre>
 <p>see also: <a href="#Less Than">Less Than</a></p>
-<h2 class="stmt" id="3F"><code>?</code> (0x3F)</h2>
-<h3 id="Then"><code>x?y</code> Then</h3>
+<h2 class="stmt" id="3F"><a class=h href="#3F"></a><code>?</code> (0x3F)</h2>
+<h3 id="Then"><a class=h href="#Then"></a><code>x?y</code> Then</h3>
 <p>execute statement y if x is not 0 or <a href="#Null">Null</a>. if x is a function, it will be called with α and, if <code>Σ~1</code>, β.</p>
 <pre>_3─b b&lt;0?-═b b ≡ 3
  5─b b&lt;0?-═b b ≡ 5</pre>
@@ -1273,13 +1289,13 @@ _1%_2 ≡ 1</pre>
 <pre>_3{&lt;0?α-◘α} ≡ 3
  5{&lt;0?α-◘α} ≡ 5
 5─a[a&lt;0?a-◘a] ≡ 5</pre>
-<h2 class="verb" id="40"><code>@</code> (0x40)</h2>
-<h3 id="First"><code>α@</code> First</h3>
+<h2 class="verb" id="40"><a class=h href="#40"></a><code>@</code> (0x40)</h2>
+<h3 id="First"><a class=h href="#First"></a><code>α@</code> First</h3>
 <p>get the first item in a list α. this is equivalent to calling α with 0.</p>
 <pre>"aeiou"@ ≡ `a
 (12)(34)@ ≡ 12
 (+2)@ ≡ 2</pre>
-<h3 id="Index"><code>α@β</code> Index</h3>
+<h3 id="Index"><a class=h href="#Index"></a><code>α@β</code> Index</h3>
 <p>get the element in list α at index β</p>
 <pre>"aeiou"@2 ≡ `i
 4321@1 ≡ 3
@@ -1303,200 +1319,200 @@ _1%_2 ≡ 1</pre>
 (123)(456)(789)@1█ ≡ 456
 (123)(456)(789)@█1 ≡ 258
 (123)(456)(789)@█2 ≡ 369</pre>
-<h2 class="verb_var" id="41"><code>A</code> (0x41)</h2>
-<h3 id=""><code>αA</code> <code>αAβ</code> </h3>
+<h2 class="verb_var" id="41"><a class=h href="#41"></a><code>A</code> (0x41)</h2>
+<h3 id=""><a class=h href="#"></a><code>αA</code> <code>αAβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→a</code>.</p>
-<h2 class="verb_var" id="42"><code>B</code> (0x42)</h2>
-<h3 id=""><code>αB</code> <code>αBβ</code> </h3>
+<h2 class="verb_var" id="42"><a class=h href="#42"></a><code>B</code> (0x42)</h2>
+<h3 id=""><a class=h href="#"></a><code>αB</code> <code>αBβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→b</code>.</p>
-<h2 class="verb_var" id="43"><code>C</code> (0x43)</h2>
-<h3 id=""><code>αC</code> <code>αCβ</code> </h3>
+<h2 class="verb_var" id="43"><a class=h href="#43"></a><code>C</code> (0x43)</h2>
+<h3 id=""><a class=h href="#"></a><code>αC</code> <code>αCβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→c</code>.</p>
-<h2 class="verb_var" id="44"><code>D</code> (0x44)</h2>
-<h3 id=""><code>αD</code> <code>αDβ</code> </h3>
+<h2 class="verb_var" id="44"><a class=h href="#44"></a><code>D</code> (0x44)</h2>
+<h3 id=""><a class=h href="#"></a><code>αD</code> <code>αDβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→d</code>.</p>
-<h2 class="verb_var" id="45"><code>E</code> (0x45)</h2>
-<h3 id=""><code>αE</code> <code>αEβ</code> </h3>
+<h2 class="verb_var" id="45"><a class=h href="#45"></a><code>E</code> (0x45)</h2>
+<h3 id=""><a class=h href="#"></a><code>αE</code> <code>αEβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→e</code>.</p>
-<h2 class="verb_var" id="46"><code>F</code> (0x46)</h2>
-<h3 id=""><code>αF</code> <code>αFβ</code> </h3>
+<h2 class="verb_var" id="46"><a class=h href="#46"></a><code>F</code> (0x46)</h2>
+<h3 id=""><a class=h href="#"></a><code>αF</code> <code>αFβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→f</code>.</p>
-<h2 class="verb_var" id="47"><code>G</code> (0x47)</h2>
-<h3 id=""><code>αG</code> <code>αGβ</code> </h3>
+<h2 class="verb_var" id="47"><a class=h href="#47"></a><code>G</code> (0x47)</h2>
+<h3 id=""><a class=h href="#"></a><code>αG</code> <code>αGβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→g</code>.</p>
-<h2 class="verb_var" id="48"><code>H</code> (0x48)</h2>
-<h3 id=""><code>αH</code> <code>αHβ</code> </h3>
+<h2 class="verb_var" id="48"><a class=h href="#48"></a><code>H</code> (0x48)</h2>
+<h3 id=""><a class=h href="#"></a><code>αH</code> <code>αHβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→h</code>.</p>
-<h2 class="verb_var" id="49"><code>I</code> (0x49)</h2>
-<h3 id=""><code>αI</code> <code>αIβ</code> </h3>
+<h2 class="verb_var" id="49"><a class=h href="#49"></a><code>I</code> (0x49)</h2>
+<h3 id=""><a class=h href="#"></a><code>αI</code> <code>αIβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→i</code>.</p>
-<h2 class="verb_var" id="4A"><code>J</code> (0x4A)</h2>
-<h3 id=""><code>αJ</code> <code>αJβ</code> </h3>
+<h2 class="verb_var" id="4A"><a class=h href="#4A"></a><code>J</code> (0x4A)</h2>
+<h3 id=""><a class=h href="#"></a><code>αJ</code> <code>αJβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→j</code>.</p>
-<h2 class="verb_var" id="4B"><code>K</code> (0x4B)</h2>
-<h3 id=""><code>αK</code> <code>αKβ</code> </h3>
+<h2 class="verb_var" id="4B"><a class=h href="#4B"></a><code>K</code> (0x4B)</h2>
+<h3 id=""><a class=h href="#"></a><code>αK</code> <code>αKβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→k</code>.</p>
-<h2 class="verb_var" id="4C"><code>L</code> (0x4C)</h2>
-<h3 id=""><code>αL</code> <code>αLβ</code> </h3>
+<h2 class="verb_var" id="4C"><a class=h href="#4C"></a><code>L</code> (0x4C)</h2>
+<h3 id=""><a class=h href="#"></a><code>αL</code> <code>αLβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→l</code>.</p>
-<h2 class="verb_var" id="4D"><code>M</code> (0x4D)</h2>
-<h3 id=""><code>αM</code> <code>αMβ</code> </h3>
+<h2 class="verb_var" id="4D"><a class=h href="#4D"></a><code>M</code> (0x4D)</h2>
+<h3 id=""><a class=h href="#"></a><code>αM</code> <code>αMβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→m</code>.</p>
-<h2 class="verb_var" id="4E"><code>N</code> (0x4E)</h2>
-<h3 id=""><code>αN</code> <code>αNβ</code> </h3>
+<h2 class="verb_var" id="4E"><a class=h href="#4E"></a><code>N</code> (0x4E)</h2>
+<h3 id=""><a class=h href="#"></a><code>αN</code> <code>αNβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→n</code>.</p>
-<h2 class="verb_var" id="4F"><code>O</code> (0x4F)</h2>
-<h3 id=""><code>αO</code> <code>αOβ</code> </h3>
+<h2 class="verb_var" id="4F"><a class=h href="#4F"></a><code>O</code> (0x4F)</h2>
+<h3 id=""><a class=h href="#"></a><code>αO</code> <code>αOβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→o</code>.</p>
-<h2 class="verb_var" id="50"><code>P</code> (0x50)</h2>
-<h3 id=""><code>αP</code> <code>αPβ</code> </h3>
+<h2 class="verb_var" id="50"><a class=h href="#50"></a><code>P</code> (0x50)</h2>
+<h3 id=""><a class=h href="#"></a><code>αP</code> <code>αPβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→p</code>.</p>
-<h2 class="verb_var" id="51"><code>Q</code> (0x51)</h2>
-<h3 id=""><code>αQ</code> <code>αQβ</code> </h3>
+<h2 class="verb_var" id="51"><a class=h href="#51"></a><code>Q</code> (0x51)</h2>
+<h3 id=""><a class=h href="#"></a><code>αQ</code> <code>αQβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→q</code>.</p>
-<h2 class="verb_var" id="52"><code>R</code> (0x52)</h2>
-<h3 id=""><code>αR</code> <code>αRβ</code> </h3>
+<h2 class="verb_var" id="52"><a class=h href="#52"></a><code>R</code> (0x52)</h2>
+<h3 id=""><a class=h href="#"></a><code>αR</code> <code>αRβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→r</code>.</p>
-<h2 class="verb_var" id="53"><code>S</code> (0x53)</h2>
-<h3 id=""><code>αS</code> <code>αSβ</code> </h3>
+<h2 class="verb_var" id="53"><a class=h href="#53"></a><code>S</code> (0x53)</h2>
+<h3 id=""><a class=h href="#"></a><code>αS</code> <code>αSβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→s</code>.</p>
-<h2 class="verb_var" id="54"><code>T</code> (0x54)</h2>
-<h3 id=""><code>αT</code> <code>αTβ</code> </h3>
+<h2 class="verb_var" id="54"><a class=h href="#54"></a><code>T</code> (0x54)</h2>
+<h3 id=""><a class=h href="#"></a><code>αT</code> <code>αTβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→t</code>.</p>
-<h2 class="verb_var" id="55"><code>U</code> (0x55)</h2>
-<h3 id=""><code>αU</code> <code>αUβ</code> </h3>
+<h2 class="verb_var" id="55"><a class=h href="#55"></a><code>U</code> (0x55)</h2>
+<h3 id=""><a class=h href="#"></a><code>αU</code> <code>αUβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→u</code>.</p>
-<h2 class="verb_var" id="56"><code>V</code> (0x56)</h2>
-<h3 id=""><code>αV</code> <code>αVβ</code> </h3>
+<h2 class="verb_var" id="56"><a class=h href="#56"></a><code>V</code> (0x56)</h2>
+<h3 id=""><a class=h href="#"></a><code>αV</code> <code>αVβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→v</code>.</p>
-<h2 class="verb_var" id="57"><code>W</code> (0x57)</h2>
-<h3 id=""><code>αW</code> <code>αWβ</code> </h3>
+<h2 class="verb_var" id="57"><a class=h href="#57"></a><code>W</code> (0x57)</h2>
+<h3 id=""><a class=h href="#"></a><code>αW</code> <code>αWβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→w</code>.</p>
-<h2 class="verb_var" id="58"><code>X</code> (0x58)</h2>
-<h3 id=""><code>αX</code> <code>αXβ</code> </h3>
+<h2 class="verb_var" id="58"><a class=h href="#58"></a><code>X</code> (0x58)</h2>
+<h3 id=""><a class=h href="#"></a><code>αX</code> <code>αXβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→x</code>.</p>
-<h2 class="verb_var" id="59"><code>Y</code> (0x59)</h2>
-<h3 id=""><code>αY</code> <code>αYβ</code> </h3>
+<h2 class="verb_var" id="59"><a class=h href="#59"></a><code>Y</code> (0x59)</h2>
+<h3 id=""><a class=h href="#"></a><code>αY</code> <code>αYβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→y</code>.</p>
-<h2 class="verb_var" id="5A"><code>Z</code> (0x5A)</h2>
-<h3 id=""><code>αZ</code> <code>αZβ</code> </h3>
+<h2 class="verb_var" id="5A"><a class=h href="#5A"></a><code>Z</code> (0x5A)</h2>
+<h3 id=""><a class=h href="#"></a><code>αZ</code> <code>αZβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→z</code>.</p>
-<h2 class="literal" id="5B"><code>[</code> (0x5B)</h2>
-<h3 id="Start Block"><code>[abc]</code> Start Block</h3>
+<h2 class="literal" id="5B"><a class=h href="#5B"></a><code>[</code> (0x5B)</h2>
+<h3 id="Start Block"><a class=h href="#Start Block"></a><code>[abc]</code> Start Block</h3>
 <p>list of statements that are executed until a <a href="#Return">Return</a> or the end is found, and return that value. similar to a <a href="#Define Function">Define Function</a>, but it is immediately executed and doesn't have a scope. most useful with <code>?</code> <a href="#Then">Then</a>, as it can be used to simulate a ternary operator:</p>
 <pre>6─a a%3=0?[/3═a "a is now ",(aⁿ] ≡ "a is now 2"
 [1+1=2?"yay"◘"oh no"]Ç ≡ "YAY"</pre>
-<h2 class="verb" id="5C"><code>\</code> (0x5C)</h2>
-<h3 id="Filter Holes"><code>α\</code> Filter Holes</h3>
+<h2 class="verb" id="5C"><a class=h href="#5C"></a><code>\</code> (0x5C)</h2>
+<h3 id="Filter Holes"><a class=h href="#Filter Holes"></a><code>α\</code> Filter Holes</h3>
 <p>remove <a href="#None">None</a>s in the list α.</p>
 <pre>█12█345██67█89\ ≡ 123456789</pre>
-<h3 id="Set Difference"><code>α\β</code> Set Difference</h3>
+<h3 id="Set Difference"><a class=h href="#Set Difference"></a><code>α\β</code> Set Difference</h3>
 <p>return α without the items in β</p>
 <pre>"hello world i am a vemf test"\`  ≡ "helloworldiamavemftest"
 "hello world i am a vemf test"\¨aeiou ≡ "hll wrld  m  vmf tst"</pre>
-<h2 class="literal" id="5D"><code>]</code> (0x5D)</h2>
-<h3 id="End Block"><code>[abc]</code> End Block</h3>
+<h2 class="literal" id="5D"><a class=h href="#5D"></a><code>]</code> (0x5D)</h2>
+<h3 id="End Block"><a class=h href="#End Block"></a><code>[abc]</code> End Block</h3>
 <p>closing counterpart of <code>[</code> <a href="#Start Block">Start Block</a>.</p>
-<h2 class="verb" id="5E"><code>^</code> (0x5E)</h2>
-<h3 id="Exponential"><code>α^</code> Exponential</h3>
+<h2 class="verb" id="5E"><a class=h href="#5E"></a><code>^</code> (0x5E)</h2>
+<h3 id="Exponential"><a class=h href="#Exponential"></a><code>α^</code> Exponential</h3>
 <p>calculate exp α, or e^α, where e = 2.718281828459045</p>
 <pre>1^ ≡ '2.718281828459045
 3^ ≡ '20.085536923187668</pre>
-<h3 id="Exponent"><code>α^β</code> Exponent</h3>
+<h3 id="Exponent"><a class=h href="#Exponent"></a><code>α^β</code> Exponent</h3>
 <p>calculate α to the power of β</p>
 <pre>2^6 ≡ '64
 3^5 ≡ '243</pre>
-<h2 class="literal" id="5F"><code>_</code> (0x5F)</h2>
-<h3 id="Alternate"><code>&#x5f;a</code> Alternate</h3>
+<h2 class="literal" id="5F"><a class=h href="#5F"></a><code>_</code> (0x5F)</h2>
+<h3 id="Alternate"><a class=h href="#Alternate"></a><code>&#x5f;a</code> Alternate</h3>
 <p>the underscore is used for accessing variant forms of functions or variables. <code>_a</code> is equivalent to <code>."_a"</code> or <code>:"_a"</code>, depending on <code>a</code></p>
 <p>for numbers (<code>123456789Φ</code>), this will be its negative.</p>
-<h2 class="literal" id="60"><code>`</code> (0x60)</h2>
-<h3 id="Character Literal"><code>`a</code> Character Literal</h3>
+<h2 class="literal" id="60"><a class=h href="#60"></a><code>`</code> (0x60)</h2>
+<h3 id="Character Literal"><a class=h href="#Character Literal"></a><code>`a</code> Character Literal</h3>
 <p>the position of <code>a</code> in the codepage</p>
 <pre>`a ≡ '97
 `b ≡ '98
 `⌡ ≡ '245</pre>
 <p>see also: <a href="#Digraph Literal">Digraph Literal</a></p>
-<h2 class="var" id="61"><code>a</code> (0x61)</h2>
-<h3 id=""><code>a</code> </h3>
+<h2 class="var" id="61"><a class=h href="#61"></a><code>a</code> (0x61)</h2>
+<h3 id=""><a class=h href="#"></a><code>a</code> </h3>
 <p>a general-purpose variable. by default, 12</p>
-<h2 class="var" id="62"><code>b</code> (0x62)</h2>
-<h3 id=""><code>b</code> </h3>
+<h2 class="var" id="62"><a class=h href="#62"></a><code>b</code> (0x62)</h2>
+<h3 id=""><a class=h href="#"></a><code>b</code> </h3>
 <p>a general-purpose variable. by default, 20</p>
-<h2 class="var" id="63"><code>c</code> (0x63)</h2>
-<h3 id=""><code>c</code> </h3>
+<h2 class="var" id="63"><a class=h href="#63"></a><code>c</code> (0x63)</h2>
+<h3 id=""><a class=h href="#"></a><code>c</code> </h3>
 <p>a general-purpose variable. by default, 99</p>
-<h2 class="var" id="64"><code>d</code> (0x64)</h2>
-<h3 id=""><code>d</code> </h3>
+<h2 class="var" id="64"><a class=h href="#64"></a><code>d</code> (0x64)</h2>
+<h3 id=""><a class=h href="#"></a><code>d</code> </h3>
 <p>a general-purpose variable. by default, 100</p>
-<h2 class="var" id="65"><code>e</code> (0x65)</h2>
-<h3 id=""><code>e</code> </h3>
+<h2 class="var" id="65"><a class=h href="#65"></a><code>e</code> (0x65)</h2>
+<h3 id=""><a class=h href="#"></a><code>e</code> </h3>
 <p>a general-purpose variable. by default, 999</p>
-<h2 class="var" id="66"><code>f</code> (0x66)</h2>
-<h3 id=""><code>f</code> </h3>
+<h2 class="var" id="66"><a class=h href="#66"></a><code>f</code> (0x66)</h2>
+<h3 id=""><a class=h href="#"></a><code>f</code> </h3>
 <p>a general-purpose variable. by default, 1000</p>
-<h2 class="var" id="67"><code>g</code> (0x67)</h2>
-<h3 id=""><code>g</code> </h3>
+<h2 class="var" id="67"><a class=h href="#67"></a><code>g</code> (0x67)</h2>
+<h3 id=""><a class=h href="#"></a><code>g</code> </h3>
 <p>a general-purpose variable. by default, 9999</p>
-<h2 class="var" id="68"><code>h</code> (0x68)</h2>
-<h3 id=""><code>h</code> </h3>
+<h2 class="var" id="68"><a class=h href="#68"></a><code>h</code> (0x68)</h2>
+<h3 id=""><a class=h href="#"></a><code>h</code> </h3>
 <p>a general-purpose variable. by default, 10000</p>
-<h2 class="var" id="69"><code>i</code> (0x69)</h2>
-<h3 id=""><code>i</code> </h3>
+<h2 class="var" id="69"><a class=h href="#69"></a><code>i</code> (0x69)</h2>
+<h3 id=""><a class=h href="#"></a><code>i</code> </h3>
 <p>a general-purpose variable. by default, 100000</p>
-<h2 class="var" id="6A"><code>j</code> (0x6A)</h2>
-<h3 id=""><code>j</code> </h3>
+<h2 class="var" id="6A"><a class=h href="#6A"></a><code>j</code> (0x6A)</h2>
+<h3 id=""><a class=h href="#"></a><code>j</code> </h3>
 <p>a general-purpose variable. by default, 1000000</p>
-<h2 class="var" id="6B"><code>k</code> (0x6B)</h2>
-<h3 id=""><code>k</code> </h3>
+<h2 class="var" id="6B"><a class=h href="#6B"></a><code>k</code> (0x6B)</h2>
+<h3 id=""><a class=h href="#"></a><code>k</code> </h3>
 <p>a general-purpose variable. by default, 15</p>
-<h2 class="var" id="6C"><code>l</code> (0x6C)</h2>
-<h3 id=""><code>l</code> </h3>
+<h2 class="var" id="6C"><a class=h href="#6C"></a><code>l</code> (0x6C)</h2>
+<h3 id=""><a class=h href="#"></a><code>l</code> </h3>
 <p>a general-purpose variable. by default, 16</p>
-<h2 class="var" id="6D"><code>m</code> (0x6D)</h2>
-<h3 id=""><code>m</code> </h3>
+<h2 class="var" id="6D"><a class=h href="#6D"></a><code>m</code> (0x6D)</h2>
+<h3 id=""><a class=h href="#"></a><code>m</code> </h3>
 <p>a general-purpose variable. by default, 31</p>
-<h2 class="var" id="6E"><code>n</code> (0x6E)</h2>
-<h3 id=""><code>n</code> </h3>
+<h2 class="var" id="6E"><a class=h href="#6E"></a><code>n</code> (0x6E)</h2>
+<h3 id=""><a class=h href="#"></a><code>n</code> </h3>
 <p>a general-purpose variable. by default, 32</p>
-<h2 class="var" id="6F"><code>o</code> (0x6F)</h2>
-<h3 id=""><code>o</code> </h3>
+<h2 class="var" id="6F"><a class=h href="#6F"></a><code>o</code> (0x6F)</h2>
+<h3 id=""><a class=h href="#"></a><code>o</code> </h3>
 <p>a general-purpose variable. by default, 63</p>
-<h2 class="var" id="70"><code>p</code> (0x70)</h2>
-<h3 id=""><code>p</code> </h3>
+<h2 class="var" id="70"><a class=h href="#70"></a><code>p</code> (0x70)</h2>
+<h3 id=""><a class=h href="#"></a><code>p</code> </h3>
 <p>a general-purpose variable. by default, 64</p>
-<h2 class="var" id="71"><code>q</code> (0x71)</h2>
-<h3 id=""><code>q</code> </h3>
+<h2 class="var" id="71"><a class=h href="#71"></a><code>q</code> (0x71)</h2>
+<h3 id=""><a class=h href="#"></a><code>q</code> </h3>
 <p>a general-purpose variable. by default, 127</p>
-<h2 class="var" id="72"><code>r</code> (0x72)</h2>
-<h3 id=""><code>r</code> </h3>
+<h2 class="var" id="72"><a class=h href="#72"></a><code>r</code> (0x72)</h2>
+<h3 id=""><a class=h href="#"></a><code>r</code> </h3>
 <p>a general-purpose variable. by default, 128</p>
-<h2 class="var" id="73"><code>s</code> (0x73)</h2>
-<h3 id=""><code>s</code> </h3>
+<h2 class="var" id="73"><a class=h href="#73"></a><code>s</code> (0x73)</h2>
+<h3 id=""><a class=h href="#"></a><code>s</code> </h3>
 <p>a general-purpose variable. by default, 255</p>
-<h2 class="var" id="74"><code>t</code> (0x74)</h2>
-<h3 id=""><code>t</code> </h3>
+<h2 class="var" id="74"><a class=h href="#74"></a><code>t</code> (0x74)</h2>
+<h3 id=""><a class=h href="#"></a><code>t</code> </h3>
 <p>a general-purpose variable. by default, 256</p>
-<h2 class="var" id="75"><code>u</code> (0x75)</h2>
-<h3 id=""><code>u</code> </h3>
+<h2 class="var" id="75"><a class=h href="#75"></a><code>u</code> (0x75)</h2>
+<h3 id=""><a class=h href="#"></a><code>u</code> </h3>
 <p>a general-purpose variable. by default, 512</p>
-<h2 class="var" id="76"><code>v</code> (0x76)</h2>
-<h3 id=""><code>v</code> </h3>
+<h2 class="var" id="76"><a class=h href="#76"></a><code>v</code> (0x76)</h2>
+<h3 id=""><a class=h href="#"></a><code>v</code> </h3>
 <p>a general-purpose variable. by default, 1024</p>
-<h2 class="var" id="77"><code>w</code> (0x77)</h2>
-<h3 id=""><code>w</code> </h3>
+<h2 class="var" id="77"><a class=h href="#77"></a><code>w</code> (0x77)</h2>
+<h3 id=""><a class=h href="#"></a><code>w</code> </h3>
 <p>a general-purpose variable. by default, 2048</p>
-<h2 class="var" id="78"><code>x</code> (0x78)</h2>
-<h3 id=""><code>x</code> </h3>
+<h2 class="var" id="78"><a class=h href="#78"></a><code>x</code> (0x78)</h2>
+<h3 id=""><a class=h href="#"></a><code>x</code> </h3>
 <p>a general-purpose variable. by default, 4096</p>
-<h2 class="var" id="79"><code>y</code> (0x79)</h2>
-<h3 id=""><code>y</code> </h3>
+<h2 class="var" id="79"><a class=h href="#79"></a><code>y</code> (0x79)</h2>
+<h3 id=""><a class=h href="#"></a><code>y</code> </h3>
 <p>a general-purpose variable. by default, 32768</p>
-<h2 class="var" id="7A"><code>z</code> (0x7A)</h2>
-<h3 id=""><code>z</code> </h3>
+<h2 class="var" id="7A"><a class=h href="#7A"></a><code>z</code> (0x7A)</h2>
+<h3 id=""><a class=h href="#"></a><code>z</code> </h3>
 <p>a general-purpose variable. by default, 65536</p>
-<h2 class="literal" id="7B"><code>{</code> (0x7B)</h2>
-<h3 id="Define Function"><code>{abc}</code> Define Function</h3>
+<h2 class="literal" id="7B"><a class=h href="#7B"></a><code>{</code> (0x7B)</h2>
+<h3 id="Define Function"><a class=h href="#Define Function"></a><code>{abc}</code> Define Function</h3>
 <p>return a function that executes the statements inside the braces, returning a value and stopping once a <a href="#Return">Return</a> statement is hit. a <a href="#Return">Return</a> statement is implicit at the end of a function. this function will have a role of verb.</p>
 <pre>{"Hello, World!"☻·}─sayhi
 {6á▲◘}─roll 0:roll ?≡ 4
@@ -1511,15 +1527,15 @@ _1%_2 ≡ 1</pre>
 123─l{─l l,α═l}─append 4:append· l ≡ 1234
 123─l{,α═l}─append 0{"things"─l 4:append· l} ≡ "things♦"  ' oops!</pre>
 <p>the braces don't need to be closed at the end of file.</p>
-<h2 class="verb" id="7C"><code>|</code> (0x7C)</h2>
-<h3 id="Or"><code>α|β</code> Or</h3>
+<h2 class="verb" id="7C"><a class=h href="#7C"></a><code>|</code> (0x7C)</h2>
+<h3 id="Or"><a class=h href="#Or"></a><code>α|β</code> Or</h3>
 <p>compute boolean OR of α and β; return 1 if one of α and β are nonzero, otherwise 0. scalar.</p>
 <pre>0|0 ≡ 0
 0|1 ≡ 1
 1|0 ≡ 1
 1|1 ≡ 1</pre>
 <p>see also: <a href="#And">And</a>, <a href="#Minimum">Minimum</a></p>
-<h3 id="Any"><code>α|</code> Any</h3>
+<h3 id="Any"><a class=h href="#Any"></a><code>α|</code> Any</h3>
 <p>return 1 if any item in α is nonzero. equivalent to <code>╧&#x7C;0</code></p>
 <pre>10101011101| ≡ 1
 11111111111| ≡ 1
@@ -1527,11 +1543,11 @@ _1%_2 ≡ 1</pre>
 <p>for an empty list, this is always 0:</p>
 <pre>φ| ≡ 0</pre>
 <p>see also: <a href="#Or">Or</a>, <a href="#All">All</a></p>
-<h2 class="literal" id="7D"><code>}</code> (0x7D)</h2>
-<h3 id="End Function"><code>{abc}</code> End Function</h3>
+<h2 class="literal" id="7D"><a class=h href="#7D"></a><code>}</code> (0x7D)</h2>
+<h3 id="End Function"><a class=h href="#End Function"></a><code>{abc}</code> End Function</h3>
 <p>closing counterpart of <a href="#Define Function">Define Function</a>.</p>
-<h2 class="verb" id="7E"><code>~</code> (0x7E)</h2>
-<h3 id="Length"><code>α~</code> Length</h3>
+<h2 class="verb" id="7E"><a class=h href="#7E"></a><code>~</code> (0x7E)</h2>
+<h3 id="Length"><a class=h href="#Length"></a><code>α~</code> Length</h3>
 <p>get the length of α. equivalent to <code>▬@</code>.</p>
 <pre>1111~ ≡ 4
 (12)(34)(56)~ ≡ 3
@@ -1540,45 +1556,45 @@ _1%_2 ≡ 1</pre>
 <pre>3~ ≡ 1
 .►~ ≡ ∞</pre>
 <p>see also: <a href="#Shape">Shape</a>, <a href="#Depth">Depth</a></p>
-<h3 id="Not Equals"><code>α~β</code> Not Equals</h3>
+<h3 id="Not Equals"><a class=h href="#Not Equals"></a><code>α~β</code> Not Equals</h3>
 <p>same as <code>=¬</code>. scalar.</p>
 <pre>5~3 ≡ 1
 3~3 ≡ 0
 3~5 ≡ 1</pre>
 <p>see also: <a href="#Equals">Equals</a></p>
-<h2 class="verb" id="7F"><code>⌂</code> (0x7F, <code>'ex</code>)</h2>
-<h3 id="Exit"><code>α⌂</code> Exit</h3>
+<h2 class="verb" id="7F"><a class=h href="#7F"></a><code>⌂</code> (0x7F, <code>'ex</code>)</h2>
+<h3 id="Exit"><a class=h href="#Exit"></a><code>α⌂</code> Exit</h3>
 <p>exits the program. if α is an integer, it will be the return code; otherwise, α will be printed as a string before exiting.</p>
-<h2 class="verb" id="80"><code>Ç</code> (0x80, <code>'c+</code>)</h2>
-<h3 id="Uppercase"><code>αÇ</code> Uppercase</h3>
+<h2 class="verb" id="80"><a class=h href="#80"></a><code>Ç</code> (0x80, <code>'c+</code>)</h2>
+<h3 id="Uppercase"><a class=h href="#Uppercase"></a><code>αÇ</code> Uppercase</h3>
 <p>returns α, uppercasing it if in the range 'a'..'z'. scalar.</p>
 <pre>"UPPERCASE"Ç ≡ "UPPERCASE"
 "lowercase"Ç ≡ "LOWERCASE"
 "Bees, bees"Ç ≡ "BEES, BEES"
 "mOcKiNg"Ç ≡ "MOCKING"</pre>
-<h2 class="verb" id="81"><code>ü</code> (0x81, <code>'u"</code>)</h2>
-<h3 id="Complex Conjugate"><code>αü</code> Complex Conjugate</h3>
+<h2 class="verb" id="81"><a class=h href="#81"></a><code>ü</code> (0x81, <code>'u"</code>)</h2>
+<h3 id="Complex Conjugate"><a class=h href="#Complex Conjugate"></a><code>αü</code> Complex Conjugate</h3>
 <p>returns α, changing the sign of the imaginary part</p>
 <pre>2í3ü ≡ _2í3
 Θí4ü ≡ 1í4
 2ü ≡ 2</pre>
-<h3 id="Group"><code>αüβ</code> Group</h3>
+<h3 id="Group"><a class=h href="#Group"></a><code>αüβ</code> Group</h3>
 <p>pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the <a href="#Empty List">Empty List</a>. if β is <a href="#None">None</a>, the element will be ignored.</p>
 <pre>"vemf programming language"ü0000█11111112222█33333333 ≡ "vemf""program""ming""language"▐φ
 123456789ü012012012 ≡ (147)(258)(369)▐φ
 "bee bumblebee honeybee"ü000φ111111000φ11111000 ≡ "beebeebee""bumblehoney"▐φ
 "eastern bumblehoneybee"ü2222222211111122222(012)(012)(012) ≡ "bee""bumblebee""eastern honeybee"▐φ</pre>
-<h2 class="verb" id="82"><code>é</code> (0x82, <code>'e'</code>)</h2>
-<h3 id="Bits"><code>αé</code> Bits</h3>
+<h2 class="verb" id="82"><a class=h href="#82"></a><code>é</code> (0x82, <code>'e'</code>)</h2>
+<h3 id="Bits"><a class=h href="#Bits"></a><code>αé</code> Bits</h3>
 <p>get the internal representation of the integer α in little-endian order. this will be a 64-element list of bits with fill 0. scalar.</p>
 <pre>'3054é ≡ 0111011111010000000000000000000000000000000000000000000000000000▐0</pre>
-<h3 id="Encode Base"><code>αéβ</code> Encode Base</h3>
+<h3 id="Encode Base"><a class=h href="#Encode Base"></a><code>αéβ</code> Encode Base</h3>
 <p>encodes the number α into the base β, in little-endian order, into a list of length <code>α∟β▲⌡Ñ1</code>. scalar.</p>
 <pre>'314éΦ ≡ 413▐0
 '314é2 ≡ 010111001▐0
 '16↕é4╛↑2 ≡ (00)(10)(20)(30)(01)(11)(21)(31)(02)(12)(22)(32)(03)(13)(23)(33)</pre>
-<h2 class="verb" id="83"><code>â</code> (0x83, <code>'a^</code>)</h2>
-<h3 id="Tangent"><code>αâ</code> Tangent</h3>
+<h2 class="verb" id="83"><a class=h href="#83"></a><code>â</code> (0x83, <code>'a^</code>)</h2>
+<h3 id="Tangent"><a class=h href="#Tangent"></a><code>αâ</code> Tangent</h3>
 <p>calculate <code>tan α</code>. scalar.</p>
 <pre>0â ± 0
 π/6â ± 3√/3
@@ -1588,56 +1604,56 @@ _1%_2 ≡ 1</pre>
 πâ ± 0
 π*3½â ± █
 π*2â ± 0</pre>
-<h3 id="Bitwise And"><code>αâβ</code> Bitwise And</h3>
+<h3 id="Bitwise And"><a class=h href="#Bitwise And"></a><code>αâβ</code> Bitwise And</h3>
 <p>calculate bitwise AND of integers α and β. scalar.</p>
 <pre>(0011è)â(0101è) ≡ 0001è
 '3054â'255 ≡ '238</pre>
-<h2 class="verb" id="84"><code>ä</code> (0x84, <code>'a"</code>)</h2>
-<h3 id="Arctangent"><code>αä</code> Arctangent</h3>
+<h2 class="verb" id="84"><a class=h href="#84"></a><code>ä</code> (0x84, <code>'a"</code>)</h2>
+<h3 id="Arctangent"><a class=h href="#Arctangent"></a><code>αä</code> Arctangent</h3>
 <p>calculate <code>arctan α</code> or <code>tan⁻¹ α</code>. scalar.</p>
 <pre>0ä ± 0
 3√ä ± π/3
 1ä ± π/4</pre>
-<h3 id="Nand"><code>αäβ</code> Nand</h3>
+<h3 id="Nand"><a class=h href="#Nand"></a><code>αäβ</code> Nand</h3>
 <p>calculate boolean NAND of α and β. scalar. equivalent to <code>&¬</code></p>
 <pre>0ä0 ≡ 1
 0ä1 ≡ 1
 1ä0 ≡ 1
 1ä1 ≡ 0</pre>
-<h2 class="verb" id="85"><code>à</code> (0x85, <code>'a`</code>)</h2>
-<h3 id="Sample"><code>αàβ</code> Sample</h3>
+<h2 class="verb" id="85"><a class=h href="#85"></a><code>à</code> (0x85, <code>'a`</code>)</h2>
+<h3 id="Sample"><a class=h href="#Sample"></a><code>αàβ</code> Sample</h3>
 <p>get a simple random sample of the list α of length β; that is, take β distinct elements randomly from α.</p>
 <pre>"sample"à4 ?≡ "smae"
 "sample"à4 ?≡ "esal"
 "sample"à2 ?≡ "em"</pre>
 <p>if β is the length of α, this is effectively a shuffle, which is what à does monadically:</p>
 <pre>"sample"à6 ?≡ "mpesla"</pre>
-<h3 id="Shuffle"><code>αà</code> Shuffle</h3>
+<h3 id="Shuffle"><a class=h href="#Shuffle"></a><code>αà</code> Shuffle</h3>
 <p>shuffle the elements from α</p>
 <pre>"sample"à ?≡ "lspeam"</pre>
-<h2 class="verb" id="86"><code>å</code> (0x86, <code>'ao</code>)</h2>
-<h3 id="Choice"><code>αå</code> Choice</h3>
+<h2 class="verb" id="86"><a class=h href="#86"></a><code>å</code> (0x86, <code>'ao</code>)</h2>
+<h3 id="Choice"><a class=h href="#Choice"></a><code>αå</code> Choice</h3>
 <p>pick a random element in α</p>
 <pre>"pick"å ?≡ `c
 "pick"å ?≡ `k</pre>
-<h3 id="Choices"><code>αåβ</code> Choices</h3>
+<h3 id="Choices"><a class=h href="#Choices"></a><code>αåβ</code> Choices</h3>
 <p>pick β elements from α, putting them in a list. β-pervasive.</p>
 <pre>"pick"å3 ?≡ "ikk"
 "pick"åΦ ?≡ "ikcipckikc"</pre>
 <p>these might repeat; see <a href="#Sample">Sample</a></p>
-<h2 class="verb" id="87"><code>ç</code> (0x87, <code>'c,</code>)</h2>
-<h3 id="Lowercase"><code>αç</code> Lowercase</h3>
+<h2 class="verb" id="87"><a class=h href="#87"></a><code>ç</code> (0x87, <code>'c,</code>)</h2>
+<h3 id="Lowercase"><a class=h href="#Lowercase"></a><code>αç</code> Lowercase</h3>
 <p>return α, lowercasing it if in the range 'A'..'Z'. scalar.</p>
 <pre>`Aç ≡ `a
 "UPPERCASE"ç ≡ "uppercase"
 "lowercase"ç ≡ "lowercase"
 "Bees, bees"ç ≡ "bees, bees"
 "mOcKiNg"ç ≡ "mocking"</pre>
-<h2 class="verb" id="88"><code>ê</code> (0x88, <code>'e^</code>)</h2>
-<h3 id="Encode Codepage"><code>αê</code> Encode Codepage</h3>
+<h2 class="verb" id="88"><a class=h href="#88"></a><code>ê</code> (0x88, <code>'e^</code>)</h2>
+<h3 id="Encode Codepage"><a class=h href="#Encode Codepage"></a><code>αê</code> Encode Codepage</h3>
 <p>convert unicode codepoint α into the vemf codepage, or <a href="#None">None</a> if not possible. scalar.</p>
 <pre>'8226'9829'9786'402`eê ≡ "•♥☺ƒe"</pre>
-<h3 id="Encode"><code>αêβ</code> Encode</h3>
+<h3 id="Encode"><a class=h href="#Encode"></a><code>αêβ</code> Encode</h3>
 <p>represent α in the radix system β in big-endian order. α-pervasive. we can use this, for example, for converting to hours, minutes, and seconds:</p>
 <pre>  '4000ê'24'60'60 ≡ '0'1'6'40
   '3200ê'24'60'60 ≡ '0'0'53'20
@@ -1648,44 +1664,44 @@ _1%_2 ≡ 1</pre>
 <p>encode is also useful as a divmod</p>
 <pre>'123.45ê'10 ± '12'3.45
 '123.45ê1 ± '123'0.45</pre>
-<h3 id="Encode UTF-8"><code>α_ê</code> Encode UTF-8</h3>
+<h3 id="Encode UTF-8"><a class=h href="#Encode UTF-8"></a><code>α_ê</code> Encode UTF-8</h3>
 <p>represent a string as a UTF-8 list of bytes, converting invalid values to � U+FFFD REPLACEMENT CHARACTER.</p>
 <pre>`a'269'676'1062'8224'30340'128238'69685_ê ≡ "a─ì╩ñ╨ªΓÇáτÜä≡ƒô«≡æÇ╡"</pre>
-<h2 class="verb" id="89"><code>ë</code> (0x89, <code>'e"</code>)</h2>
-<h3 id="Decode Codepage"><code>αë</code> Decode Codepage</h3>
+<h2 class="verb" id="89"><a class=h href="#89"></a><code>ë</code> (0x89, <code>'e"</code>)</h2>
+<h3 id="Decode Codepage"><a class=h href="#Decode Codepage"></a><code>αë</code> Decode Codepage</h3>
 <p>convert characters from vemf codepage into unicode, or <a href="#None">None</a> if not possible. scalar.</p>
 <pre>"•♥☺ƒe"ë ≡ '8226'9829'9786'402`e</pre>
-<h3 id="Decode"><code>αëβ</code> Decode</h3>
+<h3 id="Decode"><a class=h href="#Decode"></a><code>αëβ</code> Decode</h3>
 <p>decode α from the radix system β in big-endian order. this is an inverse of <a href="#Encode">Encode</a></p>
 <pre>0'1'6'40ë'24'60'60 ≡ '4000
 '1'6'40ë'24'60'60 ≡ '4000
 '12'3.45ë'10 ± '123.45
 '123'0.45ë1 ± '123.45</pre>
-<h3 id="Decode UTF-8"><code>α_ë</code> Decode UTF-8</h3>
+<h3 id="Decode UTF-8"><a class=h href="#Decode UTF-8"></a><code>α_ë</code> Decode UTF-8</h3>
 <p>converts a list of bytes into a string, converting invalid sequences to � U+FFFD REPLACEMENT CHARACTER.</p>
 <pre>"a─ì╩ñ╨ªΓÇáτÜä≡ƒô«≡æÇ╡"_ë ≡ `a'269'676'1062'8224'30340'128238'69685</pre>
-<h2 class="verb" id="8A"><code>è</code> (0x8A, <code>'e`</code>)</h2>
-<h3 id="Decode Base"><code>αèβ</code> Decode Base</h3>
+<h2 class="verb" id="8A"><a class=h href="#8A"></a><code>è</code> (0x8A, <code>'e`</code>)</h2>
+<h3 id="Decode Base"><a class=h href="#Decode Base"></a><code>αèβ</code> Decode Base</h3>
 <p>converts a list α from positional base β, in little-endian order. β-pervasive.</p>
 <pre>3054èΦ ≡ '4503</pre>
-<h3 id="Decode Binary"><code>αè</code> Decode Binary</h3>
+<h3 id="Decode Binary"><a class=h href="#Decode Binary"></a><code>αè</code> Decode Binary</h3>
 <p>use 2 as the base</p>
 <pre>1010è ≡ 5
 011101111101è2 ≡ '3054</pre>
-<h2 class="verb" id="8B"><code>ï</code> (0x8B, <code>'i"</code>)</h2>
-<h3 id="Arcsine"><code>αï</code> Arcsine</h3>
+<h2 class="verb" id="8B"><a class=h href="#8B"></a><code>ï</code> (0x8B, <code>'i"</code>)</h2>
+<h3 id="Arcsine"><a class=h href="#Arcsine"></a><code>αï</code> Arcsine</h3>
 <p>calculate <code>arcsin α</code> or <code>sin⁻¹ α</code>. scalar.</p>
 <pre>Θï ± π½-
 0ï ± 0
 1ï ± π½</pre>
-<h3 id="Xor"><code>αïβ</code> Xor</h3>
+<h3 id="Xor"><a class=h href="#Xor"></a><code>αïβ</code> Xor</h3>
 <p>calculate boolean XOR of α and β. scalar. equivalent to <code>⌐║~</code></p>
 <pre>0ï0 ≡ 0
 0ï1 ≡ 1
 1ï0 ≡ 1
 1ï1 ≡ 0</pre>
-<h2 class="verb" id="8C"><code>î</code> (0x8C, <code>'i^</code>)</h2>
-<h3 id="Sine"><code>αî</code> Sine</h3>
+<h2 class="verb" id="8C"><a class=h href="#8C"></a><code>î</code> (0x8C, <code>'i^</code>)</h2>
+<h3 id="Sine"><a class=h href="#Sine"></a><code>αî</code> Sine</h3>
 <p>calculate <code>sin α</code>. scalar.</p>
 <pre>0î ± 0
 π/6î ± 1½
@@ -1695,69 +1711,69 @@ _1%_2 ≡ 1</pre>
 πî ± 0
 π*3½î ± Θ
 π*2î ± 0</pre>
-<h3 id="Bitwise Xor"><code>αîβ</code> Bitwise Xor</h3>
+<h3 id="Bitwise Xor"><a class=h href="#Bitwise Xor"></a><code>αîβ</code> Bitwise Xor</h3>
 <p>calculate bitwise XOR of α and β. scalar.</p>
 <pre>(0011è)î(0101è) ≡ 0110è
 '3054î8 ≡ '3046</pre>
-<h2 class="verb" id="8D"><code>ì</code> (0x8D, <code>'i`</code>)</h2>
-<h3 id="Cis"><code>αì</code> Cis</h3>
+<h2 class="verb" id="8D"><a class=h href="#8D"></a><code>ì</code> (0x8D, <code>'i`</code>)</h2>
+<h3 id="Cis"><a class=h href="#Cis"></a><code>αì</code> Cis</h3>
 <p>calculate <code>cis α</code> or <code>exp(i*α)</code>. scalar.</p>
 <pre>0ì ± 1
 π½ì ± 1í
 πì ± Θ
 π-½ì ± Θí</pre>
-<h3 id="From Polar"><code>αìβ</code> From Polar</h3>
+<h3 id="From Polar"><a class=h href="#From Polar"></a><code>αìβ</code> From Polar</h3>
 <p>calculate <code>β * cis α</code> or <code>β*exp(i*α)</code>. this is the same as converting from the polar form where <code>α = φ</code> (the argument) and <code>β = r</code> (the modulus or magnitude or absolute value). scalar.</p>
 <pre>π½ì2 ± 2í
 π/4ì(2√) ± 1í1</pre>
-<h2 class="verb" id="8E"><code>Ä</code> (0x8E, <code>'a+</code>)</h2>
-<h3 id="Argument"><code>αÄ</code> Argument</h3>
+<h2 class="verb" id="8E"><a class=h href="#8E"></a><code>Ä</code> (0x8E, <code>'a+</code>)</h2>
+<h3 id="Argument"><a class=h href="#Argument"></a><code>αÄ</code> Argument</h3>
 <p>get the argument (or phase or angle) of the complex number α. scalar.</p>
 <pre>2Ä ≡ 0
 2íÄ ≡ π½
 _2Ä ≡ π
 _2íÄ ≡ π½-
 2í2Ä ≡ π/4</pre>
-<h3 id="Atan2"><code>αÄβ</code> Atan2</h3>
+<h3 id="Atan2"><a class=h href="#Atan2"></a><code>αÄβ</code> Atan2</h3>
 <p>calculate atan2(α, β). equivalent to <code>íÄ</code>. scalar.</p>
 <pre>0Ä2 ≡ 0
 2Ä0 ≡ π½
 0Ä_2 ≡ π
 _2Ä0 ≡ π½-</pre>
-<h2 class="verb" id="8F"><code>Å</code> (0x8F, <code>'aO</code>)</h2>
-<h3 id="Radians"><code>αÅ</code> Radians</h3>
+<h2 class="verb" id="8F"><a class=h href="#8F"></a><code>Å</code> (0x8F, <code>'aO</code>)</h2>
+<h3 id="Radians"><a class=h href="#Radians"></a><code>αÅ</code> Radians</h3>
 <p>converts α radians to degrees. equivalent to <code>*├'180/π</code>. scalar.</p>
 <pre>2*πÅ ≡ '360
 πÅ ≡ '180
 π½Å ≡ '90
 π¼Å ≡ '360</pre>
-<h3 id="Absolute Difference"><code>αÅβ</code> Absolute Difference</h3>
+<h3 id="Absolute Difference"><a class=h href="#Absolute Difference"></a><code>αÅβ</code> Absolute Difference</h3>
 <p>calculate the absolute difference of α and β. equivalent to <code>-¢</code>. scalar.</p>
 <pre>3Å5 ≡ 2
 5Å3 ≡ 2
 Φ↕Å3 ≡ 3210123456</pre>
-<h2 class="verb" id="90"><code>É</code> (0x90, <code>'e+</code>)</h2>
-<h3 id="Is Scalar"><code>αÉ</code> Is Scalar</h3>
+<h2 class="verb" id="90"><a class=h href="#90"></a><code>É</code> (0x90, <code>'e+</code>)</h2>
+<h3 id="Is Scalar"><a class=h href="#Is Scalar"></a><code>αÉ</code> Is Scalar</h3>
 <p>returns 1 if α is a scalar, otherwise 0. equivalent to <code>ε¬</code></p>
 <pre>4É ≡ 1
 456É ≡ 0
 (▲)É ≡ 0</pre>
 <p>see also: <a href="#Is List">Is List</a></p>
-<h3 id="Excludes"><code>αÉβ</code> Excludes</h3>
+<h3 id="Excludes"><a class=h href="#Excludes"></a><code>αÉβ</code> Excludes</h3>
 <p>for every item in the list α, check if it is not in β. equivalent to <code>ε¬</code></p>
 <pre>0123456789É012073167140 ≡ 0000010011
 1 É 012073167140 ≡ 0
 5 É 012073167140 ≡ 1
 "unauthorized equation"É"aeiou" ≡ 010011010101101001001</pre>
 <p>see also: <a href="#Includes">Includes</a></p>
-<h2 class="verb" id="91"><code>æ</code> (0x91, <code>'ae</code>)</h2>
-<h3 id="Join"><code>αæβ</code> Join</h3>
+<h2 class="verb" id="91"><a class=h href="#91"></a><code>æ</code> (0x91, <code>'ae</code>)</h2>
+<h3 id="Join"><a class=h href="#Join"></a><code>αæβ</code> Join</h3>
 <p>join the lists in α with the separator β</p>
 <pre>"bee""bees""apioids"æ` ◄ ≡ "bee bees apioids"
 123ªæ", " ≡ "1, 2, 3"
 "Hello"æ`f ≡ "Hfeflflfo"</pre>
-<h2 class="verb" id="92"><code>Æ</code> (0x92, <code>'aE</code>)</h2>
-<h3 id="Extend"><code>αÆ</code> Extend</h3>
+<h2 class="verb" id="92"><a class=h href="#92"></a><code>Æ</code> (0x92, <code>'aE</code>)</h2>
+<h3 id="Expand"><a class=h href="#Expand"></a><code>αÆ</code> Expand</h3>
 <p>turn α into an infinite list, where the items outside the list are α's fill. equivalent to <code>{┴@α}</code></p>
 <pre>123+45 ≡ 57
 123+(45▐0) ≡ 57
@@ -1765,14 +1781,14 @@ _2Ä0 ≡ π½-</pre>
 123+(45Æ) ≡ 57█
 123Æ~ ≡ ∞
 123Æ@5 ≡ █</pre>
-<h3 id="Extend with Fill"><code>αÆβ</code> Extend with Fill</h3>
+<h3 id="Expand with Fill"><a class=h href="#Expand with Fill"></a><code>αÆβ</code> Expand with Fill</h3>
 <p>turn α into an infinite list, where the items outside the list are β. equivalent to <code>▐Æ</code></p>
 <pre>123+(45Æ0) ≡ 573
 123Æ0@5 ≡ 0
 123Æ█@5 ≡ █
 123Æ456@_2 ≡ 456</pre>
-<h2 class="verb" id="93"><code>ô</code> (0x93, <code>'o^</code>)</h2>
-<h3 id="Cosine"><code>αô</code> Cosine</h3>
+<h2 class="verb" id="93"><a class=h href="#93"></a><code>ô</code> (0x93, <code>'o^</code>)</h2>
+<h3 id="Cosine"><a class=h href="#Cosine"></a><code>αô</code> Cosine</h3>
 <p>calculate <code>cos α</code>. scalar.</p>
 <pre>0ô ± 1
 π/6ô ± 3√½
@@ -1782,89 +1798,89 @@ _2Ä0 ≡ π½-</pre>
 πô ± Θ
 π*3½ô ± 0
 π*2ô ± 1</pre>
-<h3 id="Bitwise Or"><code>αôβ</code> Bitwise Or</h3>
+<h3 id="Bitwise Or"><a class=h href="#Bitwise Or"></a><code>αôβ</code> Bitwise Or</h3>
 <p>calculate bitwise OR of integers α and β. scalar.</p>
 <pre>(0011è)ô(0101è) ≡ 0111è</pre>
-<h2 class="verb" id="94"><code>ö</code> (0x94, <code>'o"</code>)</h2>
-<h3 id="Arccosine"><code>αö</code> Arccosine</h3>
+<h2 class="verb" id="94"><a class=h href="#94"></a><code>ö</code> (0x94, <code>'o"</code>)</h2>
+<h3 id="Arccosine"><a class=h href="#Arccosine"></a><code>αö</code> Arccosine</h3>
 <p>calculate <code>arccos α</code> or <code>cos⁻¹ α</code>. scalar.</p>
 <pre>Θö ± π
 0ö ± π½
 1ö ± 0</pre>
-<h3 id="Nor"><code>αöβ</code> Nor</h3>
+<h3 id="Nor"><a class=h href="#Nor"></a><code>αöβ</code> Nor</h3>
 <p>compute boolean NOR of α and β. scalar. equivalent to <code>&#x7c;¬</code>.</p>
 <pre>0ö0 ≡ 1
 0ö1 ≡ 0
 1ö0 ≡ 0
 1ö1 ≡ 0</pre>
-<h2 class="verb" id="95"><code>ò</code> (0x95, <code>'o`</code>)</h2>
-<h3 id="Eval"><code>αò</code> Eval</h3>
+<h2 class="verb" id="95"><a class=h href="#95"></a><code>ò</code> (0x95, <code>'o`</code>)</h2>
+<h3 id="Eval"><a class=h href="#Eval"></a><code>αò</code> Eval</h3>
 <p>evaluate the codepage string α in the current context, and return the value</p>
 <pre>"1+1"ò ≡ 2</pre>
 <p>it will have access to all defined variables in the enclosing scopes, all the input and output streams and the random number generator. don't use this from untrusted sources blah blah blah blah.</p>
 <pre>4─value· "6═value"ò· .value ≡ 6</pre>
-<h2 class="verb" id="96"><code>û</code> (0x96, <code>'u^</code>)</h2>
-<h3 id="Occurence Count"><code>αû</code> Occurence Count</h3>
+<h2 class="verb" id="96"><a class=h href="#96"></a><code>û</code> (0x96, <code>'u^</code>)</h2>
+<h3 id="Occurence Count"><a class=h href="#Occurence Count"></a><code>αû</code> Occurence Count</h3>
 <p>for every element of α, count the number of occurences of that element in the prefix before that element.</p>
 <pre>320110433250û ≡ 000011012102</pre>
 <p>therefore, <code>û¬</code> detects if an element is the first in the array:</p>
 <pre>320110433250û¬ ≡ 111100100010
 320110433250(û¬)╓‼ ≡ 320145  ' same as α∩</pre>
-<h3 id="Unique Index Of"><code>αûβ</code> Unique Index Of</h3>
+<h3 id="Unique Index Of"><a class=h href="#Unique Index Of"></a><code>αûβ</code> Unique Index Of</h3>
 <p>for every element in β, find the index of the first unused match in α, or <a href="#None">None</a>.</p>
 <pre>22235 û 223357 ≡ 013█4█
 3333 û 3323 ≡ 01█2</pre>
-<h2 class="verb" id="97"><code>ù</code> (0x97, <code>'u`</code>)</h2>
-<h3 id="Real Part"><code>αù</code> Real Part</h3>
+<h2 class="verb" id="97"><a class=h href="#97"></a><code>ù</code> (0x97, <code>'u`</code>)</h2>
+<h3 id="Real Part"><a class=h href="#Real Part"></a><code>αù</code> Real Part</h3>
 <p>get the real part of a complex number α. scalar.</p>
 <pre>3í4ù ≡ 4
 3ù ≡ 3</pre>
-<h3 id="Count"><code>αùβ</code> Count</h3>
+<h3 id="Count"><a class=h href="#Count"></a><code>αùβ</code> Count</h3>
 <p>count the number of occurences of β in α. β-pervasive.</p>
 <pre>012073167140ù0123456789 ≡ 3311101200</pre>
-<h2 class="verb" id="98"><code>ÿ</code> (0x98, <code>'y"</code>)</h2>
-<h3 id="Deindices"><code>αÿ</code> Deindices</h3>
+<h2 class="verb" id="98"><a class=h href="#98"></a><code>ÿ</code> (0x98, <code>'y"</code>)</h2>
+<h3 id="Deindices"><a class=h href="#Deindices"></a><code>αÿ</code> Deindices</h3>
 <p>a list of length <code>αÑ</code> with fill 0, where the value of an element <code>i</code> is the amount of occurences of <code>i</code> in α</p>
 <pre>134679ÿ ≡ 0101101101▐0
 02244455557ÿ ≡ 10203401▐0
 75420542545ÿ ≡ 10203401▐0</pre>
-<h2 class="verb" id="99"><code>Ö</code> (0x99, <code>'o+</code>)</h2>
-<h3 id="Read"><code>αÖβ</code> Read</h3>
+<h2 class="verb" id="99"><a class=h href="#99"></a><code>Ö</code> (0x99, <code>'o+</code>)</h2>
+<h3 id="Read"><a class=h href="#Read"></a><code>αÖβ</code> Read</h3>
 <p>read α bytes from input stream β and decode them from utf-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.</p>
 <p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
 <p>may return <a href="#None">None</a> in case of an IO error.</p>
-<h3 id="Read Stdin"><code>αÖ</code> Read Stdin</h3>
+<h3 id="Read Stdin"><a class=h href="#Read Stdin"></a><code>αÖ</code> Read Stdin</h3>
 <p>read from input stream 0. equivalent to <code>Ö0</code>.</p>
-<h3 id="Read Bytes"><code>α_Öβ</code> Read Bytes</h3>
+<h3 id="Read Bytes"><a class=h href="#Read Bytes"></a><code>α_Öβ</code> Read Bytes</h3>
 <p>read α bytes from input stream β.</p>
 <p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
 <p>may return <a href="#None">None</a> in case of an IO error.</p>
-<h3 id="Read Bytes from Stdin"><code>α_Ö</code> Read Bytes from Stdin</h3>
+<h3 id="Read Bytes from Stdin"><a class=h href="#Read Bytes from Stdin"></a><code>α_Ö</code> Read Bytes from Stdin</h3>
 <p>read from input stream 0. equivalent to <code>_Ö0</code>.</p>
-<h2 class="verb" id="9A"><code>Ü</code> (0x9A, <code>'u+</code>)</h2>
-<h3 id="Write"><code>αÜβ</code> Write</h3>
+<h2 class="verb" id="9A"><a class=h href="#9A"></a><code>Ü</code> (0x9A, <code>'u+</code>)</h2>
+<h3 id="Write"><a class=h href="#Write"></a><code>αÜβ</code> Write</h3>
 <p>write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
-<h3 id="Write Stdout"><code>αÜ</code> Write Stdout</h3>
+<h3 id="Write Stdout"><a class=h href="#Write Stdout"></a><code>αÜ</code> Write Stdout</h3>
 <p>write a string α to output stream 0. equivalent to <code>É0</code>.</p>
 <p>see also: <a href="#Print">Print</a></p>
-<h3 id="Write Bytes"><code>α_Üβ</code> Write Bytes</h3>
+<h3 id="Write Bytes"><a class=h href="#Write Bytes"></a><code>α_Üβ</code> Write Bytes</h3>
 <p>write a list of bytes α to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
-<h3 id="Write Bytes to Stdout"><code>α_Ü</code> Write Bytes to Stdout</h3>
+<h3 id="Write Bytes to Stdout"><a class=h href="#Write Bytes to Stdout"></a><code>α_Ü</code> Write Bytes to Stdout</h3>
 <p>write a list of bytes α to output stream 0. equivalent to <code>_É0</code>.</p>
-<h2 class="verb" id="9B"><code>¢</code> (0x9B, <code>'C</code>)</h2>
-<h3 id="Absolute"><code>α¢</code> Absolute</h3>
+<h2 class="verb" id="9B"><a class=h href="#9B"></a><code>¢</code> (0x9B, <code>'C</code>)</h2>
+<h3 id="Absolute"><a class=h href="#Absolute"></a><code>α¢</code> Absolute</h3>
 <p>get the absolute value of α. for complex numbers, this is the magnitude or modulus. scalar.</p>
 <pre>5¢ ≡ 5
 0¢ ≡ 0
 _4¢ ≡ 4
 3í4¢ ≡ 5</pre>
-<h3 id="Distance"><code>α¢β</code> Distance</h3>
+<h3 id="Distance"><a class=h href="#Distance"></a><code>α¢β</code> Distance</h3>
 <p>calculate <code>α²+(β²)√</code>, or the distance of (α, β) to the origin (0, 0), or the absolute value of <code>αíβ</code>. scalar</p>
 <pre>3¢4 ≡ 5
 8¢6 ≡ '10
 1¢1 ≡ 2√</pre>
-<h2 class="verb" id="9C"><code>£</code> (0x9C, <code>'fd</code>)</h2>
-<h3 id="Find"><code>α£β</code> Find</h3>
+<h2 class="verb" id="9C"><a class=h href="#9C"></a><code>£</code> (0x9C, <code>'fd</code>)</h2>
+<h3 id="Find"><a class=h href="#Find"></a><code>α£β</code> Find</h3>
 <p>finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are <a href="#None">None</a>. if β is a scalar or the <a href="#Empty List">Empty List</a>, search for the element β.</p>
 <pre>"sus sus amongus"£`s    ≡ 0█0█0█0███████0
 "sus sus amongus"£"s"   ≡ 0█0█0█0███████0
@@ -1881,32 +1897,32 @@ _4¢ ≡ 4
 "sus sus amongus"£"sus"=0 ≡ 100010000000000
 "sus sus amongus"£"sus"▀  ≡ 111011100000000</pre>
 <p>see also: <a href="#Equals">Equals</a>, <a href="#Scan Windows">Scan Windows</a>, <a href="#Split">Split</a></p>
-<h2 class="verb" id="9D"><code>¥</code> (0x9D, <code>'Y</code>)</h2>
-<h3 id="Split"><code>α¥β</code> Split</h3>
+<h2 class="verb" id="9D"><a class=h href="#9D"></a><code>¥</code> (0x9D, <code>'Y</code>)</h2>
+<h3 id="Split"><a class=h href="#Split"></a><code>α¥β</code> Split</h3>
 <p>splits a list α at all the ocurrences of the sublist β</p>
 <pre>"bee bees apioids"¥` ◄ ≡ "bee""bees""apioids"
 "bee bees apioids"¥`,  ≡ ♪"bee bees apioids"
 "one, two, three"¥", " ≡ "one""two""three"</pre>
 <p>see also: <a href="#Find">Find</a></p>
-<h3 id="Split Newlines"><code>α¥</code> Split Newlines</h3>
+<h3 id="Split Newlines"><a class=h href="#Split Newlines"></a><code>α¥</code> Split Newlines</h3>
 <p>splits at newlines (byte 0x0A). same as <code>¥Φ</code>. won't strip out carriage returns.</p>
-<h2 class="verb" id="9E"><code>₧</code> (0x9E, <code>'pt</code>)</h2>
-<h3 id="Partition"><code>α₧β</code> Partition</h3>
+<h2 class="verb" id="9E"><a class=h href="#9E"></a><code>₧</code> (0x9E, <code>'pt</code>)</h2>
+<h3 id="Partition"><a class=h href="#Partition"></a><code>α₧β</code> Partition</h3>
 <p>partition the list α at indexes β</p>
 <pre>0123456789₧46 ≡ (0123)(45)(6789)
 0123456789₧0469Φ ≡ ()(0123)(45)(678)(♪9)()</pre>
-<h3 id="Parts"><code>α₧</code> Parts</h3>
+<h3 id="Parts"><a class=h href="#Parts"></a><code>α₧</code> Parts</h3>
 <p>get a list of the real and imaginary parts of α. scalar. equivalent to <code>└ù♫ú</code></p>
 <pre>4í_2 ₧ ≡ _2 4
 4₧ ≡ 4 0
 456_30í_2_3024₧ ≡ │_24│_35│06│2_3│40</pre>
-<h2 class="verb_var" id="9F"><code>ƒ</code> (0x9F, <code>'F 'f,</code>)</h2>
-<h3 id="Self"><code>αƒ</code> <code>αƒβ</code> Self</h3>
+<h2 class="verb_var" id="9F"><a class=h href="#9F"></a><code>ƒ</code> (0x9F, <code>'F 'f,</code>)</h2>
+<h3 id="Self"><a class=h href="#Self"></a><code>αƒ</code> <code>αƒβ</code> Self</h3>
 <p>the function being executed. if not in a function definition, undefined. useful for recursive functions.</p>
 <pre>6{=0?1◘α▼ƒ*α} ≡ '720</pre>
 <p>remember to include an exit condition (<a href="#Return">Return</a>). you shouldn't need this very often; in this case, <code>↨*</code> or <code>!</code> would have been enough.</p>
-<h2 class="verb" id="A0"><code>á</code> (0xA0, <code>'a'</code>)</h2>
-<h3 id="Pick"><code>αá</code> Pick</h3>
+<h2 class="verb" id="A0"><a class=h href="#A0"></a><code>á</code> (0xA0, <code>'a'</code>)</h2>
+<h3 id="Pick"><a class=h href="#Pick"></a><code>αá</code> Pick</h3>
 <p>pick a random integer in the range [0, α). scalar.</p>
 <pre>5á ?≡ 3
 5á ?≡ 2
@@ -1914,152 +1930,152 @@ _4¢ ≡ 4
 5á ?≡ 0</pre>
 <p>if α is 0 or lower, pick a floating point value in the range [0, 1)</p>
 <pre>0á ?≡ '0.6902543350466662</pre>
-<h3 id="Picks"><code>αáβ</code> Picks</h3>
+<h3 id="Picks"><a class=h href="#Picks"></a><code>αáβ</code> Picks</h3>
 <p>pick β times. this is the same as doing <code>α§βá</code></p>
 <pre>5áΦ ?≡ 4 3 2 2 0 2 1 0 3 3
 5á'100&lt;5& ≡ 1</pre>
-<h2 class="verb" id="A1"><code>í</code> (0xA1, <code>'i'</code>)</h2>
-<h3 id="Imaginary"><code>αí</code> Imaginary</h3>
+<h2 class="verb" id="A1"><a class=h href="#A1"></a><code>í</code> (0xA1, <code>'i'</code>)</h2>
+<h3 id="Imaginary"><a class=h href="#Imaginary"></a><code>αí</code> Imaginary</h3>
 <p>calculate <code>α*i</code>, where <code>i</code> is the imaginary unit. scalar.</p>
 <pre>1í ≡ Γ
 3í ≡ 3*Γ</pre>
-<h3 id="Complex"><code>αíβ</code> Complex</h3>
+<h3 id="Complex"><a class=h href="#Complex"></a><code>αíβ</code> Complex</h3>
 <p>calculate <code>β + α*i</code>. scalar.</p>
 <pre>1í² ± _1
 2í² ± _4
 3í2² ± '12í_5</pre>
-<h2 class="verb" id="A2"><code>ó</code> (0xA2, <code>'o'</code>)</h2>
-<h3 id="Signs"><code>αó</code> Signs</h3>
+<h2 class="verb" id="A2"><a class=h href="#A2"></a><code>ó</code> (0xA2, <code>'o'</code>)</h2>
+<h3 id="Signs"><a class=h href="#Signs"></a><code>αó</code> Signs</h3>
 <p>calculate (-1)^α. if α is an integer, this means 1 for odd α, and −1 for even α. scalar. equivalent to <code>┴^Θ</code></p>
 <pre>012345ó ≡ 1Θ1Θ1Θ</pre>
 <p>see also: <a href="#Minus One">Minus One</a></p>
-<h3 id="Divides"><code>αóβ</code> Divides</h3>
+<h3 id="Divides"><a class=h href="#Divides"></a><code>αóβ</code> Divides</h3>
 <p>return 1 if α is divisible by β, otherwise 0. scalar. equivalent to <code>%¬</code></p>
 <pre>0ó3 ≡ 1
 1ó3 ≡ 0
 2ó3 ≡ 0
 3ó3 ≡ 1
 '20↕ó4 ≡ 10001000100010001000</pre>
-<h2 class="verb" id="A3"><code>ú</code> (0xA3, <code>'u'</code>)</h2>
-<h3 id="Imaginary Part"><code>αú</code> Imaginary Part</h3>
+<h2 class="verb" id="A3"><a class=h href="#A3"></a><code>ú</code> (0xA3, <code>'u'</code>)</h2>
+<h3 id="Imaginary Part"><a class=h href="#Imaginary Part"></a><code>αú</code> Imaginary Part</h3>
 <p>get the imaginary part of a complex number α. scalar.</p>
 <pre>3í4ú ≡ 3
 3ú ≡ 0</pre>
-<h3 id="Index of Last"><code>αúβ</code> Index of Last</h3>
+<h3 id="Index of Last"><a class=h href="#Index of Last"></a><code>αúβ</code> Index of Last</h3>
 <p>find the last exact match in the list and return its index, or else <a href="#None">None</a>. β-pervasive.</p>
 <pre>012073167140ú0123456789 ≡ '11 925Φ█78██</pre>
-<h2 class="verb" id="A4"><code>ñ</code> (0xA4, <code>'n- 'n~</code>)</h2>
-<h3 id="Minimum"><code>αñβ</code> Minimum</h3>
+<h2 class="verb" id="A4"><a class=h href="#A4"></a><code>ñ</code> (0xA4, <code>'n- 'n~</code>)</h2>
+<h3 id="Minimum"><a class=h href="#Minimum"></a><code>αñβ</code> Minimum</h3>
 <p>return the lowest number between α and β. scalar.</p>
 <pre>0ñ2 ≡ 0
 _3ñ0 ≡ _3
 _2ñ2 ≡ _2
 1ñ5 ≡ 1</pre>
-<h3 id="Infimum"><code>αñ</code> Infimum</h3>
+<h3 id="Infimum"><a class=h href="#Infimum"></a><code>αñ</code> Infimum</h3>
 <p>return the lowest number in α. equivalent to <code>╧ñ∞</code></p>
 <pre>2398389292ñ ≡ 2</pre>
 <p>for an empty list, this returns infinity.</p>
 <pre>φñ ≡ ∞</pre>
-<h2 class="verb" id="A5"><code>Ñ</code> (0xA5, <code>'n+</code>)</h2>
-<h3 id="Maximum"><code>αÑβ</code> Maximum</h3>
+<h2 class="verb" id="A5"><a class=h href="#A5"></a><code>Ñ</code> (0xA5, <code>'n+</code>)</h2>
+<h3 id="Maximum"><a class=h href="#Maximum"></a><code>αÑβ</code> Maximum</h3>
 <p>return the largest number between α and β. scalar.</p>
 <pre>1Ñ2 ≡ 2
 _2Ñ3 ≡ 3
 _2Ñ0 ≡ 0</pre>
-<h3 id="Supremum"><code>αÑ</code> Supremum</h3>
+<h3 id="Supremum"><a class=h href="#Supremum"></a><code>αÑ</code> Supremum</h3>
 <p>return the greatest number in α. equivalent to <code>╧Ñ_∞</code></p>
 <pre>381562124Ñ ≡ 8</pre>
 <p>for an empty list, this returns negative infinity.</p>
 <pre>φÑ ≡ ∞-</pre>
-<h2 class="verb" id="A6"><code>ª</code> (0xA6, <code>'a,</code>)</h2>
-<h3 id="Represent"><code>αª</code> Represent</h3>
+<h2 class="verb" id="A6"><a class=h href="#A6"></a><code>ª</code> (0xA6, <code>'a,</code>)</h2>
+<h3 id="Represent"><a class=h href="#Represent"></a><code>αª</code> Represent</h3>
 <p>convert the number α to a string. scalar.</p>
 <pre>'123ª ≡ "123"
 '123.45ª ≡ "123.45"
 4í3ª ≡ "3+4i"</pre>
 <p>see also: <a href="#Parse">Parse</a></p>
-<h3 id="Represent Base"><code>αªβ</code> Represent Base</h3>
+<h3 id="Represent Base"><a class=h href="#Represent Base"></a><code>αªβ</code> Represent Base</h3>
 <p>convert the number α to a string in base β. behaviour unspecified for bases not in [2, 36]. scalar.</p>
 <pre>'3054ª'16 ≡ "bee"
 '14774ª'36 ≡ "bee"
 '42405ª'16 ≡ "a5a5"</pre>
 <p>see also: <a href="#Parse Base">Parse Base</a></p>
-<h2 class="verb" id="A7"><code>º</code> (0xA7, <code>'o,</code>)</h2>
-<h3 id="Parse"><code>αº</code> Parse</h3>
+<h2 class="verb" id="A7"><a class=h href="#A7"></a><code>º</code> (0xA7, <code>'o,</code>)</h2>
+<h3 id="Parse"><a class=h href="#Parse"></a><code>αº</code> Parse</h3>
 <p>convert the string/character α to a number, or <a href="#None">None</a></p>
 <pre>`4º ≡ 4
 "123"º ≡ '123
 "123.45"º ≡ '123.45
 "123+5i"º ≡ 5í'123</pre>
 <p>see also: <a href="#Represent">Represent</a></p>
-<h3 id="Parse Base"><code>αºβ</code> Parse Base</h3>
+<h3 id="Parse Base"><a class=h href="#Parse Base"></a><code>αºβ</code> Parse Base</h3>
 <p>convert the string α in base β to a number. behaviour unspecified for bases not in [2, 36].</p>
 <pre>"bee"º'16 ≡ '3054
 "bee"º'36 ≡ '14774
 "A5A5"º'16 ≡ '42405</pre>
 <p>see also: <a href="#Represent Base">Represent Base</a></p>
-<h2 class="verb" id="A8"><code>¿</code> (0xA8, <code>'?</code>)</h2>
-<h3 id="Diagonal"><code>α¿</code> Diagonal</h3>
+<h2 class="verb" id="A8"><a class=h href="#A8"></a><code>¿</code> (0xA8, <code>'?</code>)</h2>
+<h3 id="Diagonal"><a class=h href="#Diagonal"></a><code>α¿</code> Diagonal</h3>
 <p>get the diagonal of length <code>α▬2ñ</code> of a list α</p>
 <pre>"bus""red""are"¿ ≡ "bee"
 .►↑55¿ ≡ '0'6'12'18'24
 (100)(020)(003)¿ ≡ 123</pre>
-<h3 id="Select"><code>α¿β</code> Select</h3>
+<h3 id="Select"><a class=h href="#Select"></a><code>α¿β</code> Select</h3>
 <p>index α with every item in β. equivalent to <code>╘@</code>.</p>
 <pre>"abc""def""ghi"¿(22)(10)(11)(00) ≡ "idea"</pre>
-<h2 class="verb" id="A9"><code>⌐</code> (0xA9, <code>'bl</code>)</h2>
-<h3 id="Bool"><code>α⌐</code> Bool</h3>
+<h2 class="verb" id="A9"><a class=h href="#A9"></a><code>⌐</code> (0xA9, <code>'bl</code>)</h2>
+<h3 id="Bool"><a class=h href="#Bool"></a><code>α⌐</code> Bool</h3>
 <p>returns 1 if <code>α~0</code>, otherwise 0. scalar.</p>
 <pre>0⌐ ≡ 0
 1⌐ ≡ 1
 3⌐ ≡ 1
 2-⌐ ≡ 1</pre>
-<h3 id="Prepend"><code>α⌐β</code> Prepend</h3>
+<h3 id="Prepend"><a class=h href="#Prepend"></a><code>α⌐β</code> Prepend</h3>
 <p>returns the list α with the item β added to the front.</p>
 <pre>123⌐4 ≡ 4123
 123⌐456 ≡ (456)123</pre>
 <p>see also: <a href="#Procatenate">Procatenate</a>, <a href="#Append">Append</a></p>
-<h2 class="verb" id="AA"><code>¬</code> (0xAA, <code>'_</code>)</h2>
-<h3 id="Not"><code>α¬</code> Not</h3>
+<h2 class="verb" id="AA"><a class=h href="#AA"></a><code>¬</code> (0xAA, <code>'_</code>)</h2>
+<h3 id="Not"><a class=h href="#Not"></a><code>α¬</code> Not</h3>
 <p>returns 1 if <code>α=0</code>, otherwise 0. scalar</p>
 <pre>0¬ ≡ 1
 1¬ ≡ 0
 3¬ ≡ 0
 2-¬ ≡ 0</pre>
-<h3 id="Append"><code>α¬β</code> Append</h3>
+<h3 id="Append"><a class=h href="#Append"></a><code>α¬β</code> Append</h3>
 <p>returns the list α with the item β added to the back.</p>
 <pre>123¬4 ≡ 1234
 123¬456 ≡ 123(456)</pre>
 <p>see also: <a href="#Concatenate">Concatenate</a>, <a href="#Prepend">Prepend</a></p>
-<h2 class="verb" id="AB"><code>½</code> (0xAB, <code>'hf</code>)</h2>
-<h3 id="Halve"><code>α½</code> Halve</h3>
+<h2 class="verb" id="AB"><a class=h href="#AB"></a><code>½</code> (0xAB, <code>'hf</code>)</h2>
+<h3 id="Halve"><a class=h href="#Halve"></a><code>α½</code> Halve</h3>
 <p>equivalent to <code>/2</code>. scalar.</p>
 <pre>1½ ≡ '0.5
 5½ ≡ '2.5
 1½½ ≡ '0.25</pre>
-<h3 id="Least Common Denominator"><code>α½β</code> Least Common Denominator</h3>
+<h3 id="Least Common Denominator"><a class=h href="#Least Common Denominator"></a><code>α½β</code> Least Common Denominator</h3>
 <p>calculates lcd(α, β). scalar.</p>
 <pre>'30½'45 ≡ '90</pre>
-<h2 class="verb" id="AC"><code>¼</code> (0xAC, <code>'db</code>)</h2>
-<h3 id="Double"><code>α¼</code> Double</h3>
+<h2 class="verb" id="AC"><a class=h href="#AC"></a><code>¼</code> (0xAC, <code>'db</code>)</h2>
+<h3 id="Double"><a class=h href="#Double"></a><code>α¼</code> Double</h3>
 <p>equivalent to <code>*2</code>. scalar.</p>
 <pre>1¼ ≡ 2
 Φ¼ ≡ '20
 5¼ ≡ '10
 6½¼ ≡ 6</pre>
-<h3 id="Greatest Common Divisor"><code>α¼β</code> Greatest Common Divisor</h3>
+<h3 id="Greatest Common Divisor"><a class=h href="#Greatest Common Divisor"></a><code>α¼β</code> Greatest Common Divisor</h3>
 <p>calculates gcd(α, β). scalar.</p>
 <pre>'30¼'45 ≡ '15</pre>
-<h2 class="verb" id="AD"><code>¡</code> (0xAD, <code>'@</code>)</h2>
-<h3 id="Last"><code>α¡</code> Last</h3>
+<h2 class="verb" id="AD"><a class=h href="#AD"></a><code>¡</code> (0xAD, <code>'@</code>)</h2>
+<h3 id="Last"><a class=h href="#Last"></a><code>α¡</code> Last</h3>
 <p>get the last element of the list in α</p>
 <pre>"aeiou"¡ ≡ `u
 123¡ ≡ 3</pre>
-<h3 id="Translate"><code>α¡β</code> Translate</h3>
+<h3 id="Translate"><a class=h href="#Translate"></a><code>α¡β</code> Translate</h3>
 <p>index the array α for every scalar in α. equivalent to <code>_╛┴@</code>.</p>
 <pre>13524¡" aeiouy" ≡ "aiueo"</pre>
-<h2 class="verb" id="AE"><code>«</code> (0xAE, <code>'rl</code>)</h2>
-<h3 id="Rotate Left"><code>α«β</code> Rotate Left</h3>
+<h2 class="verb" id="AE"><a class=h href="#AE"></a><code>«</code> (0xAE, <code>'rl</code>)</h2>
+<h3 id="Rotate Left"><a class=h href="#Rotate Left"></a><code>α«β</code> Rotate Left</h3>
 <p>moves the last β elements of the list α to the front. β-pervasive.</p>
 <pre>12345«1 ≡ 23451
 12345«3 ≡ 45123
@@ -2067,11 +2083,11 @@ _2Ñ0 ≡ 0</pre>
 12345«6 ≡ 23451</pre>
 <p>if β is negative, this acts like <a href="#Rotate Right">Rotate Right</a>.</p>
 <pre>12345«_3 ≡ 34512</pre>
-<h3 id="Rotate Left Once"><code>α«</code> Rotate Left Once</h3>
+<h3 id="Rotate Left Once"><a class=h href="#Rotate Left Once"></a><code>α«</code> Rotate Left Once</h3>
 <p>equivalent to <code>«1</code></p>
 <pre>12345« ≡ 23451</pre>
-<h2 class="verb" id="AF"><code>»</code> (0xAF, <code>'rr</code>)</h2>
-<h3 id="Rotate Right"><code>α»β</code> Rotate Right</h3>
+<h2 class="verb" id="AF"><a class=h href="#AF"></a><code>»</code> (0xAF, <code>'rr</code>)</h2>
+<h3 id="Rotate Right"><a class=h href="#Rotate Right"></a><code>α»β</code> Rotate Right</h3>
 <p>moves the first β elements of the list α to the back. β-pervasive.</p>
 <pre>12345»1 ≡ 51234
 12345»3 ≡ 34512
@@ -2079,137 +2095,137 @@ _2Ñ0 ≡ 0</pre>
 12345»6 ≡ 51234</pre>
 <p>if β is negative, this acts like <a href="#Rotate Left">Rotate Left</a>.</p>
 <pre>12345»_3 ≡ 45123</pre>
-<h3 id="Rotate Right Once"><code>α»</code> Rotate Right Once</h3>
+<h3 id="Rotate Right Once"><a class=h href="#Rotate Right Once"></a><code>α»</code> Rotate Right Once</h3>
 <p>equivalent to <code>»1</code></p>
 <pre>12345» ≡ 51234</pre>
-<h2 class="literal" id="B0"><code>░</code> (0xB0, <code>'l2</code>)</h2>
-<h3 id="Short Literal"><code>░☺☻</code> Short Literal</h3>
+<h2 class="literal" id="B0"><a class=h href="#B0"></a><code>░</code> (0xB0, <code>'l2</code>)</h2>
+<h3 id="Short Literal"><a class=h href="#Short Literal"></a><code>░☺☻</code> Short Literal</h3>
 <p>shorthand for a <a href="#Integer Literal">Integer Literal</a> with 2 digits (the closing <code>■</code> is implied)</p>
-<h2 class="literal" id="B1"><code>▒</code> (0xB1, <code>'l3</code>)</h2>
-<h3 id="Long Literal"><code>▒☺☻♥</code> Long Literal</h3>
+<h2 class="literal" id="B1"><a class=h href="#B1"></a><code>▒</code> (0xB1, <code>'l3</code>)</h2>
+<h3 id="Long Literal"><a class=h href="#Long Literal"></a><code>▒☺☻♥</code> Long Literal</h3>
 <p>shorthand for a <a href="#Integer Literal">Integer Literal</a> with 3 digits (the closing <code>■</code> is implied)</p>
-<h2 class="literal" id="B2"><code>▓</code> (0xB2, <code>'l4 'c2</code>)</h2>
-<h3 id="Digraph Literal"><code>▓ab</code> Digraph Literal</h3>
+<h2 class="literal" id="B2"><a class=h href="#B2"></a><code>▓</code> (0xB2, <code>'l4 'c2</code>)</h2>
+<h3 id="Digraph Literal"><a class=h href="#Digraph Literal"></a><code>▓ab</code> Digraph Literal</h3>
 <p>a 2 character literal.</p>
 <pre>▓() ≡ `(`)
 ▓012 ≡ (`0`1)2</pre>
 <p>see also: <a href="#Character Literal">Character Literal</a></p>
-<h2 class="noun" id="DB"><code>█</code> (0xDB, <code>'N</code>)</h2>
-<h3 id="None"><code>█</code> None</h3>
+<h2 class="noun" id="DB"><a class=h href="#DB"></a><code>█</code> (0xDB, <code>'N</code>)</h2>
+<h3 id="None"><a class=h href="#None"></a><code>█</code> None</h3>
 <p>none, null, nil, NaN. used as a dummy value sometimes.</p>
 <p>see also: <a href="#Is None">Is None</a>, <a href="#Is Some">Is Some</a>, <a href="#Fill Holes">Fill Holes</a>, <a href="#Replace Holes">Replace Holes</a>, <a href="#Filter Holes">Filter Holes</a>, <a href="#Nullify">Nullify</a></p>
-<h2 class="verb" id="DC"><code>▄</code> (0xDC, <code>'hd</code>)</h2>
-<h3 id="Is None"><code>α▄</code> Is None</h3>
+<h2 class="verb" id="DC"><a class=h href="#DC"></a><code>▄</code> (0xDC, <code>'hd</code>)</h2>
+<h3 id="Is None"><a class=h href="#Is None"></a><code>α▄</code> Is None</h3>
 <p>1 if α is none, otherwise 0. scalar.</p>
 <pre>█▄ ≡ 1
 12█456█78▄ ≡ 001000100</pre>
 <p>see also: <a href="#Is Some">Is Some</a></p>
-<h3 id="Denullify"><code>α▄β</code> Denullify</h3>
+<h3 id="Denullify"><a class=h href="#Denullify"></a><code>α▄β</code> Denullify</h3>
 <p>if β is not 0, return <a href="#None">None</a>, otherwise α. scalar.</p>
 <pre>123456789▄010103102 ≡ 1█3█5██8█</pre>
 <p>see also: <a href="#Nullify">Nullify</a></p>
-<h2 class="verb" id="DD"><code>▌</code> (0xDD, <code>'hl</code>)</h2>
-<h3 id="Fill Holes"><code>α▌</code> Fill Holes</h3>
+<h2 class="verb" id="DD"><a class=h href="#DD"></a><code>▌</code> (0xDD, <code>'hl</code>)</h2>
+<h3 id="Fill Holes"><a class=h href="#Fill Holes"></a><code>α▌</code> Fill Holes</h3>
 <p>replace <a href="#None">None</a>s in the list α with its fill.</p>
 <pre>12█456█78▐0▌ ≡ 120456078</pre>
-<h3 id="Replace Holes"><code>α▌β</code> Replace Holes</h3>
+<h3 id="Replace Holes"><a class=h href="#Replace Holes"></a><code>α▌β</code> Replace Holes</h3>
 <p>replace <a href="#None">None</a>s in the list α with β.</p>
 <pre>12█456█78▌0 ≡ 120456078</pre>
-<h2 class="verb" id="DE"><code>▐</code> (0xDE, <code>'hr</code>)</h2>
-<h3 id="Get Fill"><code>α▐</code> Get Fill</h3>
+<h2 class="verb" id="DE"><a class=h href="#DE"></a><code>▐</code> (0xDE, <code>'hr</code>)</h2>
+<h3 id="Get Fill"><a class=h href="#Get Fill"></a><code>α▐</code> Get Fill</h3>
 <p>gets the fill of the list α.</p>
 <pre>123▐ ≡ █</pre>
-<h3 id="Set Fill"><code>α▐β</code> Set Fill</h3>
+<h3 id="Set Fill"><a class=h href="#Set Fill"></a><code>α▐β</code> Set Fill</h3>
 <p>returns the list α with the fill changed.</p>
 <pre>123▐1▐ ≡ 1</pre>
-<h2 class="verb" id="DF"><code>▀</code> (0xDF, <code>'hu</code>)</h2>
-<h3 id="Is Some"><code>α▀</code> Is Some</h3>
+<h2 class="verb" id="DF"><a class=h href="#DF"></a><code>▀</code> (0xDF, <code>'hu</code>)</h2>
+<h3 id="Is Some"><a class=h href="#Is Some"></a><code>α▀</code> Is Some</h3>
 <p>check if α is not null. same as <code>¬▄</code>. scalar.</p>
 <pre>█▀ ≡ 0
 1▀ ≡ 1
 12█456█78▀ ≡ 110111011</pre>
 <p>see also: <a href="#Is None">Is None</a></p>
-<h3 id="Nullify"><code>α▀β</code> Nullify</h3>
+<h3 id="Nullify"><a class=h href="#Nullify"></a><code>α▀β</code> Nullify</h3>
 <p>if β is 0, return <a href="#None">None</a>, otherwise α. scalar.</p>
 <pre>123456789▀010103102 ≡ █2█4█67█9</pre>
 <p>see also: <a href="#Denullify">Denullify</a></p>
-<h2 class="var" id="E0"><code>α</code> (0xE0, <code>'A</code>)</h2>
-<h3 id="Alpha"><code>α</code> Alpha</h3>
+<h2 class="var" id="E0"><a class=h href="#E0"></a><code>α</code> (0xE0, <code>'A</code>)</h2>
+<h3 id="Alpha"><a class=h href="#Alpha"></a><code>α</code> Alpha</h3>
 <p>the left argument. if not in a function definition, the first argument passed in the command line, or <code>δ@0</code></p>
 <pre>"left"{αÇ} ≡ "LEFT"
 "left"{αÇ}"right" ≡ "LEFT"</pre>
-<h2 class="var" id="E1"><code>β</code> (0xE1, <code>'B</code>)</h2>
-<h3 id="Beta"><code>β</code> Beta</h3>
+<h2 class="var" id="E1"><a class=h href="#E1"></a><code>β</code> (0xE1, <code>'B</code>)</h2>
+<h3 id="Beta"><a class=h href="#Beta"></a><code>β</code> Beta</h3>
 <p>the right argument. if not in a function definition, the second argument passed in the command line, or <code>δ@1</code>. if the function was called monadically, this will be <a href="#None">None</a>.</p>
 <pre>"left"{βÇ} ≡ █
 "left"{βÇ}"right" ≡ "RIGHT"</pre>
-<h2 class="noun" id="E2"><code>Γ</code> (0xE2, <code>'g+</code>)</h2>
-<h3 id="Imaginary Constant"><code>Γ</code> Imaginary Constant</h3>
+<h2 class="noun" id="E2"><a class=h href="#E2"></a><code>Γ</code> (0xE2, <code>'g+</code>)</h2>
+<h3 id="Imaginary Constant"><a class=h href="#Imaginary Constant"></a><code>Γ</code> Imaginary Constant</h3>
 <p>the imaginary constant i</p>
 <pre>Γ ≡ Θ√</pre>
-<h3 id="Negative Imaginary Constant"><code>_Γ</code> Negative Imaginary Constant</h3>
+<h3 id="Negative Imaginary Constant"><a class=h href="#Negative Imaginary Constant"></a><code>_Γ</code> Negative Imaginary Constant</h3>
 <p>the complex number -i, or <code>Γ-</code></p>
-<h3 id="Euler–Mascheroni Constant"><code>.Γ</code> Euler–Mascheroni Constant</h3>
+<h3 id="Euler–Mascheroni Constant"><a class=h href="#Euler–Mascheroni Constant"></a><code>.Γ</code> Euler–Mascheroni Constant</h3>
 <p>the number <code>0.5772156649015329</code></p>
-<h2 class="noun" id="E3"><code>π</code> (0xE3, <code>'p- 'pi</code>)</h2>
-<h3 id="Pi"><code>π</code> Pi</h3>
+<h2 class="noun" id="E3"><a class=h href="#E3"></a><code>π</code> (0xE3, <code>'p- 'pi</code>)</h2>
+<h3 id="Pi"><a class=h href="#Pi"></a><code>π</code> Pi</h3>
 <p>archimedes constant, ratio of a semicircle to its radius, or at least the best approximation possible in 64-bit floating point.</p>
 <pre>π ≡ '3.141592653589793</pre>
-<h3 id="Tau"><code>_π</code> Tau</h3>
+<h3 id="Tau"><a class=h href="#Tau"></a><code>_π</code> Tau</h3>
 <p>the number <code>6.283185307179586</code>, or <code>π*2</code></p>
-<h3 id="Pi Halves"><code>.π</code> Pi Halves</h3>
+<h3 id="Pi Halves"><a class=h href="#Pi Halves"></a><code>.π</code> Pi Halves</h3>
 <p>the number <code>1.5707963267948966</code>, or <code>π/2</code></p>
-<h2 class="var" id="E4"><code>Σ</code> (0xE4, <code>'s+</code>)</h2>
-<h3 id="Arity"><code>Σ</code> Arity</h3>
+<h2 class="var" id="E4"><a class=h href="#E4"></a><code>Σ</code> (0xE4, <code>'s+</code>)</h2>
+<h3 id="Arity"><a class=h href="#Arity"></a><code>Σ</code> Arity</h3>
 <p>the number of arguments passed (1 or 2). if not in a function definition, the number of arguments passed in the command-line (<code>δ~</code>, may not be 1 or 2).</p>
-<h2 class="noun" id="E5"><code>σ</code> (0xE5, <code>'s-</code>)</h2>
-<h3 id="Outer Alpha"><code>σ</code> Outer Alpha</h3>
+<h2 class="noun" id="E5"><a class=h href="#E5"></a><code>σ</code> (0xE5, <code>'s-</code>)</h2>
+<h3 id="Outer Alpha"><a class=h href="#Outer Alpha"></a><code>σ</code> Outer Alpha</h3>
 <p>references <code>α</code> from the outer scope. useful for defining adverbs or higher-order functions.</p>
-<h2 class="noun" id="E6"><code>μ</code> (0xE6, <code>'m-</code>)</h2>
-<h3 id="Outer Beta"><code>μ</code> Outer Beta</h3>
+<h2 class="noun" id="E6"><a class=h href="#E6"></a><code>μ</code> (0xE6, <code>'m-</code>)</h2>
+<h3 id="Outer Beta"><a class=h href="#Outer Beta"></a><code>μ</code> Outer Beta</h3>
 <p>references <code>β</code> from the outer scope. useful for defining adverbs or higher-order functions.</p>
-<h2 class="noun" id="EB"><code>δ</code> (0xEB, <code>'d-</code>)</h2>
-<h3 id="Arguments"><code>δ</code> Arguments</h3>
+<h2 class="noun" id="EB"><a class=h href="#EB"></a><code>δ</code> (0xEB, <code>'d-</code>)</h2>
+<h3 id="Arguments"><a class=h href="#Arguments"></a><code>δ</code> Arguments</h3>
 <p>the list of arguments passed in the command line (not including the executable name, flags or the script filename)</p>
-<h2 class="noun" id="E8"><code>Φ</code> (0xE8, <code>'X 'f+</code>)</h2>
-<h3 id="Ten"><code>Φ</code> Ten</h3>
+<h2 class="noun" id="E8"><a class=h href="#E8"></a><code>Φ</code> (0xE8, <code>'X 'f+</code>)</h2>
+<h3 id="Ten"><a class=h href="#Ten"></a><code>Φ</code> Ten</h3>
 <p>the integer 10</p>
 <pre>Φ ≡ '10</pre>
-<h3 id="Minus Ten"><code>_Φ</code> Minus Ten</h3>
+<h3 id="Minus Ten"><a class=h href="#Minus Ten"></a><code>_Φ</code> Minus Ten</h3>
 <p>the integer −10</p>
 <pre>_Φ ≡ '-10</pre>
-<h3 id="Euler's Number"><code>.Φ</code> Euler's Number</h3>
+<h3 id="Euler's Number"><a class=h href="#Euler's Number"></a><code>.Φ</code> Euler's Number</h3>
 <p>the number <code>2.718281828459045</code></p>
-<h2 class="noun" id="E9"><code>Θ</code> (0xE9, <code>'Q 't+</code>)</h2>
-<h3 id="Minus One"><code>Θ</code> Minus One</h3>
+<h2 class="noun" id="E9"><a class=h href="#E9"></a><code>Θ</code> (0xE9, <code>'Q 't+</code>)</h2>
+<h3 id="Minus One"><a class=h href="#Minus One"></a><code>Θ</code> Minus One</h3>
 <p>the number −1</p>
 <pre>Θ ≡ '-1</pre>
-<h2 class="noun" id="EB"><code>δ</code> (0xEB, <code>'d-</code>)</h2>
-<h3 id="Arguments"><code>δ</code> Arguments</h3>
+<h2 class="noun" id="EB"><a class=h href="#EB"></a><code>δ</code> (0xEB, <code>'d-</code>)</h2>
+<h3 id="Arguments"><a class=h href="#Arguments"></a><code>δ</code> Arguments</h3>
 <p>the list of arguments passed in the command line (not including the executable name, flags or the script filename)</p>
-<h2 class="noun" id="EC"><code>∞</code> (0xEC, <code>'if</code>)</h2>
-<h3 id="Infinity"><code>∞</code> Infinity</h3>
+<h2 class="noun" id="EC"><a class=h href="#EC"></a><code>∞</code> (0xEC, <code>'if</code>)</h2>
+<h3 id="Infinity"><a class=h href="#Infinity"></a><code>∞</code> Infinity</h3>
 <p>positive infinity</p>
 <pre>5&lt;∞ ≡ 1</pre>
-<h3 id="Negative Infinity"><code>_∞</code> Negative Infinity</h3>
+<h3 id="Negative Infinity"><a class=h href="#Negative Infinity"></a><code>_∞</code> Negative Infinity</h3>
 <p>negative infinity</p>
 <pre>5>_∞ ≡ 1</pre>
-<h2 class="noun" id="ED"><code>φ</code> (0xED, <code>'Z 'f-</code>)</h2>
-<h3 id="Empty List"><code>φ</code> Empty List</h3>
+<h2 class="noun" id="ED"><a class=h href="#ED"></a><code>φ</code> (0xED, <code>'Z 'f-</code>)</h2>
+<h3 id="Empty List"><a class=h href="#Empty List"></a><code>φ</code> Empty List</h3>
 <p>literal for an empty list with <a href="#None">None</a> fill</p>
 <pre>φ~ ≡ 0</pre>
-<h3 id="Golden Ratio"><code>.φ</code> Golden Ratio</h3>
+<h3 id="Golden Ratio"><a class=h href="#Golden Ratio"></a><code>.φ</code> Golden Ratio</h3>
 <p>the number <code>1.618033988749895</code>, or <code>5√▲½</code></p>
-<h3 id="Golden Ratio"><code>.φ</code> Golden Ratio</h3>
+<h3 id="Golden Ratio"><a class=h href="#Golden Ratio"></a><code>.φ</code> Golden Ratio</h3>
 <p>the number <code>-0.6180339887498949</code>, or <code>5√▼-½</code></p>
-<h2 class="verb" id="EE"><code>ε</code> (0xEE, <code>'in 'e-</code>)</h2>
-<h3 id="Is List"><code>αε</code> Is List</h3>
+<h2 class="verb" id="EE"><a class=h href="#EE"></a><code>ε</code> (0xEE, <code>'in 'e-</code>)</h2>
+<h3 id="Is List"><a class=h href="#Is List"></a><code>αε</code> Is List</h3>
 <p>returns 0 if α is a scalar, otherwise 1</p>
 <pre>4ε ≡ 0
 456ε ≡ 1
 (▲)ε ≡ 1</pre>
 <p>see also: <a href="#Is Scalar">Is Scalar</a></p>
-<h3 id="Includes"><code>αεβ</code> Includes</h3>
+<h3 id="Includes"><a class=h href="#Includes"></a><code>αεβ</code> Includes</h3>
 <p>for every item in the list α, check if it is in β. equivalent to <code>╛(╘≡&#x7C;)</code></p>
 <pre>0123456789ε012073167140 ≡ 1111101100
 1 ε 012073167140 ≡ 1
@@ -2217,71 +2233,71 @@ _2Ñ0 ≡ 0</pre>
 "unauthorized equation"ε"aeiou" ≡ 101100101010010110110
 "unauthorized equation"(ε*'32-)╓+"aeiou" ≡ "UnAUthOrIzEd EqUAtIOn"</pre>
 <p>see also: <a href="#Excludes">Excludes</a></p>
-<h2 class="verb" id="EF"><code>∩</code> (0xEF, <code>'is</code>)</h2>
-<h3 id="Unique"><code>α∩</code> Unique</h3>
+<h2 class="verb" id="EF"><a class=h href="#EF"></a><code>∩</code> (0xEF, <code>'is</code>)</h2>
+<h3 id="Unique"><a class=h href="#Unique"></a><code>α∩</code> Unique</h3>
 <p>remove duplicates from α</p>
 <pre>320110433250∩ ≡ 320145</pre>
-<h3 id="Intersection"><code>α∩β</code> Intersection</h3>
+<h3 id="Intersection"><a class=h href="#Intersection"></a><code>α∩β</code> Intersection</h3>
 <p>return the items in list α that are not in β</p>
 <pre>"hello world i am a vemf test"∩`  ≡ "      "
 "hello world i am a vemf test"∩"aeiou " ≡ "eo o i a a e e"
 "hello world i am a vemf test"∩"aeiou" ≡ "eooiaaee"</pre>
-<h2 class="verb" id="F0"><code>≡</code> (0xF0, <code>'=</code>)</h2>
-<h3 id="Is Not Empty"><code>α≡</code> Is Not Empty</h3>
+<h2 class="verb" id="F0"><a class=h href="#F0"></a><code>≡</code> (0xF0, <code>'=</code>)</h2>
+<h3 id="Is Not Empty"><a class=h href="#Is Not Empty"></a><code>α≡</code> Is Not Empty</h3>
 <p>returns 1 if the length of α is 0, otherwise 0</p>
 <pre>123≡ ≡ 0
 φ≡ ≡ 1</pre>
-<h3 id="Matches"><code>α≡β</code> Matches</h3>
+<h3 id="Matches"><a class=h href="#Matches"></a><code>α≡β</code> Matches</h3>
 <p>returns 1 if the values α and β are equal. functions always return false.</p>
 <pre>123≡123 ≡ 1
 123≡1234 ≡ 0
 (+)≡(+) ≡ 0</pre>
 <p>see also: <a href="#Equals">Equals</a></p>
-<h2 class="verb" id="F1"><code>±</code> (0xF1, <code>'+</code>)</h2>
-<h3 id="Signum"><code>α±</code> Signum</h3>
+<h2 class="verb" id="F1"><a class=h href="#F1"></a><code>±</code> (0xF1, <code>'+</code>)</h2>
+<h3 id="Signum"><a class=h href="#Signum"></a><code>α±</code> Signum</h3>
 <p>returns the signum of α. this is −1 for negative numbers, 1 for positive numbers, and 0 for zero. for complex numbers, this is generalized as <code>α/abs(α)</code> or <code>¢╓/</code></p>
 <pre>5± ≡ 1
 0± ≡ 0
 _3± ≡ Θ
 4í± ≡ Γ
 2í2± ≡ π/4ì</pre>
-<h3 id="Approximately Equal"><code>α±β</code> Approximately Equal</h3>
+<h3 id="Approximately Equal"><a class=h href="#Approximately Equal"></a><code>α±β</code> Approximately Equal</h3>
 <p>checks that the floating point numbers α and β are almost (more-or-less) equal. this is computed as a relative and absolute tolerance of 2 to the power of −32, or roughly <code>{α¢β/(1αβ ¢) ≤ ('32-%) &#x7C;}</code></p>
 <pre>3±3 ≡ 1
 3±'3.0000000001 ≡ 1
 3±'3.001 ≡ 0
 3±4 ≡ 0</pre>
 <p>see also: <a href="#Matches">Matches</a></p>
-<h2 class="verb" id="F2"><code>≥</code> (0xF2, <code>'></code>)</h2>
-<h3 id="Sort Up"><code>α≥</code> Sort Up</h3>
+<h2 class="verb" id="F2"><a class=h href="#F2"></a><code>≥</code> (0xF2, <code>'></code>)</h2>
+<h3 id="Sort Up"><a class=h href="#Sort Up"></a><code>α≥</code> Sort Up</h3>
 <p>sorts the list α in ascending order</p>
 <pre>143042≥ ≡ 012344</pre>
 <p>see also: <a href="#Grade Up">Grade Up</a>, <a href="#Sort Down">Sort Down</a></p>
-<h3 id="Greater Than Or Equal"><code>α≥β</code> Greater Than Or Equal</h3>
+<h3 id="Greater Than Or Equal"><a class=h href="#Greater Than Or Equal"></a><code>α≥β</code> Greater Than Or Equal</h3>
 <p>return 1 if α ≥ b, else 0. scalar.</p>
 <pre>5≥3 ≡ 1
 3≥3 ≡ 1
 3≥5 ≡ 0</pre>
 <p>see also: <a href="#Less Than Or Equal">Less Than Or Equal</a>, <a href="#Greater Than">Greater Than</a></p>
-<h2 class="verb" id="F3"><code>≤</code> (0xF3, <code>'<</code>)</h2>
-<h3 id="Sort Down"><code>α≤</code> Sort Down</h3>
+<h2 class="verb" id="F3"><a class=h href="#F3"></a><code>≤</code> (0xF3, <code>'<</code>)</h2>
+<h3 id="Sort Down"><a class=h href="#Sort Down"></a><code>α≤</code> Sort Down</h3>
 <p>sorts the list α in descending order</p>
 <pre>143042≤ ≡ 443210</pre>
 <p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Up">Sort Up</a></p>
-<h3 id="Less Than Or Equal"><code>α≤β</code> Less Than Or Equal</h3>
+<h3 id="Less Than Or Equal"><a class=h href="#Less Than Or Equal"></a><code>α≤β</code> Less Than Or Equal</h3>
 <p>return 1 if α ≤ b, else 0. scalar.</p>
 <pre>5≤3 ≡ 0
 3≤3 ≡ 1
 3≤5 ≡ 1</pre>
 <p>see also: <a href="#Greater Than Or Equal">Greater Than Or Equal</a>, <a href="#Less Than">Less Than</a></p>
-<h2 class="verb" id="F4"><code>⌠</code> (0xF4, <code>'cl</code>)</h2>
-<h3 id="Ceiling"><code>α⌠</code> Ceiling</h3>
+<h2 class="verb" id="F4"><a class=h href="#F4"></a><code>⌠</code> (0xF4, <code>'cl</code>)</h2>
+<h3 id="Ceiling"><a class=h href="#Ceiling"></a><code>α⌠</code> Ceiling</h3>
 <p>round up α. scalar.</p>
 <pre>'3.1⌠ ≡ 4
 '3.9⌠ ≡ 4
    4⌠ ≡ 4</pre>
 <p>see also: <a href="#Floor">Floor</a>, <a href="#Round">Round</a>, <a href="#Euclidean Division">Euclidean Division</a></p>
-<h3 id="Shift Right"><code>α⌠β</code> Shift Right</h3>
+<h3 id="Shift Right"><a class=h href="#Shift Right"></a><code>α⌠β</code> Shift Right</h3>
 <p>returns a list of the same length as α, with every item shifted to the right by β, using the fill of α to fill the blanks. β-pervasive.</p>
 <pre>12345678⌠3 ≡ ███12345
 87654321▐0⌠5 ≡ 00000876
@@ -2292,14 +2308,14 @@ _3± ≡ Θ
 <p>and if <code>α~≤β</code>, the whole list will be filled:</p>
 <pre>12345678⌠8 ≡ ████████</pre>
 <p>see also: <a href="#Shift Left">Shift Left</a>, <a href="#Rotate Right">Rotate Right</a></p>
-<h2 class="verb" id="F5"><code>⌡</code> (0xF5, <code>'fl</code>)</h2>
-<h3 id="Floor"><code>α⌡</code> Floor</h3>
+<h2 class="verb" id="F5"><a class=h href="#F5"></a><code>⌡</code> (0xF5, <code>'fl</code>)</h2>
+<h3 id="Floor"><a class=h href="#Floor"></a><code>α⌡</code> Floor</h3>
 <p>round down α. scalar.</p>
 <pre>'3.1⌡ ≡ 3
 '3.9⌡ ≡ 3
    4⌡ ≡ 4</pre>
 <p>see also: <a href="#Ceiling">Ceiling</a>, <a href="#Round">Round</a></p>
-<h3 id="Shift Left"><code>α⌡β</code> Shift Left</h3>
+<h3 id="Shift Left"><a class=h href="#Shift Left"></a><code>α⌡β</code> Shift Left</h3>
 <p>returns a list of the same length as α, with every item shifted to the left by β, using the fill of α to fill the blanks. β-pervasive.</p>
 <pre>12345678⌡3 ≡ 45678███
 87654321▐0⌡5 ≡ 32100000
@@ -2310,14 +2326,14 @@ _3± ≡ Θ
 <p>and if <code>α~≤β</code>, the whole list will be filled:</p>
 <pre>12345678⌡8 ≡ ████████</pre>
 <p>see also: <a href="#Shift Right">Shift Right</a>, <a href="#Rotate Left">Rotate Left</a></p>
-<h2 class="verb" id="F6"><code>÷</code> (0xF6, <code>'%</code>)</h2>
-<h3 id="Round"><code>α÷</code> Round</h3>
+<h2 class="verb" id="F6"><a class=h href="#F6"></a><code>÷</code> (0xF6, <code>'%</code>)</h2>
+<h3 id="Round"><a class=h href="#Round"></a><code>α÷</code> Round</h3>
 <p>rounds α to the closest integer. may do round-half-to-even rounding. scalar.</p>
 <pre>'3.1÷ ≡ 3
 '3.9÷ ≡ 4
    4÷ ≡ 4</pre>
 <p>see also: <a href="#Floor">Floor</a>, <a href="#Ceiling">Ceiling</a></p>
-<h3 id="Euclidean Division"><code>α÷β</code> Euclidean Division</h3>
+<h3 id="Euclidean Division"><a class=h href="#Euclidean Division"></a><code>α÷β</code> Euclidean Division</h3>
 <p>calculates the euclidean division of α and β, which will always be an integer. for positive β, this is the same as floor division <code>α/β⌡</code>. for any α and β, <code>β*(α÷β) + (α%β) ≡ α</code>.</p>
 <pre>'345÷Φ ≡ '34
 '345÷'25 ≡ '13
@@ -2326,18 +2342,18 @@ _3± ≡ Θ
 _1÷2 ≡ _1
 _1÷_2 ≡ 1</pre>
 <p>see also: <a href="#Remainder">Remainder</a>, <a href="#Floor">Floor</a>, <a href="#Divide">Divide</a></p>
-<h2 class="verb" id="F7"><code>≈</code> (0xF7, <code>'~</code>)</h2>
-<h3 id="Is Empty"><code>α≈</code> Is Empty</h3>
+<h2 class="verb" id="F7"><a class=h href="#F7"></a><code>≈</code> (0xF7, <code>'~</code>)</h2>
+<h3 id="Is Empty"><a class=h href="#Is Empty"></a><code>α≈</code> Is Empty</h3>
 <p>returns 1 if the length of α is not 0, otherwise 0</p>
 <pre>123≈ ≡ 1
 φ≈ ≡ 0</pre>
-<h3 id="Not Matches"><code>α≈β</code> Not Matches</h3>
+<h3 id="Not Matches"><a class=h href="#Not Matches"></a><code>α≈β</code> Not Matches</h3>
 <p>equivalent to <code>≡¬</code></p>
 <pre>123≈123 ≡ 0
 123≈1234 ≡ 1
 (+)≈(+) ≡ 1</pre>
-<h2 class="verb" id="F8"><code>°</code> (0xF8, <code>'dg</code>)</h2>
-<h3 id="As Degrees"><code>α°</code> As Degrees</h3>
+<h2 class="verb" id="F8"><a class=h href="#F8"></a><code>°</code> (0xF8, <code>'dg</code>)</h2>
+<h3 id="As Degrees"><a class=h href="#As Degrees"></a><code>α°</code> As Degrees</h3>
 <p>converts α degrees to radians. equivalent to <code>*├π/'180</code>. scalar.</p>
 <pre>0° ≡ 0
 '90° ≡ π½
@@ -2345,29 +2361,29 @@ _1÷_2 ≡ 1</pre>
 '270° ≡ 3*π½
 '360° ≡ 2*π
 '69°Å ± '69</pre>
-<h2 class="literal" id="F9"><code>¨</code> (0xF9, <code>'nm</code>)</h2>
-<h3 id="Name"><code>¨name</code> Name</h3>
+<h2 class="literal" id="F9"><a class=h href="#F9"></a><code>¨</code> (0xF9, <code>'nm</code>)</h2>
+<h3 id="Name"><a class=h href="#Name"></a><code>¨name</code> Name</h3>
 <p>the identifier <code>name</code> as a string.</p>
 <pre>¨bee ≡ "bee"
 ¨things¨words¨concepts ≡ "things""words""concepts"</pre>
-<h2 class="stmt" id="FA"><code>·</code> (0xFA, <code>'&</code>)</h2>
-<h3 id="Discard"><code>a·</code> Discard</h3>
+<h2 class="stmt" id="FA"><a class=h href="#FA"></a><code>·</code> (0xFA, <code>'&</code>)</h2>
+<h3 id="Discard"><a class=h href="#Discard"></a><code>a·</code> Discard</h3>
 <p>statement that discards the value <code>a</code> and continues with the function or program.</p>
 <pre>0{4·5·6} ≡ 6</pre>
 <p>see also: <a href="#Return">Return</a></p>
-<h2 class="verb" id="FB"><code>√</code> (0xFB, <code>'V</code>)</h2>
-<h3 id="Square Root"><code>α√</code> Square Root</h3>
+<h2 class="verb" id="FB"><a class=h href="#FB"></a><code>√</code> (0xFB, <code>'V</code>)</h2>
+<h3 id="Square Root"><a class=h href="#Square Root"></a><code>α√</code> Square Root</h3>
 <p>calculate the square root of α. scalar.</p>
 <pre>2√ ≡ '1.4142135623730951
 '1'4'9'16√ ≡ 1234</pre>
-<h3 id="Root"><code>α√β</code> Root</h3>
+<h3 id="Root"><a class=h href="#Root"></a><code>α√β</code> Root</h3>
 <p>calculate the βth root of α. scalar.</p>
 <pre>2√3^3 ≡ 2</pre>
-<h2 class="verb" id="FC"><code>ⁿ</code> (0xFC, <code>'n, 'ft</code>)</h2>
-<h3 id="Format"><code>αⁿ</code> Format</h3>
+<h2 class="verb" id="FC"><a class=h href="#FC"></a><code>ⁿ</code> (0xFC, <code>'n, 'ft</code>)</h2>
+<h3 id="Format"><a class=h href="#Format"></a><code>αⁿ</code> Format</h3>
 <p>format α with default settings</p>
 <pre>123ⁿ ≡ "(1 2 3)"</pre>
-<h3 id="Custom Format"><code>αⁿβ</code> Custom Format</h3>
+<h3 id="Custom Format"><a class=h href="#Custom Format"></a><code>αⁿβ</code> Custom Format</h3>
 <p>when this is called with a right argument, it will be interpreted in the following way:</p>
 <p>- 0: print</p>
 <p>- 1: float</p>
@@ -2379,16 +2395,16 @@ _1÷_2 ≡ 1</pre>
 <p>- 8: left-aligned list of lists</p>
 <p>- 9: right-aligned list of lists</p>
 <p>you can also use multiple of these in a list, like <code>ⁿ74</code> (line-separated list of strings)</p>
-<h2 class="verb" id="FD"><code>²</code> (0xFD, <code>'z, 'sq</code>)</h2>
-<h3 id="Square"><code>α²</code> Square</h3>
+<h2 class="verb" id="FD"><a class=h href="#FD"></a><code>²</code> (0xFD, <code>'z, 'sq</code>)</h2>
+<h3 id="Square"><a class=h href="#Square"></a><code>α²</code> Square</h3>
 <p>equivalent to <code>^2</code>. scalar.</p>
 <pre>4² ≡ '16
 0² ≡ 0</pre>
-<h3 id="Binomial Coefficient"><code>α²β</code> Binomial Coefficient</h3>
+<h3 id="Binomial Coefficient"><a class=h href="#Binomial Coefficient"></a><code>α²β</code> Binomial Coefficient</h3>
 <p>calculate the binomial coefficient <code>α choose β</code>. scalar.</p>
 <pre>4²012345 ≡ 146410</pre>
-<h2 class="literal" id="FE"><code>■</code> (0xFE, <code>'il</code>)</h2>
-<h3 id="Integer Literal"><code>■☺☻♥♦■</code> Integer Literal</h3>
+<h2 class="literal" id="FE"><a class=h href="#FE"></a><code>■</code> (0xFE, <code>'il</code>)</h2>
+<h3 id="Integer Literal"><a class=h href="#Integer Literal"></a><code>■☺☻♥♦■</code> Integer Literal</h3>
 <p>a convenient literal syntax for large integers. characters are read until the next <code>■</code> or end of file, interpreted as their position in the codepage and interpreted in base 253. if this number is even, it represents <code>n½</code>, otherwise, <code>1-n½</code>.</p>
 <p>let's represent the number 123456789. for this, we must encode the number multiplied by 2 (246913578) in base 253, flipping because <a href="#Encode Base">Encode Base</a> uses big endian by default:</p>
 <pre>    '123456789¼é'253♠
@@ -2405,12 +2421,12 @@ _1÷_2 ≡ 1</pre>
 <p>- for −32130 ≤ x ≤ 32131, you can use <a href="#Short Literal">Short Literal</a>s</p>
 <p>- for −8129269 ≤ x ≤ 8129269, you can use <a href="#Long Literal">Long Literal</a>s</p>
 <p>- if your number happens to be in the lowercase ascii list or has a trivial computation, use that</p>
-<h2 class="adverb1" id="B8"><code>╕</code> (0xB8, <code>'|</code>)</h2>
-<h3 id="Each"><code>α╕G</code> Each</h3>
+<h2 class="adverb1" id="B8"><a class=h href="#B8"></a><code>╕</code> (0xB8, <code>'|</code>)</h2>
+<h3 id="Each"><a class=h href="#Each"></a><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
 <pre>123╕▲ ≡ 234
 123╕(,0) ≡ (10)(20)(30)</pre>
-<h3 id="Each"><code>α╕Gβ</code> Each</h3>
+<h3 id="Each"><a class=h href="#Each"></a><code>α╕Gβ</code> Each</h3>
 <p>if both α and β are lists, pair the items up.</p>
 <pre>123╕,456 ≡ (14)(25)(36)</pre>
 <p>if any argument is a scalar, it will be copied in each iteration; equivalently, it is extended to the other argument's shape</p>
@@ -2427,54 +2443,54 @@ _1÷_2 ≡ 1</pre>
 (│01│23)(│45│67)(89) ╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
 (│01│23)(│45│67)(89) ╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
 <p>see also: <a href="#Each Left">Each Left</a>, <a href="#Each Right">Each Right</a>, <a href="#Scalar">Scalar</a></p>
-<h2 class="adverb1" id="D5"><code>╒</code> (0xD5, <code>'co</code>)</h2>
-<h3 id="Constant"><code>╒G</code> Constant</h3>
+<h2 class="adverb1" id="D5"><a class=h href="#D5"></a><code>╒</code> (0xD5, <code>'co</code>)</h2>
+<h3 id="Constant"><a class=h href="#Constant"></a><code>╒G</code> Constant</h3>
 <p>return F</p>
 <pre>1╒23 ≡ 2
 1╒(123)3 ≡ 123
 1╒+2~ ≡ ∞</pre>
-<h2 class="adverb1" id="BE"><code>╛</code> (0xBE, <code>'}</code>)</h2>
-<h3 id="Each Left"><code>α╛Gβ</code> Each Left</h3>
+<h2 class="adverb1" id="BE"><a class=h href="#BE"></a><code>╛</code> (0xBE, <code>'}</code>)</h2>
+<h3 id="Each Left"><a class=h href="#Each Left"></a><code>α╛Gβ</code> Each Left</h3>
 <p>iterates through α, passing β in each iteration</p>
 <pre>123╛♫456 ≡ (1├456)(2├456)(3├456)
 123╛;1 ≡ (11)(12)(13)</pre>
 <p>see also: <a href="#Each Right">Each Right</a></p>
-<h3 id="Each Left"><code>α╛G</code> Each Left</h3>
+<h3 id="Each Left"><a class=h href="#Each Left"></a><code>α╛G</code> Each Left</h3>
 <p>monadically, this is the same as <a href="#Each">Each</a>:</p>
 <pre>123╛; ≡ (11)(22)(33)</pre>
-<h3 id="Extend"><code>α_╛Gβ</code> Extend</h3>
+<h3 id="Extend"><a class=h href="#Extend"></a><code>α_╛Gβ</code> Extend</h3>
 <p>call G to every scalar in α, keeping the list's structure, while passing β in each iteration.</p>
 <pre>(123)(45)6 _╛, 78 ≡ (├178├278├378)(├478├578)├678</pre>
 <p>see also: <a href="#Extend Right">Extend Right</a></p>
-<h3 id="Extend"><code>α_╛G</code> Extend</h3>
+<h3 id="Extend"><a class=h href="#Extend"></a><code>α_╛G</code> Extend</h3>
 <p>monadically, it is the same as <a href="#Scalar">Scalar</a>:</p>
 <pre>(123)(45)6 _╛♫ ≡ (♪1♪2♪3)(♪4♪5)♪6</pre>
-<h2 class="adverb1" id="D4"><code>╘</code> (0xD4, <code>'{</code>)</h2>
-<h3 id="Each Right"><code>α╘Gβ</code> Each Right</h3>
+<h2 class="adverb1" id="D4"><a class=h href="#D4"></a><code>╘</code> (0xD4, <code>'{</code>)</h2>
+<h3 id="Each Right"><a class=h href="#Each Right"></a><code>α╘Gβ</code> Each Right</h3>
 <p>iterates through β, passing α in each iteration</p>
 <pre>123╘♫456 ≡ (├1234)(├1235)(├1236)</pre>
 <p>see also: <a href="#Each Left">Each Left</a></p>
-<h3 id="Each Right"><code>α╘G</code> Each Right</h3>
+<h3 id="Each Right"><a class=h href="#Each Right"></a><code>α╘G</code> Each Right</h3>
 <p>monadically, it acts like <code>┴╘f</code>; iterates through α, passing it in each iteration</p>
 <pre>123╘* ≡ ((123)(246)(369))
 123╘╛, ≡ (│11│21│31)(│12│22│32)(│13│23│33)</pre>
-<h3 id="Extend Right"><code>α_╘Gβ</code> Extend Right</h3>
+<h3 id="Extend Right"><a class=h href="#Extend Right"></a><code>α_╘Gβ</code> Extend Right</h3>
 <p>call G to every scalar in β, keeping the list's structure, while passing α in each iteration.</p>
 <pre>78 _╘, (123)(45)6 ≡ (├781├782├783)(├784├785)├786</pre>
 <p>see also: <a href="#Extend">Extend</a></p>
-<h3 id="Extend"><code>α_╘G</code> Extend</h3>
+<h3 id="Extend"><a class=h href="#Extend"></a><code>α_╘G</code> Extend</h3>
 <p>monadically, this is equivalent to <code>α_╘Gα</code>:</p>
 <pre>(123)4 _╘, ≡ ( (├12341) (├12342) (├12343) ) (├12344)</pre>
-<h2 class="adverb1" id="D1"><code>╤</code> (0xD1, <code>'\</code>)</h2>
-<h3 id="Scan"><code>α╤G</code> Scan</h3>
+<h2 class="adverb1" id="D1"><a class=h href="#D1"></a><code>╤</code> (0xD1, <code>'\</code>)</h2>
+<h3 id="Scan"><a class=h href="#Scan"></a><code>α╤G</code> Scan</h3>
 <p><a href="#Reduce">Reduce</a>, but keeping the intermediate results. the first element will be left unchanged.</p>
 <pre>12345╤+ ≡ '1'3'6'10'15
 12345╤, ≡ 1(12)(123)(1234)(12345)</pre>
-<h3 id="Seeded Scan"><code>α╤Gβ</code> Seeded Scan</h3>
+<h3 id="Seeded Scan"><a class=h href="#Seeded Scan"></a><code>α╤Gβ</code> Seeded Scan</h3>
 <p>give an element to start with.</p>
 <pre>12345╤+1 ≡ '2'4'7'11'16</pre>
-<h2 class="adverb1" id="CF"><code>╧</code> (0xCF, <code>'/</code>)</h2>
-<h3 id="Reduce"><code>α╧G</code> Reduce</h3>
+<h2 class="adverb1" id="CF"><a class=h href="#CF"></a><code>╧</code> (0xCF, <code>'/</code>)</h2>
+<h3 id="Reduce"><a class=h href="#Reduce"></a><code>α╧G</code> Reduce</h3>
 <p>apply a dyadic operation over the elements a list, left to right, progrressively building up a value.</p>
 <p>this can be thought of as inserting the function between every element:</p>
 <pre>12345╧♫ ≡ (((12)3)4)5
@@ -2490,109 +2506,109 @@ _1÷_2 ≡ 1</pre>
 <pre>φ╧+ ≡ █
 ♪8╧+ ≡ 8</pre>
 <p>see also: <a href="#Scan">Scan</a></p>
-<h3 id="Seeded Reduce"><code>α╧Gβ</code> Seeded Reduce</h3>
+<h3 id="Seeded Reduce"><a class=h href="#Seeded Reduce"></a><code>α╧Gβ</code> Seeded Reduce</h3>
 <p>gives an element to start with. <code>α╧fβ</code> is always <code>α⌐β╧f</code>. this also means the empty list will return <code>β</code>; in fact, this is how <a href="#Sum">Sum</a> and <a href="#Product">Product</a> are implemented.</p>
 <pre>12345╧+0 ≡ '15
 φ╧+0 ≡ 0</pre>
-<h2 class="adverb1" id="C1"><code>┴</code> (0xC1, <code>'`</code>)</h2>
-<h3 id="Commute"><code>α┴G</code> Commute</h3>
+<h2 class="adverb1" id="C1"><a class=h href="#C1"></a><code>┴</code> (0xC1, <code>'`</code>)</h2>
+<h3 id="Commute"><a class=h href="#Commute"></a><code>α┴G</code> Commute</h3>
 <p>equivalent to <code>αGα</code></p>
 <pre>5+5 ≡ 5┴+</pre>
-<h3 id="Swap"><code>α┴Gβ</code> Swap</h3>
+<h3 id="Swap"><a class=h href="#Swap"></a><code>α┴Gβ</code> Swap</h3>
 <p>equivalent to <code>βGα</code></p>
 <pre>1/4 ≡ 4┴/1</pre>
-<h2 class="adverb1" id="C2"><code>┬</code> (0xC2, <code>'mo</code>)</h2>
-<h3 id="Monadic"><code>┬G</code> Monadic</h3>
+<h2 class="adverb1" id="C2"><a class=h href="#C2"></a><code>┬</code> (0xC2, <code>'mo</code>)</h2>
+<h3 id="Monadic"><a class=h href="#Monadic"></a><code>┬G</code> Monadic</h3>
 <p>executes G, ignoring the right argument</p>
 <pre>3%   ≡ 8
 3┬%  ≡ 8
 3┬%4 ≡ 8</pre>
-<h2 class="adverb1" id="C5"><code>┼</code> (0xC5, <code>'sc</code>)</h2>
-<h3 id="Scalar"><code>α┼G</code> Scalar</h3>
+<h2 class="adverb1" id="C5"><a class=h href="#C5"></a><code>┼</code> (0xC5, <code>'sc</code>)</h2>
+<h3 id="Scalar"><a class=h href="#Scalar"></a><code>α┼G</code> Scalar</h3>
 <p>call F to every scalar in α, keeping the list's structure. this is similar to <a href="#Each">Each</a> called arbitrarily many times.</p>
 <pre>(│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
 (│01│23)(│45│67)(89) ┼(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
-<h3 id="Scalar"><code>α┼Gβ</code> Scalar</h3>
+<h3 id="Scalar"><a class=h href="#Scalar"></a><code>α┼Gβ</code> Scalar</h3>
 <p>apply a function to every scalar in α and β, following the same rules as <a href="#Each">Each</a>, recursively.</p>
 <pre>0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57)(89Φ)
 (│01│23)(│45│67)(89) ┼, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 123┼,456 ≡ (14)(25)(36)
 123(45)6 ┼, 6789 ≡ (16)(27)(38)(│49│59)</pre>
-<h2 class="adverb1" id="D8"><code>╪</code> (0xD8, <code>'s2</code>)</h2>
-<h3 id="Scan Pairs"><code>α╪G</code> Scan Pairs</h3>
+<h2 class="adverb1" id="D8"><a class=h href="#D8"></a><code>╪</code> (0xD8, <code>'s2</code>)</h2>
+<h3 id="Scan Pairs"><a class=h href="#Scan Pairs"></a><code>α╪G</code> Scan Pairs</h3>
 <p>run F through 2-item pairs of α, passing the left item as the left argument and the right item as the right argument. the first item will be left unchanged.</p>
 <pre>12345 ╪+ ≡ 13579
 23456 ╪+1 ≡ 3579'11</pre>
-<h3 id="Scan Pairs"><code>α╪Gβ</code> Scan Pairs</h3>
+<h3 id="Scan Pairs"><a class=h href="#Scan Pairs"></a><code>α╪Gβ</code> Scan Pairs</h3>
 <p>run F through 2-item pairs of α, passing the left item as the left argument and the right item as the right argument. β will be passed as the left item to the first item of the result.</p>
 <pre>12345 ╪♫ ≡ 1(12)(23)(34)(45)
 12345 ╪♫0 ≡ (01)(12)(23)(34)(45)</pre>
-<h2 class="adverb2" id="CE"><code>╬</code> (0xCE, <code>'vl</code>)</h2>
-<h3 id="Valences"><code>αF╬G</code> Valences</h3>
+<h2 class="adverb2" id="CE"><a class=h href="#CE"></a><code>╬</code> (0xCE, <code>'vl</code>)</h2>
+<h3 id="Valences"><a class=h href="#Valences"></a><code>αF╬G</code> Valences</h3>
 <p>call F.</p>
 <pre>1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ} ≡ "monad 1"
 1█╬►  ≡ █</pre>
-<h3 id="Valences"><code>αF╬Gβ</code> Valences</h3>
+<h3 id="Valences"><a class=h href="#Valences"></a><code>αF╬Gβ</code> Valences</h3>
 <p>call G.</p>
 <pre>1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ}2 ≡ "dyad 1 2"
 1█╬►2 ≡ 2</pre>
-<h2 class="adverb2" id="CB"><code>╦</code> (0xCB, <code>'su</code>)</h2>
-<h3 id="Scan Until"><code>αF╦G</code> Scan Until</h3>
+<h2 class="adverb2" id="CB"><a class=h href="#CB"></a><code>╦</code> (0xCB, <code>'su</code>)</h2>
+<h3 id="Scan Until"><a class=h href="#Scan Until"></a><code>αF╦G</code> Scan Until</h3>
 <p>call a function G repeatedly, returning all the different iterations, until F passes. F is passed the current iteration as α and the last iteration as β.</p>
 <pre>'100(&lt;5)╦½ ≡ '100'50'25'12.5'6.25'3.125</pre>
-<h3 id="Scan Until"><code>αF╦Gβ</code> Scan Until</h3>
+<h3 id="Scan Until"><a class=h href="#Scan Until"></a><code>αF╦Gβ</code> Scan Until</h3>
 <p>bind β to G</p>
-<h3 id="Scan Until Compare"><code>αF_╦G</code> Scan Until Compare</h3>
+<h3 id="Scan Until Compare"><a class=h href="#Scan Until Compare"></a><code>αF_╦G</code> Scan Until Compare</h3>
 <p>call a function G repeatedly, returning all the different iterations, until <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β. <code>=╩</code> (or <code>≡╩</code>) is the fixed-point combinator:</p>
 <pre>1=_╦(/▲) ↑'12 *_f⌡/_f ≡ '1.000'2.000'1.500'1.666'1.600'1.625'1.615'1.619'1.617'1.618'1.617'1.618</pre>
-<h3 id="Scan Until Compare"><code>αF_╦Gβ</code> Scan Until Compare</h3>
+<h3 id="Scan Until Compare"><a class=h href="#Scan Until Compare"></a><code>αF_╦Gβ</code> Scan Until Compare</h3>
 <p>bind β to G</p>
-<h2 class="adverb2" id="CA"><code>╩</code> (0xCA, <code>'U</code>)</h2>
-<h3 id="Until"><code>αF╩G</code> Until</h3>
+<h2 class="adverb2" id="CA"><a class=h href="#CA"></a><code>╩</code> (0xCA, <code>'U</code>)</h2>
+<h3 id="Until"><a class=h href="#Until"></a><code>αF╩G</code> Until</h3>
 <p>call a function G repeatedly, returning the first result where <code>αF</code> passes.</p>
 <pre>'100(&lt;5)╩½ ≡ '3.125
 '100(&lt;1)╩½ ≡ '0.78125</pre>
-<h3 id="Until"><code>αF╩Gβ</code> Until</h3>
+<h3 id="Until"><a class=h href="#Until"></a><code>αF╩Gβ</code> Until</h3>
 <p>bind β to G</p>
-<h3 id="Until Compare"><code>αF_╩G</code> Until Compare</h3>
+<h3 id="Until Compare"><a class=h href="#Until Compare"></a><code>αF_╩G</code> Until Compare</h3>
 <p>call a function G repeatedly, returning the first result where <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β. <code>=╩</code> (or <code>≡╩</code>) is the fixed-point combinator:</p>
 <pre>1=_╩(/▲) ≡ 5√▲½  ' golden ratio</pre>
-<h3 id="Until Compare"><code>αF_╩Gβ</code> Until Compare</h3>
+<h3 id="Until Compare"><a class=h href="#Until Compare"></a><code>αF_╩Gβ</code> Until Compare</h3>
 <p>bind β to G</p>
-<h2 class="adverb2" id="D2"><code>╥</code> (0xD2, <code>'sp</code>)</h2>
-<h3 id="Scan Power"><code>αF╥G</code> Scan Power</h3>
+<h2 class="adverb2" id="D2"><a class=h href="#D2"></a><code>╥</code> (0xD2, <code>'sp</code>)</h2>
+<h3 id="Scan Power"><a class=h href="#Scan Power"></a><code>αF╥G</code> Scan Power</h3>
 <p>call a function G repeatedly, <code>αF</code> times. F will be executed with the arguments. this will return a list of length <code>αf+1</code>, including the original value.</p>
 <pre>'100 7╥½ ≡ '100'50'25'12.5'6.25'3.125'1.5625'0.78125</pre>
-<h3 id="Scan Power"><code>αF╥Gβ</code> Scan Power</h3>
+<h3 id="Scan Power"><a class=h href="#Scan Power"></a><code>αF╥Gβ</code> Scan Power</h3>
 <p>bind β to F and G</p>
-<h2 class="adverb2" id="D0"><code>╨</code> (0xD0, <code>'P</code>)</h2>
-<h3 id="Power"><code>αF╨G</code> Power</h3>
+<h2 class="adverb2" id="D0"><a class=h href="#D0"></a><code>╨</code> (0xD0, <code>'P</code>)</h2>
+<h3 id="Power"><a class=h href="#Power"></a><code>αF╨G</code> Power</h3>
 <p>call a function G repeatedly, <code>αF</code> times. F will be executed with the arguments.</p>
 <pre>'100 7╨½ ≡ '0.78125</pre>
-<h3 id="Power"><code>αF╨Gβ</code> Power</h3>
+<h3 id="Power"><a class=h href="#Power"></a><code>αF╨Gβ</code> Power</h3>
 <p>bind β to F and G</p>
-<h2 class="adverb2" id="D7"><code>╫</code> (0xD7, <code>'wn</code>)</h2>
-<h3 id="Scan Windows"><code>αF╫G</code> Scan Windows</h3>
+<h2 class="adverb2" id="D7"><a class=h href="#D7"></a><code>╫</code> (0xD7, <code>'wn</code>)</h2>
+<h3 id="Scan Windows"><a class=h href="#Scan Windows"></a><code>αF╫G</code> Scan Windows</h3>
 <p>apply a function G to each successive slice ("window") of length <code>αF</code> of the list α.</p>
 <pre>"things" 3╫► ≡ "thi""hin""ing""ngs"
 0123456 3╫+ ≡ 3'6'9'12'15</pre>
 <p>for a searched list of length <code>n</code> and window length <code>k</code>, the number of windows will be <code>n-k+1Ñ0</code> (even for <code>k=0</code>):</p>
 <pre>"thing"0╫► ≡ ()()()()()()</pre>
 <p>see also: <a href="#Scan Pairs">Scan Pairs</a></p>
-<h3 id="Power"><code>αF╫Gβ</code> Power</h3>
+<h3 id="Power"><a class=h href="#Power"></a><code>αF╫Gβ</code> Power</h3>
 <p>bind β to G</p>
-<h2 class="adverb2" id="BB"><code>╗</code> (0xBB, <code>'dr</code>)</h2>
-<h3 id="Drill"><code>αF╗G</code> Drill</h3>
+<h2 class="adverb2" id="BB"><a class=h href="#BB"></a><code>╗</code> (0xBB, <code>'dr</code>)</h2>
+<h3 id="Drill"><a class=h href="#Drill"></a><code>αF╗G</code> Drill</h3>
 <p>return a list <code>α</code> with an item modified. the function G is run on item <code>αF</code>.</p>
 <pre>(123)(456)(789) φ╗▲ ≡ (234)(567)(89Φ)
 (123)(456)(789) 0╗▲ ≡ (234)(456)(789)
 "x../xo./..o"(#`.)╗`x ≡ "xx./xo./..o"</pre>
 <p>if the result of <code>αF</code> is a list, it can modify items deep in a nested list:</p>
 <pre>(123)(456)(789) (12)╗▲ ≡ (123)(457)(789)</pre>
-<h3 id="Drill"><code>αF╗Gβ</code> Drill</h3>
+<h3 id="Drill"><a class=h href="#Drill"></a><code>αF╗Gβ</code> Drill</h3>
 <p>bind β to F</p>
-<h2 class="adverb2" id="C9"><code>╔</code> (0xC9, <code>'am</code>)</h2>
-<h3 id="Amend"><code>αF╔G</code> Amend</h3>
+<h2 class="adverb2" id="C9"><a class=h href="#C9"></a><code>╔</code> (0xC9, <code>'am</code>)</h2>
+<h3 id="Amend"><a class=h href="#Amend"></a><code>αF╔G</code> Amend</h3>
 <p>return a list where the items at indices <code>αF</code> are modified by <code>G</code>.</p>
 <pre>"hello world"(46789)╔Ç ≡ "hellO WORLd"</pre>
 <p>the whole list of the items to be modified is passed to G (<code>α¿(αF)G</code>) and its result is used to replace the items in α. this function is useful for modifying sublists (or substrings) in a list:</p>
@@ -2608,120 +2624,120 @@ _1÷_2 ≡ 1</pre>
 0248Φ(124)╔φ ≡ 08</pre>
 <p>and if the result list from G is longer than <code>αF</code>, the last values will be inserted after the last one:</p>
 <pre>"big brown fox"(4↕9)╔(‼2) ≡ "big bbrroowwnn fox"</pre>
-<h3 id="Amend"><code>αF╔Gβ</code> Amend</h3>
+<h3 id="Amend"><a class=h href="#Amend"></a><code>αF╔Gβ</code> Amend</h3>
 <p>bind β to F and G</p>
-<h2 class="adverb2" id="BD"><code>╜</code> (0xBD, <code>')</code>)</h2>
-<h3 id="At Left"><code>αF╜G</code> At Left</h3>
+<h2 class="adverb2" id="BD"><a class=h href="#BD"></a><code>╜</code> (0xBD, <code>')</code>)</h2>
+<h3 id="At Left"><a class=h href="#At Left"></a><code>αF╜G</code> At Left</h3>
 <p>equivalent to <code>αFG</code>.</p>
-<h3 id="At Left"><code>αF╜Gβ</code> At Left</h3>
+<h3 id="At Left"><a class=h href="#At Left"></a><code>αF╜Gβ</code> At Left</h3>
 <p>equivalent to <code>αFGβ</code>.</p>
-<h3 id="Atop"><code>F_╜G</code> Atop</h3>
+<h3 id="Atop"><a class=h href="#Atop"></a><code>F_╜G</code> Atop</h3>
 <p>adverb form of atop, same as the 2-train <code>FG</code>. <code>αF_╜G</code> is equivalent to <code>αFG</code>, and <code>αF_╜Gβ</code> is equivalent to <code>αFβG</code>. useful when composing functions tacitly.</p>
 <p>see also: <a href="#Trains">Trains</a></p>
-<h2 class="adverb2" id="D3"><code>╙</code> (0xD3, <code>'(</code>)</h2>
-<h3 id="At Right"><code>αF╙G</code> At Right</h3>
+<h2 class="adverb2" id="D3"><a class=h href="#D3"></a><code>╙</code> (0xD3, <code>'(</code>)</h2>
+<h3 id="At Right"><a class=h href="#At Right"></a><code>αF╙G</code> At Right</h3>
 <p>equivalent to <code>aF</code>.</p>
-<h3 id="At Right"><code>αF╙Gβ</code> At Right</h3>
+<h3 id="At Right"><a class=h href="#At Right"></a><code>αF╙Gβ</code> At Right</h3>
 <p>equivalent to <code>αF(βG)</code>.</p>
-<h3 id="Bind"><code>F_╙G</code> Bind</h3>
+<h3 id="Bind"><a class=h href="#Bind"></a><code>F_╙G</code> Bind</h3>
 <p>adverb form of bind, same as the train <code>Gf</code>, where <code>f</code> is F interpreted as a noun, (or rather, <code>.F</code>). note that the arguments are reversed. <code>αF_╙G</code> and <code>αF_╙Gβ</code> are equivalent to <code>αGf</code>; this ignores the second operand. useful when composing functions tacitly.</p>
 <p>see also: <a href="#Trains">Trains</a></p>
-<h2 class="adverb2" id="B7"><code>╖</code> (0xB7, <code>']</code>)</h2>
-<h3 id="On Left"><code>αF╖G</code> On Left</h3>
+<h2 class="adverb2" id="B7"><a class=h href="#B7"></a><code>╖</code> (0xB7, <code>']</code>)</h2>
+<h3 id="On Left"><a class=h href="#On Left"></a><code>αF╖G</code> On Left</h3>
 <p>equivalent to <code>αFGα</code>.</p>
-<h3 id="On Left"><code>αF╖Gβ</code> On Left</h3>
+<h3 id="On Left"><a class=h href="#On Left"></a><code>αF╖Gβ</code> On Left</h3>
 <p>equivalent to <code>αFβGβ</code>.</p>
-<h2 class="adverb2" id="D6"><code>╓</code> (0xD6, <code>'[</code>)</h2>
-<h3 id="On Right"><code>αF╓G</code> On Right</h3>
+<h2 class="adverb2" id="D6"><a class=h href="#D6"></a><code>╓</code> (0xD6, <code>'[</code>)</h2>
+<h3 id="On Right"><a class=h href="#On Right"></a><code>αF╓G</code> On Right</h3>
 <p>equivalent to <code>αF(αG)</code>.</p>
-<h3 id="On Right"><code>αF╓Gβ</code> On Right</h3>
+<h3 id="On Right"><a class=h href="#On Right"></a><code>αF╓Gβ</code> On Right</h3>
 <p>equivalent to <code>αF(αGβ)</code>.</p>
-<h2 class="adverb2" id="BA"><code>║</code> (0xBA, <code>'ov</code>)</h2>
-<h3 id="Over"><code>αF║G</code> Over</h3>
+<h2 class="adverb2" id="BA"><a class=h href="#BA"></a><code>║</code> (0xBA, <code>'ov</code>)</h2>
+<h3 id="Over"><a class=h href="#Over"></a><code>αF║G</code> Over</h3>
 <p>equivalent to <code>αFG</code>.</p>
-<h3 id="Over"><code>αF║Gβ</code> Over</h3>
+<h3 id="Over"><a class=h href="#Over"></a><code>αF║Gβ</code> Over</h3>
 <p>equivalent to <code>αFG(βF)</code>.</p>
-<h2 class="literal" id="C0"><code>└</code> (0xC0, <code>'K</code>)</h2>
-<h3 id="Fork"><code>α└FGH</code> Fork</h3>
+<h2 class="literal" id="C0"><a class=h href="#C0"></a><code>└</code> (0xC0, <code>'K</code>)</h2>
+<h3 id="Fork"><a class=h href="#Fork"></a><code>α└FGH</code> Fork</h3>
 <p>equivalent to <code>αFG(αH)</code>.</p>
-<h3 id="Fork"><code>α└FGHβ</code> Fork</h3>
+<h3 id="Fork"><a class=h href="#Fork"></a><code>α└FGHβ</code> Fork</h3>
 <p>equivalent to <code>αFβG(αHβ)</code>.</p>
-<h2 class="literal" id="C4"><code>─</code> (0xC4, <code>''</code>)</h2>
-<h3 id="Local Statement"><code>a─name</code> Local Statement</h3>
+<h2 class="literal" id="C4"><a class=h href="#C4"></a><code>─</code> (0xC4, <code>''</code>)</h2>
+<h3 id="Local Statement"><a class=h href="#Local Statement"></a><code>a─name</code> Local Statement</h3>
 <p>like <code>→name</code> <a href="#Local">Local</a> but acts as a statement and sets the contents of the body.</p>
 <pre>2─two .two+.two ≡ 4</pre>
 <p>this means that verbs can be set conveniently:</p>
 <pre>+2─add 3:add ≡ 5</pre>
 <p>if there is nothing in the statement body, the variable will be removed from the local scope.</p>
 <pre>4─a0{5─a ─a a} ≡ 4</pre>
-<h2 class="literal" id="CD"><code>═</code> (0xCD, <code>'"</code>)</h2>
-<h3 id="Mutate Statement"><code>a═name</code> Mutate Statement</h3>
+<h2 class="literal" id="CD"><a class=h href="#CD"></a><code>═</code> (0xCD, <code>'"</code>)</h2>
+<h3 id="Mutate Statement"><a class=h href="#Mutate Statement"></a><code>a═name</code> Mutate Statement</h3>
 <p>like <code>↔name</code> <a href="#Mutate">Mutate</a> but acts as a statement and changes the contents of the body.</p>
 <pre>3─n 4─m *2═n n ≡ 6</pre>
 <p>if there is nothing in the statement body, the variable will be removed from its scope.</p>
 <pre>4─a0{═a}·a ≡ █</pre>
-<h2 class="mgroup" id="DA"><code>┌</code> (0xDA, <code>'g1</code>)</h2>
-<h3 id="1-Group"><code>┌m</code> 1-Group</h3>
+<h2 class="mgroup" id="DA"><a class=h href="#DA"></a><code>┌</code> (0xDA, <code>'g1</code>)</h2>
+<h3 id="1-Group"><a class=h href="#1-Group"></a><code>┌m</code> 1-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.┌</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.┌</code> </h3>
 <p>the number <code>1.5</code>, or <code>3/2</code></p>
-<h3 id=""><code>_┌</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>_┌</code> </h3>
 <p>the number <code>-0.5</code>, or <code>Θ½</code></p>
-<h2 class="mgroup" id="B3"><code>│</code> (0xB3, <code>'g2</code>)</h2>
-<h3 id="2-Group"><code>│mn</code> 2-Group</h3>
+<h2 class="mgroup" id="B3"><a class=h href="#B3"></a><code>│</code> (0xB3, <code>'g2</code>)</h2>
+<h3 id="2-Group"><a class=h href="#2-Group"></a><code>│mn</code> 2-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.│</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.│</code> </h3>
 <p>the number <code>0.6666666666666666</code>, or <code>2/3</code></p>
-<h3 id=""><code>_│</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>_│</code> </h3>
 <p>the number <code>1.4142135623730951</code>, or <code>2√</code></p>
-<h2 class="mgroup" id="C3"><code>├</code> (0xC3, <code>'g3</code>)</h2>
-<h3 id="3-Group"><code>├mno</code> 3-Group</h3>
+<h2 class="mgroup" id="C3"><a class=h href="#C3"></a><code>├</code> (0xC3, <code>'g3</code>)</h2>
+<h3 id="3-Group"><a class=h href="#3-Group"></a><code>├mno</code> 3-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.├</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.├</code> </h3>
 <p>the number <code>0.3333333333333333</code>, or <code>1/3</code></p>
-<h3 id=""><code>_├</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>_├</code> </h3>
 <p>the number <code>1.7320508075688772</code>, or <code>3√</code></p>
-<h2 class="mgroup" id="C6"><code>╞</code> (0xC6, <code>'g4</code>)</h2>
-<h3 id="4-Group"><code>╞mnop</code> 4-Group</h3>
+<h2 class="mgroup" id="C6"><a class=h href="#C6"></a><code>╞</code> (0xC6, <code>'g4</code>)</h2>
+<h3 id="4-Group"><a class=h href="#4-Group"></a><code>╞mnop</code> 4-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.╞</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.╞</code> </h3>
 <p>the number <code>0.25</code>, or <code>1/4</code></p>
-<h3 id=""><code>_╞</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>_╞</code> </h3>
 <p>the number <code>420</code></p>
-<h2 class="mgroup" id="C7"><code>╟</code> (0xC7, <code>'g5</code>)</h2>
-<h3 id="5-Group"><code>╟mnopq</code> 5-Group</h3>
+<h2 class="mgroup" id="C7"><a class=h href="#C7"></a><code>╟</code> (0xC7, <code>'g5</code>)</h2>
+<h3 id="5-Group"><a class=h href="#5-Group"></a><code>╟mnopq</code> 5-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.╟</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.╟</code> </h3>
 <p>the number <code>0.75</code>, or <code>3/4</code></p>
-<h3 id=""><code>_╟</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>_╟</code> </h3>
 <p>the number <code>2.23606797749979</code>, <code>5√</code></p>
-<h2 class="mgroup" id="CC"><code>╠</code> (0xCC, <code>'g6</code>)</h2>
-<h3 id="6-Group"><code>╠mnopqr</code> 6-Group</h3>
+<h2 class="mgroup" id="CC"><a class=h href="#CC"></a><code>╠</code> (0xCC, <code>'g6</code>)</h2>
+<h3 id="6-Group"><a class=h href="#6-Group"></a><code>╠mnopqr</code> 6-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.╠</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.╠</code> </h3>
 <p>the number <code>0.16666666666666666</code>, or <code>1/6</code></p>
-<h3 id=""><code>_╠</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>_╠</code> </h3>
 <p>the number <code>360</code></p>
-<h2 class="mgroup" id="B4"><code>┤</code> (0xB4, <code>'g7</code>)</h2>
-<h3 id="7-Group"><code>┤mnopqrs</code> 7-Group</h3>
+<h2 class="mgroup" id="B4"><a class=h href="#B4"></a><code>┤</code> (0xB4, <code>'g7</code>)</h2>
+<h3 id="7-Group"><a class=h href="#7-Group"></a><code>┤mnopqrs</code> 7-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.┤</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.┤</code> </h3>
 <p>the number <code>0.14285714285714285</code>, or <code>1/7</code></p>
-<h3 id=""><code>_┤</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>_┤</code> </h3>
 <p>the number <code>273.15</code></p>
-<h2 class="mgroup" id="B5"><code>╡</code> (0xB5, <code>'g8</code>)</h2>
-<h3 id="8-Group"><code>╡mnopqrst</code> 8-Group</h3>
+<h2 class="mgroup" id="B5"><a class=h href="#B5"></a><code>╡</code> (0xB5, <code>'g8</code>)</h2>
+<h3 id="8-Group"><a class=h href="#8-Group"></a><code>╡mnopqrst</code> 8-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.╡</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.╡</code> </h3>
 <p>the number <code>0.125</code>, or <code>1/8</code></p>
-<h2 class="mgroup" id="B6"><code>╢</code> (0xB6, <code>'g9</code>)</h2>
-<h3 id="9-Group"><code>╢mnopqrstu</code> 9-Group</h3>
+<h2 class="mgroup" id="B6"><a class=h href="#B6"></a><code>╢</code> (0xB6, <code>'g9</code>)</h2>
+<h3 id="9-Group"><a class=h href="#9-Group"></a><code>╢mnopqrstu</code> 9-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.╢</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.╢</code> </h3>
 <p>the number <code>0.1111111111111111</code>, or <code>1/9</code></p>
-<h2 class="mgroup" id="B9"><code>╣</code> (0xB9, <code>'g0</code>)</h2>
-<h3 id="10-Group"><code>╣mnopqrstuv</code> 10-Group</h3>
+<h2 class="mgroup" id="B9"><a class=h href="#B9"></a><code>╣</code> (0xB9, <code>'g0</code>)</h2>
+<h3 id="10-Group"><a class=h href="#10-Group"></a><code>╣mnopqrstuv</code> 10-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
-<h3 id=""><code>.╣</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>.╣</code> </h3>
 <p>the number <code>2.5</code>, or <code>5/2</code></p>
 </main></div></body></html>
