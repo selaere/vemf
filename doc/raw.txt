@@ -300,10 +300,21 @@ transpose a nested list. the shape will be the minimum of the lengths of the ele
 :ascii: 'dm
 :type: verb
 #1 Domain
-get the domain of a list, or list of indices. same as `~↕`.
+get the domain of a list α, or list of indices. same as `~↕`.
 > 1234♣ ≡ 0123
 > φ♣ ≡ φ
 > (123)(456)(789)♣ ≡ 012
+#2 Domain To
+get the indices of the elements of a list α, up to a specified depth β.
+> (123)(456)(789)♣1 ≡ ♪0♪1♪2
+> (123)(456)(789)♣2 ≡ │00│01│02│10│11│12│20│21│22
+for rectangular arrays, this is similar to `α▬β↕`. but if the elements have different lengths or depths, this will be reflected in the result:
+> "yes""no""maybe"♣2 ≡ │00│01│02│10│11│20│21│22│23│24
+> 323"to"(├100├010├001)♣2 ≡ ♪0♪1♪2 │30│31 │40│41│42
+> 323"to"(├100├010├001)♣3 ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422
+if `β=∞`, this basically returns the indices of all the scalars. this can be, in general, a good indicator of the shape of an array
+> 323"to"(├100├010├001)♣∞ ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422
+> 1(2(3(4(5█))))♣∞ ≡ ♪0(10)(110)(1110)(11110)(11111)
 ---
 :char: ♠
 :ascii: 'R

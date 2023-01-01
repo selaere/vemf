@@ -397,3 +397,20 @@ func!(a :uio b => {
         NAN
     }).collect()
 });
+
+func!(a :domainto b => {
+    let mut lis = Vec::new();
+    if let Some(b) = b.try_int() { domain_to(&mut lis, a, b, vec![]) }
+    Val::lis(lis)
+});
+
+fn domain_to(lis: &mut Vec<Val>, a: Val, depth: i64, prefix: Vec<Val>) {
+    if a.is_scalar() || depth == 0 {
+        lis.push(Val::lis(prefix));
+    } else {
+        for (n, i) in a.into_iterf().enumerate() {
+            let p = prefix.iter().cloned().chain(iter::once(Int(n as _))).collect();
+            domain_to(lis, i, depth - 1, p);
+        }
+    }
+}

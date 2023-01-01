@@ -39,6 +39,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
         print, println, output, input, fromutf8, toutf8, fromcp, tocp, exit, format, numfmt, parse,
         takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find, uio,
         reverse, gradeup, gradedown, sortup, sortdown, binsup, binsdown, encode, group, occcount,
+        domainto,
     );
     macro_rules! load_av {($($name:ident,)*) => { $( {
         let mut name = Bstr::from(&b"in"[..]);
