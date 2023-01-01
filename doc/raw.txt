@@ -327,7 +327,7 @@ reverse a list.
 ---
 :char: •
 :ascii: '.
-:type: prefix
+:type: grammar
 #n 1-Adverb
 the variable `name` with 1-adverb role
 > {{αβσμ}}─d 1•d23 ≡ 1 3 2 █
@@ -335,7 +335,7 @@ see also: |Dyadic Adverb|
 ---
 :char: ◘
 :ascii: 'O
-:type: stmt
+:type: statement
 #x◘ Return
 returns x, breaking out of the enclosing function
 > 0{4·5◘6} ≡ 5
@@ -343,14 +343,14 @@ see also: |Discard|, |Then|
 ---
 :char: ○
 :ascii: ',
-:type: prefix
+:type: grammar
 #n 2-Adverb
 the variable `name` with 2-adverb role
 > {{αβσμ}}─d12○d34 ≡ 1 4 3 2
 see also: |Monadic Adverb|
 ---
 :char: ◙
-:type: literal
+:type: whitespace
 #0 Newline
 whitespace
 ---
@@ -596,7 +596,7 @@ set a new local variable with name α to β
 ---
 :char: →
 :ascii: '^
-:type: prefix
+:type: grammar
 #α→name Local
 sets a variable to α in the local scope.
 > 2─two .two+.two ≡ 4
@@ -622,7 +622,7 @@ get the logarithm base β of α. scalar.
 ---
 :char: ↔
 :ascii: '*
-:type: prefix
+:type: grammar
 #α↔name Mutate
 mutate a variable in any scope, by applying a function to it monadically. 
 > '21→n (*2)↔n n ≡ '42
@@ -671,7 +671,7 @@ it runs a binary search. when α is a list sorted in descending order, it finds 
 see also: |Bins Down|
 ---
 :char:  
-:type: literal
+:type: whitespace
 #&nbsp; Space
 whitespace. may change the parsing of some tokens:
 > ¨things  ≡ "things"
@@ -800,7 +800,7 @@ the characters with single character escape sequences are the following:
 all of the characters until the next line break will be ignored.
 ---
 :char: (
-:type: literal
+:type: grammar
 #(x) Opening Parenthesis
 groups multiple words in a single noun. often used to change verb or adverb precedence,
 > 1+2*3 ≡ 9
@@ -819,7 +819,7 @@ an empty parenthesis is the same as |Empty List|
 > () ≡ φ
 ---
 :char: )
-:type: literal
+:type: grammar
 #(x) Closing Parenthesis
 closing counterpart of |Opening Parenthesis|.
 ---
@@ -891,7 +891,7 @@ calculate α − β. scalar
 > 3-0 ≡ 3
 ---
 :char: .
-:type: prefix
+:type: grammar
 #n Noun
 the variable `name` with noun role
 ---
@@ -996,7 +996,7 @@ the integer −9
 the number `0.9`, or `9/Φ`
 ---
 :char: :
-:type: prefix
+:type: grammar
 #n Verb
 the variable `name` with verb role
 ---
@@ -1068,7 +1068,7 @@ return 1 if α > b, else 0. scalar.
 see also: |Less Than|
 ---
 :char: ?
-:type: stmt
+:type: statement
 #x?y Then
 execute statement y if x is not 0 or |Null|. if x is a function, it will be called with α and, if `Σ~1`, β.
 > _3─b b<0?-═b b ≡ 3
@@ -1111,137 +1111,137 @@ in this case, null selects all the items. this can be useful for retrieving colu
 > (123)(456)(789)@█2 ≡ 369
 ---
 :char: A
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→a`.
 ---
 :char: B
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→b`.
 ---
 :char: C
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→c`.
 ---
 :char: D
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→d`.
 ---
 :char: E
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→e`.
 ---
 :char: F
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→f`.
 ---
 :char: G
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→g`.
 ---
 :char: H
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→h`.
 ---
 :char: I
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→i`.
 ---
 :char: J
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→j`.
 ---
 :char: K
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→k`.
 ---
 :char: L
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→l`.
 ---
 :char: M
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→m`.
 ---
 :char: N
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→n`.
 ---
 :char: O
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→o`.
 ---
 :char: P
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→p`.
 ---
 :char: Q
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→q`.
 ---
 :char: R
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→r`.
 ---
 :char: S
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→s`.
 ---
 :char: T
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→t`.
 ---
 :char: U
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→u`.
 ---
 :char: V
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→v`.
 ---
 :char: W
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→w`.
 ---
 :char: X
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→x`.
 ---
 :char: Y
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→y`.
 ---
 :char: Z
-:type: verb_var
+:type: verb_variable
 #12
 general-purpose verb variable. by default, `→z`.
 ---
 :char: [
-:type: literal
+:type: grammar
 #[abc] Start Block
 list of statements that are executed until a |Return| or the end is found, and return that value. similar to a |Define Function|, but it is immediately executed and doesn't have a scope. most useful with `?` |Then|, as it can be used to simulate a ternary operator:
 > 6─a a%3=0?[/3═a "a is now ",(aⁿ] ≡ "a is now 2"
@@ -1258,7 +1258,7 @@ return α without the items in β
 > "hello world i am a vemf test"\¨aeiou ≡ "hll wrld  m  vmf tst"
 ---
 :char: ]
-:type: literal
+:type: grammar
 #[abc] End Block
 closing counterpart of `[` |Start Block|.
 ---
@@ -1274,7 +1274,7 @@ calculate α to the power of β
 > 3^5 ≡ '243
 ---
 :char: _
-:type: literal
+:type: grammar
 #&#x5f;a Alternate
 the underscore is used for accessing variant forms of functions or variables. `_a` is equivalent to `."_a"` or `:"_a"`, depending on `a`
 for numbers (`123456789Φ`), this will be its negative.
@@ -1289,137 +1289,137 @@ the position of `a` in the codepage
 see also: |Digraph Literal|
 ---
 :char: a
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 12
 ---
 :char: b
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 20
 ---
 :char: c
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 99
 ---
 :char: d
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 100
 ---
 :char: e
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 999
 ---
 :char: f
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 1000
 ---
 :char: g
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 9999
 ---
 :char: h
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 10000
 ---
 :char: i
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 100000
 ---
 :char: j
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 1000000
 ---
 :char: k
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 15
 ---
 :char: l
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 16
 ---
 :char: m
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 31
 ---
 :char: n
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 32
 ---
 :char: o
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 63
 ---
 :char: p
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 64
 ---
 :char: q
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 127
 ---
 :char: r
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 128
 ---
 :char: s
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 255
 ---
 :char: t
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 256
 ---
 :char: u
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 512
 ---
 :char: v
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 1024
 ---
 :char: w
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 2048
 ---
 :char: x
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 4096
 ---
 :char: y
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 32768
 ---
 :char: z
-:type: var
+:type: variable
 #0
 a general-purpose variable. by default, 65536
 ---
 :char: {
-:type: literal
+:type: grammar
 #{abc} Define Function
 return a function that executes the statements inside the braces, returning a value and stopping once a |Return| statement is hit. a |Return| statement is implicit at the end of a function. this function will have a role of verb.
 > {"Hello, World!"☻·}─sayhi
@@ -1455,7 +1455,7 @@ for an empty list, this is always 0:
 see also: |Or|, |All|
 ---
 :char: }
-:type: literal
+:type: grammar
 #{abc} End Function
 closing counterpart of |Define Function|.
 ---
@@ -1929,7 +1929,7 @@ get a list of the real and imaginary parts of α. scalar. equivalent to `└ù�
 ---
 :char: ƒ
 :ascii: 'F 'f,
-:type: verb_var
+:type: verb_variable
 #12 Self
 the function being executed. if not in a function definition, undefined. useful for recursive functions.
 > 6{=0?1◘α▼ƒ*α} ≡ '720
@@ -2237,7 +2237,7 @@ see also: |Denullify|
 ---
 :char: α
 :ascii: 'A
-:type: var
+:type: variable
 #0 Alpha
 the left argument. if not in a function definition, the first argument passed in the command line, or `δ@0`
 > "left"{αÇ} ≡ "LEFT"
@@ -2245,7 +2245,7 @@ the left argument. if not in a function definition, the first argument passed in
 ---
 :char: β
 :ascii: 'B
-:type: var
+:type: variable
 #0 Beta
 the right argument. if not in a function definition, the second argument passed in the command line, or `δ@1`. if the function was called monadically, this will be |None|.
 > "left"{βÇ} ≡ █
@@ -2275,7 +2275,7 @@ the number `1.5707963267948966`, or `π/2`
 ---
 :char: Σ
 :ascii: 's+
-:type: var
+:type: variable
 #0 Arity
 the number of arguments passed (1 or 2). if not in a function definition, the number of arguments passed in the command-line (`δ~`, may not be 1 or 2).
 ---
@@ -2340,7 +2340,7 @@ literal for an empty list with |None| fill
 > φ~ ≡ 0
 #.0 Golden Ratio
 the number `1.618033988749895`, or `5√▲½`
-#.0 Golden Ratio
+#_0
 the number `-0.6180339887498949`, or `5√▼-½`
 ---
 :char: ε
@@ -2529,7 +2529,7 @@ the identifier `name` as a string.
 ---
 :char: ·
 :ascii: '&
-:type: stmt
+:type: statement
 #a· Discard
 statement that discards the value `a` and continues with the function or program.
 > 0{4·5·6} ≡ 6
@@ -2599,7 +2599,7 @@ you don't actually need `¤` (0x00) for all integers, zeroes can be replaced by 
 ---
 :char: ╕
 :ascii: '|
-:type: adverb1
+:type: 1-adverb
 #1a1 Each
 call G with each item in α.
 > 123╕▲ ≡ 234
@@ -2624,7 +2624,7 @@ see also: |Each Left|, |Each Right|, |Scalar|
 ---
 :char: ╒
 :ascii: 'co
-:type: adverb1
+:type: 1-adverb
 #a1 Constant
 return F
 > 1╒23 ≡ 2
@@ -2633,7 +2633,7 @@ return F
 ---
 :char: ╛
 :ascii: '}
-:type: adverb1
+:type: 1-adverb
 #2a1 Each Left
 iterates through α, passing β in each iteration
 > 123╛♫456 ≡ (1├456)(2├456)(3├456)
@@ -2652,7 +2652,7 @@ monadically, it is the same as |Scalar|:
 ---
 :char: ╘
 :ascii: '{
-:type: adverb1
+:type: 1-adverb
 #2a1 Each Right
 iterates through β, passing α in each iteration
 > 123╘♫456 ≡ (├1234)(├1235)(├1236)
@@ -2671,7 +2671,7 @@ monadically, this is equivalent to `α_╘Gα`:
 ---
 :char: ╤
 :ascii: '\
-:type: adverb1
+:type: 1-adverb
 #1a1 Scan
 |Reduce|, but keeping the intermediate results. the first element will be left unchanged.
 > 12345╤+ ≡ '1'3'6'10'15
@@ -2682,7 +2682,7 @@ give an element to start with.
 ---
 :char: ╧
 :ascii: '/
-:type: adverb1
+:type: 1-adverb
 #1a1 Reduce
 apply a dyadic operation over the elements a list, left to right, progrressively building up a value.
 this can be thought of as inserting the function between every element:
@@ -2706,7 +2706,7 @@ gives an element to start with. `α╧fβ` is always `α⌐β╧f`. this also me
 ---
 :char: ┴
 :ascii: '`
-:type: adverb1
+:type: 1-adverb
 #1a1 Commute
 equivalent to `αGα`
 > 5+5 ≡ 5┴+
@@ -2716,7 +2716,7 @@ equivalent to `βGα`
 ---
 :char: ┬
 :ascii: 'mo
-:type: adverb1
+:type: 1-adverb
 #a1 Monadic
 executes G, ignoring the right argument
 > 3%   ≡ 8
@@ -2725,7 +2725,7 @@ executes G, ignoring the right argument
 ---
 :char: ┼
 :ascii: 'sc
-:type: adverb1
+:type: 1-adverb
 #1a1 Scalar
 call F to every scalar in α, keeping the list's structure. this is similar to |Each| called arbitrarily many times.
 > (│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
@@ -2739,7 +2739,7 @@ apply a function to every scalar in α and β, following the same rules as |Each
 ---
 :char: ╪
 :ascii: 's2
-:type: adverb1
+:type: 1-adverb
 #1a1 Scan Pairs
 run F through 2-item pairs of α, passing the left item as the left argument and the right item as the right argument. the first item will be left unchanged.
 > 12345 ╪+ ≡ 13579
@@ -2751,7 +2751,7 @@ run F through 2-item pairs of α, passing the left item as the left argument and
 ---
 :char: ╬
 :ascii: 'vl
-:type: adverb2
+:type: 2-adverb
 #1a2 Valences
 call F.
 > 1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ} ≡ "monad 1"
@@ -2763,7 +2763,7 @@ call G.
 ---
 :char: ╦
 :ascii: 'su
-:type: adverb2
+:type: 2-adverb
 #1a2 Scan Until
 call a function G repeatedly, returning all the different iterations, until F passes. F is passed the current iteration as α and the last iteration as β.
 > '100(<5)╦½ ≡ '100'50'25'12.5'6.25'3.125
@@ -2777,7 +2777,7 @@ bind β to G
 ---
 :char: ╩
 :ascii: 'U
-:type: adverb2
+:type: 2-adverb
 #1a2 Until
 call a function G repeatedly, returning the first result where `αF` passes.
 > '100(<5)╩½ ≡ '3.125
@@ -2792,7 +2792,7 @@ bind β to G
 ---
 :char: ╥
 :ascii: 'sp
-:type: adverb2
+:type: 2-adverb
 #1a2 Scan Power
 call a function G repeatedly, `αF` times. F will be executed with the arguments. this will return a list of length `αf+1`, including the original value.
 > '100 7╥½ ≡ '100'50'25'12.5'6.25'3.125'1.5625'0.78125
@@ -2801,7 +2801,7 @@ bind β to F and G
 ---
 :char: ╨
 :ascii: 'P
-:type: adverb2
+:type: 2-adverb
 #1a2 Power
 call a function G repeatedly, `αF` times. F will be executed with the arguments.
 > '100 7╨½ ≡ '0.78125
@@ -2810,7 +2810,7 @@ bind β to F and G
 ---
 :char: ╫
 :ascii: 'wn
-:type: adverb2
+:type: 2-adverb
 #1a2 Scan Windows
 apply a function G to each successive slice ("window") of length `αF` of the list α.
 > "things" 3╫► ≡ "thi""hin""ing""ngs"
@@ -2823,7 +2823,7 @@ bind β to G
 ---
 :char: ╗
 :ascii: 'dr
-:type: adverb2
+:type: 2-adverb
 #1a2 Drill
 return a list `α` with an item modified. the function G is run on item `αF`.
 > (123)(456)(789) φ╗▲ ≡ (234)(567)(89Φ)
@@ -2836,7 +2836,7 @@ bind β to F
 ---
 :char: ╔
 :ascii: 'am
-:type: adverb2
+:type: 2-adverb
 #1a2 Amend
 return a list where the items at indices `αF` are modified by `G`.
 > "hello world"(46789)╔Ç ≡ "hellO WORLd"
@@ -2858,7 +2858,7 @@ bind β to F and G
 ---
 :char: ╜
 :ascii: ')
-:type: adverb2
+:type: 2-adverb
 #1a2 At Left
 equivalent to `αFG`.
 #2a2 At Left
@@ -2869,7 +2869,7 @@ see also: |Trains|
 ---
 :char: ╙
 :ascii: '(
-:type: adverb2
+:type: 2-adverb
 #1a2 At Right
 equivalent to `aF`.
 #2a2 At Right
@@ -2880,7 +2880,7 @@ see also: |Trains|
 ---
 :char: ╖
 :ascii: ']
-:type: adverb2
+:type: 2-adverb
 #1a2 On Left
 equivalent to `αFGα`.
 #2a2 On Left
@@ -2888,7 +2888,7 @@ equivalent to `αFβGβ`.
 ---
 :char: ╓
 :ascii: '[
-:type: adverb2
+:type: 2-adverb
 #1a2 On Right
 equivalent to `αF(αG)`.
 #2a2 On Right
@@ -2896,7 +2896,7 @@ equivalent to `αF(αGβ)`.
 ---
 :char: ║
 :ascii: 'ov
-:type: adverb2
+:type: 2-adverb
 #1a2 Over
 equivalent to `αFG`.
 #2a2 Over
@@ -2904,7 +2904,7 @@ equivalent to `αFG(βF)`.
 ---
 :char: └
 :ascii: 'K
-:type: literal
+:type: grammar
 #α└FGH Fork
 equivalent to `αFG(αH)`.
 #α└FGHβ Fork
@@ -2912,7 +2912,7 @@ equivalent to `αFβG(αHβ)`.
 ---
 :char: ─
 :ascii: ''
-:type: literal
+:type: statement
 #a─name Local Statement
 like `→name` |Local| but acts as a statement and sets the contents of the body.
 > 2─two .two+.two ≡ 4
@@ -2923,7 +2923,7 @@ if there is nothing in the statement body, the variable will be removed from the
 ---
 :char: ═
 :ascii: '"
-:type: literal
+:type: statement
 #a═name Mutate Statement
 like `↔name` |Mutate| but acts as a statement and changes the contents of the body.
 > 3─n 4─m *2═n n ≡ 6
@@ -2932,7 +2932,7 @@ if there is nothing in the statement body, the variable will be removed from its
 ---
 :char: ┌
 :ascii: 'g1
-:type: mgroup
+:type: grouper
 #┌m 1-Group
 see |Groups|
 #.0
@@ -2942,7 +2942,7 @@ the number `-0.5`, or `Θ½`
 ---
 :char: │
 :ascii: 'g2
-:type: mgroup
+:type: grouper
 #│mn 2-Group
 see |Groups|
 #.0
@@ -2952,7 +2952,7 @@ the number `1.4142135623730951`, or `2√`
 ---
 :char: ├
 :ascii: 'g3
-:type: mgroup
+:type: grouper
 #├mno 3-Group
 see |Groups|
 #.0
@@ -2962,7 +2962,7 @@ the number `1.7320508075688772`, or `3√`
 ---
 :char: ╞
 :ascii: 'g4
-:type: mgroup
+:type: grouper
 #╞mnop 4-Group
 see |Groups|
 #.0
@@ -2972,7 +2972,7 @@ the number `420`
 ---
 :char: ╟
 :ascii: 'g5
-:type: mgroup
+:type: grouper
 #╟mnopq 5-Group
 see |Groups|
 #.0
@@ -2982,7 +2982,7 @@ the number `2.23606797749979`, `5√`
 ---
 :char: ╠
 :ascii: 'g6
-:type: mgroup
+:type: grouper
 #╠mnopqr 6-Group
 see |Groups|
 #.0
@@ -2992,7 +2992,7 @@ the number `360`
 ---
 :char: ┤
 :ascii: 'g7
-:type: mgroup
+:type: grouper
 #┤mnopqrs 7-Group
 see |Groups|
 #.0
@@ -3002,7 +3002,7 @@ the number `273.15`
 ---
 :char: ╡
 :ascii: 'g8
-:type: mgroup
+:type: grouper
 #╡mnopqrst 8-Group
 see |Groups|
 #.0
@@ -3010,7 +3010,7 @@ the number `0.125`, or `1/8`
 ---
 :char: ╢
 :ascii: 'g9
-:type: mgroup
+:type: grouper
 #╢mnopqrstu 9-Group
 see |Groups|
 #.0
@@ -3018,7 +3018,7 @@ the number `0.1111111111111111`, or `1/9`
 ---
 :char: ╣
 :ascii: 'g0
-:type: mgroup
+:type: grouper
 #╣mnopqrstuv 10-Group
 see |Groups|
 #.0

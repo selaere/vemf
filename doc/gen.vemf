@@ -14,7 +14,9 @@
     l╕(=":type" &)#¡l♂7─type
     l╕(=":ascii"&)#¡l♂8≈╨(;", <code>","</code>")─ascii
     (c@ê)╗.type═tab
-    "<h2 class=¨",.type,"¨ id=¨",.hex,"¨>",│.heXH,"<code>",(c:esc),"</code> (0x",.hex,.ascii,")</h2>◙"─h    
+    "<h2 class=¨r".type"¨ id=¨".hex"¨>"
+        │.heXH"<code>"(c:esc)"</code> (0x".hex.ascii")<span class=rank>"(.type(~`_)╓▀▌` )"</span>"
+    "</h2>◙",─h
     .title≈? ["<h2 class=prose id=¨",.title,"¨>",│.titlEH,.title,"</h2>◙"─h ¬.title═titles]·
     l╕{
         @=`>? α♂2:esc;"<pre>","</pre>"◘
@@ -38,7 +40,7 @@
         α,Φ,β};h
 }æΦ─body
 
-'256↕ëΦ╗'9689╕{"<td class=¨"(β▌"none")"¨><a href=¨#"│α:fc"¨>"│α:esc"</a></td>",}.tab
+'256↕ëΦ╗'9689╕{"<td class=¨r"(β▌"none")"¨><a href=¨#"│α:fc"¨>"│α:esc"</a></td>",}.tab
 ♥'16╛(æΦ;"<tr>","</tr>")æΦ─nav
 
 "<body><div id=¨all¨><nav><div id=¨wrapper¨><div id=¨fixed¨>◙<h1>vemf docs</h1>◙"
