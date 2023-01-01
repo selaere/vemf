@@ -661,10 +661,21 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 ("one""two")("three""four")♦ ≡ ("one""three")("two""four")</pre>
 <h2 class="verb" id="05"><a class=h href="#05"></a><code>♣</code> (0x05, <code>'dm</code>)</h2>
 <h3 id="Domain"><a class=h href="#Domain"></a><code>α♣</code> Domain</h3>
-<p>get the domain of a list, or list of indices. same as <code>~↕</code>.</p>
+<p>get the domain of a list α, or list of indices. same as <code>~↕</code>.</p>
 <pre>1234♣ ≡ 0123
 φ♣ ≡ φ
 (123)(456)(789)♣ ≡ 012</pre>
+<h3 id="Domain To"><a class=h href="#Domain To"></a><code>α♣β</code> Domain To</h3>
+<p>get the indices of the elements of a list α, up to a specified depth β.</p>
+<pre>(123)(456)(789)♣1 ≡ ♪0♪1♪2
+(123)(456)(789)♣2 ≡ │00│01│02│10│11│12│20│21│22</pre>
+<p>for rectangular arrays, this is similar to <code>α▬β↕</code>. but if the elements have different lengths or depths, this will be reflected in the result:</p>
+<pre>"yes""no""maybe"♣2 ≡ │00│01│02│10│11│20│21│22│23│24
+323"to"(├100├010├001)♣2 ≡ ♪0♪1♪2 │30│31 │40│41│42
+323"to"(├100├010├001)♣3 ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422</pre>
+<p>if <code>β=∞</code>, this basically returns the indices of all the scalars. this can be, in general, a good indicator of the shape of an array</p>
+<pre>323"to"(├100├010├001)♣∞ ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422
+1(2(3(4(5█))))♣∞ ≡ ♪0(10)(110)(1110)(11110)(11111)</pre>
 <h2 class="verb" id="06"><a class=h href="#06"></a><code>♠</code> (0x06, <code>'R</code>)</h2>
 <h3 id="Reverse"><a class=h href="#Reverse"></a><code>α♠</code> Reverse</h3>
 <p>reverse a list.</p>
@@ -2385,15 +2396,15 @@ _1÷_2 ≡ 1</pre>
 <pre>123ⁿ ≡ "(1 2 3)"</pre>
 <h3 id="Custom Format"><a class=h href="#Custom Format"></a><code>αⁿβ</code> Custom Format</h3>
 <p>when this is called with a right argument, it will be interpreted in the following way:</p>
-<p>- 0: print</p>
-<p>- 1: float</p>
-<p>- 2: integer</p>
-<p>- 3: unicode character</p>
-<p>- 4: unicode string</p>
-<p>- 5: codepage string</p>
-<p>- 7: line-separated list</p>
-<p>- 8: left-aligned list of lists</p>
-<p>- 9: right-aligned list of lists</p>
+<ul><li>0: print</li>
+<li>1: float</li>
+<li>2: integer</li>
+<li>3: unicode character</li>
+<li>4: unicode string</li>
+<li>5: codepage string</li>
+<li>7: line-separated list</li>
+<li>8: left-aligned list of lists</li>
+<li>9: right-aligned list of lists</li></ul>
 <p>you can also use multiple of these in a list, like <code>ⁿ74</code> (line-separated list of strings)</p>
 <h2 class="verb" id="FD"><a class=h href="#FD"></a><code>²</code> (0xFD, <code>'z, 'sq</code>)</h2>
 <h3 id="Square"><a class=h href="#Square"></a><code>α²</code> Square</h3>
@@ -2417,10 +2428,10 @@ _1÷_2 ≡ 1</pre>
 <p>you don't actually need <code>¤</code> (0x00) for all integers, zeroes can be replaced by using <code>²</code> (0xFD) and adjusting the previous character:</p>
 <pre>■ab¤c■ ≡ ■aa²c■</pre>
 <p><code>■</code> is mostly useful when using large numbers. for smaller numbers, there are more efficient ways of representing them:</p>
-<p>- for −10 ≤ x ≤ 255, you can use <a href="#Character Literal">Character Literal</a>s</p>
-<p>- for −32130 ≤ x ≤ 32131, you can use <a href="#Short Literal">Short Literal</a>s</p>
-<p>- for −8129269 ≤ x ≤ 8129269, you can use <a href="#Long Literal">Long Literal</a>s</p>
-<p>- if your number happens to be in the lowercase ascii list or has a trivial computation, use that</p>
+<ul><li>for −10 ≤ x ≤ 255, you can use <a href="#Character Literal">Character Literal</a>s</li>
+<li>for −32130 ≤ x ≤ 32131, you can use <a href="#Short Literal">Short Literal</a>s</li>
+<li>for −8129269 ≤ x ≤ 8129269, you can use <a href="#Long Literal">Long Literal</a>s</li>
+<li>if your number happens to be in the lowercase ascii list or has a trivial computation, use that</li></ul>
 <h2 class="adverb1" id="B8"><a class=h href="#B8"></a><code>╕</code> (0xB8, <code>'|</code>)</h2>
 <h3 id="Each"><a class=h href="#Each"></a><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
