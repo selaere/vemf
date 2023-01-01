@@ -141,18 +141,17 @@ impl FromIterator<Val> for Val {
     }
 }
 
-pub fn iiota(prefix: Vec<i64>, arg: &[i64]) -> Val {
+pub fn iiota(prefix: Vec<i64>, arg: &[i64]) -> Vec<Val> {
     if arg.is_empty() {
-        return prefix.into_iter().map(Int).collect()
+        return vec![prefix.into_iter().map(Int).collect()]
     }
     let iter: Box<dyn Iterator<Item=i64>> = if arg[0] > 0 {
         bx(0..arg[0])
     } else {
         bx((0..arg[0].abs()).rev())
     };
-    Val::lis(iter.map(|i| iiota([&prefix[..], &[i]].concat(), &arg[1..])).collect())
+    iter.flat_map(|i| iiota([&prefix[..], &[i]].concat(), &arg[1..])).collect()
 }
-
 
 pub fn iota_scalar(arg: i64) -> Val {
     let iter: Box<dyn Iterator<Item=i64>> = if arg > 0 {
@@ -169,8 +168,8 @@ func!(a :len => match a {
     _ => Val::flt(f64::INFINITY),
 });
 func!(a :iota => match a {
-    Lis{l, ..} => iiota(
-        Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>()),
+    Lis{l, ..} => Val::lis(iiota(
+        Vec::new(), &l.iter().cloned().filter_map(|x| x.try_int()).collect::<Vec<i64>>())),
     Num(n) => if n.is_infinite() {Val::Func(left)} else {iota_scalar(n.re as i64)},
     Int(n) => iota_scalar(n),
     _ => Val::Av(adverb::constant, None, NAN.rc()),

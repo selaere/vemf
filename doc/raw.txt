@@ -432,13 +432,13 @@ this can also be found as |Domain|
 a negative argument flips the output:
 > Φ-↕ ≡ 9876543210
 > "list"─l l~-↕¡l ≡ "tsil"
-when the argument is a list of scalars `i`, the result will be an array of shape `i,(i~)` where the deepest lists are the indices of an array of shape `i`
-> 34↕ ≡ (│00│01│02│03)(│10│11│12│13)(│20│21│22│23)
-> 123↕ ≡ ♪((├000├001├002)(├010├011├012))
+when the argument is a list of scalars, the result will be a nested list that contains the indices of an array of that shape
+> 34↕ ≡ │00│01│02│03│10│11│12│13│20│21│22│23
+> 123↕ ≡ ├000├001├002├010├011├012
 > ♪5↕ ≡ 5↕╕♫
-> 15↕ ≡ 5↕╕;0♫
+> 15↕ ≡ 5↕╕;0
 > 0123↕ ≡ φ
-> φ↕ ≡ φ
+> φ↕ ≡ ♪φ
 #2 Range
 the range is [α, β)
 > 2↕6 ≡ 2345
@@ -533,10 +533,10 @@ when α is a scalar, the output is the range of natural numbers [1, α]; startin
 > 5↨ ≡ 12345
 > Φ↨ ≡ 123456789Φ
 this is really just |Iota| with every item incremented by 1, or `↕▲`.
-the extensions that |Iota| has, like negative numbers and lists as arguments, will also work with Inclusive Iota:
+the extensions that |Iota| has, like negative numbers and lists, will also work with Inclusive Iota:
 > Φ-↨ ≡ Φ987654321
-> 34↨ ≡ (│11│12│13│14)(│21│22│23│24)(│31│32│33│34)
-> 123↨ ≡ ♪((├111├112├113)(├121├122├123))
+> 34↨ ≡ │11│12│13│14│21│22│23│24│31│32│33│34
+> 123↨ ≡ ├111├112├113├121├122├123
 #2 Inclusive Range
 the range used is [α, β]. note that this means the resulting array is of length `β-α+1`.
 > 2↨8 ≡ 2345678
