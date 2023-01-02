@@ -1601,13 +1601,16 @@ _1%_2 ≡ 1</pre>
 "eastern bumblehoneybee"ü2222222211111122222(012)(012)(012) ≡ "bee""bumblebee""eastern honeybee"▐φ</pre>
 <h2 class="rverb" id="82"><a class=h href="#82"></a><code>é</code> (0x82, <code>'e'</code>)<span class=rank>verb</span></h2>
 <h3 id="Bits"><a class=h href="#Bits"></a><code>αé</code> Bits</h3>
-<p>get the internal representation of the integer α in little-endian order. this will be a 64-element list of bits with fill 0. scalar.</p>
-<pre>'3054é ≡ 0111011111010000000000000000000000000000000000000000000000000000▐0</pre>
+<p>get the internal representation of the integer α. this will be a 64-element list of bits with fill 0. scalar.</p>
+<pre>'3054é ≡ 0000000000000000000000000000000000000000000000000000101111101110▐0</pre>
 <h3 id="Encode Base"><a class=h href="#Encode Base"></a><code>αéβ</code> Encode Base</h3>
-<p>encodes the number α into the base β, in little-endian order, into a list of length <code>α∟β▲⌡Ñ1</code>. scalar.</p>
-<pre>'314éΦ ≡ 413▐0
-'314é2 ≡ 010111001▐0
-'16↕é4╛↑2 ≡ (00)(10)(20)(30)(01)(11)(21)(31)(02)(12)(22)(32)(03)(13)(23)(33)</pre>
+<p>encodes the number α into the base β as a list, without any trailing zeros and 0 fill. scalar.</p>
+<pre>'314éΦ ≡ 314▐0
+'1000éΦ ≡ 1000▐0
+'314é2 ≡ 100111010▐0
+0é3 ≡ φ▐0
+'16↕é4╛↓2 ≡ │00│01│02│03│10│11│12│13│20│21│22│23│30│31│32│33</pre>
+<p>see also: <a href="#Represent Base">Represent Base</a>, <a href="#Decode Base">Decode Base</a></p>
 <h2 class="rverb" id="83"><a class=h href="#83"></a><code>â</code> (0x83, <code>'a^</code>)<span class=rank>verb</span></h2>
 <h3 id="Tangent"><a class=h href="#Tangent"></a><code>αâ</code> Tangent</h3>
 <p>calculate <code>tan α</code>. scalar.</p>
@@ -1698,11 +1701,12 @@ _1%_2 ≡ 1</pre>
 <h2 class="rverb" id="8A"><a class=h href="#8A"></a><code>è</code> (0x8A, <code>'e`</code>)<span class=rank>verb</span></h2>
 <h3 id="Decode Base"><a class=h href="#Decode Base"></a><code>αèβ</code> Decode Base</h3>
 <p>converts a list α from positional base β, in little-endian order. β-pervasive.</p>
-<pre>3054èΦ ≡ '4503</pre>
+<pre>3054èΦ ≡ '3054</pre>
+<p>see also: <a href="#Encode Base">Encode Base</a>, <a href="#Parse Base">Parse Base</a></p>
 <h3 id="Decode Binary"><a class=h href="#Decode Binary"></a><code>αè</code> Decode Binary</h3>
 <p>use 2 as the base</p>
-<pre>1010è ≡ 5
-011101111101è2 ≡ '3054</pre>
+<pre>0101è ≡ 5
+101111101110è2 ≡ '3054</pre>
 <h2 class="rverb" id="8B"><a class=h href="#8B"></a><code>ï</code> (0x8B, <code>'i"</code>)<span class=rank>verb</span></h2>
 <h3 id="Arcsine"><a class=h href="#Arcsine"></a><code>αï</code> Arcsine</h3>
 <p>calculate <code>arcsin α</code> or <code>sin⁻¹ α</code>. scalar.</p>
@@ -2011,10 +2015,14 @@ _2Ñ0 ≡ 0</pre>
 <p>see also: <a href="#Parse">Parse</a></p>
 <h3 id="Represent Base"><a class=h href="#Represent Base"></a><code>αªβ</code> Represent Base</h3>
 <p>convert the number α to a string in base β. behaviour unspecified for bases not in [2, 36]. scalar.</p>
-<pre>'3054ª'16 ≡ "bee"
+<pre>'35ª2 ≡ "100011"
+'42ªΦ ≡ "42"
+'3054ª'16 ≡ "bee"
 '14774ª'36 ≡ "bee"
-'42405ª'16 ≡ "a5a5"</pre>
-<p>see also: <a href="#Parse Base">Parse Base</a></p>
+'42405ª'16 ≡ "a5a5"
+'-42405ª'16 ≡ "-a5a5"
+0ª'16 ≡ "0"</pre>
+<p>see also: <a href="#Parse Base">Parse Base</a>, <a href="#Encode Base">Encode Base</a></p>
 <h2 class="rverb" id="A7"><a class=h href="#A7"></a><code>º</code> (0xA7, <code>'o,</code>)<span class=rank>verb</span></h2>
 <h3 id="Parse"><a class=h href="#Parse"></a><code>αº</code> Parse</h3>
 <p>convert the string/character α to a number, or <a href="#None">None</a></p>
@@ -2028,7 +2036,7 @@ _2Ñ0 ≡ 0</pre>
 <pre>"bee"º'16 ≡ '3054
 "bee"º'36 ≡ '14774
 "A5A5"º'16 ≡ '42405</pre>
-<p>see also: <a href="#Represent Base">Represent Base</a></p>
+<p>see also: <a href="#Represent Base">Represent Base</a>, <a href="#Decode Base">Decode Base</a></p>
 <h2 class="rverb" id="A8"><a class=h href="#A8"></a><code>¿</code> (0xA8, <code>'?</code>)<span class=rank>verb</span></h2>
 <h3 id="Diagonal"><a class=h href="#Diagonal"></a><code>α¿</code> Diagonal</h3>
 <p>get the diagonal of length <code>α▬2ñ</code> of a list α</p>

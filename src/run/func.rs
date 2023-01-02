@@ -135,8 +135,8 @@ intfunc!(a :bxor b   => Int(a ^ b));
 intfunc!(a :bnot     => Int(!a));
 intfunc!(a :brepr    => Val::lis_fill(
     a.to_be_bytes()
-        .into_iter().rev()
-        .flat_map(|x| (0..8).map(move |y| Val::bool(x & (1 << y) != 0)))
+        .into_iter()
+        .flat_map(|x| (0..8).rev().map(move |y| Val::bool(x & (1 << y) != 0)))
         .collect(),
     Int(0)
 ));
