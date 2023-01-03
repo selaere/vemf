@@ -1,21 +1,21 @@
 :title: Basics
 expressions in vemf are sequences of Nouns and Verbs. if it helps, when you hear "noun" think "value", and when you hear "verb" think "operator"
-here the verb `+` |Add| is called with a left argument `1` and with a right argument `2`. `1` and `2` are nouns, and `+` is a verb.
+here the verb `+` ||Add|| is called with a left argument `1` and with a right argument `2`. `1` and `2` are nouns, and `+` is a verb.
 > 1+2 ≡ 3
 this is the codeblock format that you will see in the documentation: `a ≡ b` means that `a` and `b`, when evaluated, are equal.
 evaluation is left to right:
 > 1+2*3 ≡ 9
-functions may be called with one argument (monadic) or two (dyadic). here you can see `-` being called as `α-` |Negate| and `α-β` |Subtract|:
+functions may be called with one argument (monadic) or two (dyadic). here you can see `-` being called as `α-` ||Negate|| and `α-β` ||Subtract||:
 > 3-1 ≡ 2
 > 5- ≡ _5
 > 5--3 ≡ _8
 , where `_5` and `_8` are nouns meaning −5 and −8 respectively.
-almost every function has two different variants that do different things. even `+`! monadic `α+` |Sum| adds all the items in a list:
+almost every function has two different variants that do different things. even `+`! monadic `α+` ||Sum|| adds all the items in a list:
 > 123+ ≡ 6
 uh, hm. yes. this is not the number one hundred twenty-three. consecutive nouns (strands) form a list, and `1`, `2`, `3` are nouns. the sum of all of those is 6.
-if you do want the number 123, you can use |Numeric Literal|s by prepending `'`:
+if you do want the number 123, you can use ||Numeric Literal||s by prepending `'`:
 > '123+1 ≡ '124
-or even shorter (and more obscure), we can use a |Character Literal|. `z` is the 123th character in the codepage, so:
+or even shorter (and more obscure), we can use a ||Character Literal||. `z` is the 123th character in the codepage, so:
 > `z+1 ≡ '123
 note that whitespace matters when using numeric literals:
 > '12 34+ ≡ '19
@@ -23,7 +23,7 @@ note that whitespace matters when using numeric literals:
 you may use parentheses to group expressions:
 > 1+(2*3) ≡ 7
 here, `2*3` is another expression that is executed before the outer one, and `(2*3)` is a noun.
-the mathematical operations you are familiar with are here. arithmetic `+-*/`, `^` |Exponent|, `∟` |Logarithm|, and a bunch more.
+the mathematical operations you are familiar with are here. arithmetic `+-*/`, `^` ||Exponent||, `∟` ||Logarithm||, and a bunch more.
 ---
 :title: Lists
 a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting nouns next to eachother:
@@ -39,7 +39,7 @@ the arguments of a list dont have to have the same length or the same type:
 > ((9 8) (1 2 3) (4 5 6 7))
 we can get a list's length with `α~`:
 > 123~ ≡ 3
-strings are lists of characters. a string literal makes a list with all the characters inside the |Quotes|, in vemf's codepage:
+strings are lists of characters. a string literal makes a list with all the characters inside the ||Quotes||, in vemf's codepage:
 > "abc" ≡ '97'98'99
 > "♥♦♣♠" ≡ 3456
 > "Hello, World!"~ ≡ '13
@@ -54,41 +54,41 @@ these rules are applied recursively:
 > (123)(456)(789)+01(323) ≡ (123)(567)('10'10'12)
 we've seen that characters are not a separate type, and they are just their codepoints. subtracting an ascii lowercase letter by 32 makes it uppercase, so we can make a word uppercase by:
 > "screaming"-'32 ≡ "SCREAMING"
-though there's also another function for this, `Ç` |Uppercase|, and it leaves punctuation unchanged:
+though there's also another function for this, `Ç` ||Uppercase||, and it leaves punctuation unchanged:
 > "words words"Ç ≡ "WORDS WORDS"
-see also: |Each|
-an element in a list can be indexed with `α@β` |Index|, where indices start with 0:
+see also: ||Each||
+an element in a list can be indexed with `α@β` ||Index||, where indices start with 0:
 > 2468@2 ≡ 6
 > 2468@0 ≡ 2
 > 2468@ ≡ 2 ' monadic @ is First
 > (123)(456)(789)@2 ≡ 789
 > (123)(456)(789)@21 ≡ 8
-`α,β` |Concatenate|s lists:
+`α,β` ||Concatenate||s lists:
 > 123,456 ≡ 123456
 > 1,234 ≡ 1234
 > (12)(34),56 ≡ (12)(34)56
-and `α♫β` creates a |Pair|:
+and `α♫β` creates a ||Pair||:
 > 123♫456 ≡ (123)(456)
-`α↕` |Iota| returns all the integers from 0 up to α:
+`α↕` ||Iota|| returns all the integers from 0 up to α:
 > 5↕ ≡ 01234
-if you want something more familiar, try `α↨` |Inclusive Iota|:
+if you want something more familiar, try `α↨` ||Inclusive Iota||:
 > 5↨ ≡ 12345
-all lists have a Fill, usually |None|. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:
+all lists have a Fill, usually ||None||. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:
 > 123@3 ≡ █
-the default fill is █ |None|. you can get a list with a fill with `α▐β` |Set Fill|, and query it with `α▐` |Get Fill|.
+the default fill is █ ||None||. you can get a list with a fill with `α▐β` ||Set Fill||, and query it with `α▐` ||Get Fill||.
 > 123▐0@3 ≡ 0
 > 123▐ ≡ █
 > 123▐0▐ ≡ 0
-`α↑β` |Take| takes the first β items, and `α♂β` |Drop| returns everything but the first β items:
+`α↑β` ||Take|| takes the first β items, and `α♂β` ||Drop|| returns everything but the first β items:
 > "javascript"↑4 ≡ "java"
 > "javascript"♂4 ≡ "script"
-`↓` |Take Right| and `♀` |Drop Right| use the last items instead:
+`↓` ||Take Right|| and `♀` ||Drop Right|| use the last items instead:
 > "file.txt"↓4 ≡ ".txt"
 > "file.txt"♀4 ≡ "file"
 these use the fill when they run out:
 > "js"▐` ↑5 ≡ "js   "
 > "js"▐` ↓5 ≡ "   js"
-but `α¶β` |Reshape| starts taking from the start when it runs out of items:
+but `α¶β` ||Reshape|| starts taking from the start when it runs out of items:
 > 123¶9 ≡ 123123123
 > "sal"¶5 ≡ "salsa"
 `↑`, `↓` and `¶` with a list right argument can reshape, or create a nested list with those dimensions:
@@ -111,7 +111,7 @@ a function also often works like an infinite list. it can be indexed and taken f
 > 4 →four 1+2 ≡ 3
 > 4 →four +2 ≡ 6
 and for golfing purposes, the characters `A`..`Z` are set by default to `→a`..`→z`, so you can set variables very conveniently.
-there is another kind of assignment: `─` |Local Statement| (that is a box drawing character, not a minus sign `-`), useful for defining verbs. we'll learn more about statements in the |Blocks| section.
+there is another kind of assignment: `─` ||Local Statement|| (that is a box drawing character, not a minus sign `-`), useful for defining verbs. we'll learn more about statements in the ||Blocks|| section.
 > + ─add 4:add5 ≡ 9
 this example may seem mundane, but statement assignments are very useful with trains.
 ---
@@ -122,7 +122,7 @@ when a verb is the start of an expression, it will result in a derived function,
 > (+1)→inc 4:inc ≡ 5
 > (*2)→dup 4:dup ≡ 8
 > (*2)→dup 4:dup9 ≡ 8
-(note that `inc` and `dup` are equivalent to `α▲` |Bump Up| and `α¼` |Double|)
+(note that `inc` and `dup` are equivalent to `α▲` ||Bump Up|| and `α¼` ||Double||)
 using `─`:
 > +1─inc 4:inc ≡ 5
 > *2─dup 4:dup ≡ 8
@@ -130,7 +130,7 @@ using `─`:
 `FG` is an Atop. it calls F with both arguments, and then calls G atop of that:
 > ↨*─fact 6:fact ≡ '720
 > |¬─nor  0:nor1 ≡ 0
-(note that `fact` and `nor` are equivalent to `α!` |Factorial| (for natural α) and `αöβ` |Nor|)
+(note that `fact` and `nor` are equivalent to `α!` ||Factorial|| (for natural α) and `αöβ` ||Nor||)
 `FGβ` is kind of a mix of the two: it calls F with both arguments, and then calls G atop of that with β as a right argument.
 > +/2─avg  4:avg8 ≡ 6
 > ²*π─area 3:area ≡ 9*π
@@ -149,15 +149,15 @@ but you never actually need to do this! an inlined train will always be shorter:
 trains are mostly useful when defining functions or when used in adverbs.
 ---
 :title: Adverbs
-adverbs are like verbs for verbs. take one of the most basic: |Selfie| `┴G` takes a function `G` and returns a function that applies `G` with the same argument used twice:
+adverbs are like verbs for verbs. take one of the most basic: ||Selfie|| `┴G` takes a function `G` and returns a function that applies `G` with the same argument used twice:
 > 123┴+ ≡ 246
 > 123┴* ≡ 149
 > "bee"┴, ≡ "beebee"
 > "bee"┴♫ ≡ "bee""bee"
-and if |Swap| `┴G` is called with two arguments, it returns a functions that applies `G` with its arguments flipped:
+and if ||Swap|| `┴G` is called with two arguments, it returns a functions that applies `G` with its arguments flipped:
 > 6┴-2 ≡ _4
 > 4┴/1 ≡ 1/4  ' reciprocal
-there are two types of adverbs. 1-adverbs, like `┴G` |Selfie|/|Swap|, take one operand after them, and the whole acts as a verb. 2-adverbs, like `F║G` |Over|, take two operands at both sides. Over applies `G` to each argument, and then `F`:
+there are two types of adverbs. 1-adverbs, like `┴G` ||Selfie||/||Swap||, take one operand after them, and the whole acts as a verb. 2-adverbs, like `F║G` ||Over||, take two operands at both sides. Over applies `G` to each argument, and then `F`:
 > 4²║+5 ≡ 4²+(5²)
 > 4²║▲ ≡ 4²▲  ' same as train (²▲)
 2-adverb precedence is right-to-left.
@@ -170,31 +170,31 @@ adverbs applied to their operands act like verbs, so you can set them just like 
 the built-in adverbs are all box-drawing symbols (though not the other way around). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:
 > 1-adverbs: ╪┼┴┬╧╤╕╒╛╘
 > 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║
-these adverbs have a variety of functions. some of them are |Combinators|, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.
+these adverbs have a variety of functions. some of them are ||Combinators||, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.
 # Iteration
 vemf automatically vectorizes, so often explicit loops are not be necessary, but adverbs can be used to explicitly iterate in a certain way
-`α╕G` |Each| applies G to every item in α:
+`α╕G` ||Each|| applies G to every item in α:
 > (123)(45)(6789)"aaaaaa"╕~ ≡ 3246
-`α╕Gβ` |Each| (dyadic) pairs the items up and applies G to each pair:
+`α╕Gβ` ||Each|| (dyadic) pairs the items up and applies G to each pair:
 > 123╕,456 ≡ (14)(25)(36)
-`α╛Gβ` |Each Left| and `α╘Gβ` |Each Right| iterates through one argument, while passing the other argument:
+`α╛Gβ` ||Each Left|| and `α╘Gβ` ||Each Right|| iterates through one argument, while passing the other argument:
 > 123╛,456 ≡ (1456)(2456)(3456)
 > 123╘,456 ≡ (1234)(1235)(1236)
 using both Each Left and Each Right we get something similar to APL's outer product, or a cartesian product:
 > 123╘╛,456 ≡ ((14)(24)(34))((15)(25)(35))((16)(26)(36))
 > 123╛╘,456 ≡ ((14)(15)(16))((24)(25)(26))((34)(35)(36))
-`α╧G` |Reduce| is like applying G between every element in α: 
+`α╧G` ||Reduce|| is like applying G between every element in α: 
 > 2345╧+ ≡ 2+3+4+5
-this is similar to the monadic use of addition, `α+` |Sum|. in fact, `*` `,` `&` `&#x7c;` `ñ` `Ñ` all act the same way: the monad is the reduction of the dyad.
-`α╤G` |Scan| gives the intermediate results:
+this is similar to the monadic use of addition, `α+` ||Sum||. in fact, `*` `,` `&` `&#x7c;` `ñ` `Ñ` all act the same way: the monad is the reduction of the dyad.
+`α╤G` ||Scan|| gives the intermediate results:
 > 2345╤+ ≡ (2)(2+3)(2+3+4)(2+3+4+5)
 > 00100010011020╤+ ≡ 00111122234466
-`αF╨G` |Power| calls G, `αF` times (note that `14` is not a strand, `4` is an operand of the 2-operator)
+`αF╨G` ||Power|| calls G, `αF` times (note that `14` is not a strand, `4` is an operand of the 2-operator)
 > 14╨┴♫ ≡ ( ((11)(11)) ((11)(11)) )( ((11)(11)) ((11)(11)) )
 this is also useful for applying a function conditionally:
 > ' if length is 3, uppercase (`Ç`)
 > "and""a""big""bee""started""approaching"╕(~=3)╨Ç ≡ "AND""a""BIG""BEE""started""approaching"
-`αF╩G` |Until| calls G until `αF` returns not 0.
+`αF╩G` ||Until|| calls G until `αF` returns not 0.
 # Combinators
 combinators call their operands in different ways. they are one of the main ways functions are defined; combinators are the "glue" that joins different functions.
 vemf has a lot of different combinators! here's a summary:
@@ -207,16 +207,16 @@ vemf has a lot of different combinators! here's a summary:
 > onleft   +╖/ : α+/α   , α+β/β
 > onright  +╓/ : α/(α+) , α/(α+β)
 > fork    └+/* : α+/(α*), α+β/(α*β)
-there is also a ""3-adverb"", the `└FGH` |Fork|. it works a little differently, and is ocassionally useful. for instance, the average (mean) of a list is the sum divided by the length:
+there is also a ""3-adverb"", the `└FGH` ||Fork||. it works a little differently, and is ocassionally useful. for instance, the average (mean) of a list is the sum divided by the length:
 > 12345└+/~ ≡ 3
 the formula for triangular numbers is n(n+1)/2. we can do the first part as a fork:
 > 6└◄*▲ ≡ '42
-and the halving with `½` |Half|:
+and the halving with `½` ||Half||:
 > 6└◄*▲½ ≡ '21
 the `½` is applied atop the result of the fork, so as a single function this is an atop:
 > 6┌(└◄*▲½) ≡ '21
 note that we need the `┌` for it to be interpreted as a function. note also that the fork is only the first three functions `◄*▲`, and the `½` is not part of the fork.
-as a general rule of thumb, when there is a `◄` or `►` in a fork, it can be represented with one of the other combinators. here we can use `αF╓G` |On Right|, which evaluates to `αG(αF)` (i read it as G, with F evaluated on the right)
+as a general rule of thumb, when there is a `◄` or `►` in a fork, it can be represented with one of the other combinators. here we can use `αF╓G` ||On Right||, which evaluates to `αG(αF)` (i read it as G, with F evaluated on the right)
 > 6┌(▲╓*½) ≡ '21
 we can set our function to a variable and use it.
 > ▲╓*½─triang 6:triang ≡ '21
@@ -253,7 +253,7 @@ TODO
 #1 Print
 print α to standard output
 > "Hello, "☺·"World!◙"☺
-see also: |Print Line|
+see also: ||Print Line||
 #2 Print
 print α to standard output, and return β
 > "Hello, "☺"World!◙"☺
@@ -264,7 +264,7 @@ print α to standard output, and return β
 #1 Print Line
 print α to standard output, with a training newline (0x0A)
 > "Hello, World!"☻
-see also: |Print|, |Write|
+see also: ||Print||, ||Write||
 #2 Print Line
 print α and return β
 > "Calculating the square root of two..."☻2√ ≡ '1.4142135623730951
@@ -280,7 +280,7 @@ split α into pairs, using the fill of α if a pair isn't full. equivalent to `�
 > 123456789▐1♥ ≡ (12)(34)(56)(78)(91)
 > "things"♥ ≡ "th""in""gs"
 #2 Chunks
-split α into β-sized chunks, using the fill of α if a group isn't full. for scalar β, this is the same as `α↑█β` (see |Take|):
+split α into β-sized chunks, using the fill of α if a group isn't full. for scalar β, this is the same as `α↑█β` (see ||Take||):
 > 123456789♥3 ≡ (123)(456)(789)
 > 123456789♥4 ≡ (1234)(5678)(9███)
 > 123456789▐0♥4 ≡ (1234)(5678)(9000)
@@ -331,7 +331,7 @@ reverse a list.
 #n 1-Adverb
 the variable `name` with 1-adverb role
 > {{αβσμ}}─d 1•d23 ≡ 1 3 2 █
-see also: |Dyadic Adverb|
+see also: ||Dyadic Adverb||
 ---
 :char: ◘
 :ascii: 'O
@@ -339,7 +339,7 @@ see also: |Dyadic Adverb|
 #x◘ Return
 returns x, breaking out of the enclosing function
 > 0{4·5◘6} ≡ 5
-see also: |Discard|, |Then|
+see also: ||Discard||, ||Then||
 ---
 :char: ○
 :ascii: ',
@@ -347,7 +347,7 @@ see also: |Discard|, |Then|
 #n 2-Adverb
 the variable `name` with 2-adverb role
 > {{αβσμ}}─d12○d34 ≡ 1 4 3 2
-see also: |Monadic Adverb|
+see also: ||Monadic Adverb||
 ---
 :char: ◙
 :type: whitespace
@@ -358,7 +358,7 @@ whitespace
 :ascii: 'E
 :type: verb
 #2 Drop
-return the list α, with β elements removed from the left. β-pervasive. if β is negative, `β¢` elements are removed from the right instead (see |Drop Right|). if β is equal or greater than the length, all elements are removed; an empty list is returned.
+return the list α, with β elements removed from the left. β-pervasive. if β is negative, `β¢` elements are removed from the right instead (see ||Drop Right||). if β is equal or greater than the length, all elements are removed; an empty list is returned.
 > "testing"♂3 ≡ "ting"
 > "testing"♂_3 ≡ "test"
 > "testing"♂9 ≡ φ
@@ -370,7 +370,7 @@ drop 1 element from the left
 :ascii: 'D
 :type: verb
 #2 Drop Right
-returns the list α, with β elements removed from the right. β-pervasive. if β is negative, `β¢` elements are removed from the left instead (see |Drop Left|). if β is equal or greater than the length, all elements are removed; an empty list is returned.
+returns the list α, with β elements removed from the right. β-pervasive. if β is negative, `β¢` elements are removed from the left instead (see ||Drop Left||). if β is equal or greater than the length, all elements are removed; an empty list is returned.
 > "testing"♀3 ≡ "test"
 > "testing"♀_3 ≡ "ting"
 > "testing"♀9 ≡ φ
@@ -394,7 +394,7 @@ for a verb F, interpret it as a noun
 > 1♫ ≡ ♪1
 > 1♫♫♫ ≡ ♪♪♪1
 #2 Pair
-create a list with the elements α and β. this is equivalent to `{αβ}`. for scalar arguments, this is the same as |Concatenate|
+create a list with the elements α and β. this is equivalent to `{αβ}`. for scalar arguments, this is the same as ||Concatenate||
 > 1♫2 ≡ 12
 > 1♫2♫3♫4 ≡ ((12)3)4
 > 12♫34 ≡ (12)(34)
@@ -423,12 +423,12 @@ returns α
 :ascii: 'I
 :type: verb
 #1 Iota
-when α is a scalar, the output is the range of natural numbers [0, α); starting by 0, excluding α (see |Inclusive Iota|).
+when α is a scalar, the output is the range of natural numbers [0, α); starting by 0, excluding α (see ||Inclusive Iota||).
 > 5↕ ≡ 01234
 > Φ↕ ≡ 0123456789
 therefore, `l~↕` is a list of the indices of the list `l` (vemf is 0-indexed), and
 > "list"─l l~↕¡l ≡ l
-this can also be found as |Domain|
+this can also be found as ||Domain||
 a negative argument flips the output:
 > Φ-↕ ≡ 9876543210
 > "list"─l l~-↕¡l ≡ "tsil"
@@ -465,7 +465,7 @@ if β is longer than α, remaining elements are ignored; if α is longer than β
 Replicate also works with nested lists in β, and it flattens the structure:
 > (123)(456)7‼(123)(210)3 ≡ 122333445777
 #1 Indices
-replicate the |Domain| of α (`♣╖‼`). for a boolean list α, this finds the indices of the ones.
+replicate the ||Domain|| of α (`♣╖‼`). for a boolean list α, this finds the indices of the ones.
 > 011010110010‼ ≡ 12467'10
 > 10203401‼ ≡ 02244455557
 ---
@@ -476,7 +476,7 @@ replicate the |Domain| of α (`♣╖‼`). for a boolean list α, this finds th
 Ravel flattens all nested lists in α, yielding a list of all the scalars:
 > ((01)23)(45(67))(8♪9)¶ ≡ Φ↕
 > ♪♪♪♪123¶ ≡ 123
-see also: |Flatten|
+see also: ||Flatten||
 #2 Reshape
 make a new list with a prefix shape of β, where the elements are taken from α in order. it truncates if α is longer than the elements needed (`β*`), and repeats cyclically through the list if α is shorter
 > 6↕¶55 ≡ (01234)(50123)(45012)(34501)(23450)
@@ -485,11 +485,11 @@ make a new list with a prefix shape of β, where the elements are taken from α 
 > '24↕¶234 ≡ ( ('0'1'2'3)('4'5'6'7)('8'9'10'11) )( ('12'13'14'15)('16'17'18'19)('20'21'22'23) )
 > .►¶33 ≡ (012)(345)(678)
 > "testing"¶'21 ≡ "testingtestingtesting"
-|Take| is similar to |Reshape|, but it does not repeat elements, using the fill instead.
-when there is a single |None| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-|None| elements of β and the length of α, or `β▀*/(α~)⌠`)
+||Take|| is similar to ||Reshape||, but it does not repeat elements, using the fill instead.
+when there is a single ||None|| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-||None|| elements of β and the length of α, or `β▀*/(α~)⌠`)
 > "testing"¶2█ ≡ "test""ingt"
 > "testing"¶█2 ≡ "te""st""in""gt"
-see also: |Take|, |Take Right|, |Cycle|
+see also: ||Take||, ||Take Right||, ||Cycle||
 ---
 :char: §
 :ascii: 'ss
@@ -516,7 +516,7 @@ get the shape of α, that is, the maximum length for each dimension. the output 
 > (123)(456)(789)▬ ≡ 33▐1
 > (1234)(5678)(9012)▬ ≡ 34▐1
 > (123)(5678)(90)▬ ≡ 34▐1
-see also: |Length|, |Depth|
+see also: ||Length||, ||Depth||
 #2 Shape Up To
 get only up to a specified depth, without fill.
 > (1234)((56)(78))(90)▬  ≡ 342▐1
@@ -532,8 +532,8 @@ get only up to a specified depth, without fill.
 when α is a scalar, the output is the range of natural numbers [1, α]; starting by 1, including α.
 > 5↨ ≡ 12345
 > Φ↨ ≡ 123456789Φ
-this is really just |Iota| with every item incremented by 1, or `↕▲`.
-the extensions that |Iota| has, like negative numbers and lists, will also work with Inclusive Iota:
+this is really just ||Iota|| with every item incremented by 1, or `↕▲`.
+the extensions that ||Iota|| has, like negative numbers and lists, will also work with Inclusive Iota:
 > Φ-↨ ≡ Φ987654321
 > 34↨ ≡ │11│12│13│14│21│22│23│24│31│32│33│34
 > 123↨ ≡ ├111├112├113├121├122├123
@@ -551,19 +551,19 @@ make a new list with a prefix shape of β, where the elements are taken from α 
 > .►↑33 ≡ (012)(345)(678)
 > "testing"▐` ↑'21 ≡ "testing              "
 > "testing"↑3 ≡ "tes"
-|Reshape|, is similar, but it cycles through the array instead of using the fill.
-when there is a single |None| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-|None| elements of β and the length of α, or `β▀*/(α~)⌠`)
+||Reshape||, is similar, but it cycles through the array instead of using the fill.
+when there is a single ||None|| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-||None|| elements of β and the length of α, or `β▀*/(α~)⌠`)
 > "testing"▐`_↑2█ ≡ "test""ing_"
 > "testing"▐`_↑█2 ≡ "te""st""in""g_"
 > "testing"▐`_↑█3 ≡ "tes""tin""g__"
-these last cases can be replaced by |Chunks| or |Pairs|:
+these last cases can be replaced by ||Chunks|| or ||Pairs||:
 > "testing"▐`_♥3 ≡ "tes""tin""g__"
 > "testing"▐`_♥ ≡ "te""st""in""g_"
-see also: |Reshape|, |Take Right|, |Drop|
+see also: ||Reshape||, ||Take Right||, ||Drop||
 #1 Prefixes
-get the prefixes of the list α; take for every item in `β♣▲` (without the empty list, but with the unmodified argument: you can remove it with |Behead|.)
+get the prefixes of the list α; take for every item in `β♣▲` (without the empty list, but with the unmodified argument: you can remove it with ||Behead||.)
 > "testing"↑ ≡ "t" "te" "tes" "test" "testi" "testin" "testing"
-see also: |Suffixes|
+see also: ||Suffixes||
 ---
 :char: ↓
 :ascii: 'S
@@ -572,16 +572,16 @@ see also: |Suffixes|
 make a new list with a prefix shape of β, where the elements are taken from α in reverse order. this truncates if α is longer than the elements needed (`β*`), and uses the fill of α if α is shorter.
 > 9↕↓55 ≡ (█████)(█████)(█████)(█0123)(45678)
 > 9↕↓23 ≡ (345)(678)
-when there is a single |None| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-|None| elements of β and the length of α, or `β▀*/(α~)⌠`)
+when there is a single ||None|| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-||None|| elements of β and the length of α, or `β▀*/(α~)⌠`)
 > "testing"↓3 ≡ "ing"
 > "testing"▐` ↓'21 ≡ "              testing"
 > "testing"▐`_↓2█ ≡ "_tes""ting"
 > "testing"▐`_↓█2 ≡ "_t""es""ti""ng"
-see also: |Take|, |Reshape|
+see also: ||Take||, ||Reshape||
 #1 Suffixes
-get the suffixes of the list α; take for every item in `β♣▲` (without the empty list, but with the unmodified argument: you can remove it with |Curtail|.)
+get the suffixes of the list α; take for every item in `β♣▲` (without the empty list, but with the unmodified argument: you can remove it with ||Curtail||.)
 > "testing"↓ ≡ "g" "ng" "ing" "ting" "sting" "esting" "testing"
-see also: |Prefixes|
+see also: ||Prefixes||
 ---
 :char: ←
 :ascii: 'vr
@@ -603,9 +603,9 @@ sets a variable to α in the local scope.
 #α→nameβ Local
 sets a variable to α in the local scope and returns β.
 > 1→a2→b3→c a+b+c ≡ 6
-this function, along with |Mutate|, are special verbs in that if they are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:
+this function, along with ||Mutate||, are special verbs in that if they are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:
 > 1→a 2→b (ab)+ ≡ 3
-see also: |Local Statement|
+see also: ||Local Statement||
 ---
 :char: ∟
 :ascii: 'L
@@ -626,16 +626,16 @@ get the logarithm base β of α. scalar.
 #α↔name Mutate
 mutate a variable in any scope, by applying a function to it monadically. 
 > '21→n (*2)↔n n ≡ '42
-if α is a verb, it is more useful to use this as a statement (see |Mutate Statement|)
+if α is a verb, it is more useful to use this as a statement (see ||Mutate Statement||)
 > '21─n *2═n n ≡ '42
 this means the verb has to be its standalone statement. this might not work like you might expect it to:
 > 3→n 4→m *2═n n ≡ 8
-because the body of the statement includes the |Local|s, which are syntactically just like verbs:
+because the body of the statement includes the ||Local||s, which are syntactically just like verbs:
 > (3→n4→m*2)═n n ≡ 8  ' 3→n4→m*2 returns 8
 > 3─n 4─m *2═n n ≡ 6  ' but this works
 #α↔nameβ Mutate
 mutate a variable and return β
-see also: |Mutate Statement|
+see also: ||Mutate Statement||
 ---
 :char: ▲
 :ascii: 'bu
@@ -645,12 +645,12 @@ increments the number by 1. equivalent to `+1`. scalar.
 > 2▲ ≡ 3
 > 0▲▲▲▲▲▲ ≡ 6
 > 123▲ ≡ 234
-see also: |Bump Down|, |Add|
+see also: ||Bump Down||, ||Add||
 #2 Bins Up
 it runs a binary search. when α is a list sorted in ascending order, it finds the position of the first element in α that is less than or equal to β. you can also think of the list α as intervals of shape [x, y)
 > 0259▲6 ≡ 3
 > 0259▲Θ0123456789Φ ≡ 011222333344
-see also: |Bins Up|
+see also: ||Bins Up||
 ---
 :char: ▼
 :ascii: 'bd
@@ -660,7 +660,7 @@ decrements the number by 1. equivalent to `-1`. scalar.
 > 3▼ ≡ 2
 > 0▼▼▼▼▼▼ ≡ _6
 > 123▼ ≡ 012
-see also: |Bump Up|, |Subtract|
+see also: ||Bump Up||, ||Subtract||
 #2 Bins Down
 it runs a binary search. when α is a list sorted in descending order, it finds the position of the first element in α that is greater than or equal to β.
 > '18'13'8▼'20 ≡ 0
@@ -668,7 +668,7 @@ it runs a binary search. when α is a list sorted in descending order, it finds 
 > '18'13'8▼'15 ≡ 1
 > '18'13'8▼'12 ≡ 2
 > '18'13'8▼'2 ≡ 3
-see also: |Bins Down|
+see also: ||Bins Down||
 ---
 :char:  
 :type: whitespace
@@ -701,7 +701,7 @@ number of β-permutations in α items. also known as the falling factorial, desc
 :char: "
 :type: literal
 #"abcd" Quotes
-string literal; every character until the next `"` will be put into a list with |None| fill
+string literal; every character until the next `"` will be put into a list with ||None|| fill
 > "" ≡ φ
 > "a" ≡ ♪`a
 > "abc" ≡ `a`b`c
@@ -714,13 +714,13 @@ with some special characters used specially: `¨` stands for `"` (0x22) and `·`
 :char: #
 :type: verb
 #1 First True
-find the first non-0 value and return its index, or else |None|.
+find the first non-0 value and return its index, or else ||None||.
 > 10101010# ≡ 0
 > 0001010# ≡ 3
 > 00002010# ≡ 4
 > 0000000# ≡ █
 #2 Index Of
-find the first exact match in the list and return its index, or else |None|. β-pervasive.
+find the first exact match in the list and return its index, or else ||None||. β-pervasive.
 > "hello"#`l ≡ 2
 > "abcdefghijklmnopqrs"#"beeimpostor" ≡ '1'4'4'8'12'15'14'18█'14'17
 > 012073167140#0123456789 ≡ 0125Φ█74██
@@ -728,7 +728,7 @@ find the first exact match in the list and return its index, or else |None|. β-
 :char: $
 :type: verb
 #1 Call with None
-calls the function α with |None| as an argument
+calls the function α with ||None|| as an argument
 > .♫$ ≡ ♪█
 #2 Call
 calls the function α with `β@0` and `β@1` (only if `β~ ≥ 2`) as arguments.
@@ -767,7 +767,7 @@ compute boolean AND of α and β. return 1 if both α and β are nonzero, otherw
 > 1&0 ≡ 0
 > 1&1 ≡ 1
 > 2&2 ≡ 1
-see also: |Or|, |Maximum|
+see also: ||Or||, ||Maximum||
 #1 All
 return 1 if all the items in α are non-zero. equivalent to `╧&1`
 > 0110101010& ≡ 0
@@ -775,7 +775,7 @@ return 1 if all the items in α are non-zero. equivalent to `╧&1`
 > 1273981913& ≡ 1
 for an empty list, this is always 1:
 > φ& ≡ 1
-see also: |And|, |Any|
+see also: ||And||, ||Any||
 ---
 :char: '
 :type: literal
@@ -812,16 +812,16 @@ often, you won't need to close a parenthesis, like in the end of a file or a sta
 > 1+(2*3─seven .seven*2 ≡ '14
 parentheses can be thought of having less precedence than braces `{}`
 > '15{"number ",(αª} ≡ "number 15"
-if there arent many words inside the parenthesis, |Grouping| may be used instead
+if there arent many words inside the parenthesis, ||Grouping|| may be used instead
 > ├123├456├789@0 ≡ 123
 > 001334│û¬╓‼ ≡ 0134
-an empty parenthesis is the same as |Empty List|
+an empty parenthesis is the same as ||Empty List||
 > () ≡ φ
 ---
 :char: )
 :type: grammar
 #(x) Closing Parenthesis
-closing counterpart of |Opening Parenthesis|.
+closing counterpart of ||Opening Parenthesis||.
 ---
 :char: *
 :type: verb
@@ -839,7 +839,7 @@ multiply all the items in α. equivalent to `╧*`.
 > (123)(456)(789)** ≡ '362880  ' 9!
 the empty product is the multiplicative identity, 1.
 > φ* ≡ 1
-see also: |Reduce|, |Sum|
+see also: ||Reduce||, ||Sum||
 ---
 :char: +
 :type: verb
@@ -855,15 +855,15 @@ add all the items in α. equivalent to `╧+`.
 > (123)(456)(789)++ ≡ '45
 the empty sum is the additive identity, 0.
 > φ+ ≡ 0
-see also: |Reduce|, |Product|
+see also: ||Reduce||, ||Product||
 ---
 :char: ,
 :type: verb
 #1 Flatten
-same as |Reduce| |Concatenate| `╧,`. this removes one level of nesting in α.
+same as ||Reduce|| ||Concatenate|| `╧,`. this removes one level of nesting in α.
 > ¨foo¨bar¨bash, ≡ "foobarbash"
 > ¨foo¨bar¨bash, ≡ "foobarbash"
-see also: |Reshape|
+see also: ||Reshape||
 #2 Concatenate
 concatenate the two lists α and β
 > 123,456 ≡ 123456
@@ -873,7 +873,7 @@ a scalar argument is used as a 1-argument list:
 > 12,3 ≡ 123
 > 1,23 ≡ 123
 > 1,2,3 ≡ 123
-see also: |Pair|, |Append|, |Prepend|
+see also: ||Pair||, ||Append||, ||Prepend||
 ---
 :char: -
 :type: verb
@@ -1019,13 +1019,13 @@ Grade Down can be used for sorting. it returns a permutation, or list of indices
 > 37625<¡37625 ≡ 76532
 > 37625<╖¡ ≡ 76532  ' more tacit
 this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.
-see also: |Grade Up|, |Sort Down|
+see also: ||Grade Up||, ||Sort Down||
 #2 Less Than
 return 1 if α < b, else 0. scalar.
 > 5<3 ≡ 0
 > 3<3 ≡ 0
 > 3<5 ≡ 1
-see also: |Less Than|
+see also: ||Less Than||
 ---
 :char: =
 :type: verb
@@ -1040,7 +1040,7 @@ get the depth of the deepest element in α. same as `▬~`
 > (1234)(5678)(9012)= ≡ 2
 > (123)(5678)(90)= ≡ 2
 > (1234)((56)(78))(90)= ≡ 3
-see also: |Shape|
+see also: ||Shape||
 #2 Equals
 return 1 if α = β, else 0. scalar.
 > 5=3 ≡ 0
@@ -1059,21 +1059,21 @@ Grade Up can be used for sorting. it returns a permutation, or list of indices, 
 > 37625>¡37625 ≡ 23567
 > 37625>╖¡ ≡ 23567  ' more tacit
 this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.
-see also: |Grade Down|, |Sort Up|
+see also: ||Grade Down||, ||Sort Up||
 #2 Greater Than
 return 1 if α > b, else 0. scalar.
 > 5>3 ≡ 1
 > 3>3 ≡ 0
 > 3>5 ≡ 0
-see also: |Less Than|
+see also: ||Less Than||
 ---
 :char: ?
 :type: statement
 #x?y Then
-execute statement y if x is not 0 or |Null|. if x is a function, it will be called with α and, if `Σ~1`, β.
+execute statement y if x is not 0 or ||Null||. if x is a function, it will be called with α and, if `Σ~1`, β.
 > _3─b b<0?-═b b ≡ 3
 >  5─b b<0?-═b b ≡ 5
-|Return| may be used for short-circuiting. this is the same as your familiar ternary statement.
+||Return|| may be used for short-circuiting. this is the same as your familiar ternary statement.
 > _3{<0?α-◘α} ≡ 3
 >  5{<0?α-◘α} ≡ 5
 > 5─a[a<0?a-◘a] ≡ 5
@@ -1243,14 +1243,14 @@ general-purpose verb variable. by default, `→z`.
 :char: [
 :type: grammar
 #[abc] Start Block
-list of statements that are executed until a |Return| or the end is found, and return that value. similar to a |Define Function|, but it is immediately executed and doesn't have a scope. most useful with `?` |Then|, as it can be used to simulate a ternary operator:
+list of statements that are executed until a ||Return|| or the end is found, and return that value. similar to a ||Define Function||, but it is immediately executed and doesn't have a scope. most useful with `?` ||Then||, as it can be used to simulate a ternary operator:
 > 6─a a%3=0?[/3═a "a is now ",(aⁿ] ≡ "a is now 2"
 > [1+1=2?"yay"◘"oh no"]Ç ≡ "YAY"
 ---
 :char: \
 :type: verb
 #1 Filter Holes
-remove |None|s in the list α.
+remove ||None||s in the list α.
 > █12█345██67█89\ ≡ 123456789
 #2 Set Difference
 return α without the items in β
@@ -1260,7 +1260,7 @@ return α without the items in β
 :char: ]
 :type: grammar
 #[abc] End Block
-closing counterpart of `[` |Start Block|.
+closing counterpart of `[` ||Start Block||.
 ---
 :char: ^
 :type: verb
@@ -1286,7 +1286,7 @@ the position of `a` in the codepage
 > `a ≡ '97
 > `b ≡ '98
 > `⌡ ≡ '245
-see also: |Digraph Literal|
+see also: ||Digraph Literal||
 ---
 :char: a
 :type: variable
@@ -1421,16 +1421,16 @@ a general-purpose variable. by default, 65536
 :char: {
 :type: grammar
 #{abc} Define Function
-return a function that executes the statements inside the braces, returning a value and stopping once a |Return| statement is hit. a |Return| statement is implicit at the end of a function. this function will have a role of verb.
+return a function that executes the statements inside the braces, returning a value and stopping once a ||Return|| statement is hit. a ||Return|| statement is implicit at the end of a function. this function will have a role of verb.
 > {"Hello, World!"☻·}─sayhi
 > {6á▲◘}─roll 0:roll ?≡ 4
 > {6á▲}─roll 0:roll ?≡ 4
-some variables are set when calling a function: `α` |Alpha| is set to the left argument, `β` |Beta| is set to the right argument or |None| if not given, `ƒ` |Self| to the function being called, and `Σ` |Arity| to the number of arguments passed.
+some variables are set when calling a function: `α` ||Alpha|| is set to the left argument, `β` ||Beta|| is set to the right argument or ||None|| if not given, `ƒ` ||Self|| to the function being called, and `Σ` ||Arity|| to the number of arguments passed.
 > {α+β/2}─avg 3:avg7 ≡ 5
 the inside of a function creates a scope, and any variables created inside the scope will not be visible once the function returns.
 when a function is created, all of the variables that it references as a value will be captured (lexical scope). this capture is immutable; if you change the value of a capture, it will only be changed in that function's scope.
 > 123─l{l,α═l}─append 4:append· l ≡ 123
-there are two ways of changing this, both equivalent: not reference the value (as |Mutate Statement| can take a function), or delete the capture. then it will look for an `l` in the caller scope (dynamic scope); the variable you reference must be in scope and there must not be any other variable with the same name in the same scope.
+there are two ways of changing this, both equivalent: not reference the value (as ||Mutate Statement|| can take a function), or delete the capture. then it will look for an `l` in the caller scope (dynamic scope); the variable you reference must be in scope and there must not be any other variable with the same name in the same scope.
 > 123─l{,α═l}─append 4:append· l ≡ 1234
 > 123─l{─l l,α═l}─append 4:append· l ≡ 1234
 > 123─l{,α═l}─append 0{"things"─l 4:append· l} ≡ "things♦"  ' oops!
@@ -1444,7 +1444,7 @@ compute boolean OR of α and β; return 1 if one of α and β are nonzero, other
 > 0|1 ≡ 1
 > 1|0 ≡ 1
 > 1|1 ≡ 1
-see also: |And|, |Minimum|
+see also: ||And||, ||Minimum||
 #1 Any
 return 1 if any item in α is nonzero. equivalent to `╧&#x7C;0`
 > 10101011101| ≡ 1
@@ -1452,12 +1452,12 @@ return 1 if any item in α is nonzero. equivalent to `╧&#x7C;0`
 > 00000000000| ≡ 0
 for an empty list, this is always 0:
 > φ| ≡ 0
-see also: |Or|, |All|
+see also: ||Or||, ||All||
 ---
 :char: }
 :type: grammar
 #{abc} End Function
-closing counterpart of |Define Function|.
+closing counterpart of ||Define Function||.
 ---
 :char: ~
 :type: verb
@@ -1466,16 +1466,16 @@ get the length of α. equivalent to `▬@`.
 > 1111~ ≡ 4
 > (12)(34)(56)~ ≡ 3
 > φ~ ≡ 0
-scalars have a length of 1, and functions have a length of |Infinity|.
+scalars have a length of 1, and functions have a length of ||Infinity||.
 > 3~ ≡ 1
 > .►~ ≡ ∞
-see also: |Shape|, |Depth|
+see also: ||Shape||, ||Depth||
 #2 Not Equals
 same as `=¬`. scalar.
 > 5~3 ≡ 1
 > 3~3 ≡ 0
 > 3~5 ≡ 1
-see also: |Equals|
+see also: ||Equals||
 ---
 :char: ⌂
 :ascii: 'ex
@@ -1502,7 +1502,7 @@ returns α, changing the sign of the imaginary part
 > Θí4ü ≡ 1í4
 > 2ü ≡ 2
 #2 Group
-pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the |Empty List|. if β is |None|, the element will be ignored.
+pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the ||Empty List||. if β is ||None||, the element will be ignored.
 > "vemf programming language"ü0000█11111112222█33333333 ≡ "vemf""program""ming""language"▐φ
 > 123456789ü012012012 ≡ (147)(258)(369)▐φ
 > "bee bumblebee honeybee"ü000φ111111000φ11111000 ≡ "beebeebee""bumblehoney"▐φ
@@ -1521,7 +1521,7 @@ encodes the number α into the base β as a list, without any trailing zeros and
 > '314é2 ≡ 100111010▐0
 > 0é3 ≡ φ▐0
 > '16↕é4╛↓2 ≡ │00│01│02│03│10│11│12│13│20│21│22│23│30│31│32│33
-see also: |Represent Base|, |Decode Base|
+see also: ||Represent Base||, ||Decode Base||
 ---
 :char: â
 :ascii: 'a^
@@ -1581,7 +1581,7 @@ pick a random element in α
 pick β elements from α, putting them in a list. β-pervasive.
 > "pick"å3 ?≡ "ikk"
 > "pick"åΦ ?≡ "ikcipckikc"
-these might repeat; see |Sample|
+these might repeat; see ||Sample||
 ---
 :char: ç
 :ascii: 'c,
@@ -1598,14 +1598,14 @@ return α, lowercasing it if in the range 'A'..'Z'. scalar.
 :ascii: 'e^
 :type: verb
 #1 Encode Codepage
-convert unicode codepoint α into the vemf codepage, or |None| if not possible. scalar.
+convert unicode codepoint α into the vemf codepage, or ||None|| if not possible. scalar.
 > '8226'9829'9786'402`eê ≡ "•♥☺ƒe"
 #2 Encode
 represent α in the radix system β in big-endian order. α-pervasive. we can use this, for example, for converting to hours, minutes, and seconds:
 >   '4000ê'24'60'60 ≡ '0'1'6'40
 >   '3200ê'24'60'60 ≡ '0'0'53'20
 > '140000ê'24'60'60 ≡ '1'14'53'20
-note that the result has one more item than β for the remainder. you can remove it with |Behead| if you want
+note that the result has one more item than β for the remainder. you can remove it with ||Behead|| if you want
 > '12345êΦΦΦΦΦΦ♂ ≡ 012345
 > '1234567êΦΦΦΦΦΦ♂ ≡ 234567
 encode is also useful as a divmod
@@ -1619,10 +1619,10 @@ represent a string as a UTF-8 list of bytes, converting invalid values to � U+
 :ascii: 'e"
 :type: verb
 #1 Decode Codepage
-convert characters from vemf codepage into unicode, or |None| if not possible. scalar.
+convert characters from vemf codepage into unicode, or ||None|| if not possible. scalar.
 > "•♥☺ƒe"ë ≡ '8226'9829'9786'402`e
 #2 Decode
-decode α from the radix system β in big-endian order. this is an inverse of |Encode|
+decode α from the radix system β in big-endian order. this is an inverse of ||Encode||
 > 0'1'6'40ë'24'60'60 ≡ '4000
 > '1'6'40ë'24'60'60 ≡ '4000
 > '12'3.45ë'10 ± '123.45
@@ -1637,7 +1637,7 @@ converts a list of bytes into a string, converting invalid sequences to � U+FF
 #2 Decode Base
 converts a list α from positional base β, in little-endian order. β-pervasive.
 > 3054èΦ ≡ '3054
-see also: |Encode Base|, |Parse Base|
+see also: ||Encode Base||, ||Parse Base||
 #1 Decode Binary
 use 2 as the base
 > 0101è ≡ 5
@@ -1730,14 +1730,14 @@ returns 1 if α is a scalar, otherwise 0. equivalent to `ε¬`
 > 4É ≡ 1
 > 456É ≡ 0
 > (▲)É ≡ 0
-see also: |Is List|
+see also: ||Is List||
 #2 Excludes
 for every item in the list α, check if it is not in β. equivalent to `ε¬`
 > 0123456789É012073167140 ≡ 0000010011
 > 1 É 012073167140 ≡ 0
 > 5 É 012073167140 ≡ 1
 > "unauthorized equation"É"aeiou" ≡ 010011010101101001001
-see also: |Includes|
+see also: ||Includes||
 ---
 :char: æ
 :ascii: 'ae
@@ -1817,7 +1817,7 @@ therefore, `û¬` detects if an element is the first in the array:
 > 320110433250û¬ ≡ 111100100010
 > 320110433250(û¬)╓‼ ≡ 320145  ' same as α∩
 #2 Unique Index Of
-for every element in β, find the index of the first unused match in α, or |None|.
+for every element in β, find the index of the first unused match in α, or ||None||.
 > 22235 û 223357 ≡ 013█4█
 > 3333 û 3323 ≡ 01█2
 ---
@@ -1847,13 +1847,13 @@ a list of length `αÑ` with fill 0, where the value of an element `i` is the am
 #2 Read
 read α bytes from input stream β and decode them from utf-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.
 for `α=∞`, read until the end of file. for `α=Θ`, read until the next line break (0x0A byte).
-may return |None| in case of an IO error.
+may return ||None|| in case of an IO error.
 #1 Read Stdin
 read from input stream 0. equivalent to `Ö0`.
 #_2 Read Bytes
 read α bytes from input stream β.
 for `α=∞`, read until the end of file. for `α=Θ`, read until the next line break (0x0A byte).
-may return |None| in case of an IO error.
+may return ||None|| in case of an IO error.
 #_1 Read Bytes from Stdin
 read from input stream 0. equivalent to `_Ö0`.
 ---
@@ -1861,12 +1861,12 @@ read from input stream 0. equivalent to `_Ö0`.
 :ascii: 'u+
 :type: verb
 #2 Write
-write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or |None| if there was some IO error.
+write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or ||None|| if there was some IO error.
 #1 Write Stdout
 write a string α to output stream 0. equivalent to `É0`.
-see also: |Print|
+see also: ||Print||
 #_2 Write Bytes
-write a list of bytes α to output stream β. returns the number of bytes written, or |None| if there was some IO error.
+write a list of bytes α to output stream β. returns the number of bytes written, or ||None|| if there was some IO error.
 #_1 Write Bytes to Stdout
 write a list of bytes α to output stream 0. equivalent to `_É0`.
 ---
@@ -1889,7 +1889,7 @@ calculate `α²+(β²)√`, or the distance of (α, β) to the origin (0, 0), or
 :ascii: 'fd
 :type: verb
 #2 Find
-finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are |None|. if β is a scalar or the |Empty List|, search for the element β.
+finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are ||None||. if β is a scalar or the ||Empty List||, search for the element β.
 > "sus sus amongus"£`s    ≡ 0█0█0█0███████0
 > "sus sus amongus"£"s"   ≡ 0█0█0█0███████0
 > "sus sus amongus"£"us"  ≡ █01██01██████01
@@ -1897,14 +1897,14 @@ finds all non-overlapping occurances of sublist β in α. returns a list of the 
 > "sus sus amongus"£"sus" ≡ 012█012████████
 > "bee beebeee beebe"£"ee"  ≡ █01██01█01███01██
 > "bee beebeee beebe"£"bee" ≡ 012█012012██012██
-this is similar to using |Scan Windows| and |Matches| `α(►~)╫≡β` but this does not include overlapping matches
+this is similar to using ||Scan Windows|| and ||Matches|| `α(►~)╫≡β` but this does not include overlapping matches
 > "asininity"£"ini" ≡ ██012████
 > "asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!
-its format is also a bit more convenient: same length as the original string, and you can do `=0` to find the starts of matches or |Is Some| `▀` to find all the matched characters:
+its format is also a bit more convenient: same length as the original string, and you can do `=0` to find the starts of matches or ||Is Some|| `▀` to find all the matched characters:
 > "sus sus amongus"£"sus"   ≡ 012█012████████
 > "sus sus amongus"£"sus"=0 ≡ 100010000000000
 > "sus sus amongus"£"sus"▀  ≡ 111011100000000
-see also: |Equals|, |Scan Windows|, |Split|
+see also: ||Equals||, ||Scan Windows||, ||Split||
 ---
 :char: ¥
 :ascii: 'Y
@@ -1914,7 +1914,7 @@ splits a list α at all the ocurrences of the sublist β
 > "bee bees apioids"¥` ◄ ≡ "bee""bees""apioids"
 > "bee bees apioids"¥`,  ≡ ♪"bee bees apioids"
 > "one, two, three"¥", " ≡ "one""two""three"
-see also: |Find|
+see also: ||Find||
 #1 Split Newlines
 splits at newlines (byte 0x0A). same as `¥Φ`. won't strip out carriage returns.
 ---
@@ -1937,7 +1937,7 @@ get a list of the real and imaginary parts of α. scalar. equivalent to `└ù�
 #12 Self
 the function being executed. if not in a function definition, undefined. useful for recursive functions.
 > 6{=0?1◘α▼ƒ*α} ≡ '720
-remember to include an exit condition (|Return|). you shouldn't need this very often; in this case, `↨*` or `!` would have been enough.
+remember to include an exit condition (||Return||). you shouldn't need this very often; in this case, `↨*` or `!` would have been enough.
 ---
 :char: á
 :ascii: 'a'
@@ -1974,7 +1974,7 @@ calculate `β + α*i`. scalar.
 #1 Signs
 calculate (-1)^α. if α is an integer, this means 1 for odd α, and −1 for even α. scalar. equivalent to `┴^Θ`
 > 012345ó ≡ 1Θ1Θ1Θ
-see also: |Minus One|
+see also: ||Minus One||
 #2 Divides
 return 1 if α is divisible by β, otherwise 0. scalar. equivalent to `%¬`
 > 0ó3 ≡ 1
@@ -1991,7 +1991,7 @@ get the imaginary part of a complex number α. scalar.
 > 3í4ú ≡ 3
 > 3ú ≡ 0
 #2 Index of Last
-find the last exact match in the list and return its index, or else |None|. β-pervasive.
+find the last exact match in the list and return its index, or else ||None||. β-pervasive.
 > 012073167140ú0123456789 ≡ '11 925Φ█78██
 ---
 :char: ñ
@@ -2031,7 +2031,7 @@ convert the number α to a string. scalar.
 > '123ª ≡ "123"
 > '123.45ª ≡ "123.45"
 > 4í3ª ≡ "3+4i"
-see also: |Parse|
+see also: ||Parse||
 #2 Represent Base
 convert the number α to a string in base β. behaviour unspecified for bases not in [2, 36]. scalar.
 > '35ª2 ≡ "100011"
@@ -2041,24 +2041,24 @@ convert the number α to a string in base β. behaviour unspecified for bases no
 > '42405ª'16 ≡ "a5a5"
 > '-42405ª'16 ≡ "-a5a5"
 > 0ª'16 ≡ "0"
-see also: |Parse Base|, |Encode Base|
+see also: ||Parse Base||, ||Encode Base||
 ---
 :char: º
 :ascii: 'o,
 :type: verb
 #1 Parse
-convert the string/character α to a number, or |None|
+convert the string/character α to a number, or ||None||
 > `4º ≡ 4
 > "123"º ≡ '123
 > "123.45"º ≡ '123.45
 > "123+5i"º ≡ 5í'123
-see also: |Represent|
+see also: ||Represent||
 #2 Parse Base
 convert the string α in base β to a number. behaviour unspecified for bases not in [2, 36].
 > "bee"º'16 ≡ '3054
 > "bee"º'36 ≡ '14774
 > "A5A5"º'16 ≡ '42405
-see also: |Represent Base|, |Decode Base|
+see also: ||Represent Base||, ||Decode Base||
 ---
 :char: ¿
 :ascii: '?
@@ -2085,7 +2085,7 @@ returns 1 if `α~0`, otherwise 0. scalar.
 returns the list α with the item β added to the front.
 > 123⌐4 ≡ 4123
 > 123⌐456 ≡ (456)123
-see also: |Procatenate|, |Append|
+see also: ||Procatenate||, ||Append||
 ---
 :char: ¬
 :ascii: '_
@@ -2100,7 +2100,7 @@ returns 1 if `α=0`, otherwise 0. scalar
 returns the list α with the item β added to the back.
 > 123¬4 ≡ 1234
 > 123¬456 ≡ 123(456)
-see also: |Concatenate|, |Prepend|
+see also: ||Concatenate||, ||Prepend||
 ---
 :char: ½
 :ascii: 'hf
@@ -2147,7 +2147,7 @@ moves the last β elements of the list α to the front. β-pervasive.
 > 12345«3 ≡ 45123
 > 12345«5 ≡ 12345
 > 12345«6 ≡ 23451
-if β is negative, this acts like |Rotate Right|.
+if β is negative, this acts like ||Rotate Right||.
 > 12345«_3 ≡ 34512
 #1 Rotate Left Once
 equivalent to `«1`
@@ -2162,7 +2162,7 @@ moves the first β elements of the list α to the back. β-pervasive.
 > 12345»3 ≡ 34512
 > 12345»5 ≡ 12345
 > 12345»6 ≡ 51234
-if β is negative, this acts like |Rotate Left|.
+if β is negative, this acts like ||Rotate Left||.
 > 12345»_3 ≡ 45123
 #1 Rotate Right Once
 equivalent to `»1`
@@ -2172,13 +2172,13 @@ equivalent to `»1`
 :ascii: 'l2
 :type: literal
 #░☺☻ Short Literal
-shorthand for a |Integer Literal| with 2 digits (the closing `■` is implied)
+shorthand for a ||Integer Literal|| with 2 digits (the closing `■` is implied)
 ---
 :char: ▒
 :ascii: 'l3
 :type: literal
 #▒☺☻♥ Long Literal
-shorthand for a |Integer Literal| with 3 digits (the closing `■` is implied)
+shorthand for a ||Integer Literal|| with 3 digits (the closing `■` is implied)
 ---
 :char: ▓
 :ascii: 'l4 'c2
@@ -2187,14 +2187,14 @@ shorthand for a |Integer Literal| with 3 digits (the closing `■` is implied)
 a 2 character literal.
 > ▓() ≡ `(`)
 > ▓012 ≡ (`0`1)2
-see also: |Character Literal|
+see also: ||Character Literal||
 ---
 :char: █
 :ascii: 'N
 :type: noun
 #0 None
 none, null, nil, NaN. used as a dummy value sometimes.
-see also: |Is None|, |Is Some|, |Fill Holes|, |Replace Holes|, |Filter Holes|, |Nullify|
+see also: ||Is None||, ||Is Some||, ||Fill Holes||, ||Replace Holes||, ||Filter Holes||, ||Nullify||
 ---
 :char: ▄
 :ascii: 'hd
@@ -2203,20 +2203,20 @@ see also: |Is None|, |Is Some|, |Fill Holes|, |Replace Holes|, |Filter Holes|, |
 1 if α is none, otherwise 0. scalar.
 > █▄ ≡ 1
 > 12█456█78▄ ≡ 001000100
-see also: |Is Some|
+see also: ||Is Some||
 #2 Denullify
-if β is not 0, return |None|, otherwise α. scalar.
+if β is not 0, return ||None||, otherwise α. scalar.
 > 123456789▄010103102 ≡ 1█3█5██8█
-see also: |Nullify|
+see also: ||Nullify||
 ---
 :char: ▌
 :ascii: 'hl
 :type: verb
 #1 Fill Holes
-replace |None|s in the list α with its fill.
+replace ||None||s in the list α with its fill.
 > 12█456█78▐0▌ ≡ 120456078
 #2 Replace Holes
-replace |None|s in the list α with β.
+replace ||None||s in the list α with β.
 > 12█456█78▌0 ≡ 120456078
 ---
 :char: ▐
@@ -2237,11 +2237,11 @@ check if α is not null. same as `¬▄`. scalar.
 > █▀ ≡ 0
 > 1▀ ≡ 1
 > 12█456█78▀ ≡ 110111011
-see also: |Is None|
+see also: ||Is None||
 #2 Nullify
-if β is 0, return |None|, otherwise α. scalar.
+if β is 0, return ||None||, otherwise α. scalar.
 > 123456789▀010103102 ≡ █2█4█67█9
-see also: |Denullify|
+see also: ||Denullify||
 ---
 :char: α
 :ascii: 'A
@@ -2255,7 +2255,7 @@ the left argument. if not in a function definition, the first argument passed in
 :ascii: 'B
 :type: variable
 #0 Beta
-the right argument. if not in a function definition, the second argument passed in the command line, or `δ@1`. if the function was called monadically, this will be |None|.
+the right argument. if not in a function definition, the second argument passed in the command line, or `δ@1`. if the function was called monadically, this will be ||None||.
 > "left"{βÇ} ≡ █
 > "left"{βÇ}"right" ≡ "RIGHT"
 ---
@@ -2344,7 +2344,7 @@ negative infinity
 :ascii: 'Z 'f-
 :type: noun
 #0 Empty List
-literal for an empty list with |None| fill
+literal for an empty list with ||None|| fill
 > φ~ ≡ 0
 #.0 Golden Ratio
 the number `1.618033988749895`, or `5√▲½`
@@ -2359,7 +2359,7 @@ returns 0 if α is a scalar, otherwise 1
 > 4ε ≡ 0
 > 456ε ≡ 1
 > (▲)ε ≡ 1
-see also: |Is Scalar|
+see also: ||Is Scalar||
 #2 Includes
 for every item in the list α, check if it is in β. equivalent to `╛(╘≡&#x7C;)`
 > 0123456789ε012073167140 ≡ 1111101100
@@ -2367,7 +2367,7 @@ for every item in the list α, check if it is in β. equivalent to `╛(╘≡&#
 > 5 ε 012073167140 ≡ 0
 > "unauthorized equation"ε"aeiou" ≡ 101100101010010110110
 > "unauthorized equation"(ε*'32-)╓+"aeiou" ≡ "UnAUthOrIzEd EqUAtIOn"
-see also: |Excludes|
+see also: ||Excludes||
 ---
 :char: ∩
 :ascii: 'is
@@ -2393,7 +2393,7 @@ returns 1 if the values α and β are equal. functions always return false.
 > 123≡123 ≡ 1
 > 123≡1234 ≡ 0
 > (+)≡(+) ≡ 0
-see also: |Equals|
+see also: ||Equals||
 ---
 :char: ±
 :ascii: '+
@@ -2411,7 +2411,7 @@ checks that the floating point numbers α and β are almost (more-or-less) equal
 > 3±'3.0000000001 ≡ 1
 > 3±'3.001 ≡ 0
 > 3±4 ≡ 0
-see also: |Matches|
+see also: ||Matches||
 ---
 :char: ≥
 :ascii: '>
@@ -2419,13 +2419,13 @@ see also: |Matches|
 #1 Sort Up
 sorts the list α in ascending order
 > 143042≥ ≡ 012344
-see also: |Grade Up|, |Sort Down|
+see also: ||Grade Up||, ||Sort Down||
 #2 Greater Than Or Equal
 return 1 if α ≥ b, else 0. scalar.
 > 5≥3 ≡ 1
 > 3≥3 ≡ 1
 > 3≥5 ≡ 0
-see also: |Less Than Or Equal|, |Greater Than|
+see also: ||Less Than Or Equal||, ||Greater Than||
 ---
 :char: ≤
 :ascii: '<
@@ -2433,13 +2433,13 @@ see also: |Less Than Or Equal|, |Greater Than|
 #1 Sort Down
 sorts the list α in descending order
 > 143042≤ ≡ 443210
-see also: |Grade Down|, |Sort Up|
+see also: ||Grade Down||, ||Sort Up||
 #2 Less Than Or Equal
 return 1 if α ≤ b, else 0. scalar.
 > 5≤3 ≡ 0
 > 3≤3 ≡ 1
 > 3≤5 ≡ 1
-see also: |Greater Than Or Equal|, |Less Than|
+see also: ||Greater Than Or Equal||, ||Less Than||
 ---
 :char: ⌠
 :ascii: 'cl
@@ -2449,18 +2449,18 @@ round up α. scalar.
 > '3.1⌠ ≡ 4
 > '3.9⌠ ≡ 4
 >    4⌠ ≡ 4
-see also: |Floor|, |Round|, |Euclidean Division|
+see also: ||Floor||, ||Round||, ||Euclidean Division||
 #2 Shift Right
 returns a list of the same length as α, with every item shifted to the right by β, using the fill of α to fill the blanks. β-pervasive.
 > 12345678⌠3 ≡ ███12345
 > 87654321▐0⌠5 ≡ 00000876
 > "yeah!!!"▐` ⌠4 ≡ "    yea"
 > "yeah!!!"▐` ⌠2 ≡ "  yeah!"
-a negative β acts like |Shift Left|:
+a negative β acts like ||Shift Left||:
 > "yeah!!!"▐` ⌠_2 ≡ "ah!!!  "
 and if `α~≤β`, the whole list will be filled:
 > 12345678⌠8 ≡ ████████
-see also: |Shift Left|, |Rotate Right|
+see also: ||Shift Left||, ||Rotate Right||
 ---
 :char: ⌡
 :ascii: 'fl
@@ -2470,18 +2470,18 @@ round down α. scalar.
 > '3.1⌡ ≡ 3
 > '3.9⌡ ≡ 3
 >    4⌡ ≡ 4
-see also: |Ceiling|, |Round|
+see also: ||Ceiling||, ||Round||
 #2 Shift Left
 returns a list of the same length as α, with every item shifted to the left by β, using the fill of α to fill the blanks. β-pervasive.
 > 12345678⌡3 ≡ 45678███
 > 87654321▐0⌡5 ≡ 32100000
 > "yeah!!!"▐` ⌡4 ≡ "!!!    "
 > "yeah!!!"▐` ⌡2 ≡ "ah!!!  "
-a negative β acts like |Shift Left|:
+a negative β acts like ||Shift Left||:
 > "yeah!!!"▐` ⌡_2 ≡ "  yeah!"
 and if `α~≤β`, the whole list will be filled:
 > 12345678⌡8 ≡ ████████
-see also: |Shift Right|, |Rotate Left|
+see also: ||Shift Right||, ||Rotate Left||
 ---
 :char: ÷
 :ascii: '%
@@ -2491,7 +2491,7 @@ rounds α to the closest integer. may do round-half-to-even rounding. scalar.
 > '3.1÷ ≡ 3
 > '3.9÷ ≡ 4
 >    4÷ ≡ 4
-see also: |Floor|, |Ceiling|
+see also: ||Floor||, ||Ceiling||
 #2 Euclidean Division
 calculates the euclidean division of α and β, which will always be an integer. for positive β, this is the same as floor division `α/β⌡`. for any α and β, `β*(α÷β) + (α%β) ≡ α`.
 > '345÷Φ ≡ '34
@@ -2500,7 +2500,7 @@ calculates the euclidean division of α and β, which will always be an integer.
 > 1÷_2 ≡ 0
 > _1÷2 ≡ _1
 > _1÷_2 ≡ 1
-see also: |Remainder|, |Floor|, |Divide|
+see also: ||Remainder||, ||Floor||, ||Divide||
 ---
 :char: ≈
 :ascii: '~
@@ -2541,7 +2541,7 @@ the identifier `name` as a string.
 #a· Discard
 statement that discards the value `a` and continues with the function or program.
 > 0{4·5·6} ≡ 6
-see also: |Return|
+see also: ||Return||
 ---
 :char: √
 :ascii: 'V
@@ -2589,7 +2589,7 @@ calculate the binomial coefficient `α choose β`. scalar.
 :type: literal
 #■☺☻♥♦■ Integer Literal
 a convenient literal syntax for large integers. characters are read until the next `■` or end of file, interpreted as their position in the codepage and interpreted in base 253. if this number is even, it represents `n½`, otherwise, `1-n½`.
-let's represent the number 123456789. for this, we must encode the number multiplied by 2 (246913578) in base 253, flipping because |Encode Base| uses big endian by default:
+let's represent the number 123456789. for this, we must encode the number multiplied by 2 (246913578) in base 253, flipping because ||Encode Base|| uses big endian by default:
 >     '123456789¼é'253♠
 > (15 62 121 252)
 and then, represent those as characters:
@@ -2600,9 +2600,9 @@ if we try it out,
 you don't actually need `¤` (0x00) for all integers, zeroes can be replaced by using `²` (0xFD) and adjusting the previous character:
 > ■ab¤c■ ≡ ■aa²c■
 `■` is mostly useful when using large numbers. for smaller numbers, there are more efficient ways of representing them:
-- for −10 ≤ x ≤ 255, you can use |Character Literal|s
-- for −32130 ≤ x ≤ 32131, you can use |Short Literal|s
-- for −8129269 ≤ x ≤ 8129269, you can use |Long Literal|s
+- for −10 ≤ x ≤ 255, you can use ||Character Literal||s
+- for −32130 ≤ x ≤ 32131, you can use ||Short Literal||s
+- for −8129269 ≤ x ≤ 8129269, you can use ||Long Literal||s
 - if your number happens to be in the lowercase ascii list or has a trivial computation, use that
 ---
 :char: ╕
@@ -2622,13 +2622,13 @@ if any argument is a scalar, it will be copied in each iteration; equivalently, 
 > 1234ª╕;`# ≡ "#1""#2""#3""#4"
 if both arguments are scalars, it just applies the operation on them
 > 1╕,2 ≡ 12
-Each applies only to one level of nesting (see |Scalar|):
+Each applies only to one level of nesting (see ||Scalar||):
 > (│01│23)(│45│67)(89) ,0 ≡     (│01│23)(│45│67)(89)0
 > (│01│23)(│45│67)(89) ╕,0 ≡    (│01│230)(│45│670)(890)
 > (│01│23)(│45│67)(89) ╕╕,0 ≡   (├010├230)(├450├670)(│80│90)
 > (│01│23)(│45│67)(89) ╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
 > (│01│23)(│45│67)(89) ╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
-see also: |Each Left|, |Each Right|, |Scalar|
+see also: ||Each Left||, ||Each Right||, ||Scalar||
 ---
 :char: ╒
 :ascii: 'co
@@ -2646,16 +2646,16 @@ return F
 iterates through α, passing β in each iteration
 > 123╛♫456 ≡ (1├456)(2├456)(3├456)
 > 123╛;1 ≡ (11)(12)(13)
-see also: |Each Right|
+see also: ||Each Right||
 #1a1 Each Left
-monadically, this is the same as |Each|:
+monadically, this is the same as ||Each||:
 > 123╛; ≡ (11)(22)(33)
 #_2a1 Extend
 call G to every scalar in α, keeping the list's structure, while passing β in each iteration.
 > (123)(45)6 _╛, 78 ≡ (├178├278├378)(├478├578)├678
-see also: |Extend Right|
+see also: ||Extend Right||
 #_1a1 Extend
-monadically, it is the same as |Scalar|:
+monadically, it is the same as ||Scalar||:
 > (123)(45)6 _╛♫ ≡ (♪1♪2♪3)(♪4♪5)♪6
 ---
 :char: ╘
@@ -2664,7 +2664,7 @@ monadically, it is the same as |Scalar|:
 #2a1 Each Right
 iterates through β, passing α in each iteration
 > 123╘♫456 ≡ (├1234)(├1235)(├1236)
-see also: |Each Left|
+see also: ||Each Left||
 #1a1 Each Right
 monadically, it acts like `┴╘f`; iterates through α, passing it in each iteration
 > 123╘* ≡ ((123)(246)(369))
@@ -2672,7 +2672,7 @@ monadically, it acts like `┴╘f`; iterates through α, passing it in each ite
 #_2a1 Extend Right
 call G to every scalar in β, keeping the list's structure, while passing α in each iteration.
 > 78 _╘, (123)(45)6 ≡ (├781├782├783)(├784├785)├786
-see also: |Extend|
+see also: ||Extend||
 #_1a1 Extend
 monadically, this is equivalent to `α_╘Gα`:
 > (123)4 _╘, ≡ ( (├12341) (├12342) (├12343) ) (├12344)
@@ -2681,7 +2681,7 @@ monadically, this is equivalent to `α_╘Gα`:
 :ascii: '\
 :type: 1-adverb
 #1a1 Scan
-|Reduce|, but keeping the intermediate results. the first element will be left unchanged.
+||Reduce||, but keeping the intermediate results. the first element will be left unchanged.
 > 12345╤+ ≡ '1'3'6'10'15
 > 12345╤, ≡ 1(12)(123)(1234)(12345)
 #2a1 Seeded Scan
@@ -2696,19 +2696,19 @@ apply a dyadic operation over the elements a list, left to right, progrressively
 this can be thought of as inserting the function between every element:
 > 12345╧♫ ≡ (((12)3)4)5
 > 1♫2♫3♫4♫5 ≡ (((12)3)4)5
-the |Sum| of a list is Reduce Add:
+the ||Sum|| of a list is Reduce Add:
 > 12345╧+   ≡ '15
 > 1+2+3+4+5 ≡ '15
 > 12345+    ≡ '15
 > 1234╧* ≡ '24
-you can fold starting from the right (as in `foldr` in haskell) with |Reverse| and |Swap/Selfie|:
+you can fold starting from the right (as in `foldr` in haskell) with ||Reverse|| and ||Swap/Selfie||:
 > 12345♠╧┴♫ ≡ 1(2(3(45)))
 an empty list will yield null. a one element list (or a scalar) will return itself.
 > φ╧+ ≡ █
 > ♪8╧+ ≡ 8
-see also: |Scan|
+see also: ||Scan||
 #2a1 Seeded Reduce
-gives an element to start with. `α╧fβ` is always `α⌐β╧f`. this also means the empty list will return `β`; in fact, this is how |Sum| and |Product| are implemented.
+gives an element to start with. `α╧fβ` is always `α⌐β╧f`. this also means the empty list will return `β`; in fact, this is how ||Sum|| and ||Product|| are implemented.
 > 12345╧+0 ≡ '15
 > φ╧+0 ≡ 0
 ---
@@ -2735,11 +2735,11 @@ executes G, ignoring the right argument
 :ascii: 'sc
 :type: 1-adverb
 #1a1 Scalar
-call F to every scalar in α, keeping the list's structure. this is similar to |Each| called arbitrarily many times.
+call F to every scalar in α, keeping the list's structure. this is similar to ||Each|| called arbitrarily many times.
 > (│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
 > (│01│23)(│45│67)(89) ┼(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 #2a1 Scalar
-apply a function to every scalar in α and β, following the same rules as |Each|, recursively.
+apply a function to every scalar in α and β, following the same rules as ||Each||, recursively.
 > 0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57)(89Φ)
 > (│01│23)(│45│67)(89) ┼, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 > 123┼,456 ≡ (14)(25)(36)
@@ -2825,7 +2825,7 @@ apply a function G to each successive slice ("window") of length `αF` of the li
 > 0123456 3╫+ ≡ 3'6'9'12'15
 for a searched list of length `n` and window length `k`, the number of windows will be `n-k+1Ñ0` (even for `k=0`):
 > "thing"0╫► ≡ ()()()()()()
-see also: |Scan Pairs|
+see also: ||Scan Pairs||
 #2a2 Power
 bind β to G
 ---
@@ -2873,7 +2873,7 @@ equivalent to `αFG`.
 equivalent to `αFGβ`.
 #_a2 Atop
 adverb form of atop, same as the 2-train `FG`. `αF_╜G` is equivalent to `αFG`, and `αF_╜Gβ` is equivalent to `αFβG`. useful when composing functions tacitly.
-see also: |Trains|
+see also: ||Trains||
 ---
 :char: ╙
 :ascii: '(
@@ -2884,7 +2884,7 @@ equivalent to `aF`.
 equivalent to `αF(βG)`.
 #_a2 Bind
 adverb form of bind, same as the train `Gf`, where `f` is F interpreted as a noun, (or rather, `.F`). note that the arguments are reversed. `αF_╙G` and `αF_╙Gβ` are equivalent to `αGf`; this ignores the second operand. useful when composing functions tacitly.
-see also: |Trains|
+see also: ||Trains||
 ---
 :char: ╖
 :ascii: ']
@@ -2922,7 +2922,7 @@ equivalent to `αFβG(αHβ)`.
 :ascii: ''
 :type: statement
 #a─name Local Statement
-like `→name` |Local| but acts as a statement and sets the contents of the body.
+like `→name` ||Local|| but acts as a statement and sets the contents of the body.
 > 2─two .two+.two ≡ 4
 this means that verbs can be set conveniently:
 > +2─add 3:add ≡ 5
@@ -2933,7 +2933,7 @@ if there is nothing in the statement body, the variable will be removed from the
 :ascii: '"
 :type: statement
 #a═name Mutate Statement
-like `↔name` |Mutate| but acts as a statement and changes the contents of the body.
+like `↔name` ||Mutate|| but acts as a statement and changes the contents of the body.
 > 3─n 4─m *2═n n ≡ 6
 if there is nothing in the statement body, the variable will be removed from its scope.
 > 4─a0{═a}·a ≡ █
@@ -2942,7 +2942,7 @@ if there is nothing in the statement body, the variable will be removed from its
 :ascii: 'g1
 :type: grouper
 #┌m 1-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `1.5`, or `3/2`
 #_0
@@ -2952,7 +2952,7 @@ the number `-0.5`, or `Θ½`
 :ascii: 'g2
 :type: grouper
 #│mn 2-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `0.6666666666666666`, or `2/3`
 #_0
@@ -2962,7 +2962,7 @@ the number `1.4142135623730951`, or `2√`
 :ascii: 'g3
 :type: grouper
 #├mno 3-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `0.3333333333333333`, or `1/3`
 #_0
@@ -2972,7 +2972,7 @@ the number `1.7320508075688772`, or `3√`
 :ascii: 'g4
 :type: grouper
 #╞mnop 4-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `0.25`, or `1/4`
 #_0
@@ -2982,7 +2982,7 @@ the number `420`
 :ascii: 'g5
 :type: grouper
 #╟mnopq 5-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `0.75`, or `3/4`
 #_0
@@ -2992,7 +2992,7 @@ the number `2.23606797749979`, `5√`
 :ascii: 'g6
 :type: grouper
 #╠mnopqr 6-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `0.16666666666666666`, or `1/6`
 #_0
@@ -3002,7 +3002,7 @@ the number `360`
 :ascii: 'g7
 :type: grouper
 #┤mnopqrs 7-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `0.14285714285714285`, or `1/7`
 #_0
@@ -3012,7 +3012,7 @@ the number `273.15`
 :ascii: 'g8
 :type: grouper
 #╡mnopqrst 8-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `0.125`, or `1/8`
 ---
@@ -3020,7 +3020,7 @@ the number `0.125`, or `1/8`
 :ascii: 'g9
 :type: grouper
 #╢mnopqrstu 9-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `0.1111111111111111`, or `1/9`
 ---
@@ -3028,6 +3028,6 @@ the number `0.1111111111111111`, or `1/9`
 :ascii: 'g0
 :type: grouper
 #╣mnopqrstuv 10-Group
-see |Groups|
+see ||Groups||
 #.0
 the number `2.5`, or `5/2`

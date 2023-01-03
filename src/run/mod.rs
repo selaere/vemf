@@ -234,7 +234,7 @@ impl<'io> Env<'io> {
         let tokens = token::tokenize(code);
         //println!("{:?}", tokens);
         let parsed = parse::parse(&tokens);
-        //for i in &parsed { println!("parsed: {}", i); }
+        //for i in &parsed { println!("parsed: {i}"); }
         self.eval_block(&parsed)
     }
 
