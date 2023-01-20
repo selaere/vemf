@@ -1321,22 +1321,22 @@ a general-purpose variable. by default, 1000
 :char: g
 :type: variable
 #0
-a general-purpose variable. by default, 9999
+a general-purpose variable. by default, 10000
 ---
 :char: h
 :type: variable
 #0
-a general-purpose variable. by default, 10000
+a general-purpose variable. by default, 100000
 ---
 :char: i
 :type: variable
 #0
-a general-purpose variable. by default, 100000
+a general-purpose variable. by default, 1000000
 ---
 :char: j
 :type: variable
 #0
-a general-purpose variable. by default, 1000000
+a general-purpose variable. by default, 10000000
 ---
 :char: k
 :type: variable
@@ -1401,22 +1401,22 @@ a general-purpose variable. by default, 1024
 :char: w
 :type: variable
 #0
-a general-purpose variable. by default, 2048
+a general-purpose variable. by default, 32768
 ---
 :char: x
 :type: variable
 #0
-a general-purpose variable. by default, 4096
+a general-purpose variable. by default, 65536
 ---
 :char: y
 :type: variable
 #0
-a general-purpose variable. by default, 32768
+a general-purpose variable. by default, 16777216, or `2^'24`
 ---
 :char: z
 :type: variable
 #0
-a general-purpose variable. by default, 65536
+a general-purpose variable. by default, 2147483648, or `2^'31`
 ---
 :char: {
 :type: grammar
@@ -2339,6 +2339,11 @@ positive infinity
 #_0 Negative Infinity
 negative infinity
 > 5>_∞ ≡ 1
+#.0 Maximum Integer
+the maximum integer representable by a signed 64-bit integer, or `'9223372036854775807`
+> .∞▲ ≡ '9223372036854775807
+> .∞  ≡ '9223372036854775807
+> .∞▼ ≡ '9223372036854775806
 ---
 :char: φ
 :ascii: 'Z 'f-

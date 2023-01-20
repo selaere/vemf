@@ -232,8 +232,8 @@ fn value_token(chr: Tok) -> Option<Expr> {
             for i in l { num = num*253 + i64::from(i) }
         numberise(num) }
         Tok::HNum(x) => {
-            let num = core::str::from_utf8(&x).unwrap().parse::<f64>().unwrap();
-            if num == num as i64 as f64 { Int(num as i64) } else { Flt(c64::new(num, 0.)) }
+            let str = core::str::from_utf8(&x).unwrap();
+            str.parse::<i64>().map_or_else(|_| Flt(c64::new(str.parse::<f64>().unwrap(), 0.)), Int)
         },
         Tok::Str(x) => Snd(x.iter().map(|&x| Int(i64::from(x))).collect()),
         _ => return None,
