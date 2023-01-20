@@ -1864,28 +1864,28 @@ _2Ä0 ≡ π½-</pre>
 02244455557ÿ ≡ 10203401▐0
 75420542545ÿ ≡ 10203401▐0</pre>
 <h2 class="rverb" id="99"><a class=h href="#99"></a><code>Ö</code> (0x99, <code>'o+</code>)<span class=rank>verb</span></h2>
-<h3 id="Read"><a class=h href="#Read"></a><code>αÖβ</code> Read</h3>
+<h3 id="Write"><a class=h href="#Write"></a><code>αÖβ</code> Write</h3>
+<p>write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
+<h3 id="Write Stdout"><a class=h href="#Write Stdout"></a><code>αÖ</code> Write Stdout</h3>
+<p>write a string α to output stream 0. equivalent to <code>Ö0</code>.</p>
+<p>see also: <a href="#Print">Print</a></p>
+<h3 id="Write Bytes"><a class=h href="#Write Bytes"></a><code>α_Öβ</code> Write Bytes</h3>
+<p>write a list of bytes α to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
+<h3 id="Write Bytes to Stdout"><a class=h href="#Write Bytes to Stdout"></a><code>α_Ö</code> Write Bytes to Stdout</h3>
+<p>write a list of bytes α to output stream 0. equivalent to <code>_Ö0</code>.</p>
+<h2 class="rverb" id="9A"><a class=h href="#9A"></a><code>Ü</code> (0x9A, <code>'u+</code>)<span class=rank>verb</span></h2>
+<h3 id="Read"><a class=h href="#Read"></a><code>αÜβ</code> Read</h3>
 <p>read α bytes from input stream β and decode them from utf-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.</p>
 <p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
 <p>may return <a href="#None">None</a> in case of an IO error.</p>
-<h3 id="Read Stdin"><a class=h href="#Read Stdin"></a><code>αÖ</code> Read Stdin</h3>
-<p>read from input stream 0. equivalent to <code>Ö0</code>.</p>
-<h3 id="Read Bytes"><a class=h href="#Read Bytes"></a><code>α_Öβ</code> Read Bytes</h3>
+<h3 id="Read Stdin"><a class=h href="#Read Stdin"></a><code>αÜ</code> Read Stdin</h3>
+<p>read from input stream 0. equivalent to <code>Ü0</code>.</p>
+<h3 id="Read Bytes"><a class=h href="#Read Bytes"></a><code>α_Üβ</code> Read Bytes</h3>
 <p>read α bytes from input stream β.</p>
 <p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
 <p>may return <a href="#None">None</a> in case of an IO error.</p>
-<h3 id="Read Bytes from Stdin"><a class=h href="#Read Bytes from Stdin"></a><code>α_Ö</code> Read Bytes from Stdin</h3>
-<p>read from input stream 0. equivalent to <code>_Ö0</code>.</p>
-<h2 class="rverb" id="9A"><a class=h href="#9A"></a><code>Ü</code> (0x9A, <code>'u+</code>)<span class=rank>verb</span></h2>
-<h3 id="Write"><a class=h href="#Write"></a><code>αÜβ</code> Write</h3>
-<p>write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
-<h3 id="Write Stdout"><a class=h href="#Write Stdout"></a><code>αÜ</code> Write Stdout</h3>
-<p>write a string α to output stream 0. equivalent to <code>É0</code>.</p>
-<p>see also: <a href="#Print">Print</a></p>
-<h3 id="Write Bytes"><a class=h href="#Write Bytes"></a><code>α_Üβ</code> Write Bytes</h3>
-<p>write a list of bytes α to output stream β. returns the number of bytes written, or <a href="#None">None</a> if there was some IO error.</p>
-<h3 id="Write Bytes to Stdout"><a class=h href="#Write Bytes to Stdout"></a><code>α_Ü</code> Write Bytes to Stdout</h3>
-<p>write a list of bytes α to output stream 0. equivalent to <code>_É0</code>.</p>
+<h3 id="Read Bytes from Stdin"><a class=h href="#Read Bytes from Stdin"></a><code>α_Ü</code> Read Bytes from Stdin</h3>
+<p>read from input stream 0. equivalent to <code>_Ü0</code>.</p>
 <h2 class="rverb" id="9B"><a class=h href="#9B"></a><code>¢</code> (0x9B, <code>'C</code>)<span class=rank>verb</span></h2>
 <h3 id="Absolute"><a class=h href="#Absolute"></a><code>α¢</code> Absolute</h3>
 <p>get the absolute value of α. for complex numbers, this is the magnitude or modulus. scalar.</p>
@@ -2233,6 +2233,11 @@ _2Ñ0 ≡ 0</pre>
 <h3 id="Negative Infinity"><a class=h href="#Negative Infinity"></a><code>_∞</code> Negative Infinity</h3>
 <p>negative infinity</p>
 <pre>5>_∞ ≡ 1</pre>
+<h3 id="Maximum Integer"><a class=h href="#Maximum Integer"></a><code>.∞</code> Maximum Integer</h3>
+<p>the maximum integer representable by a signed 64-bit integer, or <code>'9223372036854775807</code></p>
+<pre>.∞▲ ≡ '9223372036854775807
+.∞  ≡ '9223372036854775807
+.∞▼ ≡ '9223372036854775806</pre>
 <h2 class="rnoun" id="ED"><a class=h href="#ED"></a><code>φ</code> (0xED, <code>'Z 'f-</code>)<span class=rank>noun</span></h2>
 <h3 id="Empty List"><a class=h href="#Empty List"></a><code>φ</code> Empty List</h3>
 <p>literal for an empty list with <a href="#None">None</a> fill</p>

@@ -25,13 +25,13 @@
 
 .inprint─☺
 .inprintln─☻
-.inoutput─_Ü
-.ininput ─_Ö
+.inoutput─_Ö
+.ininput ─_Ü
 
 ."intoutf8"─_ê
 ."infromutf8"─_ë
-_ê╜_Ü─Ü
-_Ö_ë─Ö
+_ê╜_Ö─Ö
+_Ü_ë─Ü
 .inexit─⌂
 
 .inenlist╬.inpair─♫

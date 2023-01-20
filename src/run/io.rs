@@ -1,7 +1,7 @@
 use crate::prelude::*;
 
 pub trait Interface<'io> {
-    /// read from input stream `stm` into a slice `buf`. used by `αÖβ` and `α_Öβ` when α is 
+    /// read from input stream `stm` into a slice `buf`. used by `αÜβ` and `α_Üβ` when α is 
     /// non-negative and finite. corresponds to `Read::read(_, buf)`. this method is required, but
     /// feel free to return None if you don't have output capabilities
     fn read(&mut self, stm: usize, buf: &mut [u8])    -> Option<usize>;
@@ -9,7 +9,7 @@ pub trait Interface<'io> {
     /// stream 0). corresponds to `Write::write(_, buf)`. this method is required, but
     /// feel free to return None if you don't have input capabilities
     fn write(&mut self, stm: usize, slice: &[u8])      -> Option<usize>;
-    /// read a line from input stream `stm`. used by `αÖβ` and `α_Öβ` when α is negative.
+    /// read a line from input stream `stm`. used by `αÜβ` and `α_Üβ` when α is negative.
     /// corresponds to like `Read::read_until(_, b'\n', buf)`
     /// the default definition is inefficient but it's the best way of doing this generically,
     /// implementers SHOULD implement this better.
@@ -22,7 +22,7 @@ pub trait Interface<'io> {
         }
         Some(buf.len() - original_len)
     }
-    /// read all from input stream `stm`. used by `∞Öβ` and `∞_Öβ`.
+    /// read all from input stream `stm`. used by `∞Üβ` and `∞_Üβ`.
     /// corresponds to `Read::read_to_end(_, buf)`.
     fn read_to_end(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
         let mut tmp = [0; 256];

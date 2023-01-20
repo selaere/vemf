@@ -1844,31 +1844,31 @@ a list of length `αÑ` with fill 0, where the value of an element `i` is the am
 :char: Ö
 :ascii: 'o+
 :type: verb
+#2 Write
+write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or ||None|| if there was some IO error.
+#1 Write Stdout
+write a string α to output stream 0. equivalent to `Ö0`.
+see also: ||Print||
+#_2 Write Bytes
+write a list of bytes α to output stream β. returns the number of bytes written, or ||None|| if there was some IO error.
+#_1 Write Bytes to Stdout
+write a list of bytes α to output stream 0. equivalent to `_Ö0`.
+---
+:char: Ü
+:ascii: 'u+
+:type: verb
 #2 Read
 read α bytes from input stream β and decode them from utf-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.
 for `α=∞`, read until the end of file. for `α=Θ`, read until the next line break (0x0A byte).
 may return ||None|| in case of an IO error.
 #1 Read Stdin
-read from input stream 0. equivalent to `Ö0`.
+read from input stream 0. equivalent to `Ü0`.
 #_2 Read Bytes
 read α bytes from input stream β.
 for `α=∞`, read until the end of file. for `α=Θ`, read until the next line break (0x0A byte).
 may return ||None|| in case of an IO error.
 #_1 Read Bytes from Stdin
-read from input stream 0. equivalent to `_Ö0`.
----
-:char: Ü
-:ascii: 'u+
-:type: verb
-#2 Write
-write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or ||None|| if there was some IO error.
-#1 Write Stdout
-write a string α to output stream 0. equivalent to `É0`.
-see also: ||Print||
-#_2 Write Bytes
-write a list of bytes α to output stream β. returns the number of bytes written, or ||None|| if there was some IO error.
-#_1 Write Bytes to Stdout
-write a list of bytes α to output stream 0. equivalent to `_É0`.
+read from input stream 0. equivalent to `_Ü0`.
 ---
 :char: ¢
 :ascii: 'C

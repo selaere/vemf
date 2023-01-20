@@ -84,16 +84,16 @@ impl<'io> crate::Interface<'io> for IO<'io> {
 fn input_output() -> Result<(), ()> {
     const PROGRAM: &str = r#"
         "Hello, World!!"☻·"print"☺"ln"☻ ' basic printing
-        "line of file: ",(_1Ö)Ü0· ' line reading
-        5Ö;"5 bytes: "Ü· ' byte reading
-        ∞Ö;"the rest: "☺· ' all reading
-        "errors",ΦÜ1=7*1☺· ' writing to other stream
-        "thís fïl"ë≡(ΦÖ1)*2☺· ' reading from other stream also WOW chars != bytes
-        "e c",("FFFD"º_l)≡(4Ö1)*3☺· ' U+FFFDing when illegal sequence
-        "╕nt"≡(3_Ö1)*4ⁿ_Ü· ' binary data, even when invalid utf-8
-        "ains"≡(4Ö1)*5☻· ' for ascii, utf-8 and cp437 are  the same
-        7_Ö1_Ü· ' pass bytes without modifying
-        ∞_Ö1+'11_Ü· ' outputting raw bytes
+        "line of file: ",(_1Ü)Ö0· ' line reading
+        5Ü;"5 bytes: "Ö· ' byte reading
+        ∞Ü;"the rest: "☺· ' all reading
+        "errors",ΦÖ1=7*1☺· ' writing to other stream
+        "thís fïl"ë≡(ΦÜ1)*2☺· ' reading from other stream also WOW chars != bytes
+        "e c",("FFFD"º_l)≡(4Ü1)*3☺· ' U+FFFDing when illegal sequence
+        "╕nt"≡(3_Ü1)*4ⁿ_Ö· ' binary data, even when invalid utf-8
+        "ains"≡(4Ü1)*5☻· ' for ascii, utf-8 and cp437 are  the same
+        7_Ü1_Ö· ' pass bytes without modifying
+        ∞_Ü1+'11_Ö· ' outputting raw bytes
     "#;
     let refcell = RefCell::new((
         VecDeque::from(*b"this is a file.\nit has content"),
