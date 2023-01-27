@@ -23,7 +23,7 @@ pub enum Expr {
     Trn2(Box<Expr>, Box<Expr>), // +/
     Trn3(Box<Expr>, Box<Expr>, Box<Expr>), // +/2
     Fork(Box<Expr>, Box<Expr>, Box<Expr>), // └+/~
-    Dfn  { s: Vec<Stmt>, cap: HashSet<Bstr> },
+    Dfn { s: Vec<Stmt>, cap: HashSet<Bstr> },
     Block(Vec<Stmt>),
 }
 use Expr::*;
@@ -116,7 +116,7 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
         Tok::Just(b!('└')) => { step(t);
             let a = word_full(t).map_or(NAN, |x| x.1);
             let f = word_full(t).map_or(NAN, |x| x.1);
-            let b = word_full(t).map_or(NAN, |x| x.1);
+            let b = word(t, morphemes).map_or(NAN, |x| x.1);
             (Verb, Fork(bx(a), bx(f), bx(b)))
         },
         Tok::Just(b'{') => { step(t);

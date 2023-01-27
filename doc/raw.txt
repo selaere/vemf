@@ -237,11 +237,18 @@ here is another way of representing all the combinators that i can test automati
 ---
 :title: Groups
 i don't like parentheses. i don't like the fact that occasionally i have to use them to make things work. i don't like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as `+2` gains two characters when used with an adverb `(+2)╜/`. or with nested list literals `(123)(45)(6789)`:
-> 7 (+2)╙/ 3 ≡ 7 │+2╙/ 3
-> (123)(45)(6789) ≡ ├123│45╞6789
+> 7 (+2)╜/ 3
+> (123)(45)(6789)
 the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use. here are all the groupers:
-> 2 3 4 5 6 7 8 9 Φ
+> 2 3 4 5 6 7 8 9 10
 > │ ├ ╞ ╟ ╠ ┤ ╡ ╢ ╣
+their basic function is grouping a number of words together. above, the number next to them specifies how many words will be grouped. the 2-grouper `│` will group 2 words:
+> │01│23│45 ≡ (01)(23)(45)
+> │012││345│67 ≡ (01)2((34)5)(67)
+> ├123│45╞6789 ≡ (123)(45)(6789)
+there's a pattern to these: when they're pointing to the right the number of lines going out is the number of words grouped, and the symbols for 7,8,9,10 groupers are flipped 3,4,5,6 groupers.
+but when used with 2-adverbs, they work a little differently. the left of every 2-adverb can be used as a word separator, so:
+> 7│+2╜/3 ≡ 3
 TODO TODO
 ---
 :title: Blocks
