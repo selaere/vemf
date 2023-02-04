@@ -215,7 +215,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Just(b!('Θ')) => Int(-1),
         Just(b!('∞')) => Flt(c64::new(f64::INFINITY, 0.)),
         Just(b!('Γ')) => Flt(c64::i()),
-        Just(b!('█')) => NAN,
+        Just(b!('■')) => NAN,
         Just(b!('φ')) => Snd(Vec::new()),
         Just(b!('π')) => Flt(c64::new(core::f64::consts::PI, 0.)),
         Tok::VNoun(x) => Var(x),

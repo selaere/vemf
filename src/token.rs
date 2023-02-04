@@ -82,7 +82,7 @@ fn byte_lit(t: &mut &[u8], n: u8) -> Tok {
 fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
     Some(match first {
         Some(b'"') => Str(string(t)),
-        Some(b!('■')) => {
+        Some(b!('█')) => {
             let Some(n @ b'1'..=b'8') = step(t) else { return None }; // rethink this
             byte_lit(t, n - b'0')
         }
@@ -155,9 +155,9 @@ pub fn tokenize(mut t: &[u8]) -> Vec<Tok> {
 fn rewrite_token(first: Option<u8>, t: &mut &[u8]) -> Option<Bstr> {
     Some(match first? {
         b'"' => rewrite_string(t),
-        b!('■') => {
+        b!('█') => {
             let Some(n @ b'1'..=b'8') = step(t) else { return None };
-            let mut buf = bstr![b!('■')];
+            let mut buf = bstr![b!('█')];
             for _ in 0..(n - b'0') {
                 buf.push(step(t).unwrap_or(0));
             }
@@ -249,7 +249,7 @@ pub fn rewrite(mut t: &[u8]) -> Vec<u8> {
 }
 
 // !"#$%&'()*+,-./:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
-// ‼═☻¶÷·─╙╜↔±○ •╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬█◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈
+// ‼═☻¶÷·─╙╜↔±○ •╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈
 fn escape_1c(c: u8) -> Option<u8> {
     macro_rules! bee { ([$($f:tt $t:tt),*], _ => $else:expr) => {
         match c as char { $($f => b!($t),)* _ => $else } 
@@ -257,7 +257,7 @@ fn escape_1c(c: u8) -> Option<u8> {
     Some(bee!([
         '!''‼','"''═','#''☻','$''¶','%''÷','&''·','\'''─','(''╙',')''╜','*''↔','+''±',',''○',
                '.''•','/''╧',':''♪',';''♫','<''≤','=''≡','>''≥','?''¿','@''¡','A''α','B''β',
-        'C''¢','D''♀','E''♂','F''ƒ','G''◄','H''►','I''↕','J''↨','K''└','L''∟','M''▬','N''█',
+        'C''¢','D''♀','E''♂','F''ƒ','G''◄','H''►','I''↕','J''↨','K''└','L''∟','M''▬','N''■',
         'O''◘','P''╨','Q''Θ','R''♠','S''↓','T''♦','U''╩','V''√','W''↑','X''Φ','Y''¥','Z''φ',
         '[''╓','\\''╤',']''╖','^''→','_''¬','`''┴','{''╘','|''╕','}''╛','~''≈'
     ], _ => return None))
@@ -285,7 +285,7 @@ fn escape_2c(c: [u8; 2]) -> Option<u8> {
         b"g1"=>b!('┌'), b"g2"=>b!('│'), b"g3"=>b!('├'), b"g4"=>b!('╞'), b"g5"=>b!('╟'),
         b"g6"=>b!('╠'), b"g7"=>b!('┤'), b"g8"=>b!('╡'), b"g9"=>b!('╢'), b"g0"=>b!('╣'),
         b"vl"=>b!('╬'), b"wn"=>b!('╫'), b"sc"=>b!('┼'), b"s2"=>b!('╪'), b"am"=>b!('╔'),
-        b"su"=>b!('╦'), b"sp"=>b!('╥'), b"mo"=>b!('┬'), b"co"=>b!('╒'), b"il"=>b!('■'),
+        b"su"=>b!('╦'), b"sp"=>b!('╥'), b"mo"=>b!('┬'), b"co"=>b!('╒'), b"il"=>b!('█'),
         b"ov"=>b!('║'), b"dr"=>b!('╗'), b"in"=>b!('ε'), b"sq"=>b!('²'), b"ft"=>b!('ⁿ'),
         b"l2"=>b!('░'), b"l3"=>b!('▒'), b"l4"=>b!('▓'), b"c2"=>b!('▓'), b"pi"=>b!('π'), 
         b"qd"=>b!('⎕'),

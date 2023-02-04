@@ -345,7 +345,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="r1-adverb"><a href="#D8">╪</a></td>
 <td class="rnone"><a href="#D9">┘</a></td>
 <td class="rgrouper"><a href="#DA">┌</a></td>
-<td class="rnoun"><a href="#DB">█</a></td>
+<td class="rliteral"><a href="#DB">█</a></td>
 <td class="rverb"><a href="#DC">▄</a></td>
 <td class="rverb"><a href="#DD">▌</a></td>
 <td class="rverb"><a href="#DE">▐</a></td>
@@ -380,7 +380,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="rverb"><a href="#FB">√</a></td>
 <td class="rverb"><a href="#FC">ⁿ</a></td>
 <td class="rverb"><a href="#FD">²</a></td>
-<td class="rliteral"><a href="#FE">■</a></td>
+<td class="rnoun"><a href="#FE">■</a></td>
 <td class="rnone"><a href="#FF">⎕</a></td></tr>
 </table></div></div>
 </nav><main>
@@ -458,11 +458,11 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>5↕ ≡ 01234</pre>
 <p>if you want something more familiar, try <code>α↨</code> <a href="#Inclusive Iota">Inclusive Iota</a>:</p>
 <pre>5↨ ≡ 12345</pre>
-<p>all lists have a Fill, usually <a href="#None">None</a>. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:</p>
-<pre>123@3 ≡ █</pre>
-<p>the default fill is █ <a href="#None">None</a>. you can get a list with a fill with <code>α▐β</code> <a href="#Set Fill">Set Fill</a>, and query it with <code>α▐</code> <a href="#Get Fill">Get Fill</a>.</p>
+<p>all lists have a Fill, usually <code>■</code> <a href="#None">None</a>. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:</p>
+<pre>123@3 ≡ ■</pre>
+<p>the default fill is <a href="#None">None</a>. you can get a list with a fill with <code>α▐β</code> <a href="#Set Fill">Set Fill</a>, and query it with <code>α▐</code> <a href="#Get Fill">Get Fill</a>.</p>
 <pre>123▐0@3 ≡ 0
-123▐ ≡ █
+123▐ ≡ ■
 123▐0▐ ≡ 0</pre>
 <p><code>α↑β</code> <a href="#Take">Take</a> takes the first β items, and <code>α♂β</code> <a href="#Drop">Drop</a> returns everything but the first β items:</p>
 <pre>"javascript"↑4 ≡ "java"
@@ -607,7 +607,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 {α▲*α½}─triang 6:triang ≡ '21  ' multiplication is commutative</pre>
 <p>but the tacit form is simpler (and shorter, and somewhat faster).</p>
 <p>here is another way of representing all the combinators that i can test automatically</p>
-<pre>♫,;`(,`)─F ♫,;`[,`]─G ♫,;`{,`}─H ≡ █
+<pre>♫,;`(,`)─F ♫,;`[,`]─G ♫,;`{,`}─H ≡ ■
 (`a┴G)   (`a┴G`b)    ≡ "[aa]"    "[ba]"
 (`aF╜G)  (`aF╜G`b)   ≡ "[(a)]"   "[(a)b]"
 (`aF╙G)  (`aF╙G`b)   ≡ "[a]"     "[a(b)]"
@@ -654,16 +654,16 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h2 class="rverb" id="03"><a class=h href="#03"></a><code>♥</code> (0x03, <code>'cx</code>)<span class=rank>verb</span></h2>
 <h3 id="Pairs"><a class=h href="#Pairs"></a><code>α♥</code> Pairs</h3>
 <p>split α into pairs, using the fill of α if a pair isn't full. equivalent to <code>♥2</code></p>
-<pre>123456789♥ ≡ (12)(34)(56)(78)(9█)
+<pre>123456789♥ ≡ (12)(34)(56)(78)(9■)
 123456789▐1♥ ≡ (12)(34)(56)(78)(91)
 "things"♥ ≡ "th""in""gs"</pre>
 <h3 id="Chunks"><a class=h href="#Chunks"></a><code>α♥β</code> Chunks</h3>
-<p>split α into β-sized chunks, using the fill of α if a group isn't full. for scalar β, this is the same as <code>α↑█β</code> (see <a href="#Take">Take</a>):</p>
+<p>split α into β-sized chunks, using the fill of α if a group isn't full. for scalar β, this is the same as <code>α↑■β</code> (see <a href="#Take">Take</a>):</p>
 <pre>123456789♥3 ≡ (123)(456)(789)
-123456789♥4 ≡ (1234)(5678)(9███)
+123456789♥4 ≡ (1234)(5678)(9■■■)
 123456789▐0♥4 ≡ (1234)(5678)(9000)</pre>
-<p>if β is a list, <code>α♥β</code> reshapes into groups of <code>β*</code> and reshapes them. equivalent to <code>α↑(█,β)</code></p>
-<pre>123456789♥22 ≡ (│12│34)(│56│78)(│9█│██)
+<p>if β is a list, <code>α♥β</code> reshapes into groups of <code>β*</code> and reshapes them. equivalent to <code>α↑(■,β)</code></p>
+<pre>123456789♥22 ≡ (│12│34)(│56│78)(│9■│■■)
 "chunk brick block"▐` ♥23 ≡ ("chu""nk ")("bri""ck ")("blo""ck ")</pre>
 <h2 class="rverb" id="04"><a class=h href="#04"></a><code>♦</code> (0x04, <code>'T</code>)<span class=rank>verb</span></h2>
 <h3 id="Transpose"><a class=h href="#Transpose"></a><code>α♦</code> Transpose</h3>
@@ -686,7 +686,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 323"to"(├100├010├001)♣3 ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422</pre>
 <p>if <code>β=∞</code>, this basically returns the indices of all the scalars. this can be, in general, a good indicator of the shape of an array</p>
 <pre>323"to"(├100├010├001)♣∞ ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422
-1(2(3(4(5█))))♣∞ ≡ ♪0(10)(110)(1110)(11110)(11111)</pre>
+1(2(3(4(5■))))♣∞ ≡ ♪0(10)(110)(1110)(11110)(11111)</pre>
 <h2 class="rverb" id="06"><a class=h href="#06"></a><code>♠</code> (0x06, <code>'R</code>)<span class=rank>verb</span></h2>
 <h3 id="Reverse"><a class=h href="#Reverse"></a><code>α♠</code> Reverse</h3>
 <p>reverse a list.</p>
@@ -696,7 +696,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h2 class="rgrammar" id="07"><a class=h href="#07"></a><code>•</code> (0x07, <code>'.</code>)<span class=rank>grammar</span></h2>
 <h3 id="1-Adverb"><a class=h href="#1-Adverb"></a><code>•name</code> 1-Adverb</h3>
 <p>the variable <code>name</code> with 1-adverb role</p>
-<pre>{{αβσμ}}─d 1•d23 ≡ 1 3 2 █</pre>
+<pre>{{αβσμ}}─d 1•d23 ≡ 1 3 2 ■</pre>
 <p>see also: <a href="#Dyadic Adverb">Dyadic Adverb</a></p>
 <h2 class="rstatement" id="08"><a class=h href="#08"></a><code>◘</code> (0x08, <code>'O</code>)<span class=rank>statement</span></h2>
 <h3 id="Return"><a class=h href="#Return"></a><code>x◘</code> Return</h3>
@@ -794,7 +794,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 "abcdef"‼(10101▐1) ≡ "acef"
 "abcdef"‼0101010101 ≡ "bdf"</pre>
 <p>α's fill is kept for the resulting list. negative elements in β indicate that the fill element will be duplicated instead</p>
-<pre>12345‼12_34 ≡ 122███4444
+<pre>12345‼12_34 ≡ 122■■■4444
 12345▐0‼12_34 ≡ 1220004444▐0</pre>
 <p>Replicate also works with nested lists in β, and it flattens the structure:</p>
 <pre>(123)(456)7‼(123)(210)3 ≡ 122333445777</pre>
@@ -818,8 +818,8 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 "testing"¶'21 ≡ "testingtestingtesting"</pre>
 <p><a href="#Take">Take</a> is similar to <a href="#Reshape">Reshape</a>, but it does not repeat elements, using the fill instead.</p>
 <p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code>)</p>
-<pre>"testing"¶2█ ≡ "test""ingt"
-"testing"¶█2 ≡ "te""st""in""gt"</pre>
+<pre>"testing"¶2■ ≡ "test""ingt"
+"testing"¶■2 ≡ "te""st""in""gt"</pre>
 <p>see also: <a href="#Take">Take</a>, <a href="#Take Right">Take Right</a>, <a href="#Cycle">Cycle</a></p>
 <h2 class="rverb" id="15"><a class=h href="#15"></a><code>§</code> (0x15, <code>'ss</code>)<span class=rank>verb</span></h2>
 <h3 id="Cycle"><a class=h href="#Cycle"></a><code>α§</code> Cycle</h3>
@@ -865,16 +865,16 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h2 class="rverb" id="18"><a class=h href="#18"></a><code>↑</code> (0x18, <code>'W</code>)<span class=rank>verb</span></h2>
 <h3 id="Take"><a class=h href="#Take"></a><code>α↑β</code> Take</h3>
 <p>make a new list with a prefix shape of β, where the elements are taken from α in order. this truncates if α is longer than the elements needed (<code>β*</code>), and uses the fill of α if α is shorter.</p>
-<pre>9↕↑55 ≡ (01234)(5678█)(█████)(█████)(█████)
+<pre>9↕↑55 ≡ (01234)(5678■)(■■■■■)(■■■■■)(■■■■■)
 '99↕↑33 ≡ (012)(345)(678)
 .►↑33 ≡ (012)(345)(678)
 "testing"▐` ↑'21 ≡ "testing              "
 "testing"↑3 ≡ "tes"</pre>
 <p><a href="#Reshape">Reshape</a>, is similar, but it cycles through the array instead of using the fill.</p>
 <p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code>)</p>
-<pre>"testing"▐`_↑2█ ≡ "test""ing_"
-"testing"▐`_↑█2 ≡ "te""st""in""g_"
-"testing"▐`_↑█3 ≡ "tes""tin""g__"</pre>
+<pre>"testing"▐`_↑2■ ≡ "test""ing_"
+"testing"▐`_↑■2 ≡ "te""st""in""g_"
+"testing"▐`_↑■3 ≡ "tes""tin""g__"</pre>
 <p>these last cases can be replaced by <a href="#Chunks">Chunks</a> or <a href="#Pairs">Pairs</a>:</p>
 <pre>"testing"▐`_♥3 ≡ "tes""tin""g__"
 "testing"▐`_♥ ≡ "te""st""in""g_"</pre>
@@ -886,13 +886,13 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h2 class="rverb" id="19"><a class=h href="#19"></a><code>↓</code> (0x19, <code>'S</code>)<span class=rank>verb</span></h2>
 <h3 id="Take Right"><a class=h href="#Take Right"></a><code>α↓β</code> Take Right</h3>
 <p>make a new list with a prefix shape of β, where the elements are taken from α in reverse order. this truncates if α is longer than the elements needed (<code>β*</code>), and uses the fill of α if α is shorter.</p>
-<pre>9↕↓55 ≡ (█████)(█████)(█████)(█0123)(45678)
+<pre>9↕↓55 ≡ (■■■■■)(■■■■■)(■■■■■)(■0123)(45678)
 9↕↓23 ≡ (345)(678)</pre>
 <p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code>)</p>
 <pre>"testing"↓3 ≡ "ing"
 "testing"▐` ↓'21 ≡ "              testing"
-"testing"▐`_↓2█ ≡ "_tes""ting"
-"testing"▐`_↓█2 ≡ "_t""es""ti""ng"</pre>
+"testing"▐`_↓2■ ≡ "_tes""ting"
+"testing"▐`_↓■2 ≡ "_t""es""ti""ng"</pre>
 <p>see also: <a href="#Take">Take</a>, <a href="#Reshape">Reshape</a></p>
 <h3 id="Suffixes"><a class=h href="#Suffixes"></a><code>α↓</code> Suffixes</h3>
 <p>get the suffixes of the list α; take for every item in <code>β♣▲</code> (without the empty list, but with the unmodified argument: you can remove it with <a href="#Curtail">Curtail</a>.)</p>
@@ -1008,16 +1008,16 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>10101010# ≡ 0
 0001010# ≡ 3
 00002010# ≡ 4
-0000000# ≡ █</pre>
+0000000# ≡ ■</pre>
 <h3 id="Index Of"><a class=h href="#Index Of"></a><code>α#β</code> Index Of</h3>
 <p>find the first exact match in the list and return its index, or else <a href="#None">None</a>. β-pervasive.</p>
 <pre>"hello"#`l ≡ 2
-"abcdefghijklmnopqrs"#"beeimpostor" ≡ '1'4'4'8'12'15'14'18█'14'17
-012073167140#0123456789 ≡ 0125Φ█74██</pre>
+"abcdefghijklmnopqrs"#"beeimpostor" ≡ '1'4'4'8'12'15'14'18■'14'17
+012073167140#0123456789 ≡ 0125Φ■74■■</pre>
 <h2 class="rverb" id="24"><a class=h href="#24"></a><code>$</code> (0x24)<span class=rank>verb</span></h2>
 <h3 id="Call with None"><a class=h href="#Call with None"></a><code>α$</code> Call with None</h3>
 <p>calls the function α with <a href="#None">None</a> as an argument</p>
-<pre>.♫$ ≡ ♪█</pre>
+<pre>.♫$ ≡ ♪■</pre>
 <h3 id="Call"><a class=h href="#Call"></a><code>α$β</code> Call</h3>
 <p>calls the function α with <code>β@0</code> and <code>β@1</code> (only if <code>β~ ≥ 2</code>) as arguments.</p>
 <pre>.+$23 ≡ 5
@@ -1035,7 +1035,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>7%5 ≡ 2
 2%5 ≡ 2
 _3%5 ≡ 2
-4%0 ≡ █
+4%0 ≡ ■
 '20↕%3 ≡ 0120120120 1201201201
 '20↕-9└÷♫%3≡(_3_3_3_2_2_2ΘΘΘ00011122233)(01201201201201201201) ≡ 1</pre>
 <p>this is euclidean modulo; it always gives a positive result such that <code>β*(a÷β) + (α%β) ≡ α</code>.</p>
@@ -1077,7 +1077,7 @@ _1%_2 ≡ 1</pre>
 <p>there are more non-ascii characters than ascii characters in the codepage (256 - 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [<code>a</code>, <code>z</code>].</p>
 <p>the characters with single character escape sequences are the following:</p>
 <pre>!"#$%&'()*+,./:;&lt;=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
-‼═☻¶÷·─╙╜↔±○•╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬█◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈</pre>
+‼═☻¶÷·─╙╜↔±○•╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈</pre>
 <h3 id="Line Comment"><a class=h href="#Line Comment"></a><code>'&#x20;abc</code> Line Comment</h3>
 <p>all of the characters until the next line break will be ignored.</p>
 <h2 class="rgrammar" id="28"><a class=h href="#28"></a><code>(</code> (0x28)<span class=rank>grammar</span></h2>
@@ -1171,7 +1171,7 @@ _1%_2 ≡ 1</pre>
 <p>calculate α / β. scalar</p>
 <pre>6/2 ≡ 3
 6/3 ≡ 2
-0/0 ≡ █</pre>
+0/0 ≡ ■</pre>
 <h2 class="rnoun" id="30"><a class=h href="#30"></a><code>0</code> (0x30)<span class=rank>noun</span></h2>
 <h3 id="Zero"><a class=h href="#Zero"></a><code>0</code> Zero</h3>
 <p>the integer 0</p>
@@ -1287,7 +1287,7 @@ _1%_2 ≡ 1</pre>
 123454321234=2 ≡ 010000010100
 "words words words"=`  ≡ 00000100000100000</pre>
 <p>two NaNs compare equal:</p>
-<pre>█=█ ≡ 1</pre>
+<pre>■=■ ≡ 1</pre>
 <h2 class="rverb" id="3E"><a class=h href="#3E"></a><code>></code> (0x3E)<span class=rank>verb</span></h2>
 <h3 id="Grade Up"><a class=h href="#Grade Up"></a><code>α></code> Grade Up</h3>
 <p>Grade Up can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α~↕</code> according to α</p>
@@ -1327,20 +1327,20 @@ _1%_2 ≡ 1</pre>
 (*3-2)@5 ≡ '13
 (♠)@"bee" ≡ "eeb"</pre>
 <p>if the index is outside the list's domain [0, α~), or if it is null, it uses its fill</p>
-<pre>123@5 ≡ █
+<pre>123@5 ≡ ■
 123▐0@5 ≡ 0
-123▐0@█ ≡ 0</pre>
+123▐0@■ ≡ 0</pre>
 <p>when α and β are lists, this indexes at depth, so that <code>l@20 ≡ l@2@0</code></p>
 <pre>(12)(34)(56)(78)@20 ≡ 5
 (12)(34)(56)(78)@21 ≡ 6
 (+3)(-2)(½)(÷8)@27 ≡ '3.5</pre>
 <p>in this case, null selects all the items. this can be useful for retrieving columns of a matrix</p>
-<pre>123@♪█ ≡ 123
-(12)(34)(56)(78)@2█ ≡ 56
-(12)(34)(56)(78)@█1 ≡ 2468
-(123)(456)(789)@1█ ≡ 456
-(123)(456)(789)@█1 ≡ 258
-(123)(456)(789)@█2 ≡ 369</pre>
+<pre>123@♪■ ≡ 123
+(12)(34)(56)(78)@2■ ≡ 56
+(12)(34)(56)(78)@■1 ≡ 2468
+(123)(456)(789)@1■ ≡ 456
+(123)(456)(789)@■1 ≡ 258
+(123)(456)(789)@■2 ≡ 369</pre>
 <h2 class="rverb_variable" id="41"><a class=h href="#41"></a><code>A</code> (0x41)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αA</code> <code>αAβ</code> </h3>
 <p>general-purpose verb variable. by default, <code>→a</code>.</p>
@@ -1427,7 +1427,7 @@ _1%_2 ≡ 1</pre>
 <h2 class="rverb" id="5C"><a class=h href="#5C"></a><code>\</code> (0x5C)<span class=rank>verb</span></h2>
 <h3 id="Filter Holes"><a class=h href="#Filter Holes"></a><code>α\</code> Filter Holes</h3>
 <p>remove <a href="#None">None</a>s in the list α.</p>
-<pre>█12█345██67█89\ ≡ 123456789</pre>
+<pre>■12■345■■67■89\ ≡ 123456789</pre>
 <h3 id="Set Difference"><a class=h href="#Set Difference"></a><code>α\β</code> Set Difference</h3>
 <p>return α without the items in β</p>
 <pre>"hello world i am a vemf test"\`  ≡ "helloworldiamavemftest"
@@ -1602,7 +1602,7 @@ _1%_2 ≡ 1</pre>
 2ü ≡ 2</pre>
 <h3 id="Group"><a class=h href="#Group"></a><code>αüβ</code> Group</h3>
 <p>pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the <a href="#Empty List">Empty List</a>. if β is <a href="#None">None</a>, the element will be ignored.</p>
-<pre>"vemf programming language"ü0000█11111112222█33333333 ≡ "vemf""program""ming""language"▐φ
+<pre>"vemf programming language"ü0000■11111112222■33333333 ≡ "vemf""program""ming""language"▐φ
 123456789ü012012012 ≡ (147)(258)(369)▐φ
 "bee bumblebee honeybee"ü000φ111111000φ11111000 ≡ "beebeebee""bumblehoney"▐φ
 "eastern bumblehoneybee"ü2222222211111122222(012)(012)(012) ≡ "bee""bumblebee""eastern honeybee"▐φ</pre>
@@ -1625,9 +1625,9 @@ _1%_2 ≡ 1</pre>
 π/6â ± 3√/3
 π/4â ± 1
 π/3â ± 3√
-π/2â ± █
+π/2â ± ■
 πâ ± 0
-π*3½â ± █
+π*3½â ± ■
 π*2â ± 0</pre>
 <h3 id="Bitwise And"><a class=h href="#Bitwise And"></a><code>αâβ</code> Bitwise And</h3>
 <p>calculate bitwise AND of integers α and β. scalar.</p>
@@ -1804,14 +1804,14 @@ _2Ä0 ≡ π½-</pre>
 <pre>123+45 ≡ 57
 123+(45▐0) ≡ 57
 123+(45▐0Æ) ≡ 573
-123+(45Æ) ≡ 57█
+123+(45Æ) ≡ 57■
 123Æ~ ≡ ∞
-123Æ@5 ≡ █</pre>
+123Æ@5 ≡ ■</pre>
 <h3 id="Expand with Fill"><a class=h href="#Expand with Fill"></a><code>αÆβ</code> Expand with Fill</h3>
 <p>turn α into an infinite list, where the items outside the list are β. equivalent to <code>▐Æ</code></p>
 <pre>123+(45Æ0) ≡ 573
 123Æ0@5 ≡ 0
-123Æ█@5 ≡ █
+123Æ■@5 ≡ ■
 123Æ456@_2 ≡ 456</pre>
 <h2 class="rverb" id="93"><a class=h href="#93"></a><code>ô</code> (0x93, <code>'o^</code>)<span class=rank>verb</span></h2>
 <h3 id="Cosine"><a class=h href="#Cosine"></a><code>αô</code> Cosine</h3>
@@ -1854,8 +1854,8 @@ _2Ä0 ≡ π½-</pre>
 320110433250(û¬)╓‼ ≡ 320145  ' same as α∩</pre>
 <h3 id="Unique Index Of"><a class=h href="#Unique Index Of"></a><code>αûβ</code> Unique Index Of</h3>
 <p>for every element in β, find the index of the first unused match in α, or <a href="#None">None</a>.</p>
-<pre>22235 û 223357 ≡ 013█4█
-3333 û 3323 ≡ 01█2</pre>
+<pre>22235 û 223357 ≡ 013■4■
+3333 û 3323 ≡ 01■2</pre>
 <h2 class="rverb" id="97"><a class=h href="#97"></a><code>ù</code> (0x97, <code>'u`</code>)<span class=rank>verb</span></h2>
 <h3 id="Real Part"><a class=h href="#Real Part"></a><code>αù</code> Real Part</h3>
 <p>get the real part of a complex number α. scalar.</p>
@@ -1908,18 +1908,18 @@ _4¢ ≡ 4
 <h2 class="rverb" id="9C"><a class=h href="#9C"></a><code>£</code> (0x9C, <code>'fd</code>)<span class=rank>verb</span></h2>
 <h3 id="Find"><a class=h href="#Find"></a><code>α£β</code> Find</h3>
 <p>finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are <a href="#None">None</a>. if β is a scalar or the <a href="#Empty List">Empty List</a>, search for the element β.</p>
-<pre>"sus sus amongus"£`s    ≡ 0█0█0█0███████0
-"sus sus amongus"£"s"   ≡ 0█0█0█0███████0
-"sus sus amongus"£"us"  ≡ █01██01██████01
-"sus sus amongus"£"us " ≡ █012█012███████
-"sus sus amongus"£"sus" ≡ 012█012████████
-"bee beebeee beebe"£"ee"  ≡ █01██01█01███01██
-"bee beebeee beebe"£"bee" ≡ 012█012012██012██</pre>
+<pre>"sus sus amongus"£`s    ≡ 0■0■0■0■■■■■■■0
+"sus sus amongus"£"s"   ≡ 0■0■0■0■■■■■■■0
+"sus sus amongus"£"us"  ≡ ■01■■01■■■■■■01
+"sus sus amongus"£"us " ≡ ■012■012■■■■■■■
+"sus sus amongus"£"sus" ≡ 012■012■■■■■■■■
+"bee beebeee beebe"£"ee"  ≡ ■01■■01■01■■■01■■
+"bee beebeee beebe"£"bee" ≡ 012■012012■■012■■</pre>
 <p>this is similar to using <a href="#Scan Windows">Scan Windows</a> and <a href="#Matches">Matches</a> <code>α(►~)╫≡β</code> but this does not include overlapping matches</p>
-<pre>"asininity"£"ini" ≡ ██012████
+<pre>"asininity"£"ini" ≡ ■■012■■■■
 "asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!</pre>
 <p>its format is also a bit more convenient: same length as the original string, and you can do <code>=0</code> to find the starts of matches or <a href="#Is Some">Is Some</a> <code>▀</code> to find all the matched characters:</p>
-<pre>"sus sus amongus"£"sus"   ≡ 012█012████████
+<pre>"sus sus amongus"£"sus"   ≡ 012■012■■■■■■■■
 "sus sus amongus"£"sus"=0 ≡ 100010000000000
 "sus sus amongus"£"sus"▀  ≡ 111011100000000</pre>
 <p>see also: <a href="#Equals">Equals</a>, <a href="#Scan Windows">Scan Windows</a>, <a href="#Split">Split</a></p>
@@ -1989,7 +1989,7 @@ _4¢ ≡ 4
 3ú ≡ 0</pre>
 <h3 id="Index of Last"><a class=h href="#Index of Last"></a><code>αúβ</code> Index of Last</h3>
 <p>find the last exact match in the list and return its index, or else <a href="#None">None</a>. β-pervasive.</p>
-<pre>012073167140ú0123456789 ≡ '11 925Φ█78██</pre>
+<pre>012073167140ú0123456789 ≡ '11 925Φ■78■■</pre>
 <h2 class="rverb" id="A4"><a class=h href="#A4"></a><code>ñ</code> (0xA4, <code>'n- 'n~</code>)<span class=rank>verb</span></h2>
 <h3 id="Minimum"><a class=h href="#Minimum"></a><code>αñβ</code> Minimum</h3>
 <p>return the lowest number between α and β. scalar.</p>
@@ -2130,54 +2130,73 @@ _2Ñ0 ≡ 0</pre>
 <pre>12345» ≡ 51234</pre>
 <h2 class="rliteral" id="B0"><a class=h href="#B0"></a><code>░</code> (0xB0, <code>'l2</code>)<span class=rank>literal</span></h2>
 <h3 id="Short Literal"><a class=h href="#Short Literal"></a><code>░☺☻</code> Short Literal</h3>
-<p>shorthand for an <a href="#Integer Literal">Integer Literal</a> with 2 bytes (same as <code>■2</code>)</p>
+<p>shorthand for an <a href="#Integer Literal">Integer Literal</a> with 2 bytes (same as <code>█2</code>)</p>
 <h2 class="rliteral" id="B1"><a class=h href="#B1"></a><code>▒</code> (0xB1, <code>'l3</code>)<span class=rank>literal</span></h2>
 <h3 id="Long Literal"><a class=h href="#Long Literal"></a><code>▒☺☻♥</code> Long Literal</h3>
-<p>shorthand for an <a href="#Integer Literal">Integer Literal</a> with 3 bytes (same as <code>■3</code>)</p>
+<p>shorthand for an <a href="#Integer Literal">Integer Literal</a> with 3 bytes (same as <code>█3</code>)</p>
 <h2 class="rliteral" id="B2"><a class=h href="#B2"></a><code>▓</code> (0xB2, <code>'l4 'c2</code>)<span class=rank>literal</span></h2>
 <h3 id="Digraph Literal"><a class=h href="#Digraph Literal"></a><code>▓ab</code> Digraph Literal</h3>
 <p>a 2 character literal.</p>
 <pre>▓() ≡ `(`)
 ▓012 ≡ (`0`1)2</pre>
 <p>see also: <a href="#Character Literal">Character Literal</a></p>
-<h2 class="rnoun" id="DB"><a class=h href="#DB"></a><code>█</code> (0xDB, <code>'N</code>)<span class=rank>noun</span></h2>
-<h3 id="None"><a class=h href="#None"></a><code>█</code> None</h3>
-<p>none, null, nil, NaN. used as a dummy value sometimes.</p>
-<p>see also: <a href="#Is None">Is None</a>, <a href="#Is Some">Is Some</a>, <a href="#Fill Holes">Fill Holes</a>, <a href="#Replace Holes">Replace Holes</a>, <a href="#Filter Holes">Filter Holes</a>, <a href="#Nullify">Nullify</a></p>
+<h2 class="rliteral" id="DB"><a class=h href="#DB"></a><code>█</code> (0xDB, <code>'il</code>)<span class=rank>literal</span></h2>
+<h3 id="Integer Literals"><a class=h href="#Integer Literals"></a><code>█4☺☻♥♦</code> Integer Literals</h3>
+<p>a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the <code>█</code> there will be a digit from 1 to 8 that specifies the number of bytes of the integer. <code>░</code> <a href="#Short Literal">Short Literal</a>s and <code>▒</code> <a href="#Long Literal">Long Literal</a>s are equivalent to <code>█2</code> and <code>█3</code> respectively.</p>
+<p>an example: <code>█3☻♥♦</code> is the number <code>131844</code>. the number after the <code>█</code> is 3, so it will read three bytes. those bytes are <code>☻</code> <code>♥</code> <code>♦</code>, which means the output will be 0x020304, or <code>2*256^2 + 3*256 + 4</code>, or 131844.</p>
+<pre>█3☻♥♦ ≡ '131844
+█3☻♥♦ ≡ 2*('256^2) + (3*'256) + 4</pre>
+<p><code>▒</code> can also be used here:</p>
+<pre>▒☻♥♦ ≡ '131844</pre>
+<p>let's represent the number 123456789. we can either use the <a href="#Base Encode">Base Encode</a> function: </p>
+<pre>'123456789é'256 ≡ '7'91'205'21▐0</pre>
+<p>alternatively, get the raw <a href="#Bits">Bits</a> of the number, partition it into <a href="#Chunks">Chunks</a> of 8 bits, and <a href="#Decode Binary">Decode Binary</a> them:</p>
+<pre>'123456789é♥8╕è ≡ '0'0'0'0'7'91'205'21</pre>
+<p>we can represent the bytes as a codepage string (see <a href="#Custom Format">Custom Format</a>):</p>
+<pre>    '7'91'205'21ⁿ5☻·
+"•[═§"</pre>
+<p>if we try it out,</p>
+<pre>█4•[═§ ≡ '123456789</pre>
+<p>byte literals support negative numbers as well, using the two's complement when the first byte is over 127. <code>░²²</code> is not <code>253*256 + 253</code> or 64009, it's <code>65536 - 64009</code> or −515.</p>
+<pre>░²² ≡ '-515</pre>
+<p>integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF</p>
+<pre>░²²é♥8╕è ≡ '255'255'255'255'255'255'253'253</pre>
+<p><code>█</code> is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.</p>
+<p>see also: <a href="#Short Literal">Short Literal</a>, <a href="#Long Literal">Long Literal</a>, <a href="#Character Literal">Character Literal</a>, <a href="#Digraph Literal">Digraph Literal</a></p>
 <h2 class="rverb" id="DC"><a class=h href="#DC"></a><code>▄</code> (0xDC, <code>'hd</code>)<span class=rank>verb</span></h2>
 <h3 id="Is None"><a class=h href="#Is None"></a><code>α▄</code> Is None</h3>
 <p>1 if α is none, otherwise 0. scalar.</p>
-<pre>█▄ ≡ 1
-12█456█78▄ ≡ 001000100</pre>
+<pre>■▄ ≡ 1
+12■456■78▄ ≡ 001000100</pre>
 <p>see also: <a href="#Is Some">Is Some</a></p>
 <h3 id="Denullify"><a class=h href="#Denullify"></a><code>α▄β</code> Denullify</h3>
 <p>if β is not 0, return <a href="#None">None</a>, otherwise α. scalar.</p>
-<pre>123456789▄010103102 ≡ 1█3█5██8█</pre>
+<pre>123456789▄010103102 ≡ 1■3■5■■8■</pre>
 <p>see also: <a href="#Nullify">Nullify</a></p>
 <h2 class="rverb" id="DD"><a class=h href="#DD"></a><code>▌</code> (0xDD, <code>'hl</code>)<span class=rank>verb</span></h2>
 <h3 id="Fill Holes"><a class=h href="#Fill Holes"></a><code>α▌</code> Fill Holes</h3>
 <p>replace <a href="#None">None</a>s in the list α with its fill.</p>
-<pre>12█456█78▐0▌ ≡ 120456078</pre>
+<pre>12■456■78▐0▌ ≡ 120456078</pre>
 <h3 id="Replace Holes"><a class=h href="#Replace Holes"></a><code>α▌β</code> Replace Holes</h3>
 <p>replace <a href="#None">None</a>s in the list α with β.</p>
-<pre>12█456█78▌0 ≡ 120456078</pre>
+<pre>12■456■78▌0 ≡ 120456078</pre>
 <h2 class="rverb" id="DE"><a class=h href="#DE"></a><code>▐</code> (0xDE, <code>'hr</code>)<span class=rank>verb</span></h2>
 <h3 id="Get Fill"><a class=h href="#Get Fill"></a><code>α▐</code> Get Fill</h3>
 <p>gets the fill of the list α.</p>
-<pre>123▐ ≡ █</pre>
+<pre>123▐ ≡ ■</pre>
 <h3 id="Set Fill"><a class=h href="#Set Fill"></a><code>α▐β</code> Set Fill</h3>
 <p>returns the list α with the fill changed.</p>
 <pre>123▐1▐ ≡ 1</pre>
 <h2 class="rverb" id="DF"><a class=h href="#DF"></a><code>▀</code> (0xDF, <code>'hu</code>)<span class=rank>verb</span></h2>
 <h3 id="Is Some"><a class=h href="#Is Some"></a><code>α▀</code> Is Some</h3>
 <p>check if α is not null. same as <code>¬▄</code>. scalar.</p>
-<pre>█▀ ≡ 0
+<pre>■▀ ≡ 0
 1▀ ≡ 1
-12█456█78▀ ≡ 110111011</pre>
+12■456■78▀ ≡ 110111011</pre>
 <p>see also: <a href="#Is None">Is None</a></p>
 <h3 id="Nullify"><a class=h href="#Nullify"></a><code>α▀β</code> Nullify</h3>
 <p>if β is 0, return <a href="#None">None</a>, otherwise α. scalar.</p>
-<pre>123456789▀010103102 ≡ █2█4█67█9</pre>
+<pre>123456789▀010103102 ≡ ■2■4■67■9</pre>
 <p>see also: <a href="#Denullify">Denullify</a></p>
 <h2 class="rvariable" id="E0"><a class=h href="#E0"></a><code>α</code> (0xE0, <code>'A</code>)<span class=rank>variable</span></h2>
 <h3 id="Alpha"><a class=h href="#Alpha"></a><code>α</code> Alpha</h3>
@@ -2187,7 +2206,7 @@ _2Ñ0 ≡ 0</pre>
 <h2 class="rvariable" id="E1"><a class=h href="#E1"></a><code>β</code> (0xE1, <code>'B</code>)<span class=rank>variable</span></h2>
 <h3 id="Beta"><a class=h href="#Beta"></a><code>β</code> Beta</h3>
 <p>the right argument. if not in a function definition, the second argument passed in the command line, or <code>δ@1</code>. if the function was called monadically, this will be <a href="#None">None</a>.</p>
-<pre>"left"{βÇ} ≡ █
+<pre>"left"{βÇ} ≡ ■
 "left"{βÇ}"right" ≡ "RIGHT"</pre>
 <h2 class="rnoun" id="E2"><a class=h href="#E2"></a><code>Γ</code> (0xE2, <code>'g+</code>)<span class=rank>noun</span></h2>
 <h3 id="Imaginary Constant"><a class=h href="#Imaginary Constant"></a><code>Γ</code> Imaginary Constant</h3>
@@ -2334,14 +2353,14 @@ _3± ≡ Θ
 <p>see also: <a href="#Floor">Floor</a>, <a href="#Round">Round</a>, <a href="#Euclidean Division">Euclidean Division</a></p>
 <h3 id="Shift Right"><a class=h href="#Shift Right"></a><code>α⌠β</code> Shift Right</h3>
 <p>returns a list of the same length as α, with every item shifted to the right by β, using the fill of α to fill the blanks. β-pervasive.</p>
-<pre>12345678⌠3 ≡ ███12345
+<pre>12345678⌠3 ≡ ■■■12345
 87654321▐0⌠5 ≡ 00000876
 "yeah!!!"▐` ⌠4 ≡ "    yea"
 "yeah!!!"▐` ⌠2 ≡ "  yeah!"</pre>
 <p>a negative β acts like <a href="#Shift Left">Shift Left</a>:</p>
 <pre>"yeah!!!"▐` ⌠_2 ≡ "ah!!!  "</pre>
 <p>and if <code>α~≤β</code>, the whole list will be filled:</p>
-<pre>12345678⌠8 ≡ ████████</pre>
+<pre>12345678⌠8 ≡ ■■■■■■■■</pre>
 <p>see also: <a href="#Shift Left">Shift Left</a>, <a href="#Rotate Right">Rotate Right</a></p>
 <h2 class="rverb" id="F5"><a class=h href="#F5"></a><code>⌡</code> (0xF5, <code>'fl</code>)<span class=rank>verb</span></h2>
 <h3 id="Floor"><a class=h href="#Floor"></a><code>α⌡</code> Floor</h3>
@@ -2352,14 +2371,14 @@ _3± ≡ Θ
 <p>see also: <a href="#Ceiling">Ceiling</a>, <a href="#Round">Round</a></p>
 <h3 id="Shift Left"><a class=h href="#Shift Left"></a><code>α⌡β</code> Shift Left</h3>
 <p>returns a list of the same length as α, with every item shifted to the left by β, using the fill of α to fill the blanks. β-pervasive.</p>
-<pre>12345678⌡3 ≡ 45678███
+<pre>12345678⌡3 ≡ 45678■■■
 87654321▐0⌡5 ≡ 32100000
 "yeah!!!"▐` ⌡4 ≡ "!!!    "
 "yeah!!!"▐` ⌡2 ≡ "ah!!!  "</pre>
 <p>a negative β acts like <a href="#Shift Left">Shift Left</a>:</p>
 <pre>"yeah!!!"▐` ⌡_2 ≡ "  yeah!"</pre>
 <p>and if <code>α~≤β</code>, the whole list will be filled:</p>
-<pre>12345678⌡8 ≡ ████████</pre>
+<pre>12345678⌡8 ≡ ■■■■■■■■</pre>
 <p>see also: <a href="#Shift Right">Shift Right</a>, <a href="#Rotate Left">Rotate Left</a></p>
 <h2 class="rverb" id="F6"><a class=h href="#F6"></a><code>÷</code> (0xF6, <code>'%</code>)<span class=rank>verb</span></h2>
 <h3 id="Round"><a class=h href="#Round"></a><code>α÷</code> Round</h3>
@@ -2438,29 +2457,10 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Binomial Coefficient"><a class=h href="#Binomial Coefficient"></a><code>α²β</code> Binomial Coefficient</h3>
 <p>calculate the binomial coefficient <code>α choose β</code>. scalar.</p>
 <pre>4²012345 ≡ 146410</pre>
-<h2 class="rliteral" id="FE"><a class=h href="#FE"></a><code>■</code> (0xFE, <code>'dt</code>)<span class=rank>literal</span></h2>
-<h3 id="Integer Literals"><a class=h href="#Integer Literals"></a><code>■4☺☻♥♦</code> Integer Literals</h3>
-<p>a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the <code>■</code> there will be a digit from 1 to 8 that specifies the number of bytes of the integer. <code>░</code> <a href="#Short Literal">Short Literal</a>s and <code>▒</code> <a href="#Long Literal">Long Literal</a>s are equivalent to <code>■2</code> and <code>■3</code> respectively.</p>
-<p>an example: <code>■3☻♥♦</code> is the number <code>131844</code>. the number after the <code>■</code> is 3, so it will read three bytes. those bytes are <code>☻</code> <code>♥</code> <code>♦</code>, which means the output will be 0x020304, or <code>2*256^2 + 3*256 + 4</code>, or 131844.</p>
-<pre>■3☻♥♦ ≡ '131844
-■3☻♥♦ ≡ 2*('256^2) + (3*'256) + 4</pre>
-<p><code>▒</code> can also be used here:</p>
-<pre>▒☻♥♦ ≡ '131844</pre>
-<p>let's represent the number 123456789. we can either use the <a href="#Base Encode">Base Encode</a> function: </p>
-<pre>'123456789é'256 ≡ '7'91'205'21▐0</pre>
-<p>alternatively, get the raw <a href="#Bits">Bits</a> of the number, partition it into <a href="#Chunks">Chunks</a> of 8 bits, and <a href="#Decode Binary">Decode Binary</a> them:</p>
-<pre>'123456789é♥8╕è ≡ '0'0'0'0'7'91'205'21</pre>
-<p>we can represent the bytes as a codepage string (see <a href="#Custom Format">Custom Format</a>):</p>
-<pre>    '7'91'205'21ⁿ5☻·
-"•[═§"</pre>
-<p>if we try it out,</p>
-<pre>■4•[═§ ≡ '123456789</pre>
-<p>byte literals support negative numbers as well, using the two's complement when the first byte is over 127. <code>░²²</code> is not <code>253*256 + 253</code> or 64009, it's <code>65536 - 64009</code> or −515.</p>
-<pre>░²² ≡ '-515</pre>
-<p>integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF</p>
-<pre>░²²é♥8╕è ≡ '255'255'255'255'255'255'253'253</pre>
-<p><code>■</code> is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.</p>
-<p>see also: <a href="#Short Literal">Short Literal</a>, <a href="#Long Literal">Long Literal</a>, <a href="#Character Literal">Character Literal</a>, <a href="#Digraph Literal">Digraph Literal</a></p>
+<h2 class="rnoun" id="FE"><a class=h href="#FE"></a><code>■</code> (0xFE, <code>'N</code>)<span class=rank>noun</span></h2>
+<h3 id="None"><a class=h href="#None"></a><code>■</code> None</h3>
+<p>none, null, nil, NaN. used as a dummy value sometimes.</p>
+<p>see also: <a href="#Is None">Is None</a>, <a href="#Is Some">Is Some</a>, <a href="#Fill Holes">Fill Holes</a>, <a href="#Replace Holes">Replace Holes</a>, <a href="#Filter Holes">Filter Holes</a>, <a href="#Nullify">Nullify</a></p>
 <h2 class="r1-adverb" id="B8"><a class=h href="#B8"></a><code>╕</code> (0xB8, <code>'|</code>)<span class=rank>1-adverb</span></h2>
 <h3 id="Each"><a class=h href="#Each"></a><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
@@ -2543,7 +2543,7 @@ _1÷_2 ≡ 1</pre>
 <p>you can fold starting from the right (as in <code>foldr</code> in haskell) with <a href="#Reverse">Reverse</a> and <a href="#Swap/Selfie">Swap/Selfie</a>:</p>
 <pre>12345♠╧┴♫ ≡ 1(2(3(45)))</pre>
 <p>an empty list will yield null. a one element list (or a scalar) will return itself.</p>
-<pre>φ╧+ ≡ █
+<pre>φ╧+ ≡ ■
 ♪8╧+ ≡ 8</pre>
 <p>see also: <a href="#Scan">Scan</a></p>
 <h3 id="Seeded Reduce"><a class=h href="#Seeded Reduce"></a><code>α╧Gβ</code> Seeded Reduce</h3>
@@ -2587,11 +2587,11 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Valences"><a class=h href="#Valences"></a><code>αF╬G</code> Valences</h3>
 <p>call F.</p>
 <pre>1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ} ≡ "monad 1"
-1█╬►  ≡ █</pre>
+1■╬►  ≡ ■</pre>
 <h3 id="Valences"><a class=h href="#Valences"></a><code>αF╬Gβ</code> Valences</h3>
 <p>call G.</p>
 <pre>1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ}2 ≡ "dyad 1 2"
-1█╬►2 ≡ 2</pre>
+1■╬►2 ≡ 2</pre>
 <h2 class="r2-adverb" id="CB"><a class=h href="#CB"></a><code>╦</code> (0xCB, <code>'su</code>)<span class=rank>2-adverb</span></h2>
 <h3 id="Scan Until"><a class=h href="#Scan Until"></a><code>αF╦G</code> Scan Until</h3>
 <p>call a function G repeatedly, returning all the different iterations, until F passes. F is passed the current iteration as α and the last iteration as β.</p>
@@ -2715,7 +2715,7 @@ _1÷_2 ≡ 1</pre>
 <p>like <code>↔name</code> <a href="#Mutate">Mutate</a> but acts as a statement and changes the contents of the body.</p>
 <pre>3─n 4─m *2═n n ≡ 6</pre>
 <p>if there is nothing in the statement body, the variable will be removed from its scope.</p>
-<pre>4─a0{═a}·a ≡ █</pre>
+<pre>4─a0{═a}·a ≡ ■</pre>
 <h2 class="rgrouper" id="DA"><a class=h href="#DA"></a><code>┌</code> (0xDA, <code>'g1</code>)<span class=rank>grouper</span></h2>
 <h3 id="1-Group"><a class=h href="#1-Group"></a><code>┌m</code> 1-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>

@@ -5,9 +5,9 @@
 @êª'16▐`0↓2Ç─fc
 φ─titles
 ∞Ü ¥"◙---◙"─pg
-█§'256─tab
+■§'256─tab
 ;"<a class=h href=¨#","¨></a>"─H
-¥"||"(♣%2)╓╕►╨(◄(;"a href=¨#","¨")╓T),(=``╤+%2╪-0▲¡"<code>"█"</code>")╖╕▌,─fmt
+¥"||"(♣%2)╓╕►╨(◄(;"a href=¨#","¨")╓T),(=``╤+%2╪-0▲¡"<code>"■"</code>")╖╕▌,─fmt
 
 .pg╕{
     ─tab α¥Φ▐φL·
@@ -19,7 +19,7 @@
     (.hex H)(c:esc T"code")" (0x".hex.ascii")"(.type(~`_)╓▀▌` T"span class=rank"),
         T("h2 class=¨r".type"¨ id=¨".hex"¨",),Φ─h
     .title≈? ["<h2 class=prose id=¨",.title,"¨>",│.title H,.title,"</h2>◙"─h ¬.title═titles]·
-    l╕{ @=`:? █◘
+    l╕{ @=`:? ■◘
         @=`>? α♂2:esc T"pre"◘
         @=`#? α♂_₧` ╧{ ◄@=`_? [;`_═c ♂═α]· `αëA `βëB ·
             │βH,(α:esc{

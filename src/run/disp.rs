@@ -85,7 +85,7 @@ pub fn format(&self, f: &mut impl Write, slice: &[Val]) -> FResult {
     };
     match self {
         Num(n) => {
-            if n.is_nan() { return write!(f, "█"); }
+            if n.is_nan() { return write!(f, "■"); }
             write!(f, "{}", n.re)?;
             if n.im != 0. { write!(f, "{:+}i", n.im)? };
         Ok(()) },

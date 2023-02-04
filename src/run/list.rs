@@ -212,7 +212,7 @@ func!(@env, a :takeright b => reshape(env, a, b, true));
 pub fn reshape(env: &mut Env, a: Val, b: Val, isright: bool) -> Val {
     if b.is_infinite() { return NAN };
     let mut shape = Vec::<usize>::new();
-    let mut spot = None::<usize>; // in 2█↑, the spot is Some(1)
+    let mut spot = None::<usize>; // in 2■↑, the spot is Some(1)
     let mut product = if isright {-1} else {1};
     for i in b.iterf() { 
         if i.is_nan() && spot.is_none() { // there can only be 1 spot 

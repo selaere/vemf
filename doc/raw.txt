@@ -73,11 +73,11 @@ and `α♫β` creates a ||Pair||:
 > 5↕ ≡ 01234
 if you want something more familiar, try `α↨` ||Inclusive Iota||:
 > 5↨ ≡ 12345
-all lists have a Fill, usually ||None||. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:
-> 123@3 ≡ █
-the default fill is █ ||None||. you can get a list with a fill with `α▐β` ||Set Fill||, and query it with `α▐` ||Get Fill||.
+all lists have a Fill, usually `■` ||None||. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:
+> 123@3 ≡ ■
+the default fill is ||None||. you can get a list with a fill with `α▐β` ||Set Fill||, and query it with `α▐` ||Get Fill||.
 > 123▐0@3 ≡ 0
-> 123▐ ≡ █
+> 123▐ ≡ ■
 > 123▐0▐ ≡ 0
 `α↑β` ||Take|| takes the first β items, and `α♂β` ||Drop|| returns everything but the first β items:
 > "javascript"↑4 ≡ "java"
@@ -225,7 +225,7 @@ this way of defining functions, stringing other functions together with combinat
 > {α▲*α½}─triang 6:triang ≡ '21  ' multiplication is commutative
 but the tacit form is simpler (and shorter, and somewhat faster).
 here is another way of representing all the combinators that i can test automatically
-> ♫,;`(,`)─F ♫,;`[,`]─G ♫,;`{,`}─H ≡ █
+> ♫,;`(,`)─F ♫,;`[,`]─G ♫,;`{,`}─H ≡ ■
 > (`a┴G)   (`a┴G`b)    ≡ "[aa]"    "[ba]"
 > (`aF╜G)  (`aF╜G`b)   ≡ "[(a)]"   "[(a)b]"
 > (`aF╙G)  (`aF╙G`b)   ≡ "[a]"     "[a(b)]"
@@ -283,16 +283,16 @@ prints `αⁿ` or `αⁿβ` and returns α unchanged. useful when debugging trai
 :type: verb
 #1 Pairs
 split α into pairs, using the fill of α if a pair isn't full. equivalent to `♥2`
-> 123456789♥ ≡ (12)(34)(56)(78)(9█)
+> 123456789♥ ≡ (12)(34)(56)(78)(9■)
 > 123456789▐1♥ ≡ (12)(34)(56)(78)(91)
 > "things"♥ ≡ "th""in""gs"
 #2 Chunks
-split α into β-sized chunks, using the fill of α if a group isn't full. for scalar β, this is the same as `α↑█β` (see ||Take||):
+split α into β-sized chunks, using the fill of α if a group isn't full. for scalar β, this is the same as `α↑■β` (see ||Take||):
 > 123456789♥3 ≡ (123)(456)(789)
-> 123456789♥4 ≡ (1234)(5678)(9███)
+> 123456789♥4 ≡ (1234)(5678)(9■■■)
 > 123456789▐0♥4 ≡ (1234)(5678)(9000)
-if β is a list, `α♥β` reshapes into groups of `β*` and reshapes them. equivalent to `α↑(█,β)`
-> 123456789♥22 ≡ (│12│34)(│56│78)(│9█│██)
+if β is a list, `α♥β` reshapes into groups of `β*` and reshapes them. equivalent to `α↑(■,β)`
+> 123456789♥22 ≡ (│12│34)(│56│78)(│9■│■■)
 > "chunk brick block"▐` ♥23 ≡ ("chu""nk ")("bri""ck ")("blo""ck ")
 ---
 :char: ♦
@@ -321,7 +321,7 @@ for rectangular arrays, this is similar to `α▬β↕`. but if the elements hav
 > 323"to"(├100├010├001)♣3 ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422
 if `β=∞`, this basically returns the indices of all the scalars. this can be, in general, a good indicator of the shape of an array
 > 323"to"(├100├010├001)♣∞ ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422
-> 1(2(3(4(5█))))♣∞ ≡ ♪0(10)(110)(1110)(11110)(11111)
+> 1(2(3(4(5■))))♣∞ ≡ ♪0(10)(110)(1110)(11110)(11111)
 ---
 :char: ♠
 :ascii: 'R
@@ -337,7 +337,7 @@ reverse a list.
 :type: grammar
 #n 1-Adverb
 the variable `name` with 1-adverb role
-> {{αβσμ}}─d 1•d23 ≡ 1 3 2 █
+> {{αβσμ}}─d 1•d23 ≡ 1 3 2 ■
 see also: ||Dyadic Adverb||
 ---
 :char: ◘
@@ -467,7 +467,7 @@ if β is longer than α, remaining elements are ignored; if α is longer than β
 > "abcdef"‼(10101▐1) ≡ "acef"
 > "abcdef"‼0101010101 ≡ "bdf"
 α's fill is kept for the resulting list. negative elements in β indicate that the fill element will be duplicated instead
-> 12345‼12_34 ≡ 122███4444
+> 12345‼12_34 ≡ 122■■■4444
 > 12345▐0‼12_34 ≡ 1220004444▐0
 Replicate also works with nested lists in β, and it flattens the structure:
 > (123)(456)7‼(123)(210)3 ≡ 122333445777
@@ -494,8 +494,8 @@ make a new list with a prefix shape of β, where the elements are taken from α 
 > "testing"¶'21 ≡ "testingtestingtesting"
 ||Take|| is similar to ||Reshape||, but it does not repeat elements, using the fill instead.
 when there is a single ||None|| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-||None|| elements of β and the length of α, or `β▀*/(α~)⌠`)
-> "testing"¶2█ ≡ "test""ingt"
-> "testing"¶█2 ≡ "te""st""in""gt"
+> "testing"¶2■ ≡ "test""ingt"
+> "testing"¶■2 ≡ "te""st""in""gt"
 see also: ||Take||, ||Take Right||, ||Cycle||
 ---
 :char: §
@@ -553,16 +553,16 @@ the range used is [α, β]. note that this means the resulting array is of lengt
 :type: verb
 #2 Take
 make a new list with a prefix shape of β, where the elements are taken from α in order. this truncates if α is longer than the elements needed (`β*`), and uses the fill of α if α is shorter.
-> 9↕↑55 ≡ (01234)(5678█)(█████)(█████)(█████)
+> 9↕↑55 ≡ (01234)(5678■)(■■■■■)(■■■■■)(■■■■■)
 > '99↕↑33 ≡ (012)(345)(678)
 > .►↑33 ≡ (012)(345)(678)
 > "testing"▐` ↑'21 ≡ "testing              "
 > "testing"↑3 ≡ "tes"
 ||Reshape||, is similar, but it cycles through the array instead of using the fill.
 when there is a single ||None|| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-||None|| elements of β and the length of α, or `β▀*/(α~)⌠`)
-> "testing"▐`_↑2█ ≡ "test""ing_"
-> "testing"▐`_↑█2 ≡ "te""st""in""g_"
-> "testing"▐`_↑█3 ≡ "tes""tin""g__"
+> "testing"▐`_↑2■ ≡ "test""ing_"
+> "testing"▐`_↑■2 ≡ "te""st""in""g_"
+> "testing"▐`_↑■3 ≡ "tes""tin""g__"
 these last cases can be replaced by ||Chunks|| or ||Pairs||:
 > "testing"▐`_♥3 ≡ "tes""tin""g__"
 > "testing"▐`_♥ ≡ "te""st""in""g_"
@@ -577,13 +577,13 @@ see also: ||Suffixes||
 :type: verb
 #2 Take Right
 make a new list with a prefix shape of β, where the elements are taken from α in reverse order. this truncates if α is longer than the elements needed (`β*`), and uses the fill of α if α is shorter.
-> 9↕↓55 ≡ (█████)(█████)(█████)(█0123)(45678)
+> 9↕↓55 ≡ (■■■■■)(■■■■■)(■■■■■)(■0123)(45678)
 > 9↕↓23 ≡ (345)(678)
 when there is a single ||None|| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-||None|| elements of β and the length of α, or `β▀*/(α~)⌠`)
 > "testing"↓3 ≡ "ing"
 > "testing"▐` ↓'21 ≡ "              testing"
-> "testing"▐`_↓2█ ≡ "_tes""ting"
-> "testing"▐`_↓█2 ≡ "_t""es""ti""ng"
+> "testing"▐`_↓2■ ≡ "_tes""ting"
+> "testing"▐`_↓■2 ≡ "_t""es""ti""ng"
 see also: ||Take||, ||Reshape||
 #1 Suffixes
 get the suffixes of the list α; take for every item in `β♣▲` (without the empty list, but with the unmodified argument: you can remove it with ||Curtail||.)
@@ -725,18 +725,18 @@ find the first non-0 value and return its index, or else ||None||.
 > 10101010# ≡ 0
 > 0001010# ≡ 3
 > 00002010# ≡ 4
-> 0000000# ≡ █
+> 0000000# ≡ ■
 #2 Index Of
 find the first exact match in the list and return its index, or else ||None||. β-pervasive.
 > "hello"#`l ≡ 2
-> "abcdefghijklmnopqrs"#"beeimpostor" ≡ '1'4'4'8'12'15'14'18█'14'17
-> 012073167140#0123456789 ≡ 0125Φ█74██
+> "abcdefghijklmnopqrs"#"beeimpostor" ≡ '1'4'4'8'12'15'14'18■'14'17
+> 012073167140#0123456789 ≡ 0125Φ■74■■
 ---
 :char: $
 :type: verb
 #1 Call with None
 calls the function α with ||None|| as an argument
-> .♫$ ≡ ♪█
+> .♫$ ≡ ♪■
 #2 Call
 calls the function α with `β@0` and `β@1` (only if `β~ ≥ 2`) as arguments.
 > .+$23 ≡ 5
@@ -756,7 +756,7 @@ returns the remainder of α divided by β. scalar.
 > 7%5 ≡ 2
 > 2%5 ≡ 2
 > _3%5 ≡ 2
-> 4%0 ≡ █
+> 4%0 ≡ ■
 > '20↕%3 ≡ 0120120120 1201201201
 > '20↕-9└÷♫%3≡(_3_3_3_2_2_2ΘΘΘ00011122233)(01201201201201201201) ≡ 1
 this is euclidean modulo; it always gives a positive result such that `β*(a÷β) + (α%β) ≡ α`.
@@ -802,7 +802,7 @@ escapes are one way to write characters outside the ascii range (characters in t
 there are more non-ascii characters than ascii characters in the codepage (256 - 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [`a`, `z`].
 the characters with single character escape sequences are the following:
 > !"#$%&'()*+,./:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
-> ‼═☻¶÷·─╙╜↔±○•╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬█◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈
+> ‼═☻¶÷·─╙╜↔±○•╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈
 #'&#x20;abc Line Comment
 all of the characters until the next line break will be ignored.
 ---
@@ -912,7 +912,7 @@ get the reciprocal of α, or 1/α. scalar
 calculate α / β. scalar
 > 6/2 ≡ 3
 > 6/3 ≡ 2
-> 0/0 ≡ █
+> 0/0 ≡ ■
 ---
 :char: 0
 :type: noun
@@ -1056,7 +1056,7 @@ return 1 if α = β, else 0. scalar.
 > 123454321234=2 ≡ 010000010100
 > "words words words"=`  ≡ 00000100000100000
 two NaNs compare equal:
-> █=█ ≡ 1
+> ■=■ ≡ 1
 ---
 :char: >
 :type: verb
@@ -1102,20 +1102,20 @@ if α is a function, it will be called with the index:
 > (*3-2)@5 ≡ '13
 > (♠)@"bee" ≡ "eeb"
 if the index is outside the list's domain [0, α~), or if it is null, it uses its fill
-> 123@5 ≡ █
+> 123@5 ≡ ■
 > 123▐0@5 ≡ 0
-> 123▐0@█ ≡ 0
+> 123▐0@■ ≡ 0
 when α and β are lists, this indexes at depth, so that `l@20 ≡ l@2@0`
 > (12)(34)(56)(78)@20 ≡ 5
 > (12)(34)(56)(78)@21 ≡ 6
 > (+3)(-2)(½)(÷8)@27 ≡ '3.5
 in this case, null selects all the items. this can be useful for retrieving columns of a matrix
-> 123@♪█ ≡ 123
-> (12)(34)(56)(78)@2█ ≡ 56
-> (12)(34)(56)(78)@█1 ≡ 2468
-> (123)(456)(789)@1█ ≡ 456
-> (123)(456)(789)@█1 ≡ 258
-> (123)(456)(789)@█2 ≡ 369
+> 123@♪■ ≡ 123
+> (12)(34)(56)(78)@2■ ≡ 56
+> (12)(34)(56)(78)@■1 ≡ 2468
+> (123)(456)(789)@1■ ≡ 456
+> (123)(456)(789)@■1 ≡ 258
+> (123)(456)(789)@■2 ≡ 369
 ---
 :char: A
 :type: verb_variable
@@ -1258,7 +1258,7 @@ list of statements that are executed until a ||Return|| or the end is found, and
 :type: verb
 #1 Filter Holes
 remove ||None||s in the list α.
-> █12█345██67█89\ ≡ 123456789
+> ■12■345■■67■89\ ≡ 123456789
 #2 Set Difference
 return α without the items in β
 > "hello world i am a vemf test"\`  ≡ "helloworldiamavemftest"
@@ -1510,7 +1510,7 @@ returns α, changing the sign of the imaginary part
 > 2ü ≡ 2
 #2 Group
 pair up the elements of α and β, and returns a new list where each element in α appears in the βth element, in order. the fill will be the ||Empty List||. if β is ||None||, the element will be ignored.
-> "vemf programming language"ü0000█11111112222█33333333 ≡ "vemf""program""ming""language"▐φ
+> "vemf programming language"ü0000■11111112222■33333333 ≡ "vemf""program""ming""language"▐φ
 > 123456789ü012012012 ≡ (147)(258)(369)▐φ
 > "bee bumblebee honeybee"ü000φ111111000φ11111000 ≡ "beebeebee""bumblehoney"▐φ
 > "eastern bumblehoneybee"ü2222222211111122222(012)(012)(012) ≡ "bee""bumblebee""eastern honeybee"▐φ
@@ -1539,9 +1539,9 @@ calculate `tan α`. scalar.
 > π/6â ± 3√/3
 > π/4â ± 1
 > π/3â ± 3√
-> π/2â ± █
+> π/2â ± ■
 > πâ ± 0
-> π*3½â ± █
+> π*3½â ± ■
 > π*2â ± 0
 #2 Bitwise And
 calculate bitwise AND of integers α and β. scalar.
@@ -1763,14 +1763,14 @@ turn α into an infinite list, where the items outside the list are α's fill. e
 > 123+45 ≡ 57
 > 123+(45▐0) ≡ 57
 > 123+(45▐0Æ) ≡ 573
-> 123+(45Æ) ≡ 57█
+> 123+(45Æ) ≡ 57■
 > 123Æ~ ≡ ∞
-> 123Æ@5 ≡ █
+> 123Æ@5 ≡ ■
 #2 Expand with Fill
 turn α into an infinite list, where the items outside the list are β. equivalent to `▐Æ`
 > 123+(45Æ0) ≡ 573
 > 123Æ0@5 ≡ 0
-> 123Æ█@5 ≡ █
+> 123Æ■@5 ≡ ■
 > 123Æ456@_2 ≡ 456
 ---
 :char: ô
@@ -1825,8 +1825,8 @@ therefore, `û¬` detects if an element is the first in the array:
 > 320110433250(û¬)╓‼ ≡ 320145  ' same as α∩
 #2 Unique Index Of
 for every element in β, find the index of the first unused match in α, or ||None||.
-> 22235 û 223357 ≡ 013█4█
-> 3333 û 3323 ≡ 01█2
+> 22235 û 223357 ≡ 013■4■
+> 3333 û 3323 ≡ 01■2
 ---
 :char: ù
 :ascii: 'u`
@@ -1897,18 +1897,18 @@ calculate `α²+(β²)√`, or the distance of (α, β) to the origin (0, 0), or
 :type: verb
 #2 Find
 finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are ||None||. if β is a scalar or the ||Empty List||, search for the element β.
-> "sus sus amongus"£`s    ≡ 0█0█0█0███████0
-> "sus sus amongus"£"s"   ≡ 0█0█0█0███████0
-> "sus sus amongus"£"us"  ≡ █01██01██████01
-> "sus sus amongus"£"us " ≡ █012█012███████
-> "sus sus amongus"£"sus" ≡ 012█012████████
-> "bee beebeee beebe"£"ee"  ≡ █01██01█01███01██
-> "bee beebeee beebe"£"bee" ≡ 012█012012██012██
+> "sus sus amongus"£`s    ≡ 0■0■0■0■■■■■■■0
+> "sus sus amongus"£"s"   ≡ 0■0■0■0■■■■■■■0
+> "sus sus amongus"£"us"  ≡ ■01■■01■■■■■■01
+> "sus sus amongus"£"us " ≡ ■012■012■■■■■■■
+> "sus sus amongus"£"sus" ≡ 012■012■■■■■■■■
+> "bee beebeee beebe"£"ee"  ≡ ■01■■01■01■■■01■■
+> "bee beebeee beebe"£"bee" ≡ 012■012012■■012■■
 this is similar to using ||Scan Windows|| and ||Matches|| `α(►~)╫≡β` but this does not include overlapping matches
-> "asininity"£"ini" ≡ ██012████
+> "asininity"£"ini" ≡ ■■012■■■■
 > "asininity"(►~)╫≡ "ini" ≡ 0010100  ' two matches!
 its format is also a bit more convenient: same length as the original string, and you can do `=0` to find the starts of matches or ||Is Some|| `▀` to find all the matched characters:
-> "sus sus amongus"£"sus"   ≡ 012█012████████
+> "sus sus amongus"£"sus"   ≡ 012■012■■■■■■■■
 > "sus sus amongus"£"sus"=0 ≡ 100010000000000
 > "sus sus amongus"£"sus"▀  ≡ 111011100000000
 see also: ||Equals||, ||Scan Windows||, ||Split||
@@ -1999,7 +1999,7 @@ get the imaginary part of a complex number α. scalar.
 > 3ú ≡ 0
 #2 Index of Last
 find the last exact match in the list and return its index, or else ||None||. β-pervasive.
-> 012073167140ú0123456789 ≡ '11 925Φ█78██
+> 012073167140ú0123456789 ≡ '11 925Φ■78■■
 ---
 :char: ñ
 :ascii: 'n- 'n~
@@ -2179,13 +2179,13 @@ equivalent to `»1`
 :ascii: 'l2
 :type: literal
 #░☺☻ Short Literal
-shorthand for an ||Integer Literal|| with 2 bytes (same as `■2`)
+shorthand for an ||Integer Literal|| with 2 bytes (same as `█2`)
 ---
 :char: ▒
 :ascii: 'l3
 :type: literal
 #▒☺☻♥ Long Literal
-shorthand for an ||Integer Literal|| with 3 bytes (same as `■3`)
+shorthand for an ||Integer Literal|| with 3 bytes (same as `█3`)
 ---
 :char: ▓
 :ascii: 'l4 'c2
@@ -2197,23 +2197,42 @@ a 2 character literal.
 see also: ||Character Literal||
 ---
 :char: █
-:ascii: 'N
-:type: noun
-#0 None
-none, null, nil, NaN. used as a dummy value sometimes.
-see also: ||Is None||, ||Is Some||, ||Fill Holes||, ||Replace Holes||, ||Filter Holes||, ||Nullify||
+:ascii: 'il
+:type: literal
+#█4☺☻♥♦ Integer Literals
+a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the `█` there will be a digit from 1 to 8 that specifies the number of bytes of the integer. `░` ||Short Literal||s and `▒` ||Long Literal||s are equivalent to `█2` and `█3` respectively.
+an example: `█3☻♥♦` is the number `131844`. the number after the `█` is 3, so it will read three bytes. those bytes are `☻` `♥` `♦`, which means the output will be 0x020304, or `2*256^2 + 3*256 + 4`, or 131844.
+> █3☻♥♦ ≡ '131844
+> █3☻♥♦ ≡ 2*('256^2) + (3*'256) + 4
+`▒` can also be used here:
+> ▒☻♥♦ ≡ '131844
+let's represent the number 123456789. we can either use the ||Base Encode|| function: 
+> '123456789é'256 ≡ '7'91'205'21▐0
+alternatively, get the raw ||Bits|| of the number, partition it into ||Chunks|| of 8 bits, and ||Decode Binary|| them:
+> '123456789é♥8╕è ≡ '0'0'0'0'7'91'205'21
+we can represent the bytes as a codepage string (see ||Custom Format||):
+>     '7'91'205'21ⁿ5☻·
+> "•[═§"
+if we try it out,
+> █4•[═§ ≡ '123456789
+byte literals support negative numbers as well, using the two's complement when the first byte is over 127. `░²²` is not `253*256 + 253` or 64009, it's `65536 - 64009` or −515.
+> ░²² ≡ '-515
+integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF
+> ░²²é♥8╕è ≡ '255'255'255'255'255'255'253'253
+`█` is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.
+see also: ||Short Literal||, ||Long Literal||, ||Character Literal||, ||Digraph Literal||
 ---
 :char: ▄
 :ascii: 'hd
 :type: verb
 #1 Is None
 1 if α is none, otherwise 0. scalar.
-> █▄ ≡ 1
-> 12█456█78▄ ≡ 001000100
+> ■▄ ≡ 1
+> 12■456■78▄ ≡ 001000100
 see also: ||Is Some||
 #2 Denullify
 if β is not 0, return ||None||, otherwise α. scalar.
-> 123456789▄010103102 ≡ 1█3█5██8█
+> 123456789▄010103102 ≡ 1■3■5■■8■
 see also: ||Nullify||
 ---
 :char: ▌
@@ -2221,17 +2240,17 @@ see also: ||Nullify||
 :type: verb
 #1 Fill Holes
 replace ||None||s in the list α with its fill.
-> 12█456█78▐0▌ ≡ 120456078
+> 12■456■78▐0▌ ≡ 120456078
 #2 Replace Holes
 replace ||None||s in the list α with β.
-> 12█456█78▌0 ≡ 120456078
+> 12■456■78▌0 ≡ 120456078
 ---
 :char: ▐
 :ascii: 'hr
 :type: verb
 #1 Get Fill
 gets the fill of the list α.
-> 123▐ ≡ █
+> 123▐ ≡ ■
 #2 Set Fill
 returns the list α with the fill changed.
 > 123▐1▐ ≡ 1
@@ -2241,13 +2260,13 @@ returns the list α with the fill changed.
 :type: verb
 #1 Is Some
 check if α is not null. same as `¬▄`. scalar.
-> █▀ ≡ 0
+> ■▀ ≡ 0
 > 1▀ ≡ 1
-> 12█456█78▀ ≡ 110111011
+> 12■456■78▀ ≡ 110111011
 see also: ||Is None||
 #2 Nullify
 if β is 0, return ||None||, otherwise α. scalar.
-> 123456789▀010103102 ≡ █2█4█67█9
+> 123456789▀010103102 ≡ ■2■4■67■9
 see also: ||Denullify||
 ---
 :char: α
@@ -2263,7 +2282,7 @@ the left argument. if not in a function definition, the first argument passed in
 :type: variable
 #0 Beta
 the right argument. if not in a function definition, the second argument passed in the command line, or `δ@1`. if the function was called monadically, this will be ||None||.
-> "left"{βÇ} ≡ █
+> "left"{βÇ} ≡ ■
 > "left"{βÇ}"right" ≡ "RIGHT"
 ---
 :char: Γ
@@ -2464,14 +2483,14 @@ round up α. scalar.
 see also: ||Floor||, ||Round||, ||Euclidean Division||
 #2 Shift Right
 returns a list of the same length as α, with every item shifted to the right by β, using the fill of α to fill the blanks. β-pervasive.
-> 12345678⌠3 ≡ ███12345
+> 12345678⌠3 ≡ ■■■12345
 > 87654321▐0⌠5 ≡ 00000876
 > "yeah!!!"▐` ⌠4 ≡ "    yea"
 > "yeah!!!"▐` ⌠2 ≡ "  yeah!"
 a negative β acts like ||Shift Left||:
 > "yeah!!!"▐` ⌠_2 ≡ "ah!!!  "
 and if `α~≤β`, the whole list will be filled:
-> 12345678⌠8 ≡ ████████
+> 12345678⌠8 ≡ ■■■■■■■■
 see also: ||Shift Left||, ||Rotate Right||
 ---
 :char: ⌡
@@ -2485,14 +2504,14 @@ round down α. scalar.
 see also: ||Ceiling||, ||Round||
 #2 Shift Left
 returns a list of the same length as α, with every item shifted to the left by β, using the fill of α to fill the blanks. β-pervasive.
-> 12345678⌡3 ≡ 45678███
+> 12345678⌡3 ≡ 45678■■■
 > 87654321▐0⌡5 ≡ 32100000
 > "yeah!!!"▐` ⌡4 ≡ "!!!    "
 > "yeah!!!"▐` ⌡2 ≡ "ah!!!  "
 a negative β acts like ||Shift Left||:
 > "yeah!!!"▐` ⌡_2 ≡ "  yeah!"
 and if `α~≤β`, the whole list will be filled:
-> 12345678⌡8 ≡ ████████
+> 12345678⌡8 ≡ ■■■■■■■■
 see also: ||Shift Right||, ||Rotate Left||
 ---
 :char: ÷
@@ -2597,30 +2616,11 @@ calculate the binomial coefficient `α choose β`. scalar.
 > 4²012345 ≡ 146410
 ---
 :char: ■
-:ascii: 'il
-:type: literal
-#■4☺☻♥♦ Integer Literals
-a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the `■` there will be a digit from 1 to 8 that specifies the number of bytes of the integer. `░` ||Short Literal||s and `▒` ||Long Literal||s are equivalent to `■2` and `■3` respectively.
-an example: `■3☻♥♦` is the number `131844`. the number after the `■` is 3, so it will read three bytes. those bytes are `☻` `♥` `♦`, which means the output will be 0x020304, or `2*256^2 + 3*256 + 4`, or 131844.
-> ■3☻♥♦ ≡ '131844
-> ■3☻♥♦ ≡ 2*('256^2) + (3*'256) + 4
-`▒` can also be used here:
-> ▒☻♥♦ ≡ '131844
-let's represent the number 123456789. we can either use the ||Base Encode|| function: 
-> '123456789é'256 ≡ '7'91'205'21▐0
-alternatively, get the raw ||Bits|| of the number, partition it into ||Chunks|| of 8 bits, and ||Decode Binary|| them:
-> '123456789é♥8╕è ≡ '0'0'0'0'7'91'205'21
-we can represent the bytes as a codepage string (see ||Custom Format||):
->     '7'91'205'21ⁿ5☻·
-> "•[═§"
-if we try it out,
-> ■4•[═§ ≡ '123456789
-byte literals support negative numbers as well, using the two's complement when the first byte is over 127. `░²²` is not `253*256 + 253` or 64009, it's `65536 - 64009` or −515.
-> ░²² ≡ '-515
-integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF
-> ░²²é♥8╕è ≡ '255'255'255'255'255'255'253'253
-`■` is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.
-see also: ||Short Literal||, ||Long Literal||, ||Character Literal||, ||Digraph Literal||
+:ascii: 'N
+:type: noun
+#0 None
+none, null, nil, NaN. used as a dummy value sometimes.
+see also: ||Is None||, ||Is Some||, ||Fill Holes||, ||Replace Holes||, ||Filter Holes||, ||Nullify||
 ---
 :char: ╕
 :ascii: '|
@@ -2721,7 +2721,7 @@ the ||Sum|| of a list is Reduce Add:
 you can fold starting from the right (as in `foldr` in haskell) with ||Reverse|| and ||Swap/Selfie||:
 > 12345♠╧┴♫ ≡ 1(2(3(45)))
 an empty list will yield null. a one element list (or a scalar) will return itself.
-> φ╧+ ≡ █
+> φ╧+ ≡ ■
 > ♪8╧+ ≡ 8
 see also: ||Scan||
 #2a1 Seeded Reduce
@@ -2780,11 +2780,11 @@ run F through 2-item pairs of α, passing the left item as the left argument and
 #1a2 Valences
 call F.
 > 1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ} ≡ "monad 1"
-> 1█╬►  ≡ █
+> 1■╬►  ≡ ■
 #2a2 Valences
 call G.
 > 1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ}2 ≡ "dyad 1 2"
-> 1█╬►2 ≡ 2
+> 1■╬►2 ≡ 2
 ---
 :char: ╦
 :ascii: 'su
@@ -2953,7 +2953,7 @@ if there is nothing in the statement body, the variable will be removed from the
 like `↔name` ||Mutate|| but acts as a statement and changes the contents of the body.
 > 3─n 4─m *2═n n ≡ 6
 if there is nothing in the statement body, the variable will be removed from its scope.
-> 4─a0{═a}·a ≡ █
+> 4─a0{═a}·a ≡ ■
 ---
 :char: ┌
 :ascii: 'g1
