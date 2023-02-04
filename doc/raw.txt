@@ -2179,13 +2179,13 @@ equivalent to `»1`
 :ascii: 'l2
 :type: literal
 #░☺☻ Short Literal
-shorthand for a ||Integer Literal|| with 2 digits (the closing `■` is implied)
+shorthand for an ||Integer Literal|| with 2 bytes (same as `■2`)
 ---
 :char: ▒
 :ascii: 'l3
 :type: literal
 #▒☺☻♥ Long Literal
-shorthand for a ||Integer Literal|| with 3 digits (the closing `■` is implied)
+shorthand for an ||Integer Literal|| with 3 bytes (same as `■3`)
 ---
 :char: ▓
 :ascii: 'l4 'c2
@@ -2599,23 +2599,28 @@ calculate the binomial coefficient `α choose β`. scalar.
 :char: ■
 :ascii: 'il
 :type: literal
-#■☺☻♥♦■ Integer Literal
-a convenient literal syntax for large integers. characters are read until the next `■` or end of file, interpreted as their position in the codepage and interpreted in base 253. if this number is even, it represents `n½`, otherwise, `1-n½`.
-let's represent the number 123456789. for this, we must encode the number multiplied by 2 (246913578) in base 253, flipping because ||Encode Base|| uses big endian by default:
->     '123456789¼é'253♠
-> (15 62 121 252)
-and then, represent those as characters:
->     '15'62'121'252ⁿ5☻·
-> "☼>yⁿ"
-if we try it out, 
-> ■☼>yⁿ■ ≡ '123456789
-you don't actually need `¤` (0x00) for all integers, zeroes can be replaced by using `²` (0xFD) and adjusting the previous character:
-> ■ab¤c■ ≡ ■aa²c■
-`■` is mostly useful when using large numbers. for smaller numbers, there are more efficient ways of representing them:
-- for −10 ≤ x ≤ 255, you can use ||Character Literal||s
-- for −32130 ≤ x ≤ 32131, you can use ||Short Literal||s
-- for −8129269 ≤ x ≤ 8129269, you can use ||Long Literal||s
-- if your number happens to be in the lowercase ascii list or has a trivial computation, use that
+#■4☺☻♥♦ Integer Literals
+a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the `■` there will be a digit from 1 to 8 that specifies the number of bytes of the integer. `░` ||Short Literal||s and `▒` ||Long Literal||s are equivalent to `■2` and `■3` respectively.
+an example: `■3☻♥♦` is the number `131844`. the number after the `■` is 3, so it will read three bytes. those bytes are `☻` `♥` `♦`, which means the output will be 0x020304, or `2*256^2 + 3*256 + 4`, or 131844.
+> ■3☻♥♦ ≡ '131844
+> ■3☻♥♦ ≡ 2*('256^2) + (3*'256) + 4
+`▒` can also be used here:
+> ▒☻♥♦ ≡ '131844
+let's represent the number 123456789. we can either use the ||Base Encode|| function: 
+> '123456789é'256 ≡ '7'91'205'21▐0
+alternatively, get the raw ||Bits|| of the number, partition it into ||Chunks|| of 8 bits, and ||Decode Binary|| them:
+> '123456789é♥8╕è ≡ '0'0'0'0'7'91'205'21
+we can represent the bytes as a codepage string (see ||Custom Format||):
+>     '7'91'205'21ⁿ5☻·
+> "•[═§"
+if we try it out,
+> ■4•[═§ ≡ '123456789
+byte literals support negative numbers as well, using the two's complement when the first byte is over 127. `░²²` is not `253*256 + 253` or 64009, it's `65536 - 64009` or −515.
+> ░²² ≡ '-515
+integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF
+> ░²²é♥8╕è ≡ '255'255'255'255'255'255'253'253
+`■` is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.
+see also: ||Short Literal||, ||Long Literal||, ||Character Literal||, ||Digraph Literal||
 ---
 :char: ╕
 :ascii: '|

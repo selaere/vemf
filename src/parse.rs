@@ -2,7 +2,7 @@ use alloc::fmt::Display;
 
 use crate::prelude::*;
 use crate::codepage::tochars;
-use crate::token::Tok;
+use crate::token::Tok::{self, Just};
 
 use num_complex::Complex64 as c64;
 
@@ -102,7 +102,7 @@ fn word_cst(t: &mut&[Tok], mut morphemes: usize) -> Option<(Role, Expr)>{
 }
 
 fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
-    if *morphemes == 0 {return None}
+    if *morphemes == 0 { return None }
     let (rol, mut val) = match t.first()? {
         Tok::VSet(v) => { step(t); (Verb, SetVar(v.c())) },
         Tok::VMut(v) => { step(t); (Verb, MutVar(v.c())) },
@@ -113,38 +113,38 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
                 None => (Verb, Var(name.c())),
             }
         },
-        Tok::Just(b!('└')) => { step(t);
+        Just(b!('└')) => { step(t);
             let a = word_full(t).map_or(NAN, |x| x.1);
             let f = word_full(t).map_or(NAN, |x| x.1);
             let b = word(t, morphemes).map_or(NAN, |x| x.1);
             (Verb, Fork(bx(a), bx(f), bx(b)))
         },
-        Tok::Just(b'{') => { step(t);
+        Just(b'{') => { step(t);
             let s = block(t);
             let mut vars = HashSet::new();
-            for i in &s { i.capture(&mut vars) }
-            if let Some(Tok::Just(b'}')) = t.first() { step(t); }
+            for i in &s { i.capture(&mut vars); }
+            if let Some(Just(b'}')) = t.first() { step(t); }
             (Verb, Dfn {s, cap: vars})
         },
-        Tok::Just(b'[') => { step(t);
+        Just(b'[') => { step(t);
             let s = block(t);
-            if let Some(Tok::Just(b']')) = t.first() { step(t); }
+            if let Some(Just(b']')) = t.first() { step(t); }
             (Noun, Block(s))
         }
         Tok::VVerb(v) => { step(t); (Verb, Var(v.c())) },
-        Tok::Just(b'(') => { step(t);
+        Just(b'(') => { step(t);
             let expr = phrase_to_expr(phrase(t)).unwrap_or(Snd(vec![]));
-            if let Some(Tok::Just(b')')) = t.first() { step(t); }
+            if let Some(Just(b')')) = t.first() { step(t); }
             (Noun, expr)
         },
-        Tok::Just(b!('♪')) => { step(t);
+        Just(b!('♪')) => { step(t);
             let (rol, arg) = word_full(t).unwrap_or((Noun, NAN));
             (Noun, match rol {
                 Noun => Snd(vec![arg]),
                 Verb => arg
             })
         },
-        Tok::Just(s @ b!('┌''│''├''╞''╟''╠''┤''╡''╢''╣')) => { step(t);
+        Just(s @ b!('┌''│''├''╞''╟''╠''┤''╡''╢''╣')) => { step(t);
             macro_rules! bl { [$($b:tt)+] => {[$(b!($b)),+]} }
             let p = phrase_by_morphemes(t, 
                 bl!['┌''│''├''╞''╟''╠''┤''╡''╢''╣'].iter().position(|x| x == s).unwrap() + 1);
@@ -157,7 +157,7 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
         *morphemes -= 1;
         step(t);
         let word = word(t, morphemes);
-        for i in l.iter().rev() { val = Aav1(i.c(), bx(val)) }
+        for i in l.iter().rev() { val = Aav1(i.c(), bx(val)); }
         return Some((Verb, Aav2( bx(val), n.c(), bx(word.map_or(NAN, |x| x.1)) )))
     }}
     Some((rol, val))
@@ -167,8 +167,9 @@ pub fn phrase_by_morphemes(t: &mut&[Tok], mut morphemes: usize) -> Vec<(Role, Ex
     let mut phrase = Vec::new();
     let morphemes = &mut morphemes;
     loop {
-        if let Some(word) = word(t, morphemes) { phrase.push(word); } else { break }
-        if *morphemes >= 1 {*morphemes -= 1} else {break}
+        let Some(word) = word(t, morphemes) else { break };
+        phrase.push(word);
+        if *morphemes >= 1 { *morphemes -= 1; } else { break };
     };
     phrase
 }
@@ -207,30 +208,20 @@ fn phrase_to_expr(things: Vec<(Role, Expr)>) -> Option<Expr> {
     value } else { return None })
 }
 
-fn numberise(mut num: i64) -> Expr {
-    if num % 2 == 1 { num = 1-num; }
-    Int(num / 2)
-}
-
 fn value_token(chr: Tok) -> Option<Expr> {
     Some(match chr {
-        Tok::Just(c @ b'0'..=b'9') => Int(i64::from(c - b'0')),
-        Tok::Just(b!('Φ')) => Int(10),
-        Tok::Just(b!('Θ')) => Int(-1),
-        Tok::Just(b!('∞')) => Flt(c64::new(f64::INFINITY, 0.)),
-        Tok::Just(b!('Γ')) => Flt(c64::i()),
-        Tok::Just(b!('█')) => NAN,
-        Tok::Just(b!('φ')) => Snd(Vec::new()),
-        Tok::Just(b!('π')) => Flt(c64::new(core::f64::consts::PI, 0.)),
+        Just(c @ b'0'..=b'9') => Int(i64::from(c - b'0')),
+        Just(b!('Φ')) => Int(10),
+        Just(b!('Θ')) => Int(-1),
+        Just(b!('∞')) => Flt(c64::new(f64::INFINITY, 0.)),
+        Just(b!('Γ')) => Flt(c64::i()),
+        Just(b!('█')) => NAN,
+        Just(b!('φ')) => Snd(Vec::new()),
+        Just(b!('π')) => Flt(c64::new(core::f64::consts::PI, 0.)),
         Tok::VNoun(x) => Var(x),
         Tok::Chr(x) => Int(i64::from(x)),
         Tok::Chr2(x, y) => Snd(vec![Int(i64::from(x)), Int(i64::from(y))]),
-        Tok::Num2(   y, z) => numberise(                       i64::from(y)*253 + i64::from(z)),
-        Tok::Num3(x, y, z) => numberise(i64::from(x)*253*253 + i64::from(y)*253 + i64::from(z)),
-        Tok::Num(l) => {
-            let mut num = 0;
-            for i in l { num = num*253 + i64::from(i) }
-        numberise(num) }
+        Tok::Num(l) => Int(l),
         Tok::HNum(x) => {
             let str = core::str::from_utf8(&x).unwrap();
             str.parse::<i64>().map_or_else(|_| Flt(c64::new(str.parse::<f64>().unwrap(), 0.)), Int)
@@ -277,10 +268,10 @@ fn parse_stmt(t: &mut&[Tok], expr: Option<Expr>) -> Option<Stmt> {
             Some(e) => Stmt::Mut(e, v.c()),
             None    => Stmt::DelMut(v.c()),
         }},
-        Some(Tok::Just(b!('◘'))) => { step(t); Stmt::Return (expr.unwrap_or(NAN)) },
-        Some(Tok::Just(b!('·'))) => { step(t); Stmt::Discard(expr.unwrap_or(NAN)) },
-        Some(Tok::Just(b!('}'']'))) | None => { Stmt::Return(expr.unwrap_or(NAN)) },
-        Some(Tok::Just(b!('?'))) => { step(t);
+        Some(Just(b!('◘'))) => { step(t); Stmt::Return (expr.unwrap_or(NAN)) },
+        Some(Just(b!('·'))) => { step(t); Stmt::Discard(expr.unwrap_or(NAN)) },
+        Some(Just(b!('}'']'))) | None => { Stmt::Return(expr.unwrap_or(NAN)) },
+        Some(Just(b!('?'))) => { step(t);
             let ev2 = phrase_to_expr(phrase(t));
             Stmt::Cond(expr.unwrap_or(NAN), bx(parse_stmt(t, ev2)?))
         },
@@ -291,8 +282,8 @@ fn parse_stmt(t: &mut&[Tok], expr: Option<Expr>) -> Option<Stmt> {
 pub fn block(t: &mut&[Tok]) -> Vec<Stmt> {
     let mut exps = Vec::new();
     loop {
-        while let Some(Tok::Just(b!('·'))) = t.first() { step(t); }
-        if let Some(Tok::Just(b!('}'']'))) | None = t.first() { break };
+        while let Some(Just(b!('·'))) = t.first() { step(t); }
+        if let Some(Just(b!('}'']'))) | None = t.first() { break };
         let ev = phrase_to_expr(phrase(t));
         if let Some(stmt) = parse_stmt(t, ev) {
             exps.push(stmt);

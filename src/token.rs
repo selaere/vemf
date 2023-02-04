@@ -5,8 +5,7 @@ pub enum Tok {
     Just(u8), White(u8), Comment(Bstr),
     VNoun(Bstr), VVerb(Bstr), VAv1(Bstr), VAv2(Vec<Bstr>, Bstr),
     VSet(Bstr), VMut(Bstr), VSetS(Bstr), VMutS(Bstr),
-    Chr(u8), Chr2(u8, u8), Num2(u8, u8), Num3(u8, u8, u8),
-    Num(Bstr), HNum(Bstr), Str(Bstr)
+    Chr(u8), Chr2(u8, u8), Num(i64), HNum(Bstr), Str(Bstr)
 }
 use Tok::*;
 
@@ -71,16 +70,21 @@ fn ident(t: &mut&[u8]) -> Bstr {
     }
 }
 
+fn byte_lit(t: &mut &[u8], n: u8) -> Tok {
+    let f = step(t).unwrap_or(0);
+    let mut num = i64::from(f) - 256 * i64::from(f > 127);
+    for _ in 1..n {
+        num = (num << 8) + i64::from(step(t).unwrap_or(0));
+    }
+    Num(num)
+}
+
 fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
     Some(match first {
         Some(b'"') => Str(string(t)),
         Some(b!('■')) => {
-            let mut buf = Bstr::new();
-            loop { match step(t) {
-                Some(b!('■')) | None => break,
-                Some(c) => buf.push(c),
-            }}
-            Num(buf)
+            let Some(n @ b'1'..=b'8') = step(t) else { return None }; // rethink this
+            byte_lit(t, n - b'0')
         }
         Some(b'`') => Chr(step(t).unwrap_or(0x20)),
         Some(b'_') => {
@@ -96,15 +100,9 @@ fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
                 c => VNoun(bstr![b'_', c]),
             }
         }
-        Some(b!('▓')) => Chr2(
-            step(t).unwrap_or(  0), step(t).unwrap_or(  0),
-        ),
-        Some(b!('░')) => Num2(
-            step(t).unwrap_or(253), step(t).unwrap_or(253),
-        ),
-        Some(b!('▒')) => Num3(
-            step(t).unwrap_or(253), step(t).unwrap_or(253), step(t).unwrap_or(253),
-        ),
+        Some(b!('░')) => byte_lit(t, 2),
+        Some(b!('▒')) => byte_lit(t, 3),
+        Some(b!('▓')) => Chr2(step(t).unwrap_or(0), step(t).unwrap_or(0)),
         Some(b!('\'')) => match step(t) {
             Some(b' ') | None => {
                 let mut buf = Bstr::new();
@@ -144,7 +142,7 @@ pub fn tokenize(mut t: &[u8]) -> Vec<Tok> {
         if let White(_) | Comment(_) = tok { continue; }
         if let VAv2(v, _) = &mut tok {
             while let Some(VAv1(_)) = toks.last() {
-                let Some(VAv1(l)) = toks.pop() else {unreachable!()};
+                let Some(VAv1(l)) = toks.pop() else { unreachable!() };
                 v.push(l);
             }
         }
@@ -158,11 +156,11 @@ fn rewrite_token(first: Option<u8>, t: &mut &[u8]) -> Option<Bstr> {
     Some(match first? {
         b'"' => rewrite_string(t),
         b!('■') => {
+            let Some(n @ b'1'..=b'8') = step(t) else { return None };
             let mut buf = bstr![b!('■')];
-            loop { match step(t) {
-                Some(b!('■')) | None => break,
-                Some(c) => buf.push(c),
-            }}
+            for _ in 0..(n - b'0') {
+                buf.push(step(t).unwrap_or(0));
+            }
         buf }
         b'`' => bstr![b'`', step(t).unwrap_or(0x20)],
         b'_' => {
@@ -173,15 +171,9 @@ fn rewrite_token(first: Option<u8>, t: &mut &[u8]) -> Option<Bstr> {
             }
             bstr![b'_', c]
         }
-        b!('▓') => bstr![
-            b!('▓'), step(t).unwrap_or(  0), step(t).unwrap_or(  0),
-        ],
-        b!('░') => bstr![
-            b!('░'), step(t).unwrap_or(253), step(t).unwrap_or(253),
-        ],
-        b!('▒') => bstr![
-            b!('▒'), step(t).unwrap_or(253), step(t).unwrap_or(253), step(t).unwrap_or(253),
-        ],
+        b!('░') => bstr![b!('░'), step(t).unwrap_or(0), step(t).unwrap_or(0)],
+        b!('▒') => bstr![b!('▒'), step(t).unwrap_or(0), step(t).unwrap_or(0), step(t).unwrap_or(0)],
+        b!('▓') => bstr![b!('▓'), step(t).unwrap_or(0), step(t).unwrap_or(0)],
         b!('\'') => match step(t) {
             Some(b' ') | None => {
                 let mut buf = bstr![b'\'', b' '];

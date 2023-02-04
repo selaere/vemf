@@ -2130,10 +2130,10 @@ _2Ñ0 ≡ 0</pre>
 <pre>12345» ≡ 51234</pre>
 <h2 class="rliteral" id="B0"><a class=h href="#B0"></a><code>░</code> (0xB0, <code>'l2</code>)<span class=rank>literal</span></h2>
 <h3 id="Short Literal"><a class=h href="#Short Literal"></a><code>░☺☻</code> Short Literal</h3>
-<p>shorthand for a <a href="#Integer Literal">Integer Literal</a> with 2 digits (the closing <code>■</code> is implied)</p>
+<p>shorthand for an <a href="#Integer Literal">Integer Literal</a> with 2 bytes (same as <code>■2</code>)</p>
 <h2 class="rliteral" id="B1"><a class=h href="#B1"></a><code>▒</code> (0xB1, <code>'l3</code>)<span class=rank>literal</span></h2>
 <h3 id="Long Literal"><a class=h href="#Long Literal"></a><code>▒☺☻♥</code> Long Literal</h3>
-<p>shorthand for a <a href="#Integer Literal">Integer Literal</a> with 3 digits (the closing <code>■</code> is implied)</p>
+<p>shorthand for an <a href="#Integer Literal">Integer Literal</a> with 3 bytes (same as <code>■3</code>)</p>
 <h2 class="rliteral" id="B2"><a class=h href="#B2"></a><code>▓</code> (0xB2, <code>'l4 'c2</code>)<span class=rank>literal</span></h2>
 <h3 id="Digraph Literal"><a class=h href="#Digraph Literal"></a><code>▓ab</code> Digraph Literal</h3>
 <p>a 2 character literal.</p>
@@ -2438,24 +2438,29 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Binomial Coefficient"><a class=h href="#Binomial Coefficient"></a><code>α²β</code> Binomial Coefficient</h3>
 <p>calculate the binomial coefficient <code>α choose β</code>. scalar.</p>
 <pre>4²012345 ≡ 146410</pre>
-<h2 class="rliteral" id="FE"><a class=h href="#FE"></a><code>■</code> (0xFE, <code>'il</code>)<span class=rank>literal</span></h2>
-<h3 id="Integer Literal"><a class=h href="#Integer Literal"></a><code>■☺☻♥♦■</code> Integer Literal</h3>
-<p>a convenient literal syntax for large integers. characters are read until the next <code>■</code> or end of file, interpreted as their position in the codepage and interpreted in base 253. if this number is even, it represents <code>n½</code>, otherwise, <code>1-n½</code>.</p>
-<p>let's represent the number 123456789. for this, we must encode the number multiplied by 2 (246913578) in base 253, flipping because <a href="#Encode Base">Encode Base</a> uses big endian by default:</p>
-<pre>    '123456789¼é'253♠
-(15 62 121 252)</pre>
-<p>and then, represent those as characters:</p>
-<pre>    '15'62'121'252ⁿ5☻·
-"☼>yⁿ"</pre>
-<p>if we try it out, </p>
-<pre>■☼>yⁿ■ ≡ '123456789</pre>
-<p>you don't actually need <code>¤</code> (0x00) for all integers, zeroes can be replaced by using <code>²</code> (0xFD) and adjusting the previous character:</p>
-<pre>■ab¤c■ ≡ ■aa²c■</pre>
-<p><code>■</code> is mostly useful when using large numbers. for smaller numbers, there are more efficient ways of representing them:</p>
-<ul><li>for −10 ≤ x ≤ 255, you can use <a href="#Character Literal">Character Literal</a>s</li>
-<li>for −32130 ≤ x ≤ 32131, you can use <a href="#Short Literal">Short Literal</a>s</li>
-<li>for −8129269 ≤ x ≤ 8129269, you can use <a href="#Long Literal">Long Literal</a>s</li>
-<li>if your number happens to be in the lowercase ascii list or has a trivial computation, use that</li></ul>
+<h2 class="rliteral" id="FE"><a class=h href="#FE"></a><code>■</code> (0xFE, <code>'dt</code>)<span class=rank>literal</span></h2>
+<h3 id="Integer Literals"><a class=h href="#Integer Literals"></a><code>■4☺☻♥♦</code> Integer Literals</h3>
+<p>a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the <code>■</code> there will be a digit from 1 to 8 that specifies the number of bytes of the integer. <code>░</code> <a href="#Short Literal">Short Literal</a>s and <code>▒</code> <a href="#Long Literal">Long Literal</a>s are equivalent to <code>■2</code> and <code>■3</code> respectively.</p>
+<p>an example: <code>■3☻♥♦</code> is the number <code>131844</code>. the number after the <code>■</code> is 3, so it will read three bytes. those bytes are <code>☻</code> <code>♥</code> <code>♦</code>, which means the output will be 0x020304, or <code>2*256^2 + 3*256 + 4</code>, or 131844.</p>
+<pre>■3☻♥♦ ≡ '131844
+■3☻♥♦ ≡ 2*('256^2) + (3*'256) + 4</pre>
+<p><code>▒</code> can also be used here:</p>
+<pre>▒☻♥♦ ≡ '131844</pre>
+<p>let's represent the number 123456789. we can either use the <a href="#Base Encode">Base Encode</a> function: </p>
+<pre>'123456789é'256 ≡ '7'91'205'21▐0</pre>
+<p>alternatively, get the raw <a href="#Bits">Bits</a> of the number, partition it into <a href="#Chunks">Chunks</a> of 8 bits, and <a href="#Decode Binary">Decode Binary</a> them:</p>
+<pre>'123456789é♥8╕è ≡ '0'0'0'0'7'91'205'21</pre>
+<p>we can represent the bytes as a codepage string (see <a href="#Custom Format">Custom Format</a>):</p>
+<pre>    '7'91'205'21ⁿ5☻·
+"•[═§"</pre>
+<p>if we try it out,</p>
+<pre>■4•[═§ ≡ '123456789</pre>
+<p>byte literals support negative numbers as well, using the two's complement when the first byte is over 127. <code>░²²</code> is not <code>253*256 + 253</code> or 64009, it's <code>65536 - 64009</code> or −515.</p>
+<pre>░²² ≡ '-515</pre>
+<p>integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF</p>
+<pre>░²²é♥8╕è ≡ '255'255'255'255'255'255'253'253</pre>
+<p><code>■</code> is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.</p>
+<p>see also: <a href="#Short Literal">Short Literal</a>, <a href="#Long Literal">Long Literal</a>, <a href="#Character Literal">Character Literal</a>, <a href="#Digraph Literal">Digraph Literal</a></p>
 <h2 class="r1-adverb" id="B8"><a class=h href="#B8"></a><code>╕</code> (0xB8, <code>'|</code>)<span class=rank>1-adverb</span></h2>
 <h3 id="Each"><a class=h href="#Each"></a><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
