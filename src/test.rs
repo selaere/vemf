@@ -93,7 +93,7 @@ fn input_output() -> Result<(), ()> {
         "╕nt"≡(3_Ü1)*4ⁿ_Ö· ' binary data, even when invalid utf-8
         "ains"≡(4Ü1)*5☻· ' for ascii, utf-8 and cp437 are  the same
         7_Ü1_Ö· ' pass bytes without modifying
-        ∞_Ü1+'11_Ö· ' outputting raw bytes
+        ∞_Ü1+:11_Ö· ' outputting raw bytes
     "#;
     let refcell = RefCell::new((
         VecDeque::from(*b"this is a file.\nit has content"),

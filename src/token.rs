@@ -111,19 +111,19 @@ fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
                     Some(a) => buf.push(a),
                 }}
             Comment(buf) },
-            Some(first @ (b'0'..=b'9' | b'-')) => {
-                let mut buf = bstr![first];
-                while let Some(&x @ (b'0'..=b'9' | b'.')) = t.first() {
-                    buf.push(x); step(t);
-                }
-            HNum(buf) },
             Some(a) => return token(do_escape(a, t).or_else(|| step(t)), t),
         },
-        Some(b!('.')) => VNoun(ident(t)), Some(b!(':')) => VVerb(ident(t)),
+        Some(b!('.')) => VNoun(ident(t)), Some(b!('¨')) => Str  (ident(t)),
         Some(b!('•')) => VAv1 (ident(t)), Some(b!('○')) => VAv2 (vec![], ident(t)),
         Some(b!('─')) => VSetS(ident(t)), Some(b!('═')) => VMutS(ident(t)),
         Some(b!('→')) => VSet (ident(t)), Some(b!('↔')) => VMut (ident(t)),
-        Some(b!('¨')) => Str  (ident(t)),
+        Some(b!(':')) => if let Some(first @ (b'0'..=b'9' | b'-')) = t.first() { step(t);
+            let mut buf = bstr![*first];
+            while let Some(&x @ (b'0'..=b'9' | b'.')) = t.first() {
+                buf.push(x); step(t);
+            }
+            HNum(buf) 
+        } else { VVerb(ident(t)) },
         Some(c @ (b' ' | b'\n')) => White(c),
         Some(c @ (short_verb!() | b'A'..=b'Z')) => VVerb(bstr![c]),
         Some(c @ short_av1!())   => VAv1 (bstr![c]),
@@ -248,18 +248,19 @@ pub fn rewrite(mut t: &[u8]) -> Vec<u8> {
     string
 }
 
-// !"#$%&'()*+,-./:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
-// ‼═☻¶÷·─╙╜↔±○ •╧♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→¬┴╘╕╛≈
+// !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
+// ‼═☻¶÷·─╙╜↔±○¬•╧╣┌│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘╕╛≈
 fn escape_1c(c: u8) -> Option<u8> {
     macro_rules! bee { ([$($f:tt $t:tt),*], _ => $else:expr) => {
         match c as char { $($f => b!($t),)* _ => $else } 
     }; }
     Some(bee!([
         '!''‼','"''═','#''☻','$''¶','%''÷','&''·','\'''─','(''╙',')''╜','*''↔','+''±',',''○',
-               '.''•','/''╧',':''♪',';''♫','<''≤','=''≡','>''≥','?''¿','@''¡','A''α','B''β',
-        'C''¢','D''♀','E''♂','F''ƒ','G''◄','H''►','I''↕','J''↨','K''└','L''∟','M''▬','N''■',
-        'O''◘','P''╨','Q''Θ','R''♠','S''↓','T''♦','U''╩','V''√','W''↑','X''Φ','Y''¥','Z''φ',
-        '[''╓','\\''╤',']''╖','^''→','_''¬','`''┴','{''╘','|''╕','}''╛','~''≈'
+        '-''¬','.''•','/''╧','0''╣','1''┌','2''│','3''├','4''╞','5''╟','6''╠','7''┤','8''╡',
+        '9''╢',':''♪',';''♫','<''≤','=''≡','>''≥','?''¿','@''¡','A''α','B''β','C''¢','D''♀',
+        'E''♂','F''ƒ','G''◄','H''►','I''↕','J''↨','K''└','L''∟','M''▬','N''■','O''◘','P''╨',
+        'Q''Θ','R''♠','S''↓','T''♦','U''╩','V''√','W''↑','X''Φ','Y''¥','Z''φ','[''╓','\\''╤',
+        ']''╖','^''→','_''⌐','`''┴','{''╘','|''╕','}''╛','~''≈'
     ], _ => return None))
 }
 
@@ -282,8 +283,6 @@ fn escape_2c(c: [u8; 2]) -> Option<u8> {
         b"rl"=>b!('«'), b"rr"=>b!('»'), b"cl"=>b!('⌠'), b"fl"=>b!('⌡'), b"fd"=>b!('£'),
         b"hl"=>b!('▌'), b"hu"=>b!('▀'), b"hd"=>b!('▄'), b"hr"=>b!('▐'), b"pt"=>b!('₧'),
         b"is"=>b!('∩'), b"if"=>b!('∞'), b"dg"=>b!('°'), b"nm"=>b!('¨'), b"vr"=>b!('←'),
-        b"g1"=>b!('┌'), b"g2"=>b!('│'), b"g3"=>b!('├'), b"g4"=>b!('╞'), b"g5"=>b!('╟'),
-        b"g6"=>b!('╠'), b"g7"=>b!('┤'), b"g8"=>b!('╡'), b"g9"=>b!('╢'), b"g0"=>b!('╣'),
         b"vl"=>b!('╬'), b"wn"=>b!('╫'), b"sc"=>b!('┼'), b"s2"=>b!('╪'), b"am"=>b!('╔'),
         b"su"=>b!('╦'), b"sp"=>b!('╥'), b"mo"=>b!('┬'), b"co"=>b!('╒'), b"il"=>b!('█'),
         b"ov"=>b!('║'), b"dr"=>b!('╗'), b"in"=>b!('ε'), b"sq"=>b!('²'), b"ft"=>b!('ⁿ'),

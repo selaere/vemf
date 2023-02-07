@@ -2,10 +2,10 @@
 ♫╘┴$`<.►`>.◄"</"(►(#` )╓↑)`>,─T
 (~`<)╓▀▌"&lt;",─esc
 
-@êª'16▐`0↓2Ç─fc
+@êª:16▐`0↑2Ç─fc
 φ─titles
 ∞Ü ¥"◙---◙"─pg
-■§'256─tab
+■§:256─tab
 ;"<a class=h href=¨#","¨></a>"─H
 ¥"||"(♣%2)╓╕►╨(◄(;"a href=¨#","¨")╓T),(=``╤+%2╪-0▲¡"<code>"■"</code>")╖╕▌,─fmt
 
@@ -36,6 +36,6 @@
 "<body><div id=¨all¨><nav><div id=¨wrapper¨><div id=¨fixed¨>◙<h1>vemf docs</h1>◙"
 "<h2>tutorial:</h2>◙<ol>◙"( .titles╕((;"a href=¨#","¨")╓TT"li",Φ), )"</ol>◙"
 "<h2>codepage:</h2>◙<table>◙"(
-    '256↕ëΦ╗'9689╕{α:esc T("a href=¨#",│α:fc,"¨")T("td class=¨r",├β▌"none","¨")}.tab♥'16╛(æΦT¨tr)æΦ
+    :256↕ëΦ╗:9689╕{α:esc T("a href=¨#",│α:fc,"¨")T("td class=¨r",├β▌"none","¨")}.tab♥:16╛(æΦT¨tr)æΦ
 )"◙</table>"
 "</div></div>◙</nav><main>◙".body"◙</main></div></body></html>",
