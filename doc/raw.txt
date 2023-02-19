@@ -1760,18 +1760,12 @@ join the lists in α with the separator β
 :type: verb
 #1 Expand
 turn α into an infinite list, where the items outside the list are α's fill. equivalent to `{┴@α}`
-> 123+45 ≡ 57
-> 123+(45▐0) ≡ 57
-> 123+(45▐0Æ) ≡ 573
-> 123+(45Æ) ≡ 57■
+> 123~ ≡ 3
 > 123Æ~ ≡ ∞
-> 123Æ@5 ≡ ■
-#2 Expand with Fill
-turn α into an infinite list, where the items outside the list are β. equivalent to `▐Æ`
-> 123+(45Æ0) ≡ 573
-> 123Æ0@5 ≡ 0
-> 123Æ■@5 ≡ ■
-> 123Æ456@_2 ≡ 456
+> 123╒+45 ≡ 57
+> 123╒+(45▐0) ≡ 57
+> 123╒+(45▐0Æ) ≡ 573
+> 123╒+(45Æ) ≡ 57■
 ---
 :char: ô
 :ascii: 'o^
@@ -2240,7 +2234,8 @@ see also: ||Nullify||
 :type: verb
 #1 Fill Holes
 replace ||None||s in the list α with its fill.
-> 12■456■78▐0▌ ≡ 120456078
+> 12■456■78▐0▌ ≡ 120456078▐0
+> 12■456■78▌ ≡ 12■456■78
 #2 Replace Holes
 replace ||None||s in the list α with β.
 > 12■456■78▌0 ≡ 120456078
@@ -2629,32 +2624,56 @@ see also: ||Is None||, ||Is Some||, ||Fill Holes||, ||Replace Holes||, ||Filter 
 call G with each item in α.
 > 123╕▲ ≡ 234
 > 123╕(,0) ≡ (10)(20)(30)
+> (123)(456)(789)╕♠ ≡ (321)(654)(987)
+if α has a non-null fill, G is called to the fill as well:
+> 01001▐0¬ ≡ 10110▐1
 #2a1 Each
-if both α and β are lists, pair the items up.
-> 123╕,456 ≡ (14)(25)(36)
-if any argument is a scalar, it will be copied in each iteration; equivalently, it is extended to the other argument's shape
-> 123╕,0
+Each (along with its variants) is the main way of doing iteration in vemf. scalar functions (like ||Add|| or ||Minimum||) all use ||Conform||, which is similar to ||Each||, so all of this will apply to those functions as well.
+> 123╕+456 ≡ 123+456
+if both α and β are lists, pair the items up and call G between them.
+> 123+456 ≡ (1+4)(2+5)(3+6)
+> "abc"╕,"xyz" ≡ "ax""by""cz"
+> 123*456 ≡ :4:10:18
+if all non-scalar arguments have non-null fill, G is called with the fills as well:
+> 0123▐0+1 ≡ 1234▐1
+> 2315103▐4*(1021100▐2) ≡ 2025100▐8
+when two lists have different lengths, the shorter list will use its fill to fill up the missing elements:
+> 123+45 ≡ 57■
+> 123+(45▐0) ≡ 573
+> 567+01234 ≡ 579■■
+> 567▐0+01234 ≡ 57934
+> 567▐1+01234 ≡ 57945
+> 567▐1+01234 ≡ 57945
+if any argument is a scalar, it will be copied in each iteration (or equivalently, it is extended to the other argument's shape):
+> 123╕,0 ≡ │10│20│30
 > 1234╕{αⁿ;`#} ≡ "#1""#2""#3""#4"
 > 1234ª╕(;`#) ≡ "#1""#2""#3""#4"
 > 1234ª╕;`# ≡ "#1""#2""#3""#4"
 if both arguments are scalars, it just applies the operation on them
 > 1╕,2 ≡ 12
-Each applies only to one level of nesting (see ||Scalar||):
-> (│01│23)(│45│67)(89) ,0 ≡     (│01│23)(│45│67)(89)0
-> (│01│23)(│45│67)(89) ╕,0 ≡    (│01│230)(│45│670)(890)
-> (│01│23)(│45│67)(89) ╕╕,0 ≡   (├010├230)(├450├670)(│80│90)
-> (│01│23)(│45│67)(89) ╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
-> (│01│23)(│45│67)(89) ╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
-see also: ||Each Left||, ||Each Right||, ||Scalar||
+if any of the arguments is a function, it treats it as an infinite list, composing the operation to it:
+> .◄+1↑Φ ≡ 123456789Φ
+> .◄*(ó2)↑Φ ≡ 0020406080
+Each applies only to one level of nesting, unlike ||Conform||:
+> (│01│23)(│45│67)(89),0 ≡     (│01│23)(│45│67)(89)0
+> (│01│23)(│45│67)(89)╕,0 ≡    (│01│230)(│45│670)(890)
+> (│01│23)(│45│67)(89)╕╕,0 ≡   (├010├230)(├450├670)(│80│90)
+> (│01│23)(│45│67)(89)╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
+> (│01│23)(│45│67)(89)╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
+> (│01│23)(│45│67)(89)┼,0    ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
+see also: ||Each Left||, ||Each Right||, ||Conform||
 ---
 :char: ╒
-:ascii: 'co
+:ascii: 'et
 :type: 1-adverb
-#a1 Constant
-return F
-> 1╒23 ≡ 2
-> 1╒(123)3 ≡ 123
-> 1╒+2~ ≡ ∞
+#a1 Each Trim
+similar to ||Each||, but instead of extending the shorter list to fit, it will clip the longer list to match the shorter one. the resulting list will always have ||None|| fill.
+> 123╒+45 ≡ 57
+> 12╒+345 ≡ 46
+> 12▐6╒+(345▐7) ≡ 46
+this also means it is useful with functions, taking as many items as needed:
+> 3245╒*(┴^Φ) ≡ :3:20:400:5000
+> 01101010╒*.◄ ≡ 01204060
 ---
 :char: ╛
 :ascii: '}
@@ -2672,7 +2691,7 @@ call G to every scalar in α, keeping the list's structure, while passing β in 
 > (123)(45)6 _╛, 78 ≡ (├178├278├378)(├478├578)├678
 see also: ||Extend Right||
 #_1a1 Extend
-monadically, it is the same as ||Scalar||:
+monadically, it is the same as ||Conform||:
 > (123)(45)6 _╛♫ ≡ (♪1♪2♪3)(♪4♪5)♪6
 ---
 :char: ╘
@@ -2749,18 +2768,18 @@ executes G, ignoring the right argument
 > 3┬%4 ≡ 8
 ---
 :char: ┼
-:ascii: 'sc
+:ascii: 'cf
 :type: 1-adverb
-#1a1 Scalar
+#1a1 Conform
 call F to every scalar in α, keeping the list's structure. this is similar to ||Each|| called arbitrarily many times.
 > (│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
 > (│01│23)(│45│67)(89) ┼(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
-#2a1 Scalar
+#2a1 Conform
 apply a function to every scalar in α and β, following the same rules as ||Each||, recursively.
-> 0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57)(89Φ)
+> 0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57■)(89Φ)
 > (│01│23)(│45│67)(89) ┼, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 > 123┼,456 ≡ (14)(25)(36)
-> 123(45)6 ┼, 6789 ≡ (16)(27)(38)(│49│59)
+> 123(45)6 ┼, 6789 ≡ (16)(27)(38)(│49│59)(6■)
 ---
 :char: ╪
 :ascii: 's2

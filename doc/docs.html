@@ -1801,18 +1801,12 @@ _2Ä0 ≡ π½-</pre>
 <h2 class="rverb" id="92"><a class=h href="#92"></a><code>Æ</code> (0x92, <code>'aE</code>)<span class=rank>verb</span></h2>
 <h3 id="Expand"><a class=h href="#Expand"></a><code>αÆ</code> Expand</h3>
 <p>turn α into an infinite list, where the items outside the list are α's fill. equivalent to <code>{┴@α}</code></p>
-<pre>123+45 ≡ 57
-123+(45▐0) ≡ 57
-123+(45▐0Æ) ≡ 573
-123+(45Æ) ≡ 57■
+<pre>123~ ≡ 3
 123Æ~ ≡ ∞
-123Æ@5 ≡ ■</pre>
-<h3 id="Expand with Fill"><a class=h href="#Expand with Fill"></a><code>αÆβ</code> Expand with Fill</h3>
-<p>turn α into an infinite list, where the items outside the list are β. equivalent to <code>▐Æ</code></p>
-<pre>123+(45Æ0) ≡ 573
-123Æ0@5 ≡ 0
-123Æ■@5 ≡ ■
-123Æ456@_2 ≡ 456</pre>
+123╒+45 ≡ 57
+123╒+(45▐0) ≡ 57
+123╒+(45▐0Æ) ≡ 573
+123╒+(45Æ) ≡ 57■</pre>
 <h2 class="rverb" id="93"><a class=h href="#93"></a><code>ô</code> (0x93, <code>'o^</code>)<span class=rank>verb</span></h2>
 <h3 id="Cosine"><a class=h href="#Cosine"></a><code>αô</code> Cosine</h3>
 <p>calculate <code>cos α</code>. scalar.</p>
@@ -2176,7 +2170,8 @@ _2Ñ0 ≡ 0</pre>
 <h2 class="rverb" id="DD"><a class=h href="#DD"></a><code>▌</code> (0xDD, <code>'hl</code>)<span class=rank>verb</span></h2>
 <h3 id="Fill Holes"><a class=h href="#Fill Holes"></a><code>α▌</code> Fill Holes</h3>
 <p>replace <a href="#None">None</a>s in the list α with its fill.</p>
-<pre>12■456■78▐0▌ ≡ 120456078</pre>
+<pre>12■456■78▐0▌ ≡ 120456078▐0
+12■456■78▌ ≡ 12■456■78</pre>
 <h3 id="Replace Holes"><a class=h href="#Replace Holes"></a><code>α▌β</code> Replace Holes</h3>
 <p>replace <a href="#None">None</a>s in the list α with β.</p>
 <pre>12■456■78▌0 ≡ 120456078</pre>
@@ -2465,30 +2460,54 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Each"><a class=h href="#Each"></a><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
 <pre>123╕▲ ≡ 234
-123╕(,0) ≡ (10)(20)(30)</pre>
+123╕(,0) ≡ (10)(20)(30)
+(123)(456)(789)╕♠ ≡ (321)(654)(987)</pre>
+<p>if α has a non-null fill, G is called to the fill as well:</p>
+<pre>01001▐0¬ ≡ 10110▐1</pre>
 <h3 id="Each"><a class=h href="#Each"></a><code>α╕Gβ</code> Each</h3>
-<p>if both α and β are lists, pair the items up.</p>
-<pre>123╕,456 ≡ (14)(25)(36)</pre>
-<p>if any argument is a scalar, it will be copied in each iteration; equivalently, it is extended to the other argument's shape</p>
-<pre>123╕,0
+<p>Each (along with its variants) is the main way of doing iteration in vemf. scalar functions (like <a href="#Add">Add</a> or <a href="#Minimum">Minimum</a>) all use <a href="#Conform">Conform</a>, which is similar to <a href="#Each">Each</a>, so all of this will apply to those functions as well.</p>
+<pre>123╕+456 ≡ 123+456</pre>
+<p>if both α and β are lists, pair the items up and call G between them.</p>
+<pre>123+456 ≡ (1+4)(2+5)(3+6)
+"abc"╕,"xyz" ≡ "ax""by""cz"
+123*456 ≡ :4:10:18</pre>
+<p>if all non-scalar arguments have non-null fill, G is called with the fills as well:</p>
+<pre>0123▐0+1 ≡ 1234▐1
+2315103▐4*(1021100▐2) ≡ 2025100▐8</pre>
+<p>when two lists have different lengths, the shorter list will use its fill to fill up the missing elements:</p>
+<pre>123+45 ≡ 57■
+123+(45▐0) ≡ 573
+567+01234 ≡ 579■■
+567▐0+01234 ≡ 57934
+567▐1+01234 ≡ 57945
+567▐1+01234 ≡ 57945</pre>
+<p>if any argument is a scalar, it will be copied in each iteration (or equivalently, it is extended to the other argument's shape):</p>
+<pre>123╕,0 ≡ │10│20│30
 1234╕{αⁿ;`#} ≡ "#1""#2""#3""#4"
 1234ª╕(;`#) ≡ "#1""#2""#3""#4"
 1234ª╕;`# ≡ "#1""#2""#3""#4"</pre>
 <p>if both arguments are scalars, it just applies the operation on them</p>
 <pre>1╕,2 ≡ 12</pre>
-<p>Each applies only to one level of nesting (see <a href="#Scalar">Scalar</a>):</p>
-<pre>(│01│23)(│45│67)(89) ,0 ≡     (│01│23)(│45│67)(89)0
-(│01│23)(│45│67)(89) ╕,0 ≡    (│01│230)(│45│670)(890)
-(│01│23)(│45│67)(89) ╕╕,0 ≡   (├010├230)(├450├670)(│80│90)
-(│01│23)(│45│67)(89) ╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
-(│01│23)(│45│67)(89) ╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
-<p>see also: <a href="#Each Left">Each Left</a>, <a href="#Each Right">Each Right</a>, <a href="#Scalar">Scalar</a></p>
-<h2 class="r1-adverb" id="D5"><a class=h href="#D5"></a><code>╒</code> (0xD5, <code>'co</code>)<span class=rank>1-adverb</span></h2>
-<h3 id="Constant"><a class=h href="#Constant"></a><code>╒G</code> Constant</h3>
-<p>return F</p>
-<pre>1╒23 ≡ 2
-1╒(123)3 ≡ 123
-1╒+2~ ≡ ∞</pre>
+<p>if any of the arguments is a function, it treats it as an infinite list, composing the operation to it:</p>
+<pre>.◄+1↑Φ ≡ 123456789Φ
+.◄*(ó2)↑Φ ≡ 0020406080</pre>
+<p>Each applies only to one level of nesting, unlike <a href="#Conform">Conform</a>:</p>
+<pre>(│01│23)(│45│67)(89),0 ≡     (│01│23)(│45│67)(89)0
+(│01│23)(│45│67)(89)╕,0 ≡    (│01│230)(│45│670)(890)
+(│01│23)(│45│67)(89)╕╕,0 ≡   (├010├230)(├450├670)(│80│90)
+(│01│23)(│45│67)(89)╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
+(│01│23)(│45│67)(89)╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
+(│01│23)(│45│67)(89)┼,0    ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
+<p>see also: <a href="#Each Left">Each Left</a>, <a href="#Each Right">Each Right</a>, <a href="#Conform">Conform</a></p>
+<h2 class="r1-adverb" id="D5"><a class=h href="#D5"></a><code>╒</code> (0xD5, <code>'et</code>)<span class=rank>1-adverb</span></h2>
+<h3 id="Each Trim"><a class=h href="#Each Trim"></a><code>╒G</code> Each Trim</h3>
+<p>similar to <a href="#Each">Each</a>, but instead of extending the shorter list to fit, it will clip the longer list to match the shorter one. the resulting list will always have <a href="#None">None</a> fill.</p>
+<pre>123╒+45 ≡ 57
+12╒+345 ≡ 46
+12▐6╒+(345▐7) ≡ 46</pre>
+<p>this also means it is useful with functions, taking as many items as needed:</p>
+<pre>3245╒*(┴^Φ) ≡ :3:20:400:5000
+01101010╒*.◄ ≡ 01204060</pre>
 <h2 class="r1-adverb" id="BE"><a class=h href="#BE"></a><code>╛</code> (0xBE, <code>'}</code>)<span class=rank>1-adverb</span></h2>
 <h3 id="Each Left"><a class=h href="#Each Left"></a><code>α╛Gβ</code> Each Left</h3>
 <p>iterates through α, passing β in each iteration</p>
@@ -2503,7 +2522,7 @@ _1÷_2 ≡ 1</pre>
 <pre>(123)(45)6 _╛, 78 ≡ (├178├278├378)(├478├578)├678</pre>
 <p>see also: <a href="#Extend Right">Extend Right</a></p>
 <h3 id="Extend"><a class=h href="#Extend"></a><code>α_╛G</code> Extend</h3>
-<p>monadically, it is the same as <a href="#Scalar">Scalar</a>:</p>
+<p>monadically, it is the same as <a href="#Conform">Conform</a>:</p>
 <pre>(123)(45)6 _╛♫ ≡ (♪1♪2♪3)(♪4♪5)♪6</pre>
 <h2 class="r1-adverb" id="D4"><a class=h href="#D4"></a><code>╘</code> (0xD4, <code>'{</code>)<span class=rank>1-adverb</span></h2>
 <h3 id="Each Right"><a class=h href="#Each Right"></a><code>α╘Gβ</code> Each Right</h3>
@@ -2563,17 +2582,17 @@ _1÷_2 ≡ 1</pre>
 <pre>3%   ≡ 8
 3┬%  ≡ 8
 3┬%4 ≡ 8</pre>
-<h2 class="r1-adverb" id="C5"><a class=h href="#C5"></a><code>┼</code> (0xC5, <code>'sc</code>)<span class=rank>1-adverb</span></h2>
-<h3 id="Scalar"><a class=h href="#Scalar"></a><code>α┼G</code> Scalar</h3>
+<h2 class="r1-adverb" id="C5"><a class=h href="#C5"></a><code>┼</code> (0xC5, <code>'cf</code>)<span class=rank>1-adverb</span></h2>
+<h3 id="Conform"><a class=h href="#Conform"></a><code>α┼G</code> Conform</h3>
 <p>call F to every scalar in α, keeping the list's structure. this is similar to <a href="#Each">Each</a> called arbitrarily many times.</p>
 <pre>(│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
 (│01│23)(│45│67)(89) ┼(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
-<h3 id="Scalar"><a class=h href="#Scalar"></a><code>α┼Gβ</code> Scalar</h3>
+<h3 id="Conform"><a class=h href="#Conform"></a><code>α┼Gβ</code> Conform</h3>
 <p>apply a function to every scalar in α and β, following the same rules as <a href="#Each">Each</a>, recursively.</p>
-<pre>0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57)(89Φ)
+<pre>0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57■)(89Φ)
 (│01│23)(│45│67)(89) ┼, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 123┼,456 ≡ (14)(25)(36)
-123(45)6 ┼, 6789 ≡ (16)(27)(38)(│49│59)</pre>
+123(45)6 ┼, 6789 ≡ (16)(27)(38)(│49│59)(6■)</pre>
 <h2 class="r1-adverb" id="D8"><a class=h href="#D8"></a><code>╪</code> (0xD8, <code>'s2</code>)<span class=rank>1-adverb</span></h2>
 <h3 id="Scan Pairs"><a class=h href="#Scan Pairs"></a><code>α╪G</code> Scan Pairs</h3>
 <p>run F through 2-item pairs of α, passing the left item as the left argument and the right item as the right argument. the first item will be left unchanged.</p>

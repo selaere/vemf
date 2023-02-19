@@ -11,10 +11,10 @@
 
 .pg╕{
     ─tab α¥Φ▐φL·
-    l╕(=":title"&)#¡l♂8─title
-    l╕(=":char" &)#¡l♂7─c c:fc─hex
-    l╕(=":type" &)#¡l♂7─type
-    l╕(=":ascii"&)#¡l♂8≈╨(T"code";", ")─ascii
+    l╕(╒=":title"&)#¡l♂8─title
+    l╕(╒=":char" &)#¡l♂7─c c:fc─hex
+    l╕(╒=":type" &)#¡l♂7─type
+    l╕(╒=":ascii"&)#¡l♂8≈╨(T"code";", ")─ascii
     (c@ê)╗.type═tab    
     (.hex H)(c:esc T"code")" (0x".hex.ascii")"(.type(~`_)╓▀▌` T"span class=rank"),
         T("h2 class=¨r".type"¨ id=¨".hex"¨",),Φ─h

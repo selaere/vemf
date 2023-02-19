@@ -40,16 +40,8 @@ impl Val {
         }
     }
 
-    pub fn iterinf<'r, 'io>(self, env: &'r mut Env<'io>) -> Box<dyn InconvenientIter<'r, 'io> + 'r> {
-        if self.is_infinite() {
-            bx(InfIter { i: 0, value: self, env })
-        } else if let Lis{l, ..} = self {
-            match Rc::try_unwrap(l) {
-                Ok(l) => bx(l.into_iter()),
-                // https://smallcultfollowing.com/babysteps/blog/2018/09/02/rust-pattern-iterating-an-over-a-rc-vec-t/
-                Err(l) => bx((0..l.len()).map(move |x| l[x].c()))
-            }
-        } else { bx(iter::once(self)) }
+    pub fn iterinf<'r, 'io>(self, env: &'r mut Env<'io>) -> InfIter<'r, 'io> {
+        InfIter { i: 0, value: self, env }
     }
 
     pub fn lis(vec: Vec<Val>) -> Val {
@@ -63,29 +55,18 @@ impl Val {
     // create a finite iterator of `&Val`s. this returns a single item for functions, so it will 
     // never be infinite AND it doesnt need a &mut env which is more convenient most of the time
     pub fn iterf<'v>(&'v self) -> Box<dyn GoodIter<&'v Val> + 'v> {
-        if let Lis{l, ..} = self {
-            bx(l.iter())
-        } else {
-            bx(iter::once(self))
+        match self {
+            Lis{l, ..} => bx(l.iter()),
+            _ => bx(iter::once(self)),
         }
     }
 
     // like iterf but it clones its values EXCEPT if the vec has 1 ref then it drains them
     pub fn into_iterf(self) -> Box<dyn GoodIter<Val>> {
-        if let Lis{l, ..} = self {
-            match Rc::try_unwrap(l) {
-                Ok(l) => bx(l.into_iter()),
-                Err(l) => bx((0..l.len()).map(move |x| l[x].c()))
-            }
-        } else { bx(iter::once(self)) }
-    }
-
-    pub fn itertake(self, env: &mut Env, len: usize) -> Box<dyn GoodIter<Val>> {
-        if self.is_infinite() {
-            bx(self.iterinf(env).take(len).collect::<Vec<_>>().into_iter())
-        } else {
-            bx(self.into_iterf().take(len))
-        }
+        if let Lis{l, ..} = self { match Rc::try_unwrap(l) {
+            Ok(l) => bx(l.into_iter()),
+            Err(l) => bx((0..l.len()).map(move |x| l[x].c()))
+        } } else { bx(iter::once(self)) }
     }
 
 }
@@ -94,8 +75,7 @@ pub trait GoodIter<V>: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterato
 impl<F, V> GoodIter<V> for F where F: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator + FusedIterator {}
 
 pub trait InconvenientIter<'r, 'io>: Iterator<Item=Val> {}
-impl<'r, 'io> InconvenientIter<'r, 'io> for InfIter<'r, 'io> {}
-impl<'r, 'io, F> InconvenientIter<'r, 'io> for F where F: GoodIter<Val> {}
+impl<'r, 'io, F> InconvenientIter<'r, 'io> for F where F: Iterator<Item=Val> {}
 
 
 func!(@env, a :index b => {
@@ -109,7 +89,7 @@ func!(@env, a :index b => {
             if n+1 == b.len() {return a}
             return match a {
                 Lis {l, ..} => {
-                    let slice = b.iterinf(env).skip(n+1).collect::<Val>();
+                    let slice = b.into_iterf().skip(n+1).collect::<Val>();
                     l.iter().map(|x| index(env, x.c(), Some(slice.c()))).collect::<Val>()
                 }
                 _ => iter::empty::<Val>().collect()
@@ -121,7 +101,7 @@ func!(@env, a :index b => {
 });
 
 pub struct InfIter<'r, 'io> {
-    i: i64,
+    i: usize,
     value: Val,
     env: &'r mut Env<'io>,
 }
@@ -129,7 +109,7 @@ pub struct InfIter<'r, 'io> {
 impl<'r, 'io> Iterator for InfIter<'r, 'io> {
     type Item = Val;
     fn next(&mut self) -> Option<Self::Item> {
-        let val = Some(self.value.monad(self.env, Int(self.i)));
+        let val = Some(self.value.index(self.env, self.i));
         self.i += 1; val
     }
     fn size_hint(&self) -> (usize, Option<usize>) { (usize::MAX, None) }
@@ -243,10 +223,10 @@ pub fn reshape(env: &mut Env, a: Val, b: Val, isright: bool) -> Val {
         // pick from right
         let elems = product.unsigned_abs();
         let bee = if a.len() < elems {
-            iter::repeat(a.fill()).take(elems - a.len()).chain(a.iterinf(env)).collect::<Val>()
+            iter::repeat(a.fill()).take(elems - a.len()).chain(a.into_iterf()).collect::<Val>()
         } else {
             let len = a.len() - elems;
-            a.iterinf(env).skip(len).collect::<Val>()
+            a.into_iterf().skip(len).collect::<Val>()
         };
         bee.iterinf(env)
     };
@@ -296,8 +276,8 @@ func!(@env, a :replicate b => { let fill = a.fill();
 
 pub fn ireplicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
     let mut lis = Vec::new();
-    let (afill, bfill, len) = (a.fill(), b.fill(), a.len());
-    for (l,r) in a.into_iterf().zip(b.itertake(env, len).chain(iter::repeat(bfill))) {
+    let afill = a.fill();
+    for (l,r) in a.into_iterf().zip(b.iterinf(env)).collect::<Vec<_>>().into_iter() {
         if let Some(n) = r.try_int() { if n != 0 {
             let val = if n > 0 {l} else {afill.c()};
             for _ in 0..(n.abs() - 1) { lis.push(val.c()); }
@@ -345,7 +325,7 @@ func!( @env, a :group b => {
     if a.is_infinite() { return NAN; }
     let mut lis: Vec<Vec<Val>> = Vec::new();
     let len = a.len();
-    for (l, r) in a.into_iterf().zip(b.itertake(env, len)) {
+    for (l, r) in a.into_iterf().zip(b.iterinf(env).take(len)) {
         for i in r.into_iterf() {
             if i.is_nan() { continue }
             // epic type inference fail

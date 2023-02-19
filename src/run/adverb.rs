@@ -33,69 +33,87 @@ adverb!(@env, a f .overright g b => { let r = b.map(|b| f.monad(env, b)); g.call
 adverb!(@env, a f .forkleft  g b => { let l = f.call(env, a.c(), b.c()); g.dyad(env, l, b.unwrap_or(a)) });
 adverb!(@env, a f .forkright g b => { let r = f.call(env, a.c(), b); g.dyad(env, a, r) });
 
-adverb!(@env, a .each g b => 
-    if a.is_scalar() && b.iter().all(|x| x.is_scalar()) {
-        g.call(env, a, b)
-    } else if let Some(b) = b {
-        if (a.is_infinite() && b.is_infinite())
-        || (a.is_infinite() && b.is_scalar()  )
-        || (a.is_scalar()   && b.is_infinite()) {
-            Val::Fork(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc(), b.rc())
-        } else if a.is_scalar() {
-            b.into_iterf().map(|x| g.dyad(env, a.c(), x)).collect()
-        } else if b.is_scalar() {
-            a.into_iterf().map(|x| g.dyad(env, x, b.c())).collect()
-        } else {
-            let len = usize::min(a.len(), b.len());
-            a.itertake(env, len).zip(b.itertake(env, len))
-                .map(|(a, b)| g.dyad(env, a, b)).collect()
-        }
-    } else { eachleft(env, a, None, None, g) }
-);
+adverb!(@env, a .each g b => {
+    let Some(b) = b else { return eachleft(env, a, None, None, g); };
+    if a.is_infinite() || b.is_infinite() {
+        return Val::Fork(a.rc(), g.c(), b.rc());
+    }
+    let items = (0..match (a.is_scalar(), b.is_scalar()) {
+        ( true,  true) => return g.call(env, a, Some(b)),
+        (false,  true) => a.len(),
+        ( true, false) => b.len(),
+        (false, false) => usize::max(a.len(), b.len()),
+    }).map(|n| {
+        let l = a.index(env, n); let r = b.index(env, n); g.dyad(env, l, r)
+    }).collect();
+    let mut fill = NAN;
+    if b.is_scalar() && !a.fill().is_nan() { fill = g.dyad(env, a.fill(), b.c()); }
+    if a.is_scalar() && !b.fill().is_nan() { fill = g.dyad(env, a.c(), b.fill()); }
+    if !a.fill().is_nan() && !b.fill().is_nan() { fill = g.dyad(env, a.fill(), b.fill()); };
+    Val::lis_fill(items, fill)
+});
 
 adverb!(@env, a .eachleft g b =>
     if a.is_scalar() {
         g.call(env, a, b)
-    } else if a.is_infinite() {
-        if let Some(b) = b {
-            Val::Fork(a.rc(), Rc::clone(g), b.rc())
-        } else {
-            Val::atop(a.rc(), Rc::clone(g))
-        }
-    } else { a.into_iterf().map(|x| g.call(env, x, b.c())).collect() }
+    } else if a.is_infinite() { match b {
+        Some(b) => Val::Fork(a.rc(), Rc::clone(g), b.rc()),
+        None    => Val::atop(a.rc(), Rc::clone(g)),
+    }} else {
+        Val::lis_fill(
+            a.iterf().map(|x| g.call(env, x.c(), b.c())).collect(),
+            if a.fill().is_nan() { NAN } else { g.call(env, a.fill(), b.c()) }
+        )
+    }
 );
 
-adverb!(@env, a .conform g b =>
-    if a.is_scalar() && b.iter().all(|x| x.is_scalar()) {
-        g.call(env, a, b)
-    } else if let Some(b) = b {
-        if (a.is_infinite() && b.is_infinite())
-        || (a.is_infinite() && b.is_scalar())
-        || (a.is_scalar() && b.is_infinite()) {
-            Val::Fork(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc(), b.rc())
-        } else if a.is_scalar() {
-            b.into_iterf().map(|x| conform(env, a.c(), Some(x), None, g)).collect()
-        } else if b.is_scalar() {
-            a.into_iterf().map(|x| conform(env, x, Some(b.c()), None, g)).collect()
-        } else {
-            let len = usize::min(a.len(), b.len());
-            a.itertake(env, len).zip(b.itertake(env, len))
-                .map(|(a, b)| conform(env, a, Some(b), None, g))
-                .collect()
-        }
-    } else { extend(env, a, None, None, g) }
-);
+adverb!(@env, a .eachtrim g b => {
+    let Some(b) = b else { return eachleft(env, a, None, None, g); };
+    if !a.is_list() && !b.is_list() {
+        return Val::Fork(a.rc(), g.c(), b.rc());
+    }
+    (0..match (a.is_scalar(), b.is_scalar()) {
+        ( true,  true) => return g.call(env, a, Some(b)),
+        (false,  true) => a.len(),
+        ( true, false) => b.len(),
+        (false, false) => usize::min(a.len(), b.len()),
+    }).map(|n| {
+        let l = a.index(env, n); let r = b.index(env, n); g.dyad(env, l, r)
+    }).collect()
+});
+
+adverb!(@env, a .conform g b => {
+    let Some(b) = b else { return extend(env, a, None, None, g); };
+    if a.is_infinite() || b.is_infinite() {
+        return Val::Fork(a.rc(), Val::Av(conform, None, g.c()).rc(), b.rc());
+    }
+    let items = (0..match (a.is_scalar(), b.is_scalar()) {
+        ( true,  true) => return g.call(env, a, Some(b)),
+        (false,  true) => a.len(),
+        ( true, false) => b.len(),
+        (false, false) => usize::max(a.len(), b.len()),
+    }).map(|n| {
+        let l = a.index(env, n); let r = b.index(env, n); conform(env, l, Some(r), None, g)
+    }).collect();
+    let mut fill = NAN;
+    if b.is_scalar() && !a.fill().is_nan() { fill = conform(env, a.fill(), Some(b.c()), None, g); }
+    if a.is_scalar() && !b.fill().is_nan() { fill = conform(env, a.c(), Some(b.fill()), None, g); }
+    if !a.fill().is_nan() && !b.fill().is_nan() { 
+        fill = conform(env, a.fill(), Some(b.fill()), None, g);
+    };
+    Val::lis_fill(items, fill)
+});
 
 adverb!(@env, a .extend g b =>
     if a.is_scalar() {
         g.call(env, a, b)
-    } else if a.is_infinite() { 
-        if let Some(b) = b {
-            Val::Fork(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc(), b.rc())
-        } else {
-            Val::atop(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc())
-        }
-    } else { a.into_iterf().map(|x| extend(env, x, b.c(), None, g)).collect()}
+    } else if a.is_infinite() { match b {
+        Some(b) => Val::Fork(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc(), b.rc()),
+        None    => Val::atop(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc()),
+    }} else {
+        let fill = if a.fill().is_nan() { NAN } else { extend(env, a.fill(), b.c(), None, g) };
+        Val::lis_fill(a.into_iterf().map(|x| extend(env, x, b.c(), None, g)).collect(), fill)
+    }
 );
 
 adverb!(@env, a .scan g b => {
@@ -124,8 +142,8 @@ adverb!(@env, a .reduce g b => {
         None => start,
     };
     for i in iter { val = g.dyad(env, val, i); }
-val });
-
+    val
+});
 
 adverb!(@env, a f .untilscan g b => {
     let mut values = vec![a.c()];

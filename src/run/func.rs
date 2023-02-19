@@ -48,7 +48,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
     } );* }}
     load_av!(
         swap, constant, monadic, bind, atop,
-        each, eachleft, conform, extend,
+        each, eachleft, eachtrim, conform, extend,
         scan, scanpairs, reduce, stencil, valences,
         overleft, overright, over, forkleft, forkright,
         until, untilscan, power, powerscan, untilcmp, untilscancmp,

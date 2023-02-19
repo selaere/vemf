@@ -3,7 +3,6 @@
 
 .invalences─╬
 
-.inconstant─╒
 .inswap─┴ .inmonadic─┬
 .inoverleft─╜ .inoverright─╙
 .inforkleft─╖ .inforkright─╓
@@ -11,6 +10,7 @@
 .inover─║
 
 .ineach─╕
+.ineachtrim─╒
 .ineachleft─╛
 :┴:╛:┴─╘
 
@@ -170,12 +170,12 @@ _Ü_ë─Ü
 (│û¬╓‼) ╬ ε╓‼─∩
 ((╛≈■)╓‼) ╬ É╓‼ ─\
 
-╧╕¬(►φ)─♦
+╧╒¬(►φ)─♦
 
 "0123456789abcdefghijklmnopqrstuvwxyz"─base
 .inparse╬(ç┴#.base)╖è─º
 ' {αéβ│►¬╨│¬0α¡.base├►<0╨│⌐`-α}
-┼:innumfmt╬(é╓┴(│►¬╨│¬0¡.base))╓┴├►<0╨│⌐`-─ª
+┼:innumfmt╬(é╓┴(│►¬╨│¬0¡.base))╓┴├►<0╨│⌐`-▐■─ª
 
 ┼:infact─!
 !╬(-╓!║/)─!

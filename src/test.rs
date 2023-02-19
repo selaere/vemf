@@ -19,7 +19,7 @@ fn docs() -> Result<(), String> {
                 let left = env.include_string(i);
                 let right = env.include_string(o);
                 if left != right {
-                    println!("test failed line {} ``{i} ≡ {o}``: {left} ≢ {right}", n+1);
+                    println!("doc/raw.txt:{}: ``{i} ≡ {o}``: {left} ≢ {right}", n+1);
                     failed += 1;
                 } else {
                     //println!("test passed line {} ``{i} : {o}``", n+1);
@@ -29,7 +29,7 @@ fn docs() -> Result<(), String> {
                 let left = env.include_string(i);
                 let right = env.include_string(o);
                 if !left.approx(&right) {
-                    println!("test failed line {} ``{i} ± {o}``: {left} ≢ {right}", n+1);
+                    println!("doc/raw.txt:{}: ``{i} ± {o}``: {left} ≢ {right}", n+1);
                     failed += 1;
                 }
                 tested += 1;
