@@ -153,7 +153,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="rverb"><a href="#18">↑</a></td>
 <td class="rverb"><a href="#19">↓</a></td>
 <td class="rverb"><a href="#1A">←</a></td>
-<td class="rgrammar"><a href="#1B">→</a></td>
+<td class="rstatement"><a href="#1B">→</a></td>
 <td class="rverb"><a href="#1C">∟</a></td>
 <td class="rgrammar"><a href="#1D">↔</a></td>
 <td class="rverb"><a href="#1E">▲</a></td>
@@ -322,7 +322,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="r1-adverb"><a href="#C1">┴</a></td>
 <td class="r1-adverb"><a href="#C2">┬</a></td>
 <td class="rgrouper"><a href="#C3">├</a></td>
-<td class="rstatement"><a href="#C4">─</a></td>
+<td class="rgrammar"><a href="#C4">─</a></td>
 <td class="r1-adverb"><a href="#C5">┼</a></td>
 <td class="rgrouper"><a href="#C6">╞</a></td>
 <td class="rgrouper"><a href="#C7">╟</a></td>
@@ -331,7 +331,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="r2-adverb"><a href="#CA">╩</a></td>
 <td class="r2-adverb"><a href="#CB">╦</a></td>
 <td class="rgrouper"><a href="#CC">╠</a></td>
-<td class="rstatement"><a href="#CD">═</a></td>
+<td class="rgrammar"><a href="#CD">═</a></td>
 <td class="r2-adverb"><a href="#CE">╬</a></td>
 <td class="r1-adverb"><a href="#CF">╧</a></td></tr>
 <tr><td class="r2-adverb"><a href="#D0">╨</a></td>
@@ -480,47 +480,47 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>0123456789↑33 ≡ (012)(345)(678)
 0123456789↓33 ≡ (123)(456)(789)</pre>
 <h2 class=prose id="Variables"><a class=h href="#Variables"></a>Variables</h2>
-<p>variables can be set with <code>→name</code> and retrieved with <code>.name</code></p>
-<pre>2*3→six 1-.six ≡ _5</pre>
+<p>variables can be set with <code>─name</code> and retrieved with <code>.name</code></p>
+<pre>2*3─six 1-.six ≡ _5</pre>
 <p>, or as a verb as <code>:name</code></p>
-<pre>(*)→mul 4:mul3 ≡ :12</pre>
+<pre>(*)─mul 4:mul3 ≡ :12</pre>
 <p>note that a function and a verb are different things: verb is a grammatical role, and a function is a type; a function may be used as a noun. <code>α$β</code> calls α with the arguments β:</p>
-<pre>.*→mul .mul$35 ≡ :15
+<pre>.*─mul .mul$35 ≡ :15
 .*$35 ≡ :15</pre>
 <p>a name, or identifier, is parsed as a sequence of letters (<code>mul</code>, <code>six</code>, <code>things</code>), an underscore followed by a character (<code>_ë</code>, <code>_1</code>) or a single character (<code>+</code>, <code>-</code>). any other name can be used, by using quotes: <code>."Name of variable"</code></p>
 <p>a function also often works like an infinite list. it can be indexed and taken from:</p>
 <pre>.◄@3 ≡ 3
 .◄↑4 ≡ 0123</pre>
-<p><code>→name</code> is a just verb that sets α and returns β or, if not given, α. this makes it flexible to define a variable and then use it</p>
-<pre>4 →four 1+2 ≡ 3
-4 →four +2 ≡ 6</pre>
-<p>and for golfing purposes, the characters <code>A</code>..<code>Z</code> are set by default to <code>→a</code>..<code>→z</code>, so you can set variables very conveniently.</p>
-<p>there is another kind of assignment: <code>─</code> <a href="#Local Statement">Local Statement</a> (that is a box drawing character, not a minus sign <code>-</code>), useful for defining verbs. we'll learn more about statements in the <a href="#Blocks">Blocks</a> section.</p>
-<pre>+ ─add 4:add5 ≡ 9</pre>
+<p><code>─name</code> is a just verb that sets α and returns β or, if not given, α. this makes it flexible to define a variable and then use it</p>
+<pre>4 ─four 1+2 ≡ 3
+4 ─four +2 ≡ 6</pre>
+<p>and for golfing purposes, the characters <code>A</code>..<code>Z</code> are set by default to <code>─a</code>..<code>─z</code>, so you can set variables very conveniently.</p>
+<p>there is another kind of assignment: <code>→</code> <a href="#Local Statement">Local Statement</a> (that is a box drawing character, not a minus sign <code>-</code>), useful for defining verbs. we'll learn more about statements in the <a href="#Blocks">Blocks</a> section.</p>
+<pre>+ →add 4:add5 ≡ 9</pre>
 <p>this example may seem mundane, but statement assignments are very useful with trains.</p>
 <h2 class=prose id="Trains"><a class=h href="#Trains"></a>Trains</h2>
 <p>when a verb is the start of an expression, it will result in a derived function, or train.</p>
-<pre>(+)→add 4:add5 ≡ 9</pre>
+<pre>(+)─add 4:add5 ≡ 9</pre>
 <p><code>Fβ</code> is a Bind. it calls F with β as a right argument, ignoring whatever was passed to the right.</p>
-<pre>(+1)→inc 4:inc ≡ 5
-(*2)→dup 4:dup ≡ 8
-(*2)→dup 4:dup9 ≡ 8</pre>
+<pre>(+1)─inc 4:inc ≡ 5
+(*2)─dup 4:dup ≡ 8
+(*2)─dup 4:dup9 ≡ 8</pre>
 <p>(note that <code>inc</code> and <code>dup</code> are equivalent to <code>α▲</code> <a href="#Bump Up">Bump Up</a> and <code>α¼</code> <a href="#Double">Double</a>)</p>
-<p>using <code>─</code>:</p>
-<pre>+1─inc 4:inc ≡ 5
-*2─dup 4:dup ≡ 8
-*2─dup 4:dup9 ≡ 8</pre>
+<p>using <code>→</code>:</p>
+<pre>+1→inc 4:inc ≡ 5
+*2→dup 4:dup ≡ 8
+*2→dup 4:dup9 ≡ 8</pre>
 <p><code>FG</code> is an Atop. it calls F with both arguments, and then calls G atop of that:</p>
-<pre>↨*─fact 6:fact ≡ :720
-|¬─nor  0:nor1 ≡ 0</pre>
+<pre>↨*→fact 6:fact ≡ :720
+|¬→nor  0:nor1 ≡ 0</pre>
 <p>(note that <code>fact</code> and <code>nor</code> are equivalent to <code>α!</code> <a href="#Factorial">Factorial</a> (for natural α) and <code>αöβ</code> <a href="#Nor">Nor</a>)</p>
 <p><code>FGβ</code> is kind of a mix of the two: it calls F with both arguments, and then calls G atop of that with β as a right argument.</p>
-<pre>+/2─avg  4:avg8 ≡ 6
-²*π─area 3:area ≡ 9*π</pre>
+<pre>+/2→avg  4:avg8 ≡ 6
+²*π→area 3:area ≡ 9*π</pre>
 <p>(note that <code>π</code> is pi, the number)</p>
 <p>you can chain them, left-to-right</p>
-<pre>+1+2+3─f 5:f ≡ :11
-~=0─empty φ:empty ≡ 1</pre>
+<pre>+1+2+3→f 5:f ≡ :11
+~=0→empty φ:empty ≡ 1</pre>
 <p>we've been setting these trains to variables before using them. if you try to apply them directly, it won't work:</p>
 <pre>5(+/2)9</pre>
 <p>is a list with <code>5</code>, the function <code>+/2</code> (as a noun) and <code>9</code>. you can turn a noun into a verb with <code>┌</code> (that is a box drawing character, not a pipe):</p>
@@ -547,8 +547,8 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>`a-┴╓/`b ≡ `a(┴-)╓/`b</pre>
 <p>TODO example</p>
 <p>adverbs applied to their operands act like verbs, so you can set them just like verbs:</p>
-<pre>²║+─discrim 4:discrim5 ≡ :41
-┴/1─recip 4:recip ≡ 1/4</pre>
+<pre>²║+→discrim 4:discrim5 ≡ :41
+┴/1→recip 4:recip ≡ 1/4</pre>
 <p>the built-in adverbs are all box-drawing symbols (though not the other way around). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:</p>
 <pre>1-adverbs: ╪┼┴┬╧╤╕╒╛╘
 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║</pre>
@@ -601,13 +601,13 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <p>as a general rule of thumb, when there is a <code>◄</code> or <code>►</code> in a fork, it can be represented with one of the other combinators. here we can use <code>αF╓G</code> <a href="#On Right">On Right</a>, which evaluates to <code>αG(αF)</code> (i read it as G, with F evaluated on the right)</p>
 <pre>6┌(▲╓*½) ≡ :21</pre>
 <p>we can set our function to a variable and use it.</p>
-<pre>▲╓*½─triang 6:triang ≡ :21</pre>
+<pre>▲╓*½→triang 6:triang ≡ :21</pre>
 <p>this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly:</p>
-<pre>{α*(α▲)½}─triang 6:triang ≡ :21
-{α▲*α½}─triang 6:triang ≡ :21  ' multiplication is commutative</pre>
+<pre>{α*(α▲)½}→triang 6:triang ≡ :21
+{α▲*α½}→triang 6:triang ≡ :21  ' multiplication is commutative</pre>
 <p>but the tacit form is simpler (and shorter, and somewhat faster).</p>
 <p>here is another way of representing all the combinators that i can test automatically</p>
-<pre>♫,;`(,`)─F ♫,;`[,`]─G ♫,;`{,`}─H ≡ ■
+<pre>♫,;`(,`)→F ♫,;`[,`]→G ♫,;`{,`}→H ≡ ■
 (`a┴G)   (`a┴G`b)    ≡ "[aa]"    "[ba]"
 (`aF╜G)  (`aF╜G`b)   ≡ "[(a)]"   "[(a)b]"
 (`aF╙G)  (`aF╙G`b)   ≡ "[a]"     "[a(b)]"
@@ -696,7 +696,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h2 class="rgrammar" id="70"><a class=h href="#70"></a><code>•</code> (0x70, <code>'.</code>)<span class=rank>grammar</span></h2>
 <h3 id="1-Adverb"><a class=h href="#1-Adverb"></a><code>•name</code> 1-Adverb</h3>
 <p>the variable <code>name</code> with 1-adverb role</p>
-<pre>{{αβσμ}}─d 1•d23 ≡ 1 3 2 ■</pre>
+<pre>{{αβσμ}}→d 1•d23 ≡ 1 3 2 ■</pre>
 <p>see also: <a href="#Dyadic Adverb">Dyadic Adverb</a></p>
 <h2 class="rstatement" id="80"><a class=h href="#80"></a><code>◘</code> (0x80, <code>'O</code>)<span class=rank>statement</span></h2>
 <h3 id="Return"><a class=h href="#Return"></a><code>x◘</code> Return</h3>
@@ -706,7 +706,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <h2 class="rgrammar" id="90"><a class=h href="#90"></a><code>○</code> (0x90, <code>',</code>)<span class=rank>grammar</span></h2>
 <h3 id="2-Adverb"><a class=h href="#2-Adverb"></a><code>○name</code> 2-Adverb</h3>
 <p>the variable <code>name</code> with 2-adverb role</p>
-<pre>{{αβσμ}}─d12○d34 ≡ 1 4 3 2</pre>
+<pre>{{αβσμ}}→d12○d34 ≡ 1 4 3 2</pre>
 <p>see also: <a href="#Monadic Adverb">Monadic Adverb</a></p>
 <h2 class="rwhitespace" id="A0"><a class=h href="#A0"></a><code>◙</code> (0xA0)<span class=rank>whitespace</span></h2>
 <h3 id="Newline"><a class=h href="#Newline"></a><code>◙</code> Newline</h3>
@@ -764,11 +764,11 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>5↕ ≡ 01234
 Φ↕ ≡ 0123456789</pre>
 <p>therefore, <code>l~↕</code> is a list of the indices of the list <code>l</code> (vemf is 0-indexed), and</p>
-<pre>"list"─l l~↕¡l ≡ l</pre>
+<pre>"list"→l l~↕¡l ≡ l</pre>
 <p>this can also be found as <a href="#Domain">Domain</a></p>
 <p>a negative argument flips the output:</p>
 <pre>Φ-↕ ≡ 9876543210
-"list"─l l~-↕¡l ≡ "tsil"</pre>
+"list"→l l~-↕¡l ≡ "tsil"</pre>
 <p>when the argument is a list of scalars, the result will be a nested list that contains the indices of an array of that shape</p>
 <pre>34↕ ≡ │00│01│02│03│10│11│12│13│20│21│22│23
 123↕ ≡ ├000├001├002├010├011├012
@@ -899,23 +899,22 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>"testing"↓ ≡ "g" "ng" "ing" "ting" "sting" "esting" "testing"</pre>
 <p>see also: <a href="#Prefixes">Prefixes</a></p>
 <h2 class="rverb" id="1A"><a class=h href="#1A"></a><code>←</code> (0x1A, <code>'vr</code>)<span class=rank>verb</span></h2>
-<h3 id="Get"><a class=h href="#Get"></a><code>α←</code> Get</h3>
+<h3 id="Get Variable"><a class=h href="#Get Variable"></a><code>α←</code> Get Variable</h3>
 <p>get the variable with name α</p>
 <pre>"_a"← ≡ :12
-`æ─ash "ash"← ≡ `æ</pre>
-<h3 id="Set"><a class=h href="#Set"></a><code>α←β</code> Set</h3>
+`æ→ash "ash"← ≡ `æ</pre>
+<h3 id="Set Variable"><a class=h href="#Set Variable"></a><code>α←β</code> Set Variable</h3>
 <p>set a new local variable with name α to β</p>
 <pre>"ampersand"←`ñ·.ampersand ≡ `ñ</pre>
-<h2 class="rgrammar" id="1B"><a class=h href="#1B"></a><code>→</code> (0x1B, <code>'^</code>)<span class=rank>grammar</span></h2>
-<h3 id="Local"><a class=h href="#Local"></a><code>α→name</code> Local</h3>
-<p>sets a variable to α in the local scope.</p>
-<pre>2─two .two+.two ≡ 4</pre>
-<h3 id="Local"><a class=h href="#Local"></a><code>α→nameβ</code> Local</h3>
-<p>sets a variable to α in the local scope and returns β.</p>
-<pre>1→a2→b3→c a+b+c ≡ 6</pre>
-<p>this function, along with <a href="#Mutate">Mutate</a>, are special verbs in that if they are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:</p>
-<pre>1→a 2→b (ab)+ ≡ 3</pre>
-<p>see also: <a href="#Local Statement">Local Statement</a></p>
+<h2 class="rstatement" id="1B"><a class=h href="#1B"></a><code>→</code> (0x1B, <code>'^</code>)<span class=rank>statement</span></h2>
+<h3 id="Set"><a class=h href="#Set"></a><code>x→name</code> Set</h3>
+<p>sets a variable to x in the local scope.</p>
+<pre>2→two .two+.two ≡ 4</pre>
+<p>if there is nothing in the statement body, the variable will be removed from the local scope.</p>
+<pre>4→a0{5→a →a a} ≡ 4</pre>
+<p>this is a statement, so verbs can be set conveniently:</p>
+<pre>+2→add 3:add ≡ 5</pre>
+<p>see also: <a href="#Set Function">Set Function</a></p>
 <h2 class="rverb" id="1C"><a class=h href="#1C"></a><code>∟</code> (0x1C, <code>'L</code>)<span class=rank>verb</span></h2>
 <h3 id="Natural Logarithm"><a class=h href="#Natural Logarithm"></a><code>α∟</code> Natural Logarithm</h3>
 <p>get the natural logarithm of α. scalar.</p>
@@ -927,19 +926,18 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>:1000∟Φ ± 3
 Φ√∟Φ ≡ 2/</pre>
 <h2 class="rgrammar" id="1D"><a class=h href="#1D"></a><code>↔</code> (0x1D, <code>'*</code>)<span class=rank>grammar</span></h2>
-<h3 id="Mutate"><a class=h href="#Mutate"></a><code>α↔name</code> Mutate</h3>
+<h3 id="Mutate"><a class=h href="#Mutate"></a><code>x↔name</code> Mutate</h3>
 <p>mutate a variable in any scope, by applying a function to it monadically. </p>
-<pre>:21→n (*2)↔n n ≡ :42</pre>
-<p>if α is a verb, it is more useful to use this as a statement (see <a href="#Mutate Statement">Mutate Statement</a>)</p>
-<pre>:21─n *2═n n ≡ :42</pre>
-<p>this means the verb has to be its standalone statement. this might not work like you might expect it to:</p>
-<pre>3→n 4→m *2═n n ≡ 8</pre>
-<p>because the body of the statement includes the <a href="#Local">Local</a>s, which are syntactically just like verbs:</p>
-<pre>(3→n4→m*2)═n n ≡ 8  ' 3→n4→m*2 returns 8
-3─n 4─m *2═n n ≡ 6  ' but this works</pre>
-<h3 id="Mutate"><a class=h href="#Mutate"></a><code>α↔nameβ</code> Mutate</h3>
-<p>mutate a variable and return β</p>
-<p>see also: <a href="#Mutate Statement">Mutate Statement</a></p>
+<pre>:21→n *3↔n n ≡ :63</pre>
+<p>this is a statement, so the verb starts where the previous statement ends. this might not work like you might expect it to:</p>
+<pre>3N 4M *2↔n n ≡ 8</pre>
+<p>because the body of the statement includes <a href="#Set Function">Set Function</a>s, which are syntactically verbs:</p>
+<pre>(3N4M*2)↔n n ≡ 8    ' 3─n4─m*2 returns 8
+3→n 4→m *2↔n n ≡ 6  ' but this works</pre>
+<p>if there is nothing in the statement body, the variable will be removed from its scope.</p>
+<pre>3→n 4→m *2↔n n ≡ 6
+4→a0{↔a}·a ≡ ■</pre>
+<p>see also: <a href="#Mutate Function">Mutate Function</a></p>
 <h2 class="rverb" id="1E"><a class=h href="#1E"></a><code>▲</code> (0x1E, <code>'bu</code>)<span class=rank>verb</span></h2>
 <h3 id="Bump Up"><a class=h href="#Bump Up"></a><code>α▲</code> Bump Up</h3>
 <p>increments the number by 1. equivalent to <code>+1</code>. scalar.</p>
@@ -1001,7 +999,7 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>"☺☻♥♦" ≡ 1234</pre>
 <p>with some special characters used specially: <code>¨</code> stands for <code>"</code> (0x22) and <code>·</code> stands for <code>'</code> (0x27). <code>'</code> may be used for escaping:</p>
 <pre>"he said ¨hi¨"   ≡ "he said ",`","hi",`"
-"umlaut → 'nm ← diaeresis" ≡ "umlaut → ",`¨," ← diaeresis"</pre>
+"umlaut ─ 'nm ← diaeresis" ≡ "umlaut ─ ",`¨," ← diaeresis"</pre>
 <h2 class="rverb" id="23"><a class=h href="#23"></a><code>#</code> (0x23)<span class=rank>verb</span></h2>
 <h3 id="First True"><a class=h href="#First True"></a><code>α#</code> First True</h3>
 <p>find the first non-0 value and return its index, or else <a href="#None">None</a>.</p>
@@ -1078,7 +1076,7 @@ _1%_2 ≡ 1</pre>
 <pre>(123)(456)(789)@0 ≡ 123
 001334(û¬)╓‼ ≡ 0134</pre>
 <p>often, you won't need to close a parenthesis, like in the end of a file or a statement</p>
-<pre>1+(2*3─seven .seven*2 ≡ :14</pre>
+<pre>1+(2*3→seven .seven*2 ≡ :14</pre>
 <p>parentheses can be thought of having less precedence than braces <code>{}</code></p>
 <pre>:15{"number ",(αª} ≡ "number 15"</pre>
 <p>if there arent many words inside the parenthesis, <a href="#Grouping">Grouping</a> may be used instead</p>
@@ -1305,12 +1303,12 @@ _1%_2 ≡ 1</pre>
 <h2 class="rstatement" id="3F"><a class=h href="#3F"></a><code>?</code> (0x3F)<span class=rank>statement</span></h2>
 <h3 id="Then"><a class=h href="#Then"></a><code>x?y</code> Then</h3>
 <p>execute statement y if x is not 0 or <a href="#Null">Null</a>. if x is a function, it will be called with α and, if <code>Σ~1</code>, β.</p>
-<pre>_3─b b&lt;0?-═b b ≡ 3
- 5─b b&lt;0?-═b b ≡ 5</pre>
+<pre>_3→b b&lt;0?-↔b b ≡ 3
+ 5→b b&lt;0?-↔b b ≡ 5</pre>
 <p><a href="#Return">Return</a> may be used for short-circuiting. this is the same as your familiar ternary statement.</p>
 <pre>_3{&lt;0?α-◘α} ≡ 3
  5{&lt;0?α-◘α} ≡ 5
-5─a[a&lt;0?a-◘a] ≡ 5</pre>
+5→a[a&lt;0?a-◘a] ≡ 5</pre>
 <h2 class="rverb" id="40"><a class=h href="#40"></a><code>@</code> (0x40)<span class=rank>verb</span></h2>
 <h3 id="First"><a class=h href="#First"></a><code>α@</code> First</h3>
 <p>get the first item in a list α. this is equivalent to calling α with 0.</p>
@@ -1343,86 +1341,86 @@ _1%_2 ≡ 1</pre>
 (123)(456)(789)@■2 ≡ 369</pre>
 <h2 class="rverb_variable" id="41"><a class=h href="#41"></a><code>A</code> (0x41)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αA</code> <code>αAβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→a</code>.</p>
+<p>general-purpose verb variable. by default, <code>─a</code>.</p>
 <h2 class="rverb_variable" id="42"><a class=h href="#42"></a><code>B</code> (0x42)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αB</code> <code>αBβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→b</code>.</p>
+<p>general-purpose verb variable. by default, <code>─b</code>.</p>
 <h2 class="rverb_variable" id="43"><a class=h href="#43"></a><code>C</code> (0x43)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αC</code> <code>αCβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→c</code>.</p>
+<p>general-purpose verb variable. by default, <code>─c</code>.</p>
 <h2 class="rverb_variable" id="44"><a class=h href="#44"></a><code>D</code> (0x44)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αD</code> <code>αDβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→d</code>.</p>
+<p>general-purpose verb variable. by default, <code>─d</code>.</p>
 <h2 class="rverb_variable" id="45"><a class=h href="#45"></a><code>E</code> (0x45)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αE</code> <code>αEβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→e</code>.</p>
+<p>general-purpose verb variable. by default, <code>─e</code>.</p>
 <h2 class="rverb_variable" id="46"><a class=h href="#46"></a><code>F</code> (0x46)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αF</code> <code>αFβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→f</code>.</p>
+<p>general-purpose verb variable. by default, <code>─f</code>.</p>
 <h2 class="rverb_variable" id="47"><a class=h href="#47"></a><code>G</code> (0x47)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αG</code> <code>αGβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→g</code>.</p>
+<p>general-purpose verb variable. by default, <code>─g</code>.</p>
 <h2 class="rverb_variable" id="48"><a class=h href="#48"></a><code>H</code> (0x48)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αH</code> <code>αHβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→h</code>.</p>
+<p>general-purpose verb variable. by default, <code>─h</code>.</p>
 <h2 class="rverb_variable" id="49"><a class=h href="#49"></a><code>I</code> (0x49)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αI</code> <code>αIβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→i</code>.</p>
+<p>general-purpose verb variable. by default, <code>─i</code>.</p>
 <h2 class="rverb_variable" id="4A"><a class=h href="#4A"></a><code>J</code> (0x4A)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αJ</code> <code>αJβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→j</code>.</p>
+<p>general-purpose verb variable. by default, <code>─j</code>.</p>
 <h2 class="rverb_variable" id="4B"><a class=h href="#4B"></a><code>K</code> (0x4B)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αK</code> <code>αKβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→k</code>.</p>
+<p>general-purpose verb variable. by default, <code>─k</code>.</p>
 <h2 class="rverb_variable" id="4C"><a class=h href="#4C"></a><code>L</code> (0x4C)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αL</code> <code>αLβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→l</code>.</p>
+<p>general-purpose verb variable. by default, <code>─l</code>.</p>
 <h2 class="rverb_variable" id="4D"><a class=h href="#4D"></a><code>M</code> (0x4D)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αM</code> <code>αMβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→m</code>.</p>
+<p>general-purpose verb variable. by default, <code>─m</code>.</p>
 <h2 class="rverb_variable" id="4E"><a class=h href="#4E"></a><code>N</code> (0x4E)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αN</code> <code>αNβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→n</code>.</p>
+<p>general-purpose verb variable. by default, <code>─n</code>.</p>
 <h2 class="rverb_variable" id="4F"><a class=h href="#4F"></a><code>O</code> (0x4F)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αO</code> <code>αOβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→o</code>.</p>
+<p>general-purpose verb variable. by default, <code>─o</code>.</p>
 <h2 class="rverb_variable" id="50"><a class=h href="#50"></a><code>P</code> (0x50)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αP</code> <code>αPβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→p</code>.</p>
+<p>general-purpose verb variable. by default, <code>─p</code>.</p>
 <h2 class="rverb_variable" id="51"><a class=h href="#51"></a><code>Q</code> (0x51)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αQ</code> <code>αQβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→q</code>.</p>
+<p>general-purpose verb variable. by default, <code>─q</code>.</p>
 <h2 class="rverb_variable" id="52"><a class=h href="#52"></a><code>R</code> (0x52)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αR</code> <code>αRβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→r</code>.</p>
+<p>general-purpose verb variable. by default, <code>─r</code>.</p>
 <h2 class="rverb_variable" id="53"><a class=h href="#53"></a><code>S</code> (0x53)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αS</code> <code>αSβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→s</code>.</p>
+<p>general-purpose verb variable. by default, <code>─s</code>.</p>
 <h2 class="rverb_variable" id="54"><a class=h href="#54"></a><code>T</code> (0x54)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αT</code> <code>αTβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→t</code>.</p>
+<p>general-purpose verb variable. by default, <code>─t</code>.</p>
 <h2 class="rverb_variable" id="55"><a class=h href="#55"></a><code>U</code> (0x55)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αU</code> <code>αUβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→u</code>.</p>
+<p>general-purpose verb variable. by default, <code>─u</code>.</p>
 <h2 class="rverb_variable" id="56"><a class=h href="#56"></a><code>V</code> (0x56)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αV</code> <code>αVβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→v</code>.</p>
+<p>general-purpose verb variable. by default, <code>─v</code>.</p>
 <h2 class="rverb_variable" id="57"><a class=h href="#57"></a><code>W</code> (0x57)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αW</code> <code>αWβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→w</code>.</p>
+<p>general-purpose verb variable. by default, <code>─w</code>.</p>
 <h2 class="rverb_variable" id="58"><a class=h href="#58"></a><code>X</code> (0x58)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αX</code> <code>αXβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→x</code>.</p>
+<p>general-purpose verb variable. by default, <code>─x</code>.</p>
 <h2 class="rverb_variable" id="59"><a class=h href="#59"></a><code>Y</code> (0x59)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αY</code> <code>αYβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→y</code>.</p>
+<p>general-purpose verb variable. by default, <code>─y</code>.</p>
 <h2 class="rverb_variable" id="5A"><a class=h href="#5A"></a><code>Z</code> (0x5A)<span class=rank>verb variable</span></h2>
 <h3 id=""><a class=h href="#"></a><code>αZ</code> <code>αZβ</code> </h3>
-<p>general-purpose verb variable. by default, <code>→z</code>.</p>
+<p>general-purpose verb variable. by default, <code>─z</code>.</p>
 <h2 class="rgrammar" id="5B"><a class=h href="#5B"></a><code>[</code> (0x5B)<span class=rank>grammar</span></h2>
 <h3 id="Start Block"><a class=h href="#Start Block"></a><code>[abc]</code> Start Block</h3>
 <p>list of statements that are executed until a <a href="#Return">Return</a> or the end is found, and return that value. similar to a <a href="#Define Function">Define Function</a>, but it is immediately executed and doesn't have a scope. most useful with <code>?</code> <a href="#Then">Then</a>, as it can be used to simulate a ternary operator:</p>
-<pre>6─a a%3=0?[/3═a "a is now ",(aⁿ] ≡ "a is now 2"
+<pre>6→a a%3=0?[/3↔a "a is now ",(aⁿ] ≡ "a is now 2"
 [1+1=2?"yay"◘"oh no"]Ç ≡ "YAY"</pre>
 <h2 class="rverb" id="5C"><a class=h href="#5C"></a><code>\</code> (0x5C)<span class=rank>verb</span></h2>
 <h3 id="Filter Holes"><a class=h href="#Filter Holes"></a><code>α\</code> Filter Holes</h3>
@@ -1536,18 +1534,18 @@ _1%_2 ≡ 1</pre>
 <h2 class="rgrammar" id="7B"><a class=h href="#7B"></a><code>{</code> (0x7B)<span class=rank>grammar</span></h2>
 <h3 id="Define Function"><a class=h href="#Define Function"></a><code>{abc}</code> Define Function</h3>
 <p>return a function that executes the statements inside the braces, returning a value and stopping once a <a href="#Return">Return</a> statement is hit. a <a href="#Return">Return</a> statement is implicit at the end of a function. this function will have a role of verb.</p>
-<pre>{"Hello, World!"☻·}─sayhi
-{6á▲◘}─roll 0:roll ?≡ 4
-{6á▲}─roll 0:roll ?≡ 4</pre>
+<pre>{"Hello, World!"☻·}→sayhi
+{6á▲◘}→roll 0:roll ?≡ 4
+{6á▲}→roll 0:roll ?≡ 4</pre>
 <p>some variables are set when calling a function: <code>α</code> <a href="#Alpha">Alpha</a> is set to the left argument, <code>β</code> <a href="#Beta">Beta</a> is set to the right argument or <a href="#None">None</a> if not given, <code>ƒ</code> <a href="#Self">Self</a> to the function being called, and <code>Σ</code> <a href="#Arity">Arity</a> to the number of arguments passed.</p>
-<pre>{α+β/2}─avg 3:avg7 ≡ 5</pre>
+<pre>{α+β/2}→avg 3:avg7 ≡ 5</pre>
 <p>the inside of a function creates a scope, and any variables created inside the scope will not be visible once the function returns.</p>
 <p>when a function is created, all of the variables that it references as a value will be captured (lexical scope). this capture is immutable; if you change the value of a capture, it will only be changed in that function's scope.</p>
-<pre>123─l{l,α═l}─append 4:append· l ≡ 123</pre>
+<pre>123→l{l,α↔l}→append 4:append· l ≡ 123</pre>
 <p>there are two ways of changing this, both equivalent: not reference the value (as <a href="#Mutate Statement">Mutate Statement</a> can take a function), or delete the capture. then it will look for an <code>l</code> in the caller scope (dynamic scope); the variable you reference must be in scope and there must not be any other variable with the same name in the same scope.</p>
-<pre>123─l{,α═l}─append 4:append· l ≡ 1234
-123─l{─l l,α═l}─append 4:append· l ≡ 1234
-123─l{,α═l}─append 0{"things"─l 4:append· l} ≡ "things♦"  ' oops!</pre>
+<pre>123→l{,α↔l}→append 4:append· l ≡ 1234
+123→l{→l l,α↔l}→append 4:append· l ≡ 1234
+123→l{,α↔l}→append 0{"things"→l 4:append· l} ≡ "things♦"  ' oops!</pre>
 <p>the braces don't need to be closed at the end of file.</p>
 <h2 class="rverb" id="7C"><a class=h href="#7C"></a><code>|</code> (0x7C)<span class=rank>verb</span></h2>
 <h3 id="Or"><a class=h href="#Or"></a><code>α|β</code> Or</h3>
@@ -1838,7 +1836,7 @@ _2Ä0 ≡ π½-</pre>
 <p>evaluate the codepage string α in the current context, and return the value</p>
 <pre>"1+1"ò ≡ 2</pre>
 <p>it will have access to all defined variables in the enclosing scopes, all the input and output streams and the random number generator. don't use this from untrusted sources blah blah blah blah.</p>
-<pre>4─value· "6═value"ò· .value ≡ 6</pre>
+<pre>4→value· "6↔value"ò· .value ≡ 6</pre>
 <h2 class="rverb" id="96"><a class=h href="#96"></a><code>û</code> (0x96, <code>'u^</code>)<span class=rank>verb</span></h2>
 <h3 id="Occurence Count"><a class=h href="#Occurence Count"></a><code>αû</code> Occurence Count</h3>
 <p>for every element of α, count the number of occurences of that element in the prefix before that element.</p>
@@ -2721,20 +2719,25 @@ _1÷_2 ≡ 1</pre>
 <p>equivalent to <code>αFG(αH)</code>.</p>
 <h3 id="Fork"><a class=h href="#Fork"></a><code>α└FGHβ</code> Fork</h3>
 <p>equivalent to <code>αFβG(αHβ)</code>.</p>
-<h2 class="rstatement" id="C4"><a class=h href="#C4"></a><code>─</code> (0xC4, <code>''</code>)<span class=rank>statement</span></h2>
-<h3 id="Local Statement"><a class=h href="#Local Statement"></a><code>a─name</code> Local Statement</h3>
-<p>like <code>→name</code> <a href="#Local">Local</a> but acts as a statement and sets the contents of the body.</p>
-<pre>2─two .two+.two ≡ 4</pre>
-<p>this means that verbs can be set conveniently:</p>
-<pre>+2─add 3:add ≡ 5</pre>
-<p>if there is nothing in the statement body, the variable will be removed from the local scope.</p>
-<pre>4─a0{5─a ─a a} ≡ 4</pre>
-<h2 class="rstatement" id="CD"><a class=h href="#CD"></a><code>═</code> (0xCD, <code>'"</code>)<span class=rank>statement</span></h2>
-<h3 id="Mutate Statement"><a class=h href="#Mutate Statement"></a><code>a═name</code> Mutate Statement</h3>
-<p>like <code>↔name</code> <a href="#Mutate">Mutate</a> but acts as a statement and changes the contents of the body.</p>
-<pre>3─n 4─m *2═n n ≡ 6</pre>
-<p>if there is nothing in the statement body, the variable will be removed from its scope.</p>
-<pre>4─a0{═a}·a ≡ ■</pre>
+<h2 class="rgrammar" id="C4"><a class=h href="#C4"></a><code>─</code> (0xC4, <code>''</code>)<span class=rank>grammar</span></h2>
+<h3 id="Set Function"><a class=h href="#Set Function"></a><code>α→name</code> Set Function</h3>
+<p>set a local variable <code>name</code> to the value α. similar to <code>→name</code> <a href="#Set">Set</a> but acts as a function.</p>
+<pre>2─two· .two+.two ≡ 4</pre>
+<p>after setting, it returns α. you can assign a function and use it right after:</p>
+<pre>2─two+.two ≡ 4</pre>
+<p>the uppercase ascii letters <code>A</code> <code>B</code> <code>C</code>... are assigned to be <code>─a</code> <code>─b</code> <code>─c</code> by default. this makes for a very convenient way of setting and querying variables:</p>
+<pre>2T+t ≡ 4  ' αT sets α to the variable `t` and returns α</pre>
+<p>this function, along with <a href="#Mutate Function">Mutate Function</a>, are special verbs in that if they are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:</p>
+<pre>1─a 2─b (ab)+ ≡ 3</pre>
+<h3 id="Local"><a class=h href="#Local"></a><code>α→nameβ</code> Local</h3>
+<p>sets a variable to α in the local scope and returns β.</p>
+<pre>1─a2─b3─c a+b+c ≡ 6
+1A2B3C +a+b ≡ 6</pre>
+<h2 class="rgrammar" id="CD"><a class=h href="#CD"></a><code>═</code> (0xCD, <code>'"</code>)<span class=rank>grammar</span></h2>
+<h3 id="Mutate Function"><a class=h href="#Mutate Function"></a><code>a═name</code> Mutate Function</h3>
+<p>like <code>↔name</code> <a href="#Mutate">Mutate</a> but acts as a statement and changes using the function α.</p>
+<h3 id="Mutate"><a class=h href="#Mutate"></a><code>α═nameβ</code> Mutate</h3>
+<p>mutate a variable and return β</p>
 <h2 class="rgrouper" id="DA"><a class=h href="#DA"></a><code>┌</code> (0xDA, <code>'1</code>)<span class=rank>grouper</span></h2>
 <h3 id="1-Group"><a class=h href="#1-Group"></a><code>┌m</code> 1-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>

@@ -1,223 +1,223 @@
-.inleft─◄
-.inright─►
+.inleft→◄
+.inright→►
 
-.invalences─╬
+.invalences→╬
 
-.inswap─┴ .inmonadic─┬
-.inoverleft─╜ .inoverright─╙
-.inforkleft─╖ .inforkright─╓
-.inatop─_╜ .inbind─_╙
-.inover─║
+.inswap→┴ .inmonadic→┬
+.inoverleft→╜ .inoverright→╙
+.inforkleft→╖ .inforkright→╓
+.inatop→_╜ .inbind→_╙
+.inover→║
 
-.ineach─╕
-.ineachtrim─╒
-.ineachleft─╛
-:┴:╛:┴─╘
+.ineach→╕
+.ineachtrim→╒
+.ineachleft→╛
+:┴:╛:┴→╘
 
-.inscan─╤
-.inreduce─╧
-.inscanpairs─╪
-.instencil─╫
+.inscan→╤
+.inreduce→╧
+.inscanpairs→╪
+.instencil→╫
 
-.inconform─┼
-.inextend─_╛
-:┴:_╛:┴─_╘
+.inconform→┼
+.inextend→_╛
+:┴:_╛:┴→_╘
 
-.inprint─☺
-.inprintln─☻
-.inoutput─_Ö
-.ininput ─_Ü
+.inprint→☺
+.inprintln→☻
+.inoutput→_Ö
+.ininput →_Ü
 
-."intoutf8"─_ê
-."infromutf8"─_ë
-_ê╜_Ö─Ö
-_Ü_ë─Ü
-.inexit─⌂
+."intoutf8"→_ê
+."infromutf8"→_ë
+_ê╜_Ö→Ö
+_Ü_ë→Ü
+.inexit→⌂
 
-.inenlist╬.inpair─♫
+.inenlist╬.inpair→♫
 
-:incycle╬_╘:inreplist─§
+:incycle╬_╘:inreplist→§
 
-.intakeleft─↑
-.intakeright─↓
+.intakeleft→↑
+.intakeright→↓
 
-.inravel╬§╜↑─¶
-.indropleft─♂│♂1╬_╘♂─♂
-.indropright─♀│♀1╬_╘♀─♀
+.inravel╬§╜↑→¶
+.indropleft→♂│♂1╬_╘♂→♂
+.indropright→♀│♀1╬_╘♀→♀
 
-.inshape─▬ (▬∞)╬▬╖↑─▬
+.inshape→▬ (▬∞)╬▬╖↑→▬
 
-.inconcat─,♫┴╬┴,─;│╧,φ╬,─,
+.inconcat→,♫┴╬┴,→;│╧,φ╬,→,
 
-┼:inneg╬:insub─-
+┼:inneg╬:insub→-
 
-┼.inadd─+│╧+0╬+─+
-┼.inmul─*│╧*1╬*─*
-┼.inand─&│╧&1╬&─&
-┼.inor ─|│╧|0╬|─|
-┼.inmax─Ñ│╧Ñ(∞-)╬Ñ─Ñ
-┼.inmin─ñ│╧ñ∞╬ñ─ñ
+┼.inadd→+│╧+0╬+→+
+┼.inmul→*│╧*1╬*→*
+┼.inand→&│╧&1╬&→&
+┼.inor →|│╧|0╬|→|
+┼.inmax→Ñ│╧Ñ(∞-)╬Ñ→Ñ
+┼.inmin→ñ│╧ñ∞╬ñ→ñ
 
-.indiv─/
-┼│┴/1╬/─/
+.indiv→/
+┼│┴/1╬/→/
 
-┼:inexp╬:inpow─^
+┼:inexp╬:inpow→^
 
-┼│┴^2╬:inrem─%
+┼│┴^2╬:inrem→%
 
-┼:inln╬:inlog─∟
+┼:inln╬:inlog→∟
 
-┼:insqrt╬/╙^─√
+┼:insqrt╬/╙^→√
 
-│+1╬_╘.inbinsup─▲
-│-1╬_╘.inbinsdown─▼
+│+1╬_╘.inbinsup→▲
+│-1╬_╘.inbinsdown→▼
 
-.ingradedown╬┼:inlt─<
-│▬:inlen╬┼:inmatches─=
-.ingradeup╬┼:ingt─>
+.ingradedown╬┼:inlt→<
+│▬:inlen╬┼:inmatches→=
+.ingradeup╬┼:ingt→>
 
-(=0)╬♫╙,─¬
-(¬¬)╬♫╙;─⌐
+(=0)╬♫╙,→¬
+(¬¬)╬♫╙;→⌐
 
-(↑■2)╬(⌐■)╙↑─♥
-(┴^Θ)╬(%¬)─ó
-.insortup  ╬│<¬─≥
-.inlen     ╬│=¬─~
-.insortdown╬│>¬─≤
+(↑■2)╬(⌐■)╙↑→♥
+(┴^Θ)╬(%¬)→ó
+.insortup  ╬│<¬→≥
+.inlen     ╬│=¬→~
+.insortdown╬│>¬→≤
 
-┼:insin╬:inbxor─î
-┼:incos╬:inbor ─ô
-┼:intan╬:inband─â
+┼:insin╬:inbxor→î
+┼:incos╬:inbor →ô
+┼:intan╬:inband→â
 
-┼:inasin╬⌐║~─ï
-┼:inacos╬│|¬─ö
-┼:inatan╬│&¬─ä
+┼:inasin╬⌐║~→ï
+┼:inacos╬│|¬→ö
+┼:inatan╬│&¬→ä
 
-(^2)╬┼.inbinom─²
-(/2)╬┼.inlcm─½
-(*2)╬┼.ingcd─¼
+(^2)╬┼.inbinom→²
+(/2)╬┼.inlcm→½
+(*2)╬┼.ingcd→¼
 
-.iniota─↕
-↕╬┼┴(-Ñ0↕)╖+─↕
-│↕▲╬┼┴(-▲Ñ0↕)╖+─↨
-(~↕)╬_╘:indomainto─♣
+.iniota→↕
+↕╬┼┴(-Ñ0↕)╖+→↕
+│↕▲╬┼┴(-▲Ñ0↕)╖+→↨
+(~↕)╬_╘:indomainto→♣
 
-.inabs─¢
-┼:insign╬:inapprox─±
-┼¢╬├²║+√─¢
+.inabs→¢
+┼:insign╬:inapprox→±
+┼¢╬├²║+√→¢
 
-.inindex─@│@0╬@─@
-╘@─¿
-││~▼╓@╬_╛┴@─¡
+.inindex→@│@0╬@→@
+╘@→¿
+││~▼╓@╬_╛┴@→¡
 
-.inuntil─╩ .inuntilscan─╦
-.inuntilcmp─_╩ .inuntilscancmp─_╦
-.inpower─╨ .inpowerscan─╥
+.inuntil→╩ .inuntilscan→╦
+.inuntilcmp→_╩ .inuntilscancmp→_╦
+.inpower→╨ .inpowerscan→╥
 
-:ingetfill╬:insetfill─▐
-.inisnan┼ ╬ ╕►╨■ ─▄
-│▄¬ ╬ ╕│►¬╨■─▀
-.inreverse─♠
+:ingetfill╬:insetfill→▐
+.inisnan┼ ╬ ╕►╨■ →▄
+│▄¬ ╬ ╕│►¬╨■→▀
+.inreverse→♠
 
-(:incall■)╬.incall─$
+(:incall■)╬.incall→$
 
-:inceil┼╬_╘(└♀♫├¢╙~╜ñ╓▐╜§)╖╟>0¡.,.;╙┴$─⌠
-:infloor┼╬-╙⌠─⌡
-┼:inround╬.indive─÷
-.informat─ⁿ
-ⁿ╖☻─_☻
-(╟▬2ñ↕╕;╓╕@)╬╘@─¿
+:inceil┼╬_╘(└♀♫├¢╙~╜ñ╓▐╜§)╖╟>0¡.,.;╙┴$→⌠
+:infloor┼╬-╙⌠→⌡
+┼:inround╬.indive→÷
+.informat→ⁿ
+ⁿ╖☻→_☻
+(╟▬2ñ↕╕;╓╕@)╬╘@→¿
 
-╛(◄▄)╨►─▌(▐╓▌)╬▌─▌
+╛(◄▄)╨►→▌(▐╓▌)╬▌→▌
 
-├~=0╬.inmatches─≡
-≡¬─≈
+├~=0╬.inmatches→≡
+≡¬→≈
 
-2*π─τ
-│*├π/:180─°
-┼│*├:180/π╬│-¢─Å
+2*π→τ
+│*├π/:180→°
+┼│*├:180/π╬│-¢→Å
 
-││♣▲╓╘↓╬↓─↓
-││♣▲╓╘↑╬↑─↑
+││♣▲╓╘↓╬↓→↓
+││♣▲╓╘↑╬↑→↑
 
-.inpick─á┼├á1@╬á─á
-(│~á╓@)╬_╘(~╜á)╓¿─å
-(~╜┴┴:insample)╓¿─à
+.inpick→á┼├á1@╬á→á
+(│~á╓@)╬_╘(~╜á)╓¿→å
+(~╜┴┴:insample)╓¿→à
 
-:incomplex─í┼│í0╬í─í
-:incis─ì┼│ì1╬ì─ì
-┼:inarg╬:"inatan2"─Ä
+:incomplex→í┼│í0╬í→í
+:incis→ì┼│ì1╬ì→ì
+┼:inarg╬:"inatan2"→Ä
 
-.inreplicate─‼│♣╖‼╬‼─‼
+.inreplicate→‼│♣╖‼╬‼→‼
 
-.intocp┼╬_╛.inencode─ê
-.infromcp┼╬{α▐0↓(β~▲)*(β♠╤*♠,1)+}─ë
-(│♣♠╜┴^)╓*+─è│è2╬_╘è─è
-┼.inbrepr╬(¢╜(¬╦÷♀♠)╖%▐0)─é
+.intocp┼╬_╛.inencode→ê
+.infromcp┼╬{α▐0↓(β~▲)*(β♠╤*♠,1)+}→ë
+(│♣♠╜┴^)╓*+→è│è2╬_╘è→è
+┼.inbrepr╬(¢╜(¬╦÷♀♠)╖%▐0)→é
 
-(┴▲`a`{=1*:32)╓-─Ç
-(┴▲`A`[=1*:32)╓+─ç
+(┴▲`a`{=1*:32)╓-→Ç
+(┴▲`A`[=1*:32)╓+→ç
 
-╞(Ñ▲↕)╖╛│=+▐0─ÿ
+╞(Ñ▲↕)╖╛│=+▐0→ÿ
 
-(⌐‼@)    ╬ ╘├╛≡‼@─#
-:inreal ┼╬ ╘(╛≡+)─ù
-:inimag ┼╬ ╘├╛≡‼¡─ú
-:inislist╬ ╛(╘≡|)─ε
-ε¬─É
-:inocccount╬:inuio─û
+(⌐‼@)    ╬ ╘├╛≡‼@→#
+:inreal ┼╬ ╘(╛≡+)→ù
+:inimag ┼╬ ╘├╛≡‼¡→ú
+:inislist╬ ╛(╘≡|)→ε
+ε¬→É
+:inocccount╬:inuio→û
 
-(│û¬╓‼) ╬ ε╓‼─∩
-((╛≈■)╓‼) ╬ É╓‼ ─\
+(│û¬╓‼) ╬ ε╓‼→∩
+((╛≈■)╓‼) ╬ É╓‼ →\
 
-╧╒¬(►φ)─♦
+╧╒¬(►φ)→♦
 
-"0123456789abcdefghijklmnopqrstuvwxyz"─base
-.inparse╬(ç┴#.base)╖è─º
+"0123456789abcdefghijklmnopqrstuvwxyz"→base
+.inparse╬(ç┴#.base)╖è→º
 ' {αéβ│►¬╨│¬0α¡.base├►<0╨│⌐`-α}
-┼:innumfmt╬(é╓┴(│►¬╨│¬0¡.base))╓┴├►<0╨│⌐`-▐■─ª
+┼:innumfmt╬(é╓┴(│►¬╨│¬0¡.base))╓┴├►<0╨│⌐`-▐■→ª
 
-┼:infact─!
-!╬(-╓!║/)─!
+┼:infact→!
+!╬(-╓!║/)→!
 
-:3486─_¶
+:3486→_¶
 
-_╘(┴~╙%)╓└↓,♀─»(»1)╬»─»
-_╘(┴~╙%)╓└♂,↑─«(«1)╬«─«
+_╘(┴~╙%)╓└↓,♀→»(»1)╬»→»
+_╘(┴~╙%)╓└♂,↑→«(«1)╬«→«
 
-:inconj┼╬.ingroup─ü
-(╛,,)╖~╙♀─æ
-.infind─£
-(£└(=0╤+)▀▄)╓ü▐■─¥│¥Φ╬¥─¥
-(┼└ù♫ú) ╬ └(┴ÿ╜~╙↑╤+)╓ü↑├►~▲─₧
+:inconj┼╬.ingroup→ü
+(╛,,)╖~╙♀→æ
+.infind→£
+(£└(=0╤+)▀▄)╓ü▐■→¥│¥Φ╬¥→¥
+(┼└ù♫ú) ╬ └(┴ÿ╜~╙↑╤+)╓ü↑├►~▲→₧
 
-┴:_╙♪┴@─Æ Æ╬(▐Æ)─Æ
-.indrill─╗ .inamend─╔
-.ineval─ò
+┴:_╙♪┴@→Æ Æ╬(▐Æ)→Æ
+.indrill→╗ .inamend→╔
+.ineval→ò
 
-.inget╬.inset─←
+.inget╬.inset→←
 
 9↨╕└(ª;`_)←-· ' set _2, _3
-Φ-─_Φ
-∞-─_∞
-Γ-─_Γ
-∞÷1─∞
+Φ-→_Φ
+∞-→_∞
+Γ-→_Γ
+∞÷1→∞
 
-:0.01─0
+:0.01→0
 `1↨`9╕(º/Φ)╓←·
-1^─Φ
-π/2─π
-:0.5772156649015329─Γ
+1^→Φ
+π/2→π
+:0.5772156649015329→Γ
 3211311115/2334467892┴╕←"┌│├╞╟╠┤╡╢╣"·
 
-π*2─_π
-5√▲½─φ
-5√▼-½─_φ
+π*2→_π
+5√▲½→φ
+5√▼-½→_φ
 
-Θ½─_┌ 2√─_│ 3√─_├ :420─_╞ 5√─_╟ :360─_╠ :273.15─_┤
+Θ½→_┌ 2√→_│ 3√→_├ :420→_╞ 5√→_╟ :360→_╠ :273.15→_┤
 
-→a─A→b─B→c─C→d─D→e─E→f─F→g─G→h─H→i─I→j─J→k─K→l─L→m─M
-→n─N→o─O→p─P→q─Q→r─R→s─S→t─T→u─U→v─V→w─W→x─X→y─Y→z─Z
+─a→A─b→B─c→C─d→D─e→E─f→F─g→G─h→H─i→I─j→J─k→K─l→L─m→M
+─n→N─o→O─p→P─q→Q─r→R─s→S─t→T─u→U─v→V─w→W─x→X─y→Y─z→Z
 
 :12A:20B:99C:100D:999E:1000F:10000G:100000H:1000000I:10000000J
 :15K:16L:31M:32N:63O:64P:127Q:128R:255S:256T:512U:1024V:32768W:65536X:16777216Y:2147483648Z

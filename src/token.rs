@@ -115,8 +115,8 @@ fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
         },
         Some(b!('.')) => VNoun(ident(t)), Some(b!('¨')) => Str  (ident(t)),
         Some(b!('•')) => VAv1 (ident(t)), Some(b!('○')) => VAv2 (vec![], ident(t)),
-        Some(b!('─')) => VSetS(ident(t)), Some(b!('═')) => VMutS(ident(t)),
-        Some(b!('→')) => VSet (ident(t)), Some(b!('↔')) => VMut (ident(t)),
+        Some(b!('→')) => VSetS(ident(t)), Some(b!('↔')) => VMutS(ident(t)),
+        Some(b!('─')) => VSet (ident(t)), Some(b!('═')) => VMut (ident(t)),
         Some(b!(':')) => if let Some(first @ (b'0'..=b'9' | b'-')) = t.first() { step(t);
             let mut buf = bstr![*first];
             while let Some(&x @ (b'0'..=b'9' | b'.')) = t.first() {
