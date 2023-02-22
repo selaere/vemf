@@ -84,13 +84,12 @@ impl Val {
     pub fn call(&self, env: &mut Env, a: Val, b: Option<Val>) -> Val {
         match self {
             Val::Err(x) => Val::Err(*x),
-
             Lis { .. } | Num(_) | Int(_) => self.c(),
             Val::FSet(name) => {
                 env.set_local(name.c(), a.c());
                 b.unwrap_or(a)
             },
-            Val::FCng(name) => env.mutate_var(name, a).unwrap_or_else(|| b.unwrap_or(NAN)),
+            Val::FCng(name) => env.mutate_var(name, a, b).unwrap_or(NAN),
             Val::Dfn { s, loc } => {
                 env.stack.push((**loc).c());
                 env.set_local(bstr![b!('Σ')], Int(1 + i64::from(b.is_some())));

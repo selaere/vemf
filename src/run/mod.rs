@@ -98,12 +98,12 @@ impl<'io> Env<'io> {
         }
     }
 
-    pub fn mutate_var(&mut self, mut name: &[u8], func: Val) -> Option<Val> {
+    pub fn mutate_var(&mut self, mut name: &[u8], func: Val, b: Option<Val>) -> Option<Val> {
         let mut skipped = 0;
         loop {
             for (fmn, frame) in self.stack.iter_mut().enumerate().rev().skip(skipped) {
                 if let Some((nam, val)) = frame.remove_entry(name) {
-                    let val = func.monad(self, val);
+                    let val = func.call(self, val, b);
                     self.stack[fmn].insert(nam, val.c());
                     return Some(val);
                 }
@@ -150,7 +150,7 @@ impl<'io> Env<'io> {
             },
             Expr::Afn2(a, f, b) => {
                 let a = eval!(a); let f = eval!(f); 
-                if let Val::FSet(_) | Val::FCng(_) = f { f.monad(self, a); return eval!(b) }
+                if let Val::FSet(_) = f { f.monad(self, a); return eval!(b) }
                 let b = eval!(b);
                 f.dyad(self, a, b)
             },
@@ -201,7 +201,7 @@ impl<'io> Env<'io> {
         match stmt {
             Stmt::Discard(expr) => { _ = eval!(expr); },
             Stmt::Loc(a, v) => { let a = eval!(a); self.set_local(v.c(), a); },
-            Stmt::Mut(a, v) => { let a = eval!(a); self.mutate_var(v, a); },
+            Stmt::Mut(a, v) => { let a = eval!(a); self.mutate_var(v, a, None); },
             Stmt::DelLoc(v) => { self.locals_mut().remove(v); },
             Stmt::DelMut(v) => { self.delete_var(v); },
             Stmt::Return(expr) => { return Some(eval!(expr)); },

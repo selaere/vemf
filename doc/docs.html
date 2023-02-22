@@ -2720,24 +2720,30 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Fork"><a class=h href="#Fork"></a><code>α└FGHβ</code> Fork</h3>
 <p>equivalent to <code>αFβG(αHβ)</code>.</p>
 <h2 class="rgrammar" id="C4"><a class=h href="#C4"></a><code>─</code> (0xC4, <code>''</code>)<span class=rank>grammar</span></h2>
-<h3 id="Set Function"><a class=h href="#Set Function"></a><code>α→name</code> Set Function</h3>
-<p>set a local variable <code>name</code> to the value α. similar to <code>→name</code> <a href="#Set">Set</a> but acts as a function.</p>
+<h3 id="Set Function"><a class=h href="#Set Function"></a><code>α─name</code> Set Function</h3>
+<p>set a local variable <code>.name</code> to the value α. similar to <code>→name</code> <a href="#Set">Set</a> but acts as a function.</p>
 <pre>2─two· .two+.two ≡ 4</pre>
 <p>after setting, it returns α. you can assign a function and use it right after:</p>
 <pre>2─two+.two ≡ 4</pre>
 <p>the uppercase ascii letters <code>A</code> <code>B</code> <code>C</code>... are assigned to be <code>─a</code> <code>─b</code> <code>─c</code> by default. this makes for a very convenient way of setting and querying variables:</p>
 <pre>2T+t ≡ 4  ' αT sets α to the variable `t` and returns α</pre>
-<p>this function, along with <a href="#Mutate Function">Mutate Function</a>, are special verbs in that if they are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:</p>
-<pre>1─a 2─b (ab)+ ≡ 3</pre>
-<h3 id="Local"><a class=h href="#Local"></a><code>α→nameβ</code> Local</h3>
+<p>this function, when used as a verb, is special in that if it are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:</p>
+<pre>1A 2B (ab)+ ≡ 3</pre>
+<p>even if <code>(ab)</code> is an argument of <code>B</code>, and would logically other functions evaluate their arguments before calling them.</p>
+<h3 id="Set Function"><a class=h href="#Set Function"></a><code>α─nameβ</code> Set Function</h3>
 <p>sets a variable to α in the local scope and returns β.</p>
 <pre>1─a2─b3─c a+b+c ≡ 6
 1A2B3C +a+b ≡ 6</pre>
+<p>see also: <a href="#Mutate Function">Mutate Function</a>, <a href="#Set">Set</a></p>
 <h2 class="rgrammar" id="CD"><a class=h href="#CD"></a><code>═</code> (0xCD, <code>'"</code>)<span class=rank>grammar</span></h2>
 <h3 id="Mutate Function"><a class=h href="#Mutate Function"></a><code>a═name</code> Mutate Function</h3>
-<p>like <code>↔name</code> <a href="#Mutate">Mutate</a> but acts as a statement and changes using the function α.</p>
-<h3 id="Mutate"><a class=h href="#Mutate"></a><code>α═nameβ</code> Mutate</h3>
-<p>mutate a variable and return β</p>
+<p>change the variable <code>.name</code> using the function β. similar <code>↔name</code> <a href="#Mutate">Mutate</a> but acts as a function. returns the changed value.</p>
+<pre>1→a .▲═a· a ≡ 2
+1→a .▲═a+a ≡ 4</pre>
+<h3 id="Mutate Function"><a class=h href="#Mutate Function"></a><code>α═nameβ</code> Mutate Function</h3>
+<p>call the function with β as a right argument</p>
+<pre>1→a .+═a2· a ≡ 3</pre>
+<p>see also: <a href="#Set Function">Set Function</a>, <a href="#Mutate">Mutate</a></p>
 <h2 class="rgrouper" id="DA"><a class=h href="#DA"></a><code>┌</code> (0xDA, <code>'1</code>)<span class=rank>grouper</span></h2>
 <h3 id="1-Group"><a class=h href="#1-Group"></a><code>┌m</code> 1-Group</h3>
 <p>see <a href="#Groups">Groups</a></p>
