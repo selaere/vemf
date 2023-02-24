@@ -1,7 +1,7 @@
-vemf is a programming language. it is sort of golfy and arraylike and tacit and words words words etc etc.
+vemf is my silly little programming language. it is sort of golfy and arraylike and tacit and words words words etc etc.
 
 ## CAUTION CAUTION!!
-this language and interpreter is in its early stages and _everything_ is bound to change. you should expect that any code you write today will be not working tomorrow. if you have feedback, ideas, things, bugs, thoughts, issues please let me know
+this language and interpreter is in its early stages and _everything_ is bound to change. you should expect that any code you write today will be not working tomorrow. if you have feedback, ideas, bugs, thoughts, issues, things please let me know
 
 ## building
 

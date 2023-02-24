@@ -2,12 +2,12 @@
 ♫╘┴$`<.►`>.◄"</"(►(#` )╓↑)`>,→T
 (~`<)╓▀▌"&lt;",→esc
 
-@êª:16▐`0↑2Ç→fc
+@êª:16▐`0↓2Ç→fc
 φ→titles
 ∞Ü ¥"◙---◙"→pg
 ■§:256→tab
-;"<a class=h href=¨#","¨></a>"→H
-¥"||"(♣%2)╓╕►╨(◄(;"a href=¨#","¨")╓T),(=``╤+%2╪-0▲¡"<code>"■"</code>")╖╕▌,→fmt
+;"a class=h href=¨#",`"┴Tφ→H
+¥"||"(♣%2)╓╕►╨(◄¥`@(@;`#)╓▐↑2╧(;"a href=¨",`")╙T),(=``╤+%2╪-0▲¡"<code>"■"</code>")╖╕▌,→fmt
 
 .pg╕{
     →tab α¥Φ▐φL·
@@ -16,26 +16,26 @@
     l╕(╒=":type" &)#¡l♂7→type
     l╕(╒=":ascii"&)#¡l♂8≈╨(T"code";", ")→ascii
     (c@ê)╗.type↔tab    
-    (.hex H)(c:esc T"code")" (0x".hex.ascii")"(.type(~`_)╓▀▌` T"span class=rank"),
-        T("h2 class=¨r".type"¨ id=¨".hex"¨",),Φ→h
+    (.hex H)(c:esc T"code")" (0x".hex.ascii") "(.type(~`_)╓▀▌` T"span class=rank"),
+        T("h2 class=¨r".type"¨ id=¨".hex`",),Φ→h
     .title≈? ["<h2 class=prose id=¨",.title,"¨>",│.title H,.title,"</h2>◙"→h ¬.title↔titles]·
     l╕{ @=`:? ■◘
         @=`>? α♂2:esc T"pre"◘
         @=`#? α♂_₧` ╧{ ◄@=`_? [;`_↔c ♂↔α]· `αëA `βëB ·
-            │βH,(α:esc{
+            │βH,(α:esc{ 
                 ≡¨0?   c         ◘ ≡".0"?  `.c      ◘
                 ≡¨1?   ac        ◘ ≡¨2?    acb      ◘ ≡"12"?  ac"</code>"░ ♦"<code>"acb ◘
                 ≡"a1"? c`G       ◘ ≡"1a1"? a  c`G   ◘ ≡"2a1"? a  c`Gb ◘
                 ≡"a2"? `Fc`G     ◘ ≡"1a2"? a`Fc`G   ◘ ≡"2a2"? a`Fc`Gb ◘
                 ≡"n"?  c¨name    ◘ ≈?      α:esc    ◘ φ
-            },≈╨(T "code",░ ♦)),βT("h3 id=¨",β,"¨") }◘
+            },≈╨(T "code",░ ♦)),βT("h3 id=¨",β,`") }◘
         @=`-? α♂2:esc:fmt T"li"T"ul" ◘ α:esc:fmt T`p
     }\æΦ(└└(£"</pre>◙<pre>"▄)&(£"</ul>◙<ul>"▄)|(=Φ))╓‼;h
 }æΦ→body
 
 "<body><div id=¨all¨><nav><div id=¨wrapper¨><div id=¨fixed¨>◙<h1>vemf docs</h1>◙"
-"<h2>tutorial:</h2>◙<ol>◙"( .titles╕((;"a href=¨#","¨")╓TT"li",Φ), )"</ol>◙"
+"<h2>tutorial:</h2>◙<ol start=0>◙"( .titles╕((;"a href=¨#",`")╓TT"li",Φ), )"</ol>◙"
 "<h2>codepage:</h2>◙<table>◙"(
-    :256↕ëΦ╗:9689╕{α:esc T("a href=¨#",│α:fc,"¨")T("td class=¨r",├β▌"none","¨")}.tab♥:16╛(æΦT¨tr)æΦ
+    :256↕ëΦ╗:9689╕{α:esc T("a href=¨#",│α:fc,`")T("td class=¨r",├β▌"none",`")}.tab♥:16╛(æΦT¨tr)æΦ
 )"◙</table>"
 "</div></div>◙</nav><main>◙".body"◙</main></div></body></html>",

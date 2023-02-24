@@ -1,32 +1,63 @@
+:title: About
+if you are reading this, you are reading the vemf documentation. the vemf documentation has information about all of the different characters, verbs, nouns and adverbs that vemf has.
+the documentation can be enjoyed in a "raw" text format or in a nice html document format. the raw format is converted with ||a vemf script@https://github.com/selaere/vemf/blob/main/doc/gen.vemf||.
+but not only does this documentation have text. in fact i am bad at explaining stuff, so there are way more examples than text. here's one!
+> "hello world i am a vemf test"\"aeiou" ≡ "hll wrld  m  vmf tst"
+believe it or not, the vemf documentation is not only a documentation, it doubles as a test suite! when the tests are run, the expressions to both sides of the ` ≡ ` are evaluated, and checked for equality. if you see an example like this:
+> 1+1 ≡ 2
+you know it will work in the latest vemf version!
+the main way to play around with vemf is the interactive repl.
+>     1+1
+> 2
+>     __*3
+> 6
+the indented lines are input, and the result is unindented and ||formatted@#Format|| automatically. the default formatting is not always what you want though:
+>     "hello world i am a vemf test"\"aeiou"
+> (104 108 108 32 119 114 108 100 32 32 109 32 32 118 109 102 32 116 115 116)
+in the repl, you can format it into a string by using `)4 ` (see ||Custom Format||)
+>     )4 "hello world i am a vemf test"\"aeiou"
+> "hll wrld  m  vmf tst"
+if you evaluate something like "tangent of pi radians", thanks to floating-point shenanigans, you can get small inaccuracies:
+>     πâ
+> -0.00000000000000012246467991473532
+when testing those we use ` ± ` ||Approximate Equal||, and if a test passes, the results are within about 10 significant figures.
+> πâ ± 0
+not everything can be automatically tested. functions that rely on the random number generator, like `áàå`, won't give the same results everytime, so lines with `?≡` are ignored.
+> 5á ?≡ 3
+---
 :title: Basics
-expressions in vemf are sequences of Nouns and Verbs. if it helps, when you hear "noun" think "value", and when you hear "verb" think "operator"
-here the verb `+` ||Add|| is called with a left argument `1` and with a right argument `2`. `1` and `2` are nouns, and `+` is a verb.
+here's a vemf expression!
 > 1+2 ≡ 3
-this is the codeblock format that you will see in the documentation: `a ≡ b` means that `a` and `b`, when evaluated, are equal.
-evaluation is left to right:
+surprising! vemf can do maths. there are more operations, of course,
+> 3*2 ≡ 6
+> 8/4 ≡ 2
+> 2*3+1 ≡ 7
+characters like `+ - * /` are functions. here they take two arguments at each side: `α+β`.
+evaluation of functions is strictly left to right:
 > 1+2*3 ≡ 9
-functions may be called with one argument (monadic) or two (dyadic). here you can see `-` being called as `α-` ||Negate|| and `α-β` ||Subtract||:
+functions may also be called with one argument (monadic) instead of two (dyadic), by only giving the left argument `α+`. here you can see `-` being called as `α-` ||Negate|| and `α-β` ||Subtract||:
 > 3-1 ≡ 2
 > 5- ≡ _5
 > 5--3 ≡ _8
-, where `_5` and `_8` are nouns meaning −5 and −8 respectively.
+, where `_5` and `_8` are constants meaning −5 and −8 respectively.
 almost every function has two different variants that do different things. even `+`! monadic `α+` ||Sum|| adds all the items in a list:
 > 123+ ≡ 6
-uh, hm. yes. this is not the number one hundred twenty-three. consecutive nouns (strands) form a list, and `1`, `2`, `3` are nouns. the sum of all of those is 6.
-if you do want the number 123, you can use ||Numeric Literal||s by prepending `:`:
+uh, hm. yes. this is not the number one hundred and twenty-three. consecutive values form a list, and `1`, `2`, `3` are values. the sum of all of those is 6.
+if you do want the number 123, you can use ||Numeric Literal||s by prepending a colon `:`:
 > :123+1 ≡ :124
-or even shorter (and more obscure), we can use a ||Character Literal||. `z` is the 123th character in the codepage, so:
+> :12:33:-4+ ≡ :41
+or even shorter (and more obscure), we can use a ||Character Literal|| with a backtick. `z` is the 123th character in ||the codepage@#The Codepage||, so:
 > `z+1 ≡ :123
 note that whitespace matters when using numeric literals:
 > :12 34+ ≡ :19
 > :123 4+ ≡ :127
 you may use parentheses to group expressions:
 > 1+(2*3) ≡ 7
-here, `2*3` is another expression that is executed before the outer one, and `(2*3)` is a noun.
+here, `2*3` is another expression that is executed before the outer one, and `(2*3)` is a single value.
 the mathematical operations you are familiar with are here. arithmetic `+-*/`, `^` ||Exponent||, `∟` ||Logarithm||, and a bunch more.
 ---
 :title: Lists
-a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting nouns next to eachother:
+a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting values next to eachother:
 >     123
 > (1 2 3)
 lists may be nested arbitrarily deep. this is a list composed of 3 lists, each with 3 items (or a 3 by 3 matrix).
@@ -39,24 +70,35 @@ the arguments of a list dont have to have the same length or the same type:
 > ((9 8) (1 2 3) (4 5 6 7))
 we can get a list's length with `α~`:
 > 123~ ≡ 3
-strings are lists of characters. a string literal makes a list with all the characters inside the ||Quotes||, in vemf's codepage:
+in vemf, strings are lists of characters (rather, Unicode codepoints). a string literal makes a list with all the characters inside the ||Quotes||, in vemf's codepage:
 > "abc" ≡ :97:98:99
 > "♥♦♣♠" ≡ 3456
 > "Hello, World!"~ ≡ :13
 strings can be stranded as well:
-> "earth""fire""air""water"
-functions that work with numbers are scalar: they automatically distribute to every number in a list. for two lists, this pairs up the elements and operates on them:
-> 012*345 ≡ 04:10
-if one argument is a list and another is a scalar, the scalar is 'distributed' to all the items in the array
+>     "earth""fire""air""water"
+> ((101 97 114 116 104) (102 105 114 101) (97 105 114) (119 97 116 101 114))
+>     )4 "earth""fire""air""water"
+> ("earth" "fire" "air" "water")
+functions that work with numbers are scalar functions: they automatically distribute to every number in a list. for two lists, this pairs up the elements and operates on them:
+> 012*345 ≡ 0 4 :10
+if one argument is a list and another is a scalar, the scalar is 'distributed' to all the items in the array:
 > 63102+2 ≡ 85324
 > 1/234 ≡ (1/2)(1/3)(1/4)
 these rules are applied recursively:
 > (123)(456)(789)+01(323) ≡ (123)(567)(:10:10:12)
+see also: ||Each||, ||Conform||
+comparison functions, like `< = > ≤ ~ ≥` (`α~β` is ||Not Equals||), are scalar as well, and they return a 1 if true, otherwise 0:
+> "cat"="cow" ≡ 100
+> "cat"="cat" ≡ 111
+> (0123)(456)(78)9>5 ≡ (0000)(001)(11)1
+> "pickled peppers"~`p ≡ 011111110100111
+though it's useful to compare if two lists are equal, so there also is `≡` ||Matches|| and `≈` ||Not Matches||
+> "cat"≡"cow" ≡ 0
+> "cat"≡"cat" ≡ 1
 we've seen that characters are not a separate type, and they are just their codepoints. subtracting an ascii lowercase letter by 32 makes it uppercase, so we can make a word uppercase by:
 > "screaming"-:32 ≡ "SCREAMING"
 though there's also another function for this, `Ç` ||Uppercase||, and it leaves punctuation unchanged:
 > "words words"Ç ≡ "WORDS WORDS"
-see also: ||Each||
 an element in a list can be indexed with `α@β` ||Index||, where indices start with 0:
 > 2468@2 ≡ 6
 > 2468@0 ≡ 2
@@ -73,7 +115,7 @@ and `α♫β` creates a ||Pair||:
 > 5↕ ≡ 01234
 if you want something more familiar, try `α↨` ||Inclusive Iota||:
 > 5↨ ≡ 12345
-all lists have a Fill, usually `■` ||None||. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:
+all lists have a fill, usually `■` ||None||. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:
 > 123@3 ≡ ■
 the default fill is ||None||. you can get a list with a fill with `α▐β` ||Set Fill||, and query it with `α▐` ||Get Fill||.
 > 123▐0@3 ≡ 0
@@ -96,51 +138,51 @@ but `α¶β` ||Reshape|| starts taking from the start when it runs out of items:
 > 0123456789↓33 ≡ (123)(456)(789)
 ---
 :title: Variables
-variables can be set with `─name` and retrieved with `.name`
-> 2*3─six 1-.six ≡ _5
+i will now introduce some terminology. functions, lists and numbers are types of values. in a program, these types can all be used as either nouns or verbs (what we've been calling "values" and "functions" up to now.)
+variables can be set with `→name` and retrieved as a noun with `.name`
+> :35/7→five 1/.five ≡ :0.2
 , or as a verb as `:name`
-> (*)─mul 4:mul3 ≡ :12
-note that a function and a verb are different things: verb is a grammatical role, and a function is a type; a function may be used as a noun. `α$β` calls α with the arguments β:
+> *→mul 4:mul3 ≡ :12
+a function and a verb are different things: verb is a syntactical role, and a function is a type; a function may be used as a noun. `α$β` calls α with the arguments β:
 > .*─mul .mul$35 ≡ :15
 > .*$35 ≡ :15
-a name, or identifier, is parsed as a sequence of letters (`mul`, `six`, `things`), an underscore followed by a character (`_ë`, `_1`) or a single character (`+`, `-`). any other name can be used, by using quotes: `."Name of variable"`
+a name, or identifier, is parsed as a sequence of letters (`mul`, `six`, `things`), an underscore followed by a character (`_ë`, `_1`) or a single character (`+`, `-`). any other name can be used by using quotes: `."Name of variable"`
 a function also often works like an infinite list. it can be indexed and taken from:
 > .◄@3 ≡ 3
 > .◄↑4 ≡ 0123
-`─name` is a just verb that sets α and returns β or, if not given, α. this makes it flexible to define a variable and then use it
+`x→name` is a statement that sets x to the variable `.name`. statements are not quite like verbs; they have more precedence. you will see more about statements in the ||Statements|| section.
+there is another kind of assignment: `─name` ||Set Function|| (that is a box drawing character, not a minus sign `-`). the whole thing is a verb, that sets α to the variable and returns β or, if not given, α. this makes it flexible to define a variable and then use it. you can only assign nouns using `─`
 > 4 ─four 1+2 ≡ 3
 > 4 ─four +2 ≡ 6
-and for golfing purposes, the characters `A`..`Z` are set by default to `─a`..`─z`, so you can set variables very conveniently.
-there is another kind of assignment: `→` ||Local Statement|| (that is a box drawing character, not a minus sign `-`), useful for defining verbs. we'll learn more about statements in the ||Blocks|| section.
-> + →add 4:add5 ≡ 9
-this example may seem mundane, but statement assignments are very useful with trains.
+and for golfing purposes, the characters `A`..`Z` are set by default to `─a`..`─z`, so you can set and get variables very conveniently.
+> 3+1F+f ≡ 8
 ---
 :title: Trains
 when a verb is the start of an expression, it will result in a derived function, or train.
-> (+)─add 4:add5 ≡ 9
+> +→add 4:add5 ≡ 9
 `Fβ` is a Bind. it calls F with β as a right argument, ignoring whatever was passed to the right.
-> (+1)─inc 4:inc ≡ 5
-> (*2)─dup 4:dup ≡ 8
-> (*2)─dup 4:dup9 ≡ 8
+> +1→inc 4:inc ≡ 5
+> *2→dup 4:dup ≡ 8
+> *2→dup 4:dup9 ≡ 8
 (note that `inc` and `dup` are equivalent to `α▲` ||Bump Up|| and `α¼` ||Double||)
-using `→`:
 > +1→inc 4:inc ≡ 5
 > *2→dup 4:dup ≡ 8
 > *2→dup 4:dup9 ≡ 8
 `FG` is an Atop. it calls F with both arguments, and then calls G atop of that:
 > ↨*→fact 6:fact ≡ :720
+> ~↕→dom  "text":dom ≡ 0123
 > |¬→nor  0:nor1 ≡ 0
-(note that `fact` and `nor` are equivalent to `α!` ||Factorial|| (for natural α) and `αöβ` ||Nor||)
-`FGβ` is kind of a mix of the two: it calls F with both arguments, and then calls G atop of that with β as a right argument.
+(note that `fact`, `dom`, `nor` are equivalent to `α!` ||Factorial|| (for natural α), `α♣` ||Domain|| and `αöβ` ||Nor||)
+`FGβ` is kind of a mix of the two: it calls F with both arguments, and then calls G atop of that using β as a right argument.
 > +/2→avg  4:avg8 ≡ 6
 > ²*π→area 3:area ≡ 9*π
 (note that `π` is pi, the number)
-you can chain them, left-to-right
+you can chain these, left-to-right
 > +1+2+3→f 5:f ≡ :11
 > ~=0→empty φ:empty ≡ 1
-we've been setting these trains to variables before using them. if you try to apply them directly, it won't work:
+we've been setting these trains to variables before using them. it won't work if you try to apply them directly with parentheses:
 > 5(+/2)9
-is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with `┌` (that is a box drawing character, not a pipe):
+is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with `┌`:
 > 5┌(+/2)9 ≡ 7
 > 6┌(↨*) ≡ :720
 but you never actually need to do this! an inlined train will always be shorter:
@@ -149,7 +191,7 @@ but you never actually need to do this! an inlined train will always be shorter:
 trains are mostly useful when defining functions or when used in adverbs.
 ---
 :title: Adverbs
-adverbs are like verbs for verbs. take one of the most basic: ||Selfie|| `┴G` takes a function `G` and returns a function that applies `G` with the same argument used twice:
+adverbs are a syntax for functions that take verbs. take one of the most basic: ||Selfie|| `┴G` takes a function `G` and returns a function that applies `G` with the same argument used twice:
 > 123┴+ ≡ 246
 > 123┴* ≡ 149
 > "bee"┴, ≡ "beebee"
@@ -160,10 +202,10 @@ and if ||Swap|| `┴G` is called with two arguments, it returns a functions that
 there are two types of adverbs. 1-adverbs, like `┴G` ||Selfie||/||Swap||, take one operand after them, and the whole acts as a verb. 2-adverbs, like `F║G` ||Over||, take two operands at both sides. Over applies `G` to each argument, and then `F`:
 > 4²║+5 ≡ 4²+(5²)
 > 4²║▲ ≡ 4²▲  ' same as train (²▲)
-2-adverb precedence is right-to-left.
+adverb precedence is right-to-left.
+> 4┴²║-5 ≡ 5²-(4²)
 additionally, 1-adverbs can be used before 2-adverbs, and this applies them to the left operand:
-> `a-┴╓/`b ≡ `a(┴-)╓/`b
-TODO example
+> 2-┴╓/6 ≡ 2(┴-)╓/6
 adverbs applied to their operands act like verbs, so you can set them just like verbs:
 > ²║+→discrim 4:discrim5 ≡ :41
 > ┴/1→recip 4:recip ≡ 1/4
@@ -183,17 +225,18 @@ vemf automatically vectorizes, so often explicit loops are not be necessary, but
 using both Each Left and Each Right we get something similar to APL's outer product, or a cartesian product:
 > 123╘╛,456 ≡ ((14)(24)(34))((15)(25)(35))((16)(26)(36))
 > 123╛╘,456 ≡ ((14)(15)(16))((24)(25)(26))((34)(35)(36))
-`α╧G` ||Reduce|| is like applying G between every element in α: 
+`α╧G` ||Reduce|| is like applying G between every element in α, progressively building up a value: 
 > 2345╧+ ≡ 2+3+4+5
 this is similar to the monadic use of addition, `α+` ||Sum||. in fact, `*` `,` `&` `&#x7c;` `ñ` `Ñ` all act the same way: the monad is the reduction of the dyad.
-`α╤G` ||Scan|| gives the intermediate results:
+`α╤G` ||Scan|| gives the intermediate results of the reduction:
 > 2345╤+ ≡ (2)(2+3)(2+3+4)(2+3+4+5)
 > 00100010011020╤+ ≡ 00111122234466
-`αF╨G` ||Power|| calls G, `αF` times (note that `14` is not a strand, `4` is an operand of the 2-operator)
+`αF╨G` ||Power|| calls G, `αF` times
 > 14╨┴♫ ≡ ( ((11)(11)) ((11)(11)) )( ((11)(11)) ((11)(11)) )
+(note that `14` is not a strand, `4` is an operand of the 2-adverb, and `1` is an argument)
 this is also useful for applying a function conditionally:
-> ' if length is 3, uppercase (`Ç`)
-> "and""a""big""bee""started""approaching"╕(~=3)╨Ç ≡ "AND""a""BIG""BEE""started""approaching"
+> ' if length is 3, uppercase
+> "and""the""small""bee""wanted""to""fly"╕(~=3)╨Ç ≡ "AND""THE""small""BEE""wanted""to""FLY"
 `αF╩G` ||Until|| calls G until `αF` returns not 0.
 # Combinators
 combinators call their operands in different ways. they are one of the main ways functions are defined; combinators are the "glue" that joins different functions.
@@ -207,7 +250,7 @@ vemf has a lot of different combinators! here's a summary:
 > onleft   +╖/ : α+/α   , α+β/β
 > onright  +╓/ : α/(α+) , α/(α+β)
 > fork    └+/* : α+/(α*), α+β/(α*β)
-there is also a ""3-adverb"", the `└FGH` ||Fork||. it works a little differently, and is ocassionally useful. for instance, the average (mean) of a list is the sum divided by the length:
+there is also a ""3-adverb"" of sorts, the `└FGH` ||Fork||. it works a little differently, it is a prefix rather than an infix, and is ocassionally useful. for instance, the average (mean) of a list is the sum divided by the length:
 > 12345└+/~ ≡ 3
 the formula for triangular numbers is n(n+1)/2. we can do the first part as a fork:
 > 6└◄*▲ ≡ :42
@@ -236,8 +279,11 @@ here is another way of representing all the combinators that i can test automati
 > (`aF╜H╙G)(`aF╜H╙G`b) ≡ "[(a)]"   "[(a){b}]"
 ---
 :title: Groups
-i don't like parentheses. i don't like the fact that occasionally i have to use them to make things work. i don't like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as `+2` gains two characters when used with an adverb `(+2)╜/`. or with nested list literals `(123)(45)(6789)`:
+i don't like parentheses. i don't like the fact that occasionally i have to use them to make things work. i don't like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as `+2` gains two characters when used with an adverb `(+2)╜/`. 
 > 7 (+2)╜/ 3
+precedence adjusting is annoying:
+> :42→a "I think ",(aª)," is a good number." ≡ "I think 42 is a good number."
+nested list literals can also get unwieldy:
 > (123)(45)(6789)
 the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use. here are all the groupers:
 > 2 3 4 5 6 7 8 9 10
@@ -246,13 +292,63 @@ their basic function is grouping a number of words together. above, the number n
 > │01│23│45 ≡ (01)(23)(45)
 > │012││345│67 ≡ (01)2((34)5)(67)
 > ├123│45╞6789 ≡ (123)(45)(6789)
+> :42→a "I think ",│aª," is a good number." ≡ "I think 42 is a good number."
 there's a pattern to these: when they're pointing to the right the number of lines going out is the number of words grouped, and the symbols for 7,8,9,10 groupers are flipped 3,4,5,6 groupers.
 but when used with 2-adverbs, they work a little differently. the left of every 2-adverb can be used as a word separator, so:
 > 7│+2╜/3 ≡ 3
-TODO TODO
+> 123456│~½╓₧ ≡ (123)(456)
+> "and""the""small""bee""wanted""to""fly"╕├~=3╨Ç ≡ "AND""THE""small""BEE""wanted""to""FLY"
 ---
-:title: Blocks
-TODO
+:title: Statements
+there is a more explicit way of defining functions, and it looks more like lambda expressions you might be used to from other languages:
+> 456{α+/(α~)} ≡ 5
+> 345{β^(α♣♠)*α+}:10 ≡ :345
+that thing inside braces is the ||function definition@#Define Function||, and it uses special variables like `α` or `β` that are always defined inside dfns. the expression inside the braces will be evaluated and returned.
+but there's more that you can do inside functions. dfns are composed of multiple statements, and the result of the last one is returned.
+statements are delimited by statement separators like `·` ||Discard|| or `◘` ||Return||. discard statements evaluate a value and discard it; return statements return a value from the function.
+> ■{1·2·3◘4·5} ≡ 3
+not very interesting. you have already seen one statement separator: `→name` assigns the body of the statement to the variable with that name. use this in longer pieces of code, to give names to values.
+> 456{α+→avg α~→len .avg/.len} ≡ 5
+functions create a lexical scope. this means variables you define inside of a function will not be accessible outside.
+these become more useful when used with `x?y` ||Then|| (note that Then is not a function), which executes the following statement `y` if `x` is not 0. you can use these for ternary-operator-like things:
+> _5{α>0?α◘α-} ≡ 5
+the left side of `?` can take a function, and it will be called with the same arguments as the outer function:
+> _5{>0?α◘α-} ≡ 5
+you can also use statements in ||Blocks||, that work like functions that are immediately evaluated. this can be useful for conditions:
+> [1+1=2?"good"◘"bad"] ≡ "good"
+or for doing multiple things if a condition holds. blocks don't create their own scope, so:
+> 6{α→a 4→b a>b?[a-b→a 0→b]· ab} ≡ 20
+---
+:title: Programs
+# The Codepage
+here is the vemf codepage. if you are reading in a browser, you might be seeing this at the left of your screen.
+>    | 0123456789abcdef0123456789abcdef
+> ---+-----------------++++++++++++++++
+> x0 | ¤☺☻♥♦♣♠•◘○◙♂♀♪♫☼►◄↕‼¶§▬↨↑↓←→∟↔▲▼
+> x2 |  !"#$%&'()*+,-./0123456789:;<=>?
+> x4 | @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_
+> x6 | `abcdefghijklmnopqrstuvwxyz{|}~⌂
+> x8 | ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒ
+> xA | áíóúñÑªº¿⌐¬½¼¡«»░▒▓│┤╡╢╖╕╣║╗╝╜╛┐
+> xC | └┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌█▄▌▐▀
+> xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■⎕
+this is based on the ||CP-437@https://en.wikipedia.org/wiki/Code_page_437|| codepage. this is the codepage used in the very first IBM PCs! note that
+- `◙ 0A` doubles as a ||Line Break||, it is whitespace
+- `  20` is a space
+- `¨ F9` represents `¨ U+00A8 DIAERESIS`, while CP-437 uses a small middle dot. it is encoded in Unicode as `∙ U+2219 BULLET OPERATOR`, but most modern fonts don't make the distinction with `· FA` or `• F7`. (the related codepage ||CP-850@https://en.wikipedia.org/wiki/Code_page_850|| does this too)
+- `¤ 00` and `⎕ FF` are control characters in CP-437. they are assigned other characters in vemf (`¤ U+00A4 CURRENCY SIGN` and `⎕ U+2395 APL FUNCTIONAL SYMBOL QUAD` respectively) but (for now) they are syntax errors outside of literals
+these are all of the symbols available to vemf programs. even if storing vemf scripts byte-by-byte is more efficient, they use utf-8 by default.
+# Execution
+a vemf file is a list of statements that are executed in order. there are only a few ways a vemf program can contact with the outside world
+the command line arguments are available as `δ` ||Arguments||. as a shorthand, `α` ||Alpha|| and `β` ||Beta|| are set to the first argument and second argument respectively, and `Σ` ||Arity|| is the number of arguments. arguments are always Unicode strings.
+the return value of the program (either from a `◘` ||Return|| in the top scope or the last statement in the program) is, by default, formatted and printed automatically. the formatting is the same as `ⁿ0` (see ||Custom Format||):
+- if the result is a function, it is called with the arguments passed into the program (monadically with α if only one argument was passed, otherwise with α and β), and then formatted
+- if the result is a scalar, it is printed as a number in decimal
+- if the result is a flat list, it is printed as a Unicode string, where every element is a codepoint
+- if the result is a nested list, each of the inner lists will be printed as a separate line and delimited with newlines
+there are also input and output streams. there can be any number, but the cli uses input stream 0 for stdin, output stream 0 for stdout, and output stream 1 for stderr. `☺` ||Print|| and `☻` ||Print Line|| always print text to output stream 1.
+the streams are byte streams, and the functions `Ö` ||Write|| and `Ü` ||Read|| convert to/from UTF-8. you may use `_Ö` ||Write Bytes|| and `_Ü` ||Read Bytes|| to manipulate the byte streams directly.
+you also have access to a global random number generator (see `á` ||Pick||, `â` ||Sample||, `å` ||Choice||)
 ---
 :char: ☺
 :ascii: 'pr
@@ -617,12 +713,12 @@ see also: ||Set Function||
 :ascii: 'L
 :type: verb
 #1 Natural Logarithm
-get the natural logarithm of α. scalar.
+get the ||natural logarithm@https://en.m.wikipedia.org/wiki/Natural_logarithm|| of α. scalar.
 > 2∟^ ≡ 2
 > 1∟ ≡ 0
 > 2∟ ≡ :0.6931471805599453
 #2 Logarithm
-get the logarithm base β of α. scalar.
+get the ||logarithm@https://en.m.wikipedia.org/wiki/Logarithm|| base β of α. scalar.
 > :1000∟Φ ± 3
 > Φ√∟Φ ≡ 2/
 ---
@@ -652,7 +748,7 @@ increments the number by 1. equivalent to `+1`. scalar.
 > 123▲ ≡ 234
 see also: ||Bump Down||, ||Add||
 #2 Bins Up
-it runs a binary search. when α is a list sorted in ascending order, it finds the position of the first element in α that is less than or equal to β. you can also think of the list α as intervals of shape [x, y)
+run a binary search. when α is a list sorted in ascending order, it finds the position of the first element in α that is less than or equal to β. you can also think of the list α as intervals of shape [x, y)
 > 0259▲6 ≡ 3
 > 0259▲Θ0123456789Φ ≡ 011222333344
 see also: ||Bins Up||
@@ -667,7 +763,7 @@ decrements the number by 1. equivalent to `-1`. scalar.
 > 123▼ ≡ 012
 see also: ||Bump Up||, ||Subtract||
 #2 Bins Down
-it runs a binary search. when α is a list sorted in descending order, it finds the position of the first element in α that is greater than or equal to β.
+run a binary search. when α is a list sorted in descending order, it finds the position of the first element in α that is greater than or equal to β.
 > :18:13:8▼:20 ≡ 0
 > :18:13:8▼:18 ≡ 0
 > :18:13:8▼:15 ≡ 1
@@ -687,7 +783,7 @@ whitespace. may change the parsing of some tokens:
 :char: !
 :type: verb
 #1 Factorial
-get the factorial of α. this is extended to reals with the gamma function, Γ(α + 1)
+get the factorial of α. this is extended to reals with the ||Gamma function@https://en.wikipedia.org/wiki/Gamma_function||, Γ(α + 1). scalar.
 > 0! ≡ 1
 > 1! ≡ 1
 > 3! ≡ 6
@@ -697,7 +793,7 @@ get the factorial of α. this is extended to reals with the gamma function, Γ(�
 > Φ! ≡ :3628800
 > :-0.5! ± π√
 #2 Permute
-number of β-permutations in α items. also known as the falling factorial, descending factorial, pochhammer symbol, or the nPr key in your calculator. equivalent to `-╓!║/` or `{α!/(α-β!)}`
+number of β-permutations in α items. also known as the ||falling factorial@https://en.wikipedia.org/wiki/Falling_and_rising_factorials||, descending factorial, pochhammer symbol, or the nPr key in your calculator. equivalent to `-╓!║/` or `{α!/(α-β!)}`. scalar.
 > 1!1 ≡ 1
 > 3!2 ≡ :6
 > 4!3 ≡ :24
@@ -745,12 +841,12 @@ calls the function α with `β@0` and `β@1` (only if `β~ ≥ 2`) as arguments.
 :char: %
 :type: verb
 #1 Power of Two
-get 2 to the power of α. scalar.
+calculate 2 to the power of α. equivalent to `┴^2`. scalar.
 > 0% ≡ 1
 > 4% ≡ :16
 > :32% ≡ :4294967296
 #2 Remainder
-returns the remainder of α divided by β. scalar.
+returns the remainder of α divided by β, also known as the ||modulo@https://en.m.wikipedia.org/wiki/Modulo||. scalar.
 > 7%5 ≡ 2
 > 2%5 ≡ 2
 > _3%5 ≡ 2
@@ -786,7 +882,7 @@ see also: ||And||, ||Any||
 :type: literal
 #'A,'ab Escape
 escapes are one way to write characters outside the ascii range (characters in the range 0x20 ` ` to 0x7E `~`, the ones that you almost certainly have in your keyboard). you will see the escapes in the documentation of each character.
-there are more non-ascii characters than ascii characters in the codepage (256 - 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [`a`, `z`].
+there are more non-ascii characters than ascii characters in the codepage (256 − 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [`a`, `z`].
 the characters with single character escape sequences are the following:
 > !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
 > ‼═☻¶÷·─╙╜↔±○¬•╧╣┌│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘╕╛≈
@@ -887,7 +983,10 @@ calculate α − β. scalar
 :char: .
 :type: grammar
 #n Noun
-the variable `name` with noun role
+the variable `name` with noun role.
+if not defined, will return ||None||.
+> .kjfghkjbgihjbhekjgerbn ≡ ■
+see also: ||Set||, ||Mutate||
 ---
 :char: /
 :type: verb
@@ -1055,6 +1154,7 @@ return 1 if α = β, else 0. scalar.
 > "words words words"=`  ≡ 00000100000100000
 two NaNs compare equal:
 > ■=■ ≡ 1
+see also: ||Matches||, ||Not Equals||
 ---
 :char: >
 :type: verb
@@ -1270,11 +1370,11 @@ closing counterpart of `[` ||Start Block||.
 :char: ^
 :type: verb
 #1 Exponential
-calculate exp α, or e^α, where e = 2.718281828459045
+calculate ||exp α@https://en.wikipedia.org/wiki/Exponential_function||, or e^α, where e is Euler's number. scalar.
 > 1^ ≡ :2.718281828459045
 > 3^ ≡ :20.085536923187668
 #2 Exponent
-calculate α to the power of β
+calculate ||α raised to the power of β@https://en.wikipedia.org/wiki/Exponentiation||. scalar.
 > 2^6 ≡ :64
 > 3^5 ≡ :243
 ---
@@ -1433,9 +1533,11 @@ return a function that executes the statements inside the braces, returning a va
 some variables are set when calling a function: `α` ||Alpha|| is set to the left argument, `β` ||Beta|| is set to the right argument or ||None|| if not given, `ƒ` ||Self|| to the function being called, and `Σ` ||Arity|| to the number of arguments passed.
 > {α+β/2}→avg 3:avg7 ≡ 5
 the inside of a function creates a scope, and any variables created inside the scope will not be visible once the function returns.
+> 123{α*2→double .double-1} ≡ 135
+> 123{α*2→double .double-1}· .double ≡ ■
 when a function is created, all of the variables that it references as a value will be captured (lexical scope). this capture is immutable; if you change the value of a capture, it will only be changed in that function's scope.
 > 123→l{l,α↔l}→append 4:append· l ≡ 123
-there are two ways of changing this, both equivalent: not reference the value (as ||Mutate Statement|| can take a function), or delete the capture. then it will look for an `l` in the caller scope (dynamic scope); the variable you reference must be in scope and there must not be any other variable with the same name in the same scope.
+there are two ways of changing this, both equivalent: not referencing the value (as ||Mutate Statement|| can take a function), or deleting the capture. then it will look for an `l` in the caller scope (dynamic scope); the variable you reference must be in scope and there must not be any other variable with the same name in the same scope.
 > 123→l{,α↔l}→append 4:append· l ≡ 1234
 > 123→l{→l l,α↔l}→append 4:append· l ≡ 1234
 > 123→l{,α↔l}→append 0{"things"→l 4:append· l} ≡ "things♦"  ' oops!
@@ -1480,7 +1582,7 @@ same as `=¬`. scalar.
 > 5~3 ≡ 1
 > 3~3 ≡ 0
 > 3~5 ≡ 1
-see also: ||Equals||
+see also: ||Equals||, ||Not Matches||
 ---
 :char: ⌂
 :ascii: 'ex
@@ -1603,7 +1705,7 @@ return α, lowercasing it if in the range 'A'..'Z'. scalar.
 :ascii: 'e^
 :type: verb
 #1 Encode Codepage
-convert unicode codepoint α into the vemf codepage, or ||None|| if not possible. scalar.
+convert Unicode codepoint α into the vemf codepage, or ||None|| if not possible. scalar.
 > :8226:9829:9786:402`eê ≡ "•♥☺ƒe"
 #2 Encode
 represent α in the radix system β in big-endian order. α-pervasive. we can use this, for example, for converting to hours, minutes, and seconds:
@@ -1624,7 +1726,7 @@ represent a string as a UTF-8 list of bytes, converting invalid values to � U+
 :ascii: 'e"
 :type: verb
 #1 Decode Codepage
-convert characters from vemf codepage into unicode, or ||None|| if not possible. scalar.
+convert characters from vemf codepage into Unicode, or ||None|| if not possible. scalar.
 > "•♥☺ƒe"ë ≡ :8226:9829:9786:402`e
 #2 Decode
 decode α from the radix system β in big-endian order. this is an inverse of ||Encode||
@@ -1844,7 +1946,7 @@ a list of length `αÑ` with fill 0, where the value of an element `i` is the am
 :ascii: 'o+
 :type: verb
 #2 Write
-write a string α, utf-8 encoded, to output stream β. returns the number of bytes written, or ||None|| if there was some IO error.
+write a string α, UTF-8 encoded, to output stream β. returns the number of bytes written, or ||None|| if there was some IO error.
 #1 Write Stdout
 write a string α to output stream 0. equivalent to `Ö0`.
 see also: ||Print||
@@ -1857,7 +1959,7 @@ write a list of bytes α to output stream 0. equivalent to `_Ö0`.
 :ascii: 'u+
 :type: verb
 #2 Read
-read α bytes from input stream β and decode them from utf-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.
+read α bytes from input stream β and decode them from UTF-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.
 for `α=∞`, read until the end of file. for `α=Θ`, read until the next line break (0x0A byte).
 may return ||None|| in case of an IO error.
 #1 Read Stdin
@@ -1971,7 +2073,7 @@ calculate `β + α*i`. scalar.
 :ascii: 'o'
 :type: verb
 #1 Signs
-calculate (-1)^α. if α is an integer, this means 1 for odd α, and −1 for even α. scalar. equivalent to `┴^Θ`
+calculate (−1)^α. if α is an integer, this means 1 for odd α, and −1 for even α. scalar. equivalent to `┴^Θ`
 > 012345ó ≡ 1Θ1Θ1Θ
 see also: ||Minus One||
 #2 Divides
@@ -2109,8 +2211,9 @@ equivalent to `/2`. scalar.
 > 1½ ≡ :0.5
 > 5½ ≡ :2.5
 > 1½½ ≡ :0.25
-#2 Least Common Denominator
-calculates lcd(α, β). scalar.
+#2 Lowest Common Denominator
+calculates the ||lowest common denominator||https://en.wikipedia.org/wiki/Lowest_common_denominator|| of two integers α and β, or lcd(α, β). scalar.
+> :12½:18 ≡ :36
 > :30½:45 ≡ :90
 ---
 :char: ¼
@@ -2123,7 +2226,8 @@ equivalent to `*2`. scalar.
 > 5¼ ≡ :10
 > 6½¼ ≡ 6
 #2 Greatest Common Divisor
-calculates gcd(α, β). scalar.
+calculates the ||greatest common divisor@https://en.wikipedia.org/wiki/Greatest_common_divisor|| of two integers α and β, or gcd(α, β). scalar.
+> 8¼:12 ≡ 4
 > :30¼:45 ≡ :15
 ---
 :char: ¡
@@ -2281,10 +2385,11 @@ the right argument. if not in a function definition, the second argument passed 
 :char: Γ
 :ascii: 'g+
 :type: noun
-#0 Imaginary Constant
-the imaginary constant i
+#0 Imaginary Unit
+the ||imaginary Unit@https://en.wikipedia.org/wiki/Imaginary_unit|| i
 > Γ ≡ Θ√
-#_0 Negative Imaginary Constant
+> 3*Γ+2 ≡ 3í2
+#_0 Negative Imaginary Unit
 the complex number -i, or `Γ-`
 #.0 Euler–Mascheroni Constant
 the number `0.5772156649015329`
@@ -2293,7 +2398,7 @@ the number `0.5772156649015329`
 :ascii: 'p- 'pi
 :type: noun
 #0 Pi
-archimedes constant, ratio of a semicircle to its radius, or at least the best approximation possible in 64-bit floating point.
+||pi@https://en.wikipedia.org/wiki/Pi||, archimedes constant, ratio of a semicircle to its radius, or at least the best approximation possible in 64-bit floating point.
 > π ≡ :3.141592653589793
 #_0 Tau
 the number `6.283185307179586`, or `π*2`
@@ -2334,7 +2439,8 @@ the integer 10
 the integer −10
 > _Φ ≡ :-10
 #.0 Euler's Number
-the number `2.718281828459045`
+||euler's number@https://en.wikipedia.org/wiki/E_(mathematical_constant)|| e, or the number `2.718281828459045`
+> 1^ ≡ .Φ
 ---
 :char: Θ
 :ascii: 'Q 't+
@@ -2538,6 +2644,7 @@ equivalent to `≡¬`
 > 123≈123 ≡ 0
 > 123≈1234 ≡ 1
 > (+)≈(+) ≡ 1
+see also: ||Matches||
 ---
 :char: °
 :ascii: 'dg
@@ -2586,16 +2693,22 @@ format α with default settings
 > 123ⁿ ≡ "(1 2 3)"
 #2 Custom Format
 when this is called with a right argument, it will be interpreted in the following way:
-- 0: print
+- 0: format for printing (see ||Execution||)
 - 1: float
 - 2: integer
-- 3: unicode character
-- 4: unicode string
+- 3: Unicode character
+- 4: Unicode string
 - 5: codepage string
 - 7: line-separated list
 - 8: left-aligned list of lists
 - 9: right-aligned list of lists
 you can also use multiple of these in a list, like `ⁿ74` (line-separated list of strings)
+`8` and `9` are useful for neatly formatted tables:
+>     )9 :99↑44á
+> ((13  4  6 26)
+>  (53  7 18 72)
+>  (54 45 84 87)
+>  (36 41 13 60))
 ---
 :char: ²
 :ascii: 'z, 'sq
