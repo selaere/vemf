@@ -5,6 +5,7 @@ struct Options {
     filename: Option<PathBuf>,
     arguments: Vec<String>,
     no_stdlib: bool,
+    inspect: bool,
     format: String,
     rewrite: bool,
 }
@@ -29,8 +30,9 @@ fn parse_args() -> Options {
         filename: None,
         arguments: vec![],
         no_stdlib: false,
+        inspect: false,
         format: String::from("0"),
-        rewrite: false
+        rewrite: false,
     };
     _ = iter.next();
     loop {
@@ -49,12 +51,14 @@ the script unchanged. sets α, β and δ accordingly.
   -f/--format <format>: how to format the output, 0 by default. use like dyadic ⁿ. ignored in repl \
 mode.
   -r/--rewrite: if given, print to stdout the file, rewritten without ' escapes
+  -i/--inspect: open the repl after running file
   --no-stdlib: do not use the standard library\
 ");
                 std::process::exit(0);
             },
             Some("-r" | "--rewrite") => { opts.rewrite   = true; }
             Some("--no-stdlib")      => { opts.no_stdlib = true; }
+            Some("-i" | "--inspect") => { opts.inspect   = true; }
             Some(x) if x.starts_with('-') => {
                 panic!("unrecognized option {x}")
             }
@@ -71,25 +75,23 @@ mode.
 
 fn main() {
     let opts = parse_args();
-    let mut state = Env::new(bx(rand::thread_rng()));
-    if !opts.no_stdlib { state.include_stdlib(); }
-    state.interface = bx(vemf::StdIO {});
+    let mut env = Env::new(bx(rand::thread_rng()));
+    if !opts.no_stdlib { env.include_stdlib(); }
+    env.interface = bx(vemf::StdIO {});
     if let Some(ref path) = opts.filename {
         if opts.rewrite { return rewrite(path); }
-        let arguments = state.include_args(&opts.arguments);
-        let mut res = state.include_file(&mut File::open(path).unwrap_or_else(|e|
+        env.include_args(&opts.arguments);
+        let mut code = String::new();
+        File::open(path).unwrap_or_else(|e|
             panic!("error while opening file {}: {}", path.display(), e)
-        )).unwrap();
-        if let Val::Err(x) = res { std::process::exit(x); }
-        if res.is_infinite() { res = res.call(
-            &mut state,
-            arguments.get(0).cloned().unwrap_or(Val::NAN),
-            arguments.get(1).cloned()
-        ); }
-        if let Val::Err(x) = res { std::process::exit(x); }
-        res.format(&mut FromIoWrite(std::io::stdout()), &fmtstring(&opts.format)).unwrap();
-        println!();
-    } else { repl(state, opts); }
+        ).read_to_string(&mut code).unwrap_or_else(|e|
+            panic!("error while opening file {}: {}", path.display(), e)
+        );
+        if let Err(x) = env.run_string(&code, &fmtstring(&opts.format)) {
+            std::process::exit(x)
+        };
+        if opts.inspect { repl(env, opts); }
+    } else { repl(env, opts); }
 }
 
 fn repl(mut env: Env, args: Options) {

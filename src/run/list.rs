@@ -173,7 +173,6 @@ func!(a :replist b => if !a.is_infinite() {
 } else {a});
 
 func!(a :concat b => {
-    if a.is_infinite() || b.is_infinite() { return NAN }
     if let Lis{l, ..} = a { return match Rc::try_unwrap(l) {
         Ok(mut l) => { l.extend(b.iterf().cloned()); Val::lis(l) },
         Err(l) => l.iter().cloned().chain(b.into_iterf()).collect()

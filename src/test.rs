@@ -63,8 +63,8 @@ fn docs_escapes() {
 }
 
 #[allow(clippy::type_complexity)]
-struct IO<'io> (&'io RefCell<(VecDeque<u8>, VecDeque<u8>, Vec<u8>, Vec<u8>)>);
-impl<'io> crate::Interface<'io> for IO<'io> {
+struct TestIO<'io> (&'io RefCell<(VecDeque<u8>, VecDeque<u8>, Vec<u8>, Vec<u8>)>);
+impl<'io> crate::Interface<'io> for TestIO<'io> {
     // we should implement read_to_end and read_line, but i want to see if the default defs work
     fn read(&mut self, stm: usize, slice: &mut [u8]) -> Option<usize> {
         if stm == 0 {
@@ -102,7 +102,7 @@ fn input_output() -> Result<(), ()> {
         Vec::new()));
 
     let mut env = crate::Env::new(bx(rngs::mock::StepRng::new(0, 0)));
-    env.interface = bx(IO(&refcell));
+    env.interface = bx(TestIO(&refcell));
     env.include_stdlib();
     env.include_string(PROGRAM);
 
@@ -222,3 +222,40 @@ fn scripts() {
 █░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░
 ████████████████████████████████████████████████████████████████"#.trim());
 }
+
+macro_rules! aoc { ($name:ident,$num:tt, $res:expr) => {
+    #[test]
+    fn $name() {
+        let refcell = RefCell::new((
+            VecDeque::from(*include_bytes!(concat!("../scripts/aoc2022/in/d",$num,".txt"))),
+            VecDeque::<u8>::new(), Vec::<u8>::new(), Vec::<u8>::new()));
+        let mut env = crate::Env::new(bx(rngs::mock::StepRng::new(0, 0)));
+        env.include_stdlib();
+        env.interface = bx(TestIO(&refcell));
+        env.run_string(
+            include_str!(concat!("../scripts/aoc2022/d",$num,".vemf")),
+            &[crate::Val::Int(0)]).unwrap();
+        assert_eq!(&String::from_utf8_lossy(&refcell.take().2), $res);
+    }
+} }
+
+aoc!(aoc2022_01, "01", "69281\n201524\n");
+aoc!(aoc2022_02, "02", "11767\n13886\n");
+aoc!(aoc2022_03, "03", "8105\n2363\n");
+aoc!(aoc2022_04, "04", "547\n843\n");
+aoc!(aoc2022_05, "05", "MQTPGLLDN\nLVZPSTTCZ\n");
+aoc!(aoc2022_06, "06", "1651\n3837\n");
+aoc!(aoc2022_07, "07", "1667443\n8998590\n");
+aoc!(aoc2022_08, "08", "1672\n327180\n");
+aoc!(aoc2022_09, "09", "6243\n2630\n");
+aoc!(aoc2022_10, "10", "14860
+███   ██  ████ ████ █  █ █  █ ███  █  █ 
+█  █ █  █    █ █    █  █ █  █ █  █ █ █  
+█  █ █      █  ███  ████ █  █ █  █ ██   
+███  █ ██  █   █    █  █ █  █ ███  █ █  
+█ █  █  █ █    █    █  █ █  █ █ █  █ █  
+█  █  ███ ████ ████ █  █  ██  █  █ █  █ \n");
+aoc!(aoc2022_11, "11", "50616\n11309046332\n");
+aoc!(aoc2022_12, "12", "456\n454\n");
+aoc!(aoc2022_13, "13", "5185\n23751\n");
+aoc!(aoc2022_14, "14", "618\n26358\n");

@@ -243,20 +243,32 @@ impl<'io> Env<'io> {
         self.include_string(STDLIB);
     }
 
-    #[cfg(feature = "std")]
+    #[cfg(any(feature = "std", test))]
     pub fn include_file<F: std::io::Read>(&mut self, file: &mut F) -> std::io::Result<Val> {
         let mut code = String::new();
         file.read_to_string(&mut code)?;
         Ok(self.include_string(&code))
     }
 
-    pub fn include_args(&mut self, args: &[String]) -> Vec<Val> {
+    pub fn run_string(&mut self, code: &str, format: &[Val]) -> Result<(), i32> {
+        let mut res = self.include_string(code);
+        if let Val::Err(x) = res { return Err(x); }
+        if res.is_infinite() { res = res.call(
+            self,
+            self.get_var(&[b!('α')]).unwrap_or(NAN),
+            self.get_var(&[b!('β')]),
+        ); }
+        if let Val::Err(x) = res { return Err(x); }
+        res.format(&mut io::FromInterface(&mut *self.interface), format).unwrap();
+        Ok(())
+    }
+
+    pub fn include_args(&mut self, args: &[String]) {
         let args: Vec<Val> = args.iter().map(|s| s.chars().map(|x| Int(x as i64)).collect()).collect();
         if let Some(x) = args.get(0) { self.set_local(bstr![b!('α')], x.c()); }
         if let Some(x) = args.get(1) { self.set_local(bstr![b!('β')], x.c()); }
         self.set_local(bstr![b!('Σ')], Int(args.len() as _));
         self.set_local(bstr![b!('δ')], Val::lis(args.c()));
-        args
     }
 
 }

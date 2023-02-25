@@ -1,4 +1,9 @@
 /target
 /tmp
 /wasm/pkg
-/scripts/aoc2022/
+/scripts/aoc2022/d15.vemf
+/scripts/aoc2022/d16.vemf
+/scripts/aoc2022/d17.vemf
+/scripts/aoc2022/in/d15.txt
+/scripts/aoc2022/in/d16.txt
+/scripts/aoc2022/in/d17.txt

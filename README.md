@@ -13,5 +13,5 @@ you probably want to use `rlwrap` or equivalent in linux for an interactive repl
 
 to run the tests:
 ```sh
-$ cargo test --lib
+$ cargo test --release --lib
 ```

@@ -2454,11 +2454,12 @@ _3± ≡ Θ
 <h3 id="Shift Right"><a class=h href="#Shift Right"></a><code>α⌠β</code> Shift Right</h3>
 <p>returns a list of the same length as α, with every item shifted to the right by β, using the fill of α to fill the blanks. β-pervasive.</p>
 <pre>12345678⌠3 ≡ ■■■12345
-87654321▐0⌠5 ≡ 00000876
-"yeah!!!"▐` ⌠4 ≡ "    yea"
-"yeah!!!"▐` ⌠2 ≡ "  yeah!"</pre>
+87654321▐0⌠5 ≡ 00000876▐0
+"yeah!!!"▐` ⌠4 ≡ "    yea"▐` 
+"yeah!!!"▐` ⌠2 ≡ "  yeah!"▐` 
+(012)(345)(678)▐000⌠1 ≡ (000)(012)(345)▐000</pre>
 <p>a negative β acts like <a href="#Shift Left">Shift Left</a>:</p>
-<pre>"yeah!!!"▐` ⌠_2 ≡ "ah!!!  "</pre>
+<pre>"yeah!!!"▐` ⌠_2 ≡ "ah!!!  "▐` </pre>
 <p>and if <code>α~≤β</code>, the whole list will be filled:</p>
 <pre>12345678⌠8 ≡ ■■■■■■■■</pre>
 <p>see also: <a href="#Shift Left">Shift Left</a>, <a href="#Rotate Right">Rotate Right</a></p>
@@ -2472,11 +2473,12 @@ _3± ≡ Θ
 <h3 id="Shift Left"><a class=h href="#Shift Left"></a><code>α⌡β</code> Shift Left</h3>
 <p>returns a list of the same length as α, with every item shifted to the left by β, using the fill of α to fill the blanks. β-pervasive.</p>
 <pre>12345678⌡3 ≡ 45678■■■
-87654321▐0⌡5 ≡ 32100000
-"yeah!!!"▐` ⌡4 ≡ "!!!    "
-"yeah!!!"▐` ⌡2 ≡ "ah!!!  "</pre>
+87654321▐0⌡5 ≡ 32100000▐0
+"yeah!!!"▐` ⌡4 ≡ "!!!    "▐` 
+"yeah!!!"▐` ⌡2 ≡ "ah!!!  "▐` 
+(012)(345)(678)▐000⌡1 ≡ (345)(678)(000)▐000</pre>
 <p>a negative β acts like <a href="#Shift Left">Shift Left</a>:</p>
-<pre>"yeah!!!"▐` ⌡_2 ≡ "  yeah!"</pre>
+<pre>"yeah!!!"▐` ⌡_2 ≡ "  yeah!"▐` </pre>
 <p>and if <code>α~≤β</code>, the whole list will be filled:</p>
 <pre>12345678⌡8 ≡ ■■■■■■■■</pre>
 <p>see also: <a href="#Shift Right">Shift Right</a>, <a href="#Rotate Left">Rotate Left</a></p>

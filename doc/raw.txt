@@ -2583,11 +2583,12 @@ see also: ||Floor||, ||Round||, ||Euclidean Division||
 #2 Shift Right
 returns a list of the same length as α, with every item shifted to the right by β, using the fill of α to fill the blanks. β-pervasive.
 > 12345678⌠3 ≡ ■■■12345
-> 87654321▐0⌠5 ≡ 00000876
-> "yeah!!!"▐` ⌠4 ≡ "    yea"
-> "yeah!!!"▐` ⌠2 ≡ "  yeah!"
+> 87654321▐0⌠5 ≡ 00000876▐0
+> "yeah!!!"▐` ⌠4 ≡ "    yea"▐` 
+> "yeah!!!"▐` ⌠2 ≡ "  yeah!"▐` 
+> (012)(345)(678)▐000⌠1 ≡ (000)(012)(345)▐000
 a negative β acts like ||Shift Left||:
-> "yeah!!!"▐` ⌠_2 ≡ "ah!!!  "
+> "yeah!!!"▐` ⌠_2 ≡ "ah!!!  "▐` 
 and if `α~≤β`, the whole list will be filled:
 > 12345678⌠8 ≡ ■■■■■■■■
 see also: ||Shift Left||, ||Rotate Right||
@@ -2604,11 +2605,12 @@ see also: ||Ceiling||, ||Round||
 #2 Shift Left
 returns a list of the same length as α, with every item shifted to the left by β, using the fill of α to fill the blanks. β-pervasive.
 > 12345678⌡3 ≡ 45678■■■
-> 87654321▐0⌡5 ≡ 32100000
-> "yeah!!!"▐` ⌡4 ≡ "!!!    "
-> "yeah!!!"▐` ⌡2 ≡ "ah!!!  "
+> 87654321▐0⌡5 ≡ 32100000▐0
+> "yeah!!!"▐` ⌡4 ≡ "!!!    "▐` 
+> "yeah!!!"▐` ⌡2 ≡ "ah!!!  "▐` 
+> (012)(345)(678)▐000⌡1 ≡ (345)(678)(000)▐000
 a negative β acts like ||Shift Left||:
-> "yeah!!!"▐` ⌡_2 ≡ "  yeah!"
+> "yeah!!!"▐` ⌡_2 ≡ "  yeah!"▐` 
 and if `α~≤β`, the whole list will be filled:
 > 12345678⌡8 ≡ ■■■■■■■■
 see also: ||Shift Right||, ||Rotate Left||
