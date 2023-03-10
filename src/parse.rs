@@ -222,10 +222,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Tok::Chr(x) => Int(i64::from(x)),
         Tok::Chr2(x, y) => Snd(vec![Int(i64::from(x)), Int(i64::from(y))]),
         Tok::Num(l) => Int(l),
-        Tok::HNum(x) => {
-            let str = core::str::from_utf8(&x).unwrap();
-            str.parse::<i64>().map_or_else(|_| Flt(c64::new(str.parse::<f64>().unwrap(), 0.)), Int)
-        },
+        Tok::Flt(l) => Flt(l),
         Tok::Str(x) => Snd(x.iter().map(|&x| Int(i64::from(x))).collect()),
         _ => return None,
     })
@@ -245,7 +242,7 @@ fn capture(&self, vars: &mut HashSet<Bstr>) { match self { // yeah...
     Trn3(a, f, b) => { a.capture(vars); f.capture(vars); b.capture(vars); },
     Fork(a, f, b) => { a.capture(vars); f.capture(vars); b.capture(vars); },
     Dfn { cap, .. } => { vars.extend(cap.iter().cloned()); }
-    Block(s) => { for i in s {i.capture(vars)} }
+    Block(s) => { for i in s { i.capture(vars) } }
 }}
 }
 

@@ -1093,16 +1093,38 @@ the number `0.9`, or `9/Φ`
 #n Verb
 the variable `name` with verb role
 #:123 Numeric Literal
-when the following character is in the range [`0`, `9`] or the negative sign `-`, it will be interpreted as a floating point number until the next character that isn't in [`0`, `9`] or `.`.
+when the character after the colon is a decimal digit `[0-9]` or the negative sign `-`, it will be interpreted as a number (integer or floating point).
 > :12 ≡ Φ+2
+> :39 ≡ 3*Φ+9
 > :256 ≡ 2^8
+> :-3 ≡ _3
 > :12:24:32/4 ≡ 368
-note that whitespace is ends a literal:
+this also supports decimals, with a decimal point `.` or ||scientific notation@https://en.wikipedia.org/wiki/Scientific_notation|| using `e`:
+> :43.21 ≡ :4321/:100
+> :6.022e23 ≈ :6.022*(Φ^:23)
+> :1.6605e−27 ≈ :1.6605/(Φ^:27)
+> :0.01 ≡ 1/:100
+> :1e-2 ≡ 1/:100
+this syntax allows for `0x` `0b` `0o` `0s` `0z` `0n` for hexadecimal, binary, octal, senary, duodecimal, hexatrigesimal respectively. these use the digits `0-9` and `a-z` (always in lowercase):
+> :0xff ≡ :255
+> :0xdeadbeef ≡ :3735928559
+> :-0nxyz ≡ :-44027
+> :0x100000000 ≡ 2^:32
+the syntax looks a bit like this:
+> number := ":" "-"? (decimal | based)
+> decimal := [0-9]+ ("." [0-9]*)? ("e" "-"? [0-9]+)?
+> based := "0x" [0-9a-f]*
+>        | "0b" [0-1]*
+>        | "0o" [0-7]*
+>        | "0s" [0-5]*
+>        | "0z" [0-9a-b]*
+>        | "0n" [0-9a-z]*
+note that whitespace ends a literal:
 > :1 234 ≡ (1)(2)(3)(4)
 > :12 34 ≡ (:12)(3)(4)
 > :123 4 ≡ (:123)(4)
 > :1234  ≡ :1234
-complex number literals or scientific notation is not supported.
+see also: ||Integer Literals||
 ---
 :char: ;
 :type: verb
@@ -3100,9 +3122,9 @@ see also: ||Set Function||, ||Mutate||
 ---
 :char: ┌
 :ascii: '1
-:type: grouper
-#┌m 1-Group
-see ||Groups||
+:type: grammar
+#┌m Verbize
+turns the following morpheme into a verb.
 #.0
 the number `1.5`, or `3/2`
 #_0

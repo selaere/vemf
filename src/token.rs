@@ -1,11 +1,12 @@
 use crate::prelude::*;
+use crate::c64;
 
 #[derive(Debug, Clone)]
 pub enum Tok {
     Just(u8), White(u8), Comment(Bstr),
     VNoun(Bstr), VVerb(Bstr), VAv1(Bstr), VAv2(Vec<Bstr>, Bstr),
     VSet(Bstr), VMut(Bstr), VSetS(Bstr), VMutS(Bstr),
-    Chr(u8), Chr2(u8, u8), Num(i64), HNum(Bstr), Str(Bstr)
+    Chr(u8), Chr2(u8, u8), Num(i64), Flt(c64), Str(Bstr)
 }
 use Tok::*;
 
@@ -79,6 +80,43 @@ fn byte_lit(t: &mut &[u8], n: u8) -> Tok {
     Num(num)
 }
 
+fn hnum(t: &mut &[u8], first: u8, is_neg: bool) -> Tok {
+    let b: i64 = match *t.first().unwrap_or(&0) {
+        b'x' => 16, b'b' =>  2, b'o' => 8,
+        b's' => 6,  b'z' => 12, b'n' => 36,
+        _ => 0
+    };
+    if first == b'0' && b != 0 {
+        let mut num = 0i64;
+        loop {
+            step(t);
+            let a = match t.first() {
+                Some(c@b'0'..=b'9') => i64::from(c - b'0'),
+                Some(c@b'a'..=b'z') => i64::from(c - b'a' + 10),
+                _ => break
+            };
+            if a > b { break }
+            num = num * b + a;
+        }
+        return Num(num * if is_neg {-1} else {1})
+    }
+    let mut buf = String::from(first as char);
+    loop {
+        let Some(x) = t.first().copied().map(char::from) else { break };
+        if x.is_ascii_digit()
+        || x == '.' && !buf.contains('e') && !buf.contains('.')
+        || x == 'e' && !buf.contains('e') && matches!(t.get(1), Some(b'0'..=b'9'|b'-'))
+        || x == '-' && buf.bytes().last() == Some(b'e') {
+            buf.push(x); step(t);
+        } else { break }
+    }
+    if buf.ends_with("e-") { buf.pop(); buf.pop(); }
+    buf.parse::<i64>().map_or_else(
+        |_| Flt(c64::new(buf.parse::<f64>().unwrap() * if is_neg {-1.} else {1.}, 0.)),
+        |x| Num(x * if is_neg {-1} else {1}),
+    )
+}
+
 fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
     Some(match first {
         Some(b'"') => Str(string(t)),
@@ -117,12 +155,19 @@ fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
         Some(b!('•')) => VAv1 (ident(t)), Some(b!('○')) => VAv2 (vec![], ident(t)),
         Some(b!('→')) => VSetS(ident(t)), Some(b!('↔')) => VMutS(ident(t)),
         Some(b!('─')) => VSet (ident(t)), Some(b!('═')) => VMut (ident(t)),
-        Some(b!(':')) => if let Some(first @ (b'0'..=b'9' | b'-')) = t.first() { step(t);
-            let mut buf = bstr![*first];
-            while let Some(&x @ (b'0'..=b'9' | b'.')) = t.first() {
-                buf.push(x); step(t);
+        Some(b!(':')) => if let Some(first @ (b'0'..=b'9' | b'-')) = t.first() {
+            step(t);
+            if *first == b'-' {
+                if let Some(first @ (b'0'..=b'9')) = t.first() {
+                    step(t);
+                    hnum(t, *first, true)
+                } else {
+                    VVerb(bstr![b'-'])
+                }   
+            } else {
+                hnum(t, *first, false)
             }
-            HNum(buf) 
+            
         } else { VVerb(ident(t)) },
         Some(c @ (b' ' | b'\n')) => White(c),
         Some(c @ (short_verb!() | b'A'..=b'Z')) => VVerb(bstr![c]),

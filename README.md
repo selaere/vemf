@@ -7,7 +7,7 @@ this language and interpreter is in its early stages and _everything_ is bound t
 
 to build the interpreter/cli/repl, assuming you have cargo/rustup installed (remove the `--release` for a debug build):
 ```sh
-$ cargo build --release --features lib
+$ cargo build --release --features=bin
 ```
 you probably want to use `rlwrap` or equivalent in linux for an interactive repl.
 

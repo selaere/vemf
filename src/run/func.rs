@@ -97,8 +97,11 @@ func!(a :rem b => match (a, b) {
 });
 intfunc!(a :dive b => if b == 0 {NAN} else { Int(a.div_euclid(b)) });
 func!(a :pow b => match (a, b) {
-    (Int(a), Int(b)) if b >= 0 => Int(a.saturating_pow(b as u32)),
-    (a, Int(b @ -0x80000000..=0x7FFFFFFF)) => Num(a.as_c().powi(b as i32)),
+    (Int(a), Int(b @ 0..=0x7FFFFFFF)) =>
+        a.checked_pow(b as u32)
+        .map_or_else(|| Num(c64::new(a as f64, 0.).powi(b as i32)), Int),
+    (a, Int(b @ -0x80000000..=0x7FFFFFFF)) =>
+        Num(a.as_c().powi(b as i32)),
     (a, b) => Num(a.as_c().powc(b.as_c())),
 });
 func!(a :log b => Num(a.as_c().log(b.as_c().norm())));

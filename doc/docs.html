@@ -347,7 +347,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="r2-adverb"><a href="#D7">╫</a></td>
 <td class="r1-adverb"><a href="#D8">╪</a></td>
 <td class="rnone"><a href="#D9">┘</a></td>
-<td class="rgrouper"><a href="#DA">┌</a></td>
+<td class="rgrammar"><a href="#DA">┌</a></td>
 <td class="rliteral"><a href="#DB">█</a></td>
 <td class="rverb"><a href="#DC">▄</a></td>
 <td class="rverb"><a href="#DD">▌</a></td>
@@ -1331,16 +1331,38 @@ _1%_2 ≡ 1</pre>
 <h3 id="Verb"><a class=h href="#Verb"></a><code>:name</code> Verb</h3>
 <p>the variable <code>name</code> with verb role</p>
 <h3 id="Numeric Literal"><a class=h href="#Numeric Literal"></a><code>:123</code> Numeric Literal</h3>
-<p>when the following character is in the range [<code>0</code>, <code>9</code>] or the negative sign <code>-</code>, it will be interpreted as a floating point number until the next character that isn't in [<code>0</code>, <code>9</code>] or <code>.</code>.</p>
+<p>when the character after the colon is a decimal digit <code>[0-9]</code> or the negative sign <code>-</code>, it will be interpreted as a number (integer or floating point).</p>
 <pre>:12 ≡ Φ+2
+:39 ≡ 3*Φ+9
 :256 ≡ 2^8
+:-3 ≡ _3
 :12:24:32/4 ≡ 368</pre>
-<p>note that whitespace is ends a literal:</p>
+<p>this also supports decimals, with a decimal point <code>.</code> or <a href="https://en.wikipedia.org/wiki/Scientific_notation">scientific notation</a> using <code>e</code>:</p>
+<pre>:43.21 ≡ :4321/:100
+:6.022e23 ≈ :6.022*(Φ^:23)
+:1.6605e−27 ≈ :1.6605/(Φ^:27)
+:0.01 ≡ 1/:100
+:1e-2 ≡ 1/:100</pre>
+<p>this syntax allows for <code>0x</code> <code>0b</code> <code>0o</code> <code>0s</code> <code>0z</code> <code>0n</code> for hexadecimal, binary, octal, senary, duodecimal, hexatrigesimal respectively. these use the digits <code>0-9</code> and <code>a-z</code> (always in lowercase):</p>
+<pre>:0xff ≡ :255
+:0xdeadbeef ≡ :3735928559
+:-0nxyz ≡ :-44027
+:0x100000000 ≡ 2^:32</pre>
+<p>the syntax looks a bit like this:</p>
+<pre>number := ":" "-"? (decimal | based)
+decimal := [0-9]+ ("." [0-9]*)? ("e" "-"? [0-9]+)?
+based := "0x" [0-9a-f]*
+       | "0b" [0-1]*
+       | "0o" [0-7]*
+       | "0s" [0-5]*
+       | "0z" [0-9a-b]*
+       | "0n" [0-9a-z]*</pre>
+<p>note that whitespace ends a literal:</p>
 <pre>:1 234 ≡ (1)(2)(3)(4)
 :12 34 ≡ (:12)(3)(4)
 :123 4 ≡ (:123)(4)
 :1234  ≡ :1234</pre>
-<p>complex number literals or scientific notation is not supported.</p>
+<p>see also: <a href="#Integer Literals">Integer Literals</a></p>
 <h2 class="rverb" id="3B"><a class=h href="#3B"></a><code>;</code> (0x3B) <span class=rank>verb</span></h2>
 <h3 id="Duplicate"><a class=h href="#Duplicate"></a><code>α;</code> Duplicate</h3>
 <p>forms a pair <code>αα</code>. same as <code>┴♫</code></p>
@@ -2860,9 +2882,9 @@ _1÷_2 ≡ 1</pre>
 <p>call the function with β as a right argument</p>
 <pre>1→a .+═a2· a ≡ 3</pre>
 <p>see also: <a href="#Set Function">Set Function</a>, <a href="#Mutate">Mutate</a></p>
-<h2 class="rgrouper" id="DA"><a class=h href="#DA"></a><code>┌</code> (0xDA, <code>'1</code>) <span class=rank>grouper</span></h2>
-<h3 id="1-Group"><a class=h href="#1-Group"></a><code>┌m</code> 1-Group</h3>
-<p>see <a href="#Groups">Groups</a></p>
+<h2 class="rgrammar" id="DA"><a class=h href="#DA"></a><code>┌</code> (0xDA, <code>'1</code>) <span class=rank>grammar</span></h2>
+<h3 id="Verbize"><a class=h href="#Verbize"></a><code>┌m</code> Verbize</h3>
+<p>turns the following morpheme into a verb.</p>
 <h3 id=""><a class=h href="#"></a><code>.┌</code> </h3>
 <p>the number <code>1.5</code>, or <code>3/2</code></p>
 <h3 id=""><a class=h href="#"></a><code>_┌</code> </h3>
