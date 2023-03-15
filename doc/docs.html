@@ -120,9 +120,9 @@ h2>code { background-color: inherit; white-space: pre; }
 <li><a href="#About">About</a></li>
 <li><a href="#Basics">Basics</a></li>
 <li><a href="#Lists">Lists</a></li>
+<li><a href="#Adverbs">Adverbs</a></li>
 <li><a href="#Variables">Variables</a></li>
 <li><a href="#Trains">Trains</a></li>
-<li><a href="#Adverbs">Adverbs</a></li>
 <li><a href="#Groups">Groups</a></li>
 <li><a href="#Statements">Statements</a></li>
 <li><a href="#Programs">Programs</a></li>
@@ -389,10 +389,10 @@ h2>code { background-color: inherit; white-space: pre; }
 </nav><main>
 <h2 class=prose id="About"><a class=h href="#About"></a>About</h2>
 <p>if you are reading this, you are reading the vemf documentation. the vemf documentation has information about all of the different characters, verbs, nouns and adverbs that vemf has.</p>
-<p>the documentation can be enjoyed in a "raw" text format or in a nice html document format. the raw format is converted with <a href="https://github.com/selaere/vemf/blob/main/doc/gen.vemf">a vemf script</a>.</p>
+<p>the documentation can be enjoyed in a "raw" text format or in a nice html webpage format. <a href="https://github.com/selaere/vemf/blob/main/doc/raw.txt">the raw format</a> is converted to html with <a href="https://github.com/selaere/vemf/blob/main/doc/gen.vemf">a vemf script</a>.</p>
 <p>but not only does this documentation have text. in fact i am bad at explaining stuff, so there are way more examples than text. here's one!</p>
 <pre>"hello world i am a vemf test"\"aeiou" ≡ "hll wrld  m  vmf tst"</pre>
-<p>believe it or not, the vemf documentation is not only a documentation, it doubles as a test suite! when the tests are run, the expressions to both sides of the <code> ≡ </code> are evaluated, and checked for equality. if you see an example like this:</p>
+<p>the vemf documentation is not only a documentation, it doubles as a test suite! when the tests are run, the expressions to both sides of the <code> ≡ </code> are evaluated, and checked for equality. if you see an example like this:</p>
 <pre>1+1 ≡ 2</pre>
 <p>you know it will work in the latest vemf version!</p>
 <p>the main way to play around with vemf is the interactive repl.</p>
@@ -411,7 +411,7 @@ h2>code { background-color: inherit; white-space: pre; }
 -0.00000000000000012246467991473532</pre>
 <p>when testing those we use <code> ± </code> <a href="#Approximate Equal">Approximate Equal</a>, and if a test passes, the results are within about 10 significant figures.</p>
 <pre>πâ ± 0</pre>
-<p>not everything can be automatically tested. functions that rely on the random number generator, like <code>áàå</code>, won't give the same results everytime, so lines with <code>?≡</code> are ignored.</p>
+<p>not everything can be automatically tested. functions that rely on the random number generator, like <code>áàå</code>, won't give the same results everytime, so tests with <code>?≡</code> are ignored.</p>
 <pre>5á ?≡ 3</pre>
 <h2 class=prose id="Basics"><a class=h href="#Basics"></a>Basics</h2>
 <p>here's a vemf expression!</p>
@@ -425,13 +425,15 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>1+2*3 ≡ 9</pre>
 <p>functions may also be called with one argument (monadic) instead of two (dyadic), by only giving the left argument <code>α+</code>. here you can see <code>-</code> being called as <code>α-</code> <a href="#Negate">Negate</a> and <code>α-β</code> <a href="#Subtract">Subtract</a>:</p>
 <pre>3-1 ≡ 2
+4+2- ≡ _6
+4+2-- ≡ 6
 5- ≡ _5
 5--3 ≡ _8</pre>
-<p>, where <code>_5</code> and <code>_8</code> are constants meaning −5 and −8 respectively.</p>
+<p>, where <code>_5</code>, <code>_6</code>, <code>_8</code> are constants meaning −5, −6, −8 respectively.</p>
 <p>almost every function has two different variants that do different things. even <code>+</code>! monadic <code>α+</code> <a href="#Sum">Sum</a> adds all the items in a list:</p>
 <pre>123+ ≡ 6</pre>
 <p>uh, hm. yes. this is not the number one hundred and twenty-three. consecutive values form a list, and <code>1</code>, <code>2</code>, <code>3</code> are values. the sum of all of those is 6.</p>
-<p>if you do want the number 123, you can use <a href="#Numeric Literal">Numeric Literal</a>s by prepending a colon <code>:</code>:</p>
+<p>if you do want the number 123, you can use <a href="#Numeric Literal">Numeric Literal</a>s by prepending a <code>:</code> colon:</p>
 <pre>:123+1 ≡ :124
 :12:33:-4+ ≡ :41</pre>
 <p>or even shorter (and more obscure), we can use a <a href="#Character Literal">Character Literal</a> with a backtick. <code>z</code> is the 123th character in <a href="#The Codepage">the codepage</a>, so:</p>
@@ -444,10 +446,12 @@ h2>code { background-color: inherit; white-space: pre; }
 <p>here, <code>2*3</code> is another expression that is executed before the outer one, and <code>(2*3)</code> is a single value.</p>
 <p>the mathematical operations you are familiar with are here. arithmetic <code>+-*/</code>, <code>^</code> <a href="#Exponent">Exponent</a>, <code>∟</code> <a href="#Logarithm">Logarithm</a>, and a bunch more.</p>
 <h2 class=prose id="Lists"><a class=h href="#Lists"></a>Lists</h2>
-<p>a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting values next to eachother:</p>
+<p>a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting values next to each other:</p>
 <pre>    123
-(1 2 3)</pre>
-<p>lists may be nested arbitrarily deep. this is a list composed of 3 lists, each with 3 items (or a 3 by 3 matrix).</p>
+(1 2 3)
+    :16:25:36:49:64
+(16 25 36 49 64)</pre>
+<p>lists may be nested arbitrarily deep. this is a list composed of 3 lists, each with 3 items (or, if you prefer, a 3 by 3 matrix).</p>
 <pre>    (123)(456)(789)
 ((1 2 3) (4 5 6) (7 8 9))</pre>
 <p>the arguments of a list dont have to have the same length or the same type:</p>
@@ -504,7 +508,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>5↨ ≡ 12345</pre>
 <p>all lists have a fill, usually <code>■</code> <a href="#None">None</a>. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:</p>
 <pre>123@3 ≡ ■</pre>
-<p>the default fill is <a href="#None">None</a>. you can get a list with a fill with <code>α▐β</code> <a href="#Set Fill">Set Fill</a>, and query it with <code>α▐</code> <a href="#Get Fill">Get Fill</a>.</p>
+<p>the default fill is <a href="#None">None</a>. you can specify the fill of a list <code>α▐β</code> <a href="#Set Fill">Set Fill</a>, and query it with <code>α▐</code> <a href="#Get Fill">Get Fill</a>.</p>
 <pre>123▐0@3 ≡ 0
 123▐ ≡ ■
 123▐0▐ ≡ 0</pre>
@@ -514,68 +518,17 @@ h2>code { background-color: inherit; white-space: pre; }
 <p><code>↓</code> <a href="#Take Right">Take Right</a> and <code>♀</code> <a href="#Drop Right">Drop Right</a> use the last items instead:</p>
 <pre>"file.txt"↓4 ≡ ".txt"
 "file.txt"♀4 ≡ "file"</pre>
-<p>these use the fill when they run out:</p>
+<p>these use the fill when the list runs out:</p>
 <pre>"js"▐` ↑5 ≡ "js   "
 "js"▐` ↓5 ≡ "   js"</pre>
 <p>but <code>α¶β</code> <a href="#Reshape">Reshape</a> starts taking from the start when it runs out of items:</p>
 <pre>123¶9 ≡ 123123123
 "sal"¶5 ≡ "salsa"</pre>
-<p><code>↑</code>, <code>↓</code> and <code>¶</code> with a list right argument can reshape, or create a nested list with those dimensions:</p>
+<p><code>↑</code>, <code>↓</code> and <code>¶</code> with a list as a right argument can reshape, or create a nested list with those dimensions:</p>
 <pre>0123456789↑33 ≡ (012)(345)(678)
 0123456789↓33 ≡ (123)(456)(789)</pre>
-<h2 class=prose id="Variables"><a class=h href="#Variables"></a>Variables</h2>
-<p>i will now introduce some terminology. functions, lists and numbers are types of values. in a program, these types can all be used as either nouns or verbs (what we've been calling "values" and "functions" up to now.)</p>
-<p>variables can be set with <code>→name</code> and retrieved as a noun with <code>.name</code></p>
-<pre>:35/7→five 1/.five ≡ :0.2</pre>
-<p>, or as a verb as <code>:name</code></p>
-<pre>*→mul 4:mul3 ≡ :12</pre>
-<p>a function and a verb are different things: verb is a syntactical role, and a function is a type; a function may be used as a noun. <code>α$β</code> calls α with the arguments β:</p>
-<pre>.*─mul .mul$35 ≡ :15
-.*$35 ≡ :15</pre>
-<p>a name, or identifier, is parsed as a sequence of letters (<code>mul</code>, <code>six</code>, <code>things</code>), an underscore followed by a character (<code>_ë</code>, <code>_1</code>) or a single character (<code>+</code>, <code>-</code>). any other name can be used by using quotes: <code>."Name of variable"</code></p>
-<p>a function also often works like an infinite list. it can be indexed and taken from:</p>
-<pre>.◄@3 ≡ 3
-.◄↑4 ≡ 0123</pre>
-<p><code>x→name</code> is a statement that sets x to the variable <code>.name</code>. statements are not quite like verbs; they have more precedence. you will see more about statements in the <a href="#Statements">Statements</a> section.</p>
-<p>there is another kind of assignment: <code>─name</code> <a href="#Set Function">Set Function</a> (that is a box drawing character, not a minus sign <code>-</code>). the whole thing is a verb, that sets α to the variable and returns β or, if not given, α. this makes it flexible to define a variable and then use it. you can only assign nouns using <code>─</code></p>
-<pre>4 ─four 1+2 ≡ 3
-4 ─four +2 ≡ 6</pre>
-<p>and for golfing purposes, the characters <code>A</code>..<code>Z</code> are set by default to <code>─a</code>..<code>─z</code>, so you can set and get variables very conveniently.</p>
-<pre>3+1F+f ≡ 8</pre>
-<h2 class=prose id="Trains"><a class=h href="#Trains"></a>Trains</h2>
-<p>when a verb is the start of an expression, it will result in a derived function, or train.</p>
-<pre>+→add 4:add5 ≡ 9</pre>
-<p><code>Fβ</code> is a Bind. it calls F with β as a right argument, ignoring whatever was passed to the right.</p>
-<pre>+1→inc 4:inc ≡ 5
-*2→dup 4:dup ≡ 8
-*2→dup 4:dup9 ≡ 8</pre>
-<p>(note that <code>inc</code> and <code>dup</code> are equivalent to <code>α▲</code> <a href="#Bump Up">Bump Up</a> and <code>α¼</code> <a href="#Double">Double</a>)</p>
-<pre>+1→inc 4:inc ≡ 5
-*2→dup 4:dup ≡ 8
-*2→dup 4:dup9 ≡ 8</pre>
-<p><code>FG</code> is an Atop. it calls F with both arguments, and then calls G atop of that:</p>
-<pre>↨*→fact 6:fact ≡ :720
-~↕→dom  "text":dom ≡ 0123
-|¬→nor  0:nor1 ≡ 0</pre>
-<p>(note that <code>fact</code>, <code>dom</code>, <code>nor</code> are equivalent to <code>α!</code> <a href="#Factorial">Factorial</a> (for natural α), <code>α♣</code> <a href="#Domain">Domain</a> and <code>αöβ</code> <a href="#Nor">Nor</a>)</p>
-<p><code>FGβ</code> is kind of a mix of the two: it calls F with both arguments, and then calls G atop of that using β as a right argument.</p>
-<pre>+/2→avg  4:avg8 ≡ 6
-²*π→area 3:area ≡ 9*π</pre>
-<p>(note that <code>π</code> is pi, the number)</p>
-<p>you can chain these, left-to-right</p>
-<pre>+1+2+3→f 5:f ≡ :11
-~=0→empty φ:empty ≡ 1</pre>
-<p>we've been setting these trains to variables before using them. it won't work if you try to apply them directly with parentheses:</p>
-<pre>5(+/2)9</pre>
-<p>is a list with <code>5</code>, the function <code>+/2</code> (as a noun) and <code>9</code>. you can turn a noun into a verb with <code>┌</code>:</p>
-<pre>5┌(+/2)9 ≡ 7
-6┌(↨*) ≡ :720</pre>
-<p>but you never actually need to do this! an inlined train will always be shorter:</p>
-<pre>5+9/2 ≡ 7
-6↨* ≡ :720</pre>
-<p>trains are mostly useful when defining functions or when used in adverbs.</p>
 <h2 class=prose id="Adverbs"><a class=h href="#Adverbs"></a>Adverbs</h2>
-<p>adverbs are a syntax for functions that take verbs. take one of the most basic: <a href="#Selfie">Selfie</a> <code>┴G</code> takes a function <code>G</code> and returns a function that applies <code>G</code> with the same argument used twice:</p>
+<p>adverbs are a syntax for functions that take other functions. take one of the most basic: <a href="#Selfie">Selfie</a> <code>┴G</code> takes a function <code>G</code> and returns a function that applies <code>G</code> with the same argument used twice:</p>
 <pre>123┴+ ≡ 246
 123┴* ≡ 149
 "bee"┴, ≡ "beebee"
@@ -585,18 +538,16 @@ h2>code { background-color: inherit; white-space: pre; }
 4┴/1 ≡ 1/4  ' reciprocal</pre>
 <p>there are two types of adverbs. 1-adverbs, like <code>┴G</code> <a href="#Selfie">Selfie</a>/<a href="#Swap">Swap</a>, take one operand after them, and the whole acts as a verb. 2-adverbs, like <code>F║G</code> <a href="#Over">Over</a>, take two operands at both sides. Over applies <code>G</code> to each argument, and then <code>F</code>:</p>
 <pre>4²║+5 ≡ 4²+(5²)
-4²║▲ ≡ 4²▲  ' same as train (²▲)</pre>
+4²║▲ ≡ 4²▲</pre>
 <p>adverb precedence is right-to-left.</p>
 <pre>4┴²║-5 ≡ 5²-(4²)</pre>
 <p>additionally, 1-adverbs can be used before 2-adverbs, and this applies them to the left operand:</p>
-<pre>2-┴╓/6 ≡ 2(┴-)╓/6</pre>
-<p>adverbs applied to their operands act like verbs, so you can set them just like verbs:</p>
-<pre>²║+→discrim 4:discrim5 ≡ :41
-┴/1→recip 4:recip ≡ 1/4</pre>
-<p>the built-in adverbs are all box-drawing symbols (though not the other way around). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:</p>
+<pre>4*┴║-5 ≡ 4(┴*)║-5
+4*┴║-5 ≡ 4*4-(5*5)</pre>
+<p>the built-in adverbs are all box-drawing symbols (though not all box-drawing symbols are adverbs). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:</p>
 <pre>1-adverbs: ╪┼┴┬╧╤╕╒╛╘
 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║</pre>
-<p>these adverbs have a variety of functions. some of them are <a href="#Combinators">Combinators</a>, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.</p>
+<p>these adverbs have a variety of uses. some of them are <a href="#Combinators">Combinators</a>, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.</p>
 <h3 id="Iteration"><a class=h href="#Iteration"></a>Iteration</h3>
 <p>vemf automatically vectorizes, so often explicit loops are not be necessary, but adverbs can be used to explicitly iterate in a certain way</p>
 <p><code>α╕G</code> <a href="#Each">Each</a> applies G to every item in α:</p>
@@ -618,16 +569,13 @@ h2>code { background-color: inherit; white-space: pre; }
 <p><code>αF╨G</code> <a href="#Power">Power</a> calls G, <code>αF</code> times</p>
 <pre>14╨┴♫ ≡ ( ((11)(11)) ((11)(11)) )( ((11)(11)) ((11)(11)) )</pre>
 <p>(note that <code>14</code> is not a strand, <code>4</code> is an operand of the 2-adverb, and <code>1</code> is an argument)</p>
-<p>this is also useful for applying a function conditionally:</p>
-<pre>' if length is 3, uppercase
-"and""the""small""bee""wanted""to""fly"╕(~=3)╨Ç ≡ "AND""THE""small""BEE""wanted""to""FLY"</pre>
 <p><code>αF╩G</code> <a href="#Until">Until</a> calls G until <code>αF</code> returns not 0.</p>
 <h3 id="Combinators"><a class=h href="#Combinators"></a>Combinators</h3>
 <p>combinators call their operands in different ways. they are one of the main ways functions are defined; combinators are the "glue" that joins different functions.</p>
-<p>vemf has a lot of different combinators! here's a summary:</p>
+<p>vemf has a lot of different combinators! here's a summary, using <code>+</code> <code>/</code> <code>*</code> as examples:</p>
 <pre>NAME         : MONADIC, DYADIC
 atop      +/ : α+/    , α+β/
-commute   ┴/ : α/α    , β/α
+swap      ┴/ : α/α    , β/α
 atleft   +╜/ : α+/    , α+/β
 atright  +╙/ : α/     , α/(β+)
 over     +║/ : α+/    , α+/(β+)
@@ -638,19 +586,16 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 <pre>12345└+/~ ≡ 3</pre>
 <p>the formula for triangular numbers is n(n+1)/2. we can do the first part as a fork:</p>
 <pre>6└◄*▲ ≡ :42</pre>
-<p>and the halving with <code>½</code> <a href="#Half">Half</a>:</p>
+<p>this is the same as</p>
+<pre>6◄*(6▲) ≡ :42</pre>
+<p>here, <code>◄</code> is the identity function or <a href="#Left">Left</a>, that always returns the left argument. there is also a <code>►</code> <a href="#Right">Right</a>, that returns the right argument.</p>
+<pre>6◄3 ≡ 6
+6►3 ≡ 3
+6*(6▲) ≡ :42</pre>
+<p>and then we can do the halving with <code>½</code> <a href="#Half">Half</a>:</p>
 <pre>6└◄*▲½ ≡ :21</pre>
-<p>the <code>½</code> is applied atop the result of the fork, so as a single function this is an atop:</p>
-<pre>6┌(└◄*▲½) ≡ :21</pre>
-<p>note that we need the <code>┌</code> for it to be interpreted as a function. note also that the fork is only the first three functions <code>◄*▲</code>, and the <code>½</code> is not part of the fork.</p>
-<p>as a general rule of thumb, when there is a <code>◄</code> or <code>►</code> in a fork, it can be represented with one of the other combinators. here we can use <code>αF╓G</code> <a href="#On Right">On Right</a>, which evaluates to <code>αG(αF)</code> (i read it as G, with F evaluated on the right)</p>
-<pre>6┌(▲╓*½) ≡ :21</pre>
-<p>we can set our function to a variable and use it.</p>
-<pre>▲╓*½→triang 6:triang ≡ :21</pre>
-<p>this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly:</p>
-<pre>{α*(α▲)½}→triang 6:triang ≡ :21
-{α▲*α½}→triang 6:triang ≡ :21  ' multiplication is commutative</pre>
-<p>but the tacit form is simpler (and shorter, and somewhat faster).</p>
+<p>as a general rule of thumb, when there is a <code>◄</code> or <code>►</code> in a fork, it can be represented with one of the other combinators. here we can use <code>αF╓G</code> <a href="#On Right">On Right</a>, which evaluates to <code>αG(αF)</code></p>
+<pre>6▲╓*½ ≡ :21</pre>
 <p>here is another way of representing all the combinators that i can test automatically</p>
 <pre>♫,;`(,`)→F ♫,;`[,`]→G ♫,;`{,`}→H ≡ ■
 (`a┴G)   (`a┴G`b)    ≡ "[aa]"    "[ba]"
@@ -661,6 +606,95 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 (`aF║G)  (`aF║G`b)   ≡ "[(a)]"   "[(a)(b)]"
 (`a└FGH) (`a└FGH`b)  ≡ "[(a){a}]""[(ab){ab}]"
 (`aF╜H╙G)(`aF╜H╙G`b) ≡ "[(a)]"   "[(a){b}]"</pre>
+<h2 class=prose id="Variables"><a class=h href="#Variables"></a>Variables</h2>
+<p>i will now introduce some terminology. functions, lists and numbers are types of values. in a program, these types can all be used as either nouns or verbs (what we've been calling "values" and "functions" up to now). a function may be used as a noun, and a verb may be used as a function.</p>
+<p>a noun can become a verb if you enclose it in parentheses. this way, you can pass functions to other functions. <code>α$β</code> <a href="#Call">Call</a>s α with the pair of arguments β:</p>
+<pre>(*)$35 ≡ :15</pre>
+<p>with built-in functions, you can also use a dot <code>.</code> before the name:</p>
+<pre>.*$35 ≡ :15</pre>
+<p>you can also have functions in lists:</p>
+<pre>.+.-.*./@3$62 ≡ 3</pre>
+<p>indexing a function calls it monadically with the index,</p>
+<pre>.-@3 ≡ _3</pre>
+<p>and some list functions, like <a href="#Take">Take</a>, use this to treat functions as infinite lists:</p>
+<pre>.◄↑4 ≡ 0123
+.-↑33 ≡ (0_1_2)(_3_4_5)(_6_7_8)
+.+~ ≡ ∞</pre>
+<p>characters from <code>a</code> to <code>z</code> are variables, which are given somewhat-convenient default values.</p>
+<pre>abcdefghij ≡ :12:20:99:100:999:1000:10000:100000:1000000:10000000
+klmnopqrst ≡ :15:16:31:32:63:64:127:128:255:256
+uvwxyz     ≡ :512:1024:32768:65536:16777216:2147483648
+f+n ≡ :1032</pre>
+<p>variables can be set with <code>→name</code> and retrieved as a noun with <code>.name</code>. the dot is not necessary for variables <code>a</code> to <code>z</code>.</p>
+<pre>:35/7→f 1/f ≡ :0.2
+:35/7→five 1/.five ≡ :0.2</pre>
+<p>builtin verbs are also variables, and that's why you can get them with a dot. <code>.</code> is the noun variable prefix, and <code>:</code> is the verb variable prefix:</p>
+<pre>4:*3 ≡ :12</pre>
+<p>that was useless. but this means you can assign functions and use them as verbs!</p>
+<pre>*→mult 4:mult3 ≡ :12
+└+/~→avg 234:avg ≡ 3</pre>
+<p><code>A</code> to <code>Z</code> don't need the colon:</p>
+<pre>*→M 4M3 ≡ :12
+└+/~→V 234:avg ≡ 3</pre>
+<p>calling a number or a list as a verb just makes it return itself:</p>
+<pre>:35/7→f 4:f ≡ :5
+:35/7→F 4F  ≡ :5</pre>
+<p>a name, or identifier, can be a sequence of lowercase letters (<code>mul</code>, <code>six</code>, <code>things</code>), an underscore followed by a character (<code>_ë</code>, <code>_1</code>) or a single character (<code>+</code>, <code>-</code>). any other name can be used by using quotes: <code>."Name of variable"</code></p>
+<p><code>x→name</code> is a statement that sets x to the variable <code>.name</code>. statements are not quite like verbs; you will see more about statements in the <a href="#Statements">Statements</a> section.</p>
+<p>there is another kind of assignment: <code>─name</code> <a href="#Set Function">Set Function</a> (that is a box drawing character, not a minus sign <code>-</code>). it is a verb that sets α to the variable and returns β or, if not given, α. this makes it flexible to define a variable and then use it.</p>
+<pre>4 ─four 1+2+.four ≡ 7  ' β is 1, return 1 after changing the variable
+4 ─four +1+2      ≡ 7  ' β not given, return .four back</pre>
+<p>and for golfing purposes, the functions <code>A</code>..<code>Z</code> are set by default to <code>─a</code>..<code>─z</code>, so you can set and get variables conveniently.</p>
+<pre>3+1X+x ≡ 8</pre>
+<h2 class=prose id="Trains"><a class=h href="#Trains"></a>Trains</h2>
+<p>we saw earlier that you can assign a verb to a variable with <code>→name</code>,</p>
+<pre>+→add 4:add5 ≡ 9</pre>
+<p>and you can use a verb as a noun by enclosing it in parentheses (or, in general, having it at the start of an expression)</p>
+<pre>(+)$12 ≡ 3</pre>
+<p>but by having more stuff inside the expression, we can modify the verb in certain ways:</p>
+<p>a verb and a noun <code>Fβ</code> is called a Bind. it calls F with β as a right argument, ignoring whatever was passed to the right.</p>
+<pre>+1→inc 4:inc ≡ 5
+(+1)@5 ≡ 6
+*2→dup 4:dup ≡ 8
+*2→dup 4:dup9 ≡ 8</pre>
+<p>(note that <code>inc</code> and <code>dup</code> are equivalent to <code>α▲</code> <a href="#Bump Up">Bump Up</a> and <code>α¼</code> <a href="#Double">Double</a>)</p>
+<pre>+1→inc 4:inc ≡ 5
+*2→dup 4:dup ≡ 8
+*2→dup 4:dup9 ≡ 8</pre>
+<p>a verb and a verb <code>FG</code> is an Atop. it calls F with all arguments, and then calls G atop of that.</p>
+<pre>↨*→fact 6:fact ≡ :720
+~↕→dom  "text":dom ≡ 0123
+|¬→nor  0:nor1 ≡ 0</pre>
+<p>(note that <code>fact</code>, <code>dom</code>, <code>nor</code> are equivalent to <code>α!</code> <a href="#Factorial">Factorial</a> (for natural α), <code>α♣</code> <a href="#Domain">Domain</a> and <code>αöβ</code> <a href="#Nor">Nor</a>)</p>
+<p>verb+verb+noun <code>FGβ</code> is a mix of the two: it calls F with both arguments, and then calls G atop of that using β as a right argument.</p>
+<pre>+/2→avg  4:avg8 ≡ 6
+²*π→area 3:area ≡ 9*π</pre>
+<p>(note that <code>π</code> is pi, the number)</p>
+<p>you can chain these, left-to-right</p>
+<pre>+1+2+3→f 5:f ≡ :11
+~=0→empty φ:empty ≡ 1</pre>
+<p>we've been setting these trains to variables before using them. it won't work if you try to apply them directly with parentheses:</p>
+<pre>5(+/2)9</pre>
+<p>is a list with <code>5</code>, the function <code>+/2</code> (as a noun) and <code>9</code>. you can turn a noun into a verb with <a href="#Verbize">Verbize</a> <code>┌</code>:</p>
+<pre>5┌(+/2)9 ≡ 7
+6┌(↨*) ≡ :720</pre>
+<p>but you never actually need to do this! an inlined train will always be shorter:</p>
+<pre>5+9/2 ≡ 7
+6↨* ≡ :720</pre>
+<p>trains are also useful when used with adverbs:</p>
+<pre>' if length is 3, uppercase
+"and""the""small""bee""wanted""to""fly"╕(~=3)╨Ç ≡ "AND""THE""small""BEE""wanted""to""FLY"</pre>
+<p>we can create a variable from the triangular number function from earlier with a train.</p>
+<p>the <code>½</code> is applied atop the result of the fork, so as a single function this is an atop:</p>
+<pre>6▲╓*½ ≡ :21
+6┌(└◄*▲½) ≡ :21</pre>
+<p>note that we need the <code>┌</code> for it to be interpreted as a function.</p>
+<p>we can set our function to a variable and use it.</p>
+<pre>▲╓*½→triang 6:triang ≡ :21</pre>
+<p>this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly (see <a href="#Statements">Statements</a>):</p>
+<pre>{α*(α▲)½}→triang 6:triang ≡ :21
+{α▲*α½}→triang 6:triang ≡ :21  ' multiplication is commutative</pre>
+<p>but the tacit form is simpler (and shorter, and somewhat faster).</p>
 <h2 class=prose id="Groups"><a class=h href="#Groups"></a>Groups</h2>
 <p>i don't like parentheses. i don't like the fact that occasionally i have to use them to make things work. i don't like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as <code>+2</code> gains two characters when used with an adverb <code>(+2)╜/</code>. </p>
 <pre>7 (+2)╜/ 3</pre>
@@ -683,14 +717,14 @@ fork    └+/* : α+/(α*), α+β/(α*β)</pre>
 "and""the""small""bee""wanted""to""fly"╕├~=3╨Ç ≡ "AND""THE""small""BEE""wanted""to""FLY"</pre>
 <h2 class=prose id="Statements"><a class=h href="#Statements"></a>Statements</h2>
 <p>there is a more explicit way of defining functions, and it looks more like lambda expressions you might be used to from other languages:</p>
-<pre>456{α+/(α~)} ≡ 5
+<pre>456{α+/(α~)} ≡ 5
 345{β^(α♣♠)*α+}:10 ≡ :345</pre>
 <p>that thing inside braces is the <a href="#Define Function">function definition</a>, and it uses special variables like <code>α</code> or <code>β</code> that are always defined inside dfns. the expression inside the braces will be evaluated and returned.</p>
 <p>but there's more that you can do inside functions. dfns are composed of multiple statements, and the result of the last one is returned.</p>
 <p>statements are delimited by statement separators like <code>·</code> <a href="#Discard">Discard</a> or <code>◘</code> <a href="#Return">Return</a>. discard statements evaluate a value and discard it; return statements return a value from the function.</p>
 <pre>■{1·2·3◘4·5} ≡ 3</pre>
-<p>not very interesting. you have already seen one statement separator: <code>→name</code> assigns the body of the statement to the variable with that name. use this in longer pieces of code, to give names to values.</p>
-<pre>456{α+→avg α~→len .avg/.len} ≡ 5</pre>
+<p>not very interesting. you have already seen one statement separator: <code>→name</code> assigns the body of the statement to the variable with that name. you can use this in longer pieces of code, to give names to values.</p>
+<pre>456{α+→avg α~→len .avg/.len} ≡ 5</pre>
 <p>functions create a lexical scope. this means variables you define inside of a function will not be accessible outside.</p>
 <p>these become more useful when used with <code>x?y</code> <a href="#Then">Then</a> (note that Then is not a function), which executes the following statement <code>y</code> if <code>x</code> is not 0. you can use these for ternary-operator-like things:</p>
 <pre>_5{α>0?α◘α-} ≡ 5</pre>
@@ -1657,7 +1691,7 @@ based := "0x" [0-9a-f]*
 <h2 class="rgrammar" id="7B"><a class=h href="#7B"></a><code>{</code> (0x7B) <span class=rank>grammar</span></h2>
 <h3 id="Define Function"><a class=h href="#Define Function"></a><code>{abc}</code> Define Function</h3>
 <p>return a function that executes the statements inside the braces, returning a value and stopping once a <a href="#Return">Return</a> statement is hit. a <a href="#Return">Return</a> statement is implicit at the end of a function. this function will have a role of verb.</p>
-<pre>{"Hello, World!"☻·}→sayhi
+<pre>{"Hello, World!"☻·}→sayhi 0:sayhi ≡ ■
 {6á▲◘}→roll 0:roll ?≡ 4
 {6á▲}→roll 0:roll ?≡ 4</pre>
 <p>some variables are set when calling a function: <code>α</code> <a href="#Alpha">Alpha</a> is set to the left argument, <code>β</code> <a href="#Beta">Beta</a> is set to the right argument or <a href="#None">None</a> if not given, <code>ƒ</code> <a href="#Self">Self</a> to the function being called, and <code>Σ</code> <a href="#Arity">Arity</a> to the number of arguments passed.</p>
@@ -1717,6 +1751,7 @@ based := "0x" [0-9a-f]*
 "lowercase"Ç ≡ "LOWERCASE"
 "Bees, bees"Ç ≡ "BEES, BEES"
 "mOcKiNg"Ç ≡ "MOCKING"</pre>
+<p>see also: <a href="#Lowercase">Lowercase</a></p>
 <h2 class="rverb" id="81"><a class=h href="#81"></a><code>ü</code> (0x81, <code>'u"</code>) <span class=rank>verb</span></h2>
 <h3 id="Complex Conjugate"><a class=h href="#Complex Conjugate"></a><code>αü</code> Complex Conjugate</h3>
 <p>returns α, changing the sign of the imaginary part</p>
@@ -1797,6 +1832,7 @@ based := "0x" [0-9a-f]*
 "lowercase"ç ≡ "lowercase"
 "Bees, bees"ç ≡ "bees, bees"
 "mOcKiNg"ç ≡ "mocking"</pre>
+<p>see also: <a href="#Uppercase">Uppercase</a></p>
 <h2 class="rverb" id="88"><a class=h href="#88"></a><code>ê</code> (0x88, <code>'e^</code>) <span class=rank>verb</span></h2>
 <h3 id="Encode Codepage"><a class=h href="#Encode Codepage"></a><code>αê</code> Encode Codepage</h3>
 <p>convert Unicode codepoint α into the vemf codepage, or <a href="#None">None</a> if not possible. scalar.</p>
@@ -2063,7 +2099,7 @@ _4¢ ≡ 4
 <h3 id="Self"><a class=h href="#Self"></a><code>αƒ</code> <code>αƒβ</code> Self</h3>
 <p>the function being executed. if not in a function definition, undefined. useful for recursive functions.</p>
 <pre>6{=0?1◘α▼ƒ*α} ≡ :720</pre>
-<p>remember to include an exit condition (<a href="#Return">Return</a>). you shouldn't need this very often; in this case, <code>↨*</code> or <code>!</code> would have been enough.</p>
+<p>you shouldn't need this very often; in this case, <code>↨*</code> or <code>!</code> would have been enough. remember to include an exit condition using <a href="#Return">Return</a>. </p>
 <h2 class="rverb" id="A0"><a class=h href="#A0"></a><code>á</code> (0xA0, <code>'a'</code>) <span class=rank>verb</span></h2>
 <h3 id="Pick"><a class=h href="#Pick"></a><code>αá</code> Pick</h3>
 <p>pick a random integer in the range [0, α). scalar.</p>
@@ -2201,7 +2237,7 @@ _2Ñ0 ≡ 0</pre>
 5½ ≡ :2.5
 1½½ ≡ :0.25</pre>
 <h3 id="Lowest Common Denominator"><a class=h href="#Lowest Common Denominator"></a><code>α½β</code> Lowest Common Denominator</h3>
-<p>calculates the <a href="#lowest common denominator">lowest common denominator</a>https://en.wikipedia.org/wiki/Lowest_common_denominator<a href="# of two integers α and β, or lcd(α, β). scalar."> of two integers α and β, or lcd(α, β). scalar.</a></p>
+<p>calculates the <a href="https://en.wikipedia.org/wiki/Lowest_common_denominator">lowest common denominator</a> of two integers α and β, or lcd(α, β). scalar.</p>
 <pre>:12½:18 ≡ :36
 :30½:45 ≡ :90</pre>
 <h2 class="rverb" id="AC"><a class=h href="#AC"></a><code>¼</code> (0xAC, <code>'db</code>) <span class=rank>verb</span></h2>
@@ -2766,7 +2802,7 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Until"><a class=h href="#Until"></a><code>αF╩Gβ</code> Until</h3>
 <p>bind β to G</p>
 <h3 id="Until Compare"><a class=h href="#Until Compare"></a><code>αF_╩G</code> Until Compare</h3>
-<p>call a function G repeatedly, returning the first result where <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β. <code>=╩</code> (or <code>≡╩</code>) is the fixed-point combinator:</p>
+<p>call a function G repeatedly, returning the first result where <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β. <code>=_╩</code> (or <code>≡_╩</code>) is the fixed-point combinator:</p>
 <pre>1=_╩(/▲) ≡ 5√▲½  ' golden ratio</pre>
 <h3 id="Until Compare"><a class=h href="#Until Compare"></a><code>αF_╩Gβ</code> Until Compare</h3>
 <p>bind β to G</p>

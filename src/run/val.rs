@@ -136,11 +136,15 @@ impl PartialEq for Val {
 impl Eq for Val {}
 
 pub fn complexcmp(a: c64, b: c64) -> Ordering {
+    fn good_cmp(a: f64, b: f64) -> Ordering {
+        if a == 0. && b == 0. { return Ordering::Equal; } // make -0.0 and 0.0 compare equal
+        a.total_cmp(&b)
+    }
     match (a.is_nan(), b.is_nan()) {
         (true , true ) => Ordering::Equal,
         (true , false) => Ordering::Less,
         (false, true ) => Ordering::Greater,
-        (false, false) => a.re.total_cmp(&b.re).then_with(|| a.im.total_cmp(&b.im))
+        (false, false) => good_cmp(a.re, b.re).then_with(|| good_cmp(a.im, b.im))
     }
 }
 

@@ -84,12 +84,12 @@ impl<'io> crate::Interface<'io> for TestIO<'io> {
 fn input_output() -> Result<(), ()> {
     const PROGRAM: &str = r#"
         "Hello, World!!"☻·"print"☺"ln"☻ ' basic printing
-        "line of file: ",(_1Ü)Ö0· ' line reading
+        "line of file: ",(ΘÜ)Ö0· ' line reading
         5Ü;"5 bytes: "Ö· ' byte reading
         ∞Ü;"the rest: "☺· ' all reading
         "errors",ΦÖ1=7*1☺· ' writing to other stream
         "thís fïl"ë≡(ΦÜ1)*2☺· ' reading from other stream also WOW chars != bytes
-        "e c",("FFFD"º_l)≡(4Ü1)*3☺· ' U+FFFDing when illegal sequence
+        "e c",:0xfffd≡(4Ü1)*3☺· ' U+FFFDing when illegal sequence
         "╕nt"≡(3_Ü1)*4ⁿ_Ö· ' binary data, even when invalid utf-8
         "ains"≡(4Ü1)*5☻· ' for ascii, utf-8 and cp437 are  the same
         7_Ü1_Ö· ' pass bytes without modifying

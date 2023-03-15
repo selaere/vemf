@@ -65,7 +65,7 @@ fn ident(t: &mut&[u8]) -> Bstr {
             let a = step(t).unwrap_or(b'\'');
             bstr![do_escape(a, t).unwrap_or(a)]
         }
-        Some(c @ (b']' | b!('['))) => [c].into_iter().chain(ident(t)).collect(),
+        Some(c @ b!('←''→')) => [c].into_iter().chain(ident(t)).collect(),
         Some(chr) => bstr![chr],
         None => bstr![],
     }
@@ -174,8 +174,8 @@ fn token(first: Option<u8>, t: &mut &[u8]) -> Option<Tok> {
         Some(c @ short_av1!())   => VAv1 (bstr![c]),
         Some(c @ short_av2!())   => VAv2 (vec![], bstr![c]),
         Some(c @ short_noun!())  => VNoun(bstr![c]),
-        Some(b!('σ')) => VNoun(bstr![b!('['), b!('α')]),
-        Some(b!('μ')) => VNoun(bstr![b!('['), b!('β')]),
+        Some(b!('σ')) => VNoun(bstr![b!('→'), b!('α')]),
+        Some(b!('μ')) => VNoun(bstr![b!('→'), b!('β')]),
         Some(x) => Just(x),
         None => return None,
     })
@@ -260,7 +260,7 @@ fn rewrite_identifier(t: &mut&[u8]) -> Bstr {
             let a = step(t).unwrap_or(b'\'');
             bstr![do_escape(a, t).unwrap_or(a)]
         }
-        Some(c @ (b']' | b!('['))) => {
+        Some(c @ b!('←''→')) => {
             [c].into_iter().chain(rewrite_identifier(t)).collect()
         }
         Some(chr) => bstr![chr],

@@ -18,7 +18,7 @@ smallvec = { version = "1.10", features = ["union"] }
 rand = { version = "0.8", default-features = false, features = ["alloc"] }
 # complex numbers
 num-complex = "0.4"
-# gcd, lcm, binom
+# gcd, lcm, binom (i should write these myself)
 num-integer = "0.1"
 # gamma (not complex (i have to look for a better library))
 libm = "0.2"

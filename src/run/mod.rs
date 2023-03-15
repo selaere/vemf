@@ -68,7 +68,7 @@ impl<'io> Env<'io> {
     }
 
     pub fn get_var_cap(&self, mut name: &[u8]) -> Option<Val> {
-        if let Some(b!('[')) = name.first() {name = &name[1..]}
+        if let Some(b!('→')) = name.first() {name = &name[1..]}
         let mut skipped = 0;
         loop {
             for frame in self.stack.iter().rev().skip(skipped) {
@@ -76,7 +76,7 @@ impl<'io> Env<'io> {
                     return Some(var.c())
                 }
             }
-            if let Some(b!('[')) = name.first() {
+            if let Some(b!('→')) = name.first() {
                 name = &name[1..];
                 skipped += 1;
             } else { return None }
@@ -91,7 +91,7 @@ impl<'io> Env<'io> {
                     return Some(var.c())
                 }
             }
-            if let Some(b!(']')) = name.first() {
+            if let Some(b!('←')) = name.first() {
                 name = &name[1..];
                 skipped += 1;
             } else { return None }
@@ -108,7 +108,7 @@ impl<'io> Env<'io> {
                     return Some(val);
                 }
             }
-            if let Some(b!(']')) = name.first() {
+            if let Some(b!('←')) = name.first() {
                 name = &name[1..];
                 skipped += 1;
             } else { return None }
@@ -121,7 +121,7 @@ impl<'io> Env<'io> {
             for frame in self.stack.iter_mut().rev().skip(skipped) {
                 if frame.remove_entry(name).is_some() { return; }
             }
-            if let Some(b!(']')) = name.first() {
+            if let Some(b!('←')) = name.first() {
                 name = &name[1..];
                 skipped += 1;
             } else { return }

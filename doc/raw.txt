@@ -1,9 +1,9 @@
 :title: About
 if you are reading this, you are reading the vemf documentation. the vemf documentation has information about all of the different characters, verbs, nouns and adverbs that vemf has.
-the documentation can be enjoyed in a "raw" text format or in a nice html document format. the raw format is converted with ||a vemf script@https://github.com/selaere/vemf/blob/main/doc/gen.vemf||.
+the documentation can be enjoyed in a "raw" text format or in a nice html webpage format. ||the raw format@https://github.com/selaere/vemf/blob/main/doc/raw.txt|| is converted to html with ||a vemf script@https://github.com/selaere/vemf/blob/main/doc/gen.vemf||.
 but not only does this documentation have text. in fact i am bad at explaining stuff, so there are way more examples than text. here's one!
 > "hello world i am a vemf test"\"aeiou" ≡ "hll wrld  m  vmf tst"
-believe it or not, the vemf documentation is not only a documentation, it doubles as a test suite! when the tests are run, the expressions to both sides of the ` ≡ ` are evaluated, and checked for equality. if you see an example like this:
+the vemf documentation is not only a documentation, it doubles as a test suite! when the tests are run, the expressions to both sides of the ` ≡ ` are evaluated, and checked for equality. if you see an example like this:
 > 1+1 ≡ 2
 you know it will work in the latest vemf version!
 the main way to play around with vemf is the interactive repl.
@@ -22,7 +22,7 @@ if you evaluate something like "tangent of pi radians", thanks to floating-point
 > -0.00000000000000012246467991473532
 when testing those we use ` ± ` ||Approximate Equal||, and if a test passes, the results are within about 10 significant figures.
 > πâ ± 0
-not everything can be automatically tested. functions that rely on the random number generator, like `áàå`, won't give the same results everytime, so lines with `?≡` are ignored.
+not everything can be automatically tested. functions that rely on the random number generator, like `áàå`, won't give the same results everytime, so tests with `?≡` are ignored.
 > 5á ?≡ 3
 ---
 :title: Basics
@@ -37,13 +37,15 @@ evaluation of functions is strictly left to right:
 > 1+2*3 ≡ 9
 functions may also be called with one argument (monadic) instead of two (dyadic), by only giving the left argument `α+`. here you can see `-` being called as `α-` ||Negate|| and `α-β` ||Subtract||:
 > 3-1 ≡ 2
+> 4+2- ≡ _6
+> 4+2-- ≡ 6
 > 5- ≡ _5
 > 5--3 ≡ _8
-, where `_5` and `_8` are constants meaning −5 and −8 respectively.
+, where `_5`, `_6`, `_8` are constants meaning −5, −6, −8 respectively.
 almost every function has two different variants that do different things. even `+`! monadic `α+` ||Sum|| adds all the items in a list:
 > 123+ ≡ 6
 uh, hm. yes. this is not the number one hundred and twenty-three. consecutive values form a list, and `1`, `2`, `3` are values. the sum of all of those is 6.
-if you do want the number 123, you can use ||Numeric Literal||s by prepending a colon `:`:
+if you do want the number 123, you can use ||Numeric Literal||s by prepending a `:` colon:
 > :123+1 ≡ :124
 > :12:33:-4+ ≡ :41
 or even shorter (and more obscure), we can use a ||Character Literal|| with a backtick. `z` is the 123th character in ||the codepage@#The Codepage||, so:
@@ -57,10 +59,12 @@ here, `2*3` is another expression that is executed before the outer one, and `(2
 the mathematical operations you are familiar with are here. arithmetic `+-*/`, `^` ||Exponent||, `∟` ||Logarithm||, and a bunch more.
 ---
 :title: Lists
-a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting values next to eachother:
+a list is a finite ordered collection of values. lists can be created with stranding syntax, which just means putting values next to each other:
 >     123
 > (1 2 3)
-lists may be nested arbitrarily deep. this is a list composed of 3 lists, each with 3 items (or a 3 by 3 matrix).
+>     :16:25:36:49:64
+> (16 25 36 49 64)
+lists may be nested arbitrarily deep. this is a list composed of 3 lists, each with 3 items (or, if you prefer, a 3 by 3 matrix).
 >     (123)(456)(789)
 > ((1 2 3) (4 5 6) (7 8 9))
 the arguments of a list dont have to have the same length or the same type:
@@ -92,7 +96,7 @@ comparison functions, like `< = > ≤ ~ ≥` (`α~β` is ||Not Equals||), are sc
 > "cat"="cat" ≡ 111
 > (0123)(456)(78)9>5 ≡ (0000)(001)(11)1
 > "pickled peppers"~`p ≡ 011111110100111
-though it's useful to compare if two lists are equal, so there also is `≡` ||Matches|| and `≈` ||Not Matches||
+though it's useful to compare if two lists are equal, so there is also `≡` ||Matches|| and `≈` ||Not Matches||
 > "cat"≡"cow" ≡ 0
 > "cat"≡"cat" ≡ 1
 we've seen that characters are not a separate type, and they are just their codepoints. subtracting an ascii lowercase letter by 32 makes it uppercase, so we can make a word uppercase by:
@@ -117,7 +121,7 @@ if you want something more familiar, try `α↨` ||Inclusive Iota||:
 > 5↨ ≡ 12345
 all lists have a fill, usually `■` ||None||. you can think of the fill as a dummy element for the elements outside of its domain. when you index out of range, you will get the fill:
 > 123@3 ≡ ■
-the default fill is ||None||. you can get a list with a fill with `α▐β` ||Set Fill||, and query it with `α▐` ||Get Fill||.
+the default fill is ||None||. you can specify the fill of a list `α▐β` ||Set Fill||, and query it with `α▐` ||Get Fill||.
 > 123▐0@3 ≡ 0
 > 123▐ ≡ ■
 > 123▐0▐ ≡ 0
@@ -127,71 +131,18 @@ the default fill is ||None||. you can get a list with a fill with `α▐β` ||Se
 `↓` ||Take Right|| and `♀` ||Drop Right|| use the last items instead:
 > "file.txt"↓4 ≡ ".txt"
 > "file.txt"♀4 ≡ "file"
-these use the fill when they run out:
+these use the fill when the list runs out:
 > "js"▐` ↑5 ≡ "js   "
 > "js"▐` ↓5 ≡ "   js"
 but `α¶β` ||Reshape|| starts taking from the start when it runs out of items:
 > 123¶9 ≡ 123123123
 > "sal"¶5 ≡ "salsa"
-`↑`, `↓` and `¶` with a list right argument can reshape, or create a nested list with those dimensions:
+`↑`, `↓` and `¶` with a list as a right argument can reshape, or create a nested list with those dimensions:
 > 0123456789↑33 ≡ (012)(345)(678)
 > 0123456789↓33 ≡ (123)(456)(789)
 ---
-:title: Variables
-i will now introduce some terminology. functions, lists and numbers are types of values. in a program, these types can all be used as either nouns or verbs (what we've been calling "values" and "functions" up to now.)
-variables can be set with `→name` and retrieved as a noun with `.name`
-> :35/7→five 1/.five ≡ :0.2
-, or as a verb as `:name`
-> *→mul 4:mul3 ≡ :12
-a function and a verb are different things: verb is a syntactical role, and a function is a type; a function may be used as a noun. `α$β` calls α with the arguments β:
-> .*─mul .mul$35 ≡ :15
-> .*$35 ≡ :15
-a name, or identifier, is parsed as a sequence of letters (`mul`, `six`, `things`), an underscore followed by a character (`_ë`, `_1`) or a single character (`+`, `-`). any other name can be used by using quotes: `."Name of variable"`
-a function also often works like an infinite list. it can be indexed and taken from:
-> .◄@3 ≡ 3
-> .◄↑4 ≡ 0123
-`x→name` is a statement that sets x to the variable `.name`. statements are not quite like verbs; they have more precedence. you will see more about statements in the ||Statements|| section.
-there is another kind of assignment: `─name` ||Set Function|| (that is a box drawing character, not a minus sign `-`). the whole thing is a verb, that sets α to the variable and returns β or, if not given, α. this makes it flexible to define a variable and then use it. you can only assign nouns using `─`
-> 4 ─four 1+2 ≡ 3
-> 4 ─four +2 ≡ 6
-and for golfing purposes, the characters `A`..`Z` are set by default to `─a`..`─z`, so you can set and get variables very conveniently.
-> 3+1F+f ≡ 8
----
-:title: Trains
-when a verb is the start of an expression, it will result in a derived function, or train.
-> +→add 4:add5 ≡ 9
-`Fβ` is a Bind. it calls F with β as a right argument, ignoring whatever was passed to the right.
-> +1→inc 4:inc ≡ 5
-> *2→dup 4:dup ≡ 8
-> *2→dup 4:dup9 ≡ 8
-(note that `inc` and `dup` are equivalent to `α▲` ||Bump Up|| and `α¼` ||Double||)
-> +1→inc 4:inc ≡ 5
-> *2→dup 4:dup ≡ 8
-> *2→dup 4:dup9 ≡ 8
-`FG` is an Atop. it calls F with both arguments, and then calls G atop of that:
-> ↨*→fact 6:fact ≡ :720
-> ~↕→dom  "text":dom ≡ 0123
-> |¬→nor  0:nor1 ≡ 0
-(note that `fact`, `dom`, `nor` are equivalent to `α!` ||Factorial|| (for natural α), `α♣` ||Domain|| and `αöβ` ||Nor||)
-`FGβ` is kind of a mix of the two: it calls F with both arguments, and then calls G atop of that using β as a right argument.
-> +/2→avg  4:avg8 ≡ 6
-> ²*π→area 3:area ≡ 9*π
-(note that `π` is pi, the number)
-you can chain these, left-to-right
-> +1+2+3→f 5:f ≡ :11
-> ~=0→empty φ:empty ≡ 1
-we've been setting these trains to variables before using them. it won't work if you try to apply them directly with parentheses:
-> 5(+/2)9
-is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with `┌`:
-> 5┌(+/2)9 ≡ 7
-> 6┌(↨*) ≡ :720
-but you never actually need to do this! an inlined train will always be shorter:
-> 5+9/2 ≡ 7
-> 6↨* ≡ :720
-trains are mostly useful when defining functions or when used in adverbs.
----
 :title: Adverbs
-adverbs are a syntax for functions that take verbs. take one of the most basic: ||Selfie|| `┴G` takes a function `G` and returns a function that applies `G` with the same argument used twice:
+adverbs are a syntax for functions that take other functions. take one of the most basic: ||Selfie|| `┴G` takes a function `G` and returns a function that applies `G` with the same argument used twice:
 > 123┴+ ≡ 246
 > 123┴* ≡ 149
 > "bee"┴, ≡ "beebee"
@@ -201,18 +152,16 @@ and if ||Swap|| `┴G` is called with two arguments, it returns a functions that
 > 4┴/1 ≡ 1/4  ' reciprocal
 there are two types of adverbs. 1-adverbs, like `┴G` ||Selfie||/||Swap||, take one operand after them, and the whole acts as a verb. 2-adverbs, like `F║G` ||Over||, take two operands at both sides. Over applies `G` to each argument, and then `F`:
 > 4²║+5 ≡ 4²+(5²)
-> 4²║▲ ≡ 4²▲  ' same as train (²▲)
+> 4²║▲ ≡ 4²▲
 adverb precedence is right-to-left.
 > 4┴²║-5 ≡ 5²-(4²)
 additionally, 1-adverbs can be used before 2-adverbs, and this applies them to the left operand:
-> 2-┴╓/6 ≡ 2(┴-)╓/6
-adverbs applied to their operands act like verbs, so you can set them just like verbs:
-> ²║+→discrim 4:discrim5 ≡ :41
-> ┴/1→recip 4:recip ≡ 1/4
-the built-in adverbs are all box-drawing symbols (though not the other way around). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:
+> 4*┴║-5 ≡ 4(┴*)║-5
+> 4*┴║-5 ≡ 4*4-(5*5)
+the built-in adverbs are all box-drawing symbols (though not all box-drawing symbols are adverbs). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:
 > 1-adverbs: ╪┼┴┬╧╤╕╒╛╘
 > 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║
-these adverbs have a variety of functions. some of them are ||Combinators||, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.
+these adverbs have a variety of uses. some of them are ||Combinators||, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.
 # Iteration
 vemf automatically vectorizes, so often explicit loops are not be necessary, but adverbs can be used to explicitly iterate in a certain way
 `α╕G` ||Each|| applies G to every item in α:
@@ -234,16 +183,13 @@ this is similar to the monadic use of addition, `α+` ||Sum||. in fact, `*` `,` 
 `αF╨G` ||Power|| calls G, `αF` times
 > 14╨┴♫ ≡ ( ((11)(11)) ((11)(11)) )( ((11)(11)) ((11)(11)) )
 (note that `14` is not a strand, `4` is an operand of the 2-adverb, and `1` is an argument)
-this is also useful for applying a function conditionally:
-> ' if length is 3, uppercase
-> "and""the""small""bee""wanted""to""fly"╕(~=3)╨Ç ≡ "AND""THE""small""BEE""wanted""to""FLY"
 `αF╩G` ||Until|| calls G until `αF` returns not 0.
 # Combinators
 combinators call their operands in different ways. they are one of the main ways functions are defined; combinators are the "glue" that joins different functions.
-vemf has a lot of different combinators! here's a summary:
+vemf has a lot of different combinators! here's a summary, using `+` `/` `*` as examples:
 > NAME         : MONADIC, DYADIC
 > atop      +/ : α+/    , α+β/
-> commute   ┴/ : α/α    , β/α
+> swap      ┴/ : α/α    , β/α
 > atleft   +╜/ : α+/    , α+/β
 > atright  +╙/ : α/     , α/(β+)
 > over     +║/ : α+/    , α+/(β+)
@@ -254,19 +200,16 @@ there is also a ""3-adverb"" of sorts, the `└FGH` ||Fork||. it works a little 
 > 12345└+/~ ≡ 3
 the formula for triangular numbers is n(n+1)/2. we can do the first part as a fork:
 > 6└◄*▲ ≡ :42
-and the halving with `½` ||Half||:
+this is the same as
+> 6◄*(6▲) ≡ :42
+here, `◄` is the identity function or ||Left||, that always returns the left argument. there is also a `►` ||Right||, that returns the right argument.
+> 6◄3 ≡ 6
+> 6►3 ≡ 3
+> 6*(6▲) ≡ :42
+and then we can do the halving with `½` ||Half||:
 > 6└◄*▲½ ≡ :21
-the `½` is applied atop the result of the fork, so as a single function this is an atop:
-> 6┌(└◄*▲½) ≡ :21
-note that we need the `┌` for it to be interpreted as a function. note also that the fork is only the first three functions `◄*▲`, and the `½` is not part of the fork.
-as a general rule of thumb, when there is a `◄` or `►` in a fork, it can be represented with one of the other combinators. here we can use `αF╓G` ||On Right||, which evaluates to `αG(αF)` (i read it as G, with F evaluated on the right)
-> 6┌(▲╓*½) ≡ :21
-we can set our function to a variable and use it.
-> ▲╓*½→triang 6:triang ≡ :21
-this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly:
-> {α*(α▲)½}→triang 6:triang ≡ :21
-> {α▲*α½}→triang 6:triang ≡ :21  ' multiplication is commutative
-but the tacit form is simpler (and shorter, and somewhat faster).
+as a general rule of thumb, when there is a `◄` or `►` in a fork, it can be represented with one of the other combinators. here we can use `αF╓G` ||On Right||, which evaluates to `αG(αF)`
+> 6▲╓*½ ≡ :21
 here is another way of representing all the combinators that i can test automatically
 > ♫,;`(,`)→F ♫,;`[,`]→G ♫,;`{,`}→H ≡ ■
 > (`a┴G)   (`a┴G`b)    ≡ "[aa]"    "[ba]"
@@ -277,6 +220,97 @@ here is another way of representing all the combinators that i can test automati
 > (`aF║G)  (`aF║G`b)   ≡ "[(a)]"   "[(a)(b)]"
 > (`a└FGH) (`a└FGH`b)  ≡ "[(a){a}]""[(ab){ab}]"
 > (`aF╜H╙G)(`aF╜H╙G`b) ≡ "[(a)]"   "[(a){b}]"
+---
+:title: Variables
+i will now introduce some terminology. functions, lists and numbers are types of values. in a program, these types can all be used as either nouns or verbs (what we've been calling "values" and "functions" up to now). a function may be used as a noun, and a verb may be used as a function.
+a noun can become a verb if you enclose it in parentheses. this way, you can pass functions to other functions. `α$β` ||Call||s α with the pair of arguments β:
+> (*)$35 ≡ :15
+with built-in functions, you can also use a dot `.` before the name:
+> .*$35 ≡ :15
+you can also have functions in lists:
+> .+.-.*./@3$62 ≡ 3
+indexing a function calls it monadically with the index,
+> .-@3 ≡ _3
+and some list functions, like ||Take||, use this to treat functions as infinite lists:
+> .◄↑4 ≡ 0123
+> .-↑33 ≡ (0_1_2)(_3_4_5)(_6_7_8)
+> .+~ ≡ ∞
+characters from `a` to `z` are variables, which are given somewhat-convenient default values.
+> abcdefghij ≡ :12:20:99:100:999:1000:10000:100000:1000000:10000000
+> klmnopqrst ≡ :15:16:31:32:63:64:127:128:255:256
+> uvwxyz     ≡ :512:1024:32768:65536:16777216:2147483648
+> f+n ≡ :1032
+variables can be set with `→name` and retrieved as a noun with `.name`. the dot is not necessary for variables `a` to `z`.
+> :35/7→f 1/f ≡ :0.2
+> :35/7→five 1/.five ≡ :0.2
+builtin verbs are also variables, and that's why you can get them with a dot. `.` is the noun variable prefix, and `:` is the verb variable prefix:
+> 4:*3 ≡ :12
+that was useless. but this means you can assign functions and use them as verbs!
+> *→mult 4:mult3 ≡ :12
+> └+/~→avg 234:avg ≡ 3
+`A` to `Z` don't need the colon:
+> *→M 4M3 ≡ :12
+> └+/~→V 234:avg ≡ 3
+calling a number or a list as a verb just makes it return itself:
+> :35/7→f 4:f ≡ :5
+> :35/7→F 4F  ≡ :5
+a name, or identifier, can be a sequence of lowercase letters (`mul`, `six`, `things`), an underscore followed by a character (`_ë`, `_1`) or a single character (`+`, `-`). any other name can be used by using quotes: `."Name of variable"`
+`x→name` is a statement that sets x to the variable `.name`. statements are not quite like verbs; you will see more about statements in the ||Statements|| section.
+there is another kind of assignment: `─name` ||Set Function|| (that is a box drawing character, not a minus sign `-`). it is a verb that sets α to the variable and returns β or, if not given, α. this makes it flexible to define a variable and then use it.
+> 4 ─four 1+2+.four ≡ 7  ' β is 1, return 1 after changing the variable
+> 4 ─four +1+2      ≡ 7  ' β not given, return .four back
+and for golfing purposes, the functions `A`..`Z` are set by default to `─a`..`─z`, so you can set and get variables conveniently.
+> 3+1X+x ≡ 8
+---
+:title: Trains
+we saw earlier that you can assign a verb to a variable with `→name`,
+> +→add 4:add5 ≡ 9
+and you can use a verb as a noun by enclosing it in parentheses (or, in general, having it at the start of an expression)
+> (+)$12 ≡ 3
+but by having more stuff inside the expression, we can modify the verb in certain ways:
+a verb and a noun `Fβ` is called a Bind. it calls F with β as a right argument, ignoring whatever was passed to the right.
+> +1→inc 4:inc ≡ 5
+> (+1)@5 ≡ 6
+> *2→dup 4:dup ≡ 8
+> *2→dup 4:dup9 ≡ 8
+(note that `inc` and `dup` are equivalent to `α▲` ||Bump Up|| and `α¼` ||Double||)
+> +1→inc 4:inc ≡ 5
+> *2→dup 4:dup ≡ 8
+> *2→dup 4:dup9 ≡ 8
+a verb and a verb `FG` is an Atop. it calls F with all arguments, and then calls G atop of that.
+> ↨*→fact 6:fact ≡ :720
+> ~↕→dom  "text":dom ≡ 0123
+> |¬→nor  0:nor1 ≡ 0
+(note that `fact`, `dom`, `nor` are equivalent to `α!` ||Factorial|| (for natural α), `α♣` ||Domain|| and `αöβ` ||Nor||)
+verb+verb+noun `FGβ` is a mix of the two: it calls F with both arguments, and then calls G atop of that using β as a right argument.
+> +/2→avg  4:avg8 ≡ 6
+> ²*π→area 3:area ≡ 9*π
+(note that `π` is pi, the number)
+you can chain these, left-to-right
+> +1+2+3→f 5:f ≡ :11
+> ~=0→empty φ:empty ≡ 1
+we've been setting these trains to variables before using them. it won't work if you try to apply them directly with parentheses:
+> 5(+/2)9
+is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with ||Verbize|| `┌`:
+> 5┌(+/2)9 ≡ 7
+> 6┌(↨*) ≡ :720
+but you never actually need to do this! an inlined train will always be shorter:
+> 5+9/2 ≡ 7
+> 6↨* ≡ :720
+trains are also useful when used with adverbs:
+> ' if length is 3, uppercase
+> "and""the""small""bee""wanted""to""fly"╕(~=3)╨Ç ≡ "AND""THE""small""BEE""wanted""to""FLY"
+we can create a variable from the triangular number function from earlier with a train.
+the `½` is applied atop the result of the fork, so as a single function this is an atop:
+> 6▲╓*½ ≡ :21
+> 6┌(└◄*▲½) ≡ :21
+note that we need the `┌` for it to be interpreted as a function.
+we can set our function to a variable and use it.
+> ▲╓*½→triang 6:triang ≡ :21
+this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly (see ||Statements||):
+> {α*(α▲)½}→triang 6:triang ≡ :21
+> {α▲*α½}→triang 6:triang ≡ :21  ' multiplication is commutative
+but the tacit form is simpler (and shorter, and somewhat faster).
 ---
 :title: Groups
 i don't like parentheses. i don't like the fact that occasionally i have to use them to make things work. i don't like that precedence is a thing. but alas, this is not a stack language, and we ocassionally need to group things. but parentheses take up a lot of space, and something as simple as `+2` gains two characters when used with an adverb `(+2)╜/`. 
@@ -301,14 +335,14 @@ but when used with 2-adverbs, they work a little differently. the left of every 
 ---
 :title: Statements
 there is a more explicit way of defining functions, and it looks more like lambda expressions you might be used to from other languages:
-> 456{α+/(α~)} ≡ 5
+> 456{α+/(α~)} ≡ 5
 > 345{β^(α♣♠)*α+}:10 ≡ :345
 that thing inside braces is the ||function definition@#Define Function||, and it uses special variables like `α` or `β` that are always defined inside dfns. the expression inside the braces will be evaluated and returned.
 but there's more that you can do inside functions. dfns are composed of multiple statements, and the result of the last one is returned.
 statements are delimited by statement separators like `·` ||Discard|| or `◘` ||Return||. discard statements evaluate a value and discard it; return statements return a value from the function.
 > ■{1·2·3◘4·5} ≡ 3
-not very interesting. you have already seen one statement separator: `→name` assigns the body of the statement to the variable with that name. use this in longer pieces of code, to give names to values.
-> 456{α+→avg α~→len .avg/.len} ≡ 5
+not very interesting. you have already seen one statement separator: `→name` assigns the body of the statement to the variable with that name. you can use this in longer pieces of code, to give names to values.
+> 456{α+→avg α~→len .avg/.len} ≡ 5
 functions create a lexical scope. this means variables you define inside of a function will not be accessible outside.
 these become more useful when used with `x?y` ||Then|| (note that Then is not a function), which executes the following statement `y` if `x` is not 0. you can use these for ternary-operator-like things:
 > _5{α>0?α◘α-} ≡ 5
@@ -1549,7 +1583,7 @@ a general-purpose variable. by default, 2147483648, or `2^:31`
 :type: grammar
 #{abc} Define Function
 return a function that executes the statements inside the braces, returning a value and stopping once a ||Return|| statement is hit. a ||Return|| statement is implicit at the end of a function. this function will have a role of verb.
-> {"Hello, World!"☻·}→sayhi
+> {"Hello, World!"☻·}→sayhi 0:sayhi ≡ ■
 > {6á▲◘}→roll 0:roll ?≡ 4
 > {6á▲}→roll 0:roll ?≡ 4
 some variables are set when calling a function: `α` ||Alpha|| is set to the left argument, `β` ||Beta|| is set to the right argument or ||None|| if not given, `ƒ` ||Self|| to the function being called, and `Σ` ||Arity|| to the number of arguments passed.
@@ -1621,6 +1655,7 @@ returns α, uppercasing it if in the range 'a'..'z'. scalar.
 > "lowercase"Ç ≡ "LOWERCASE"
 > "Bees, bees"Ç ≡ "BEES, BEES"
 > "mOcKiNg"Ç ≡ "MOCKING"
+see also: ||Lowercase||
 ---
 :char: ü
 :ascii: 'u"
@@ -1722,6 +1757,7 @@ return α, lowercasing it if in the range 'A'..'Z'. scalar.
 > "lowercase"ç ≡ "lowercase"
 > "Bees, bees"ç ≡ "bees, bees"
 > "mOcKiNg"ç ≡ "mocking"
+see also: ||Uppercase||
 ---
 :char: ê
 :ascii: 'e^
@@ -2060,7 +2096,7 @@ get a list of the real and imaginary parts of α. scalar. equivalent to `└ù�
 #12 Self
 the function being executed. if not in a function definition, undefined. useful for recursive functions.
 > 6{=0?1◘α▼ƒ*α} ≡ :720
-remember to include an exit condition (||Return||). you shouldn't need this very often; in this case, `↨*` or `!` would have been enough.
+you shouldn't need this very often; in this case, `↨*` or `!` would have been enough. remember to include an exit condition using ||Return||. 
 ---
 :char: á
 :ascii: 'a'
@@ -2234,7 +2270,7 @@ equivalent to `/2`. scalar.
 > 5½ ≡ :2.5
 > 1½½ ≡ :0.25
 #2 Lowest Common Denominator
-calculates the ||lowest common denominator||https://en.wikipedia.org/wiki/Lowest_common_denominator|| of two integers α and β, or lcd(α, β). scalar.
+calculates the ||lowest common denominator@https://en.wikipedia.org/wiki/Lowest_common_denominator|| of two integers α and β, or lcd(α, β). scalar.
 > :12½:18 ≡ :36
 > :30½:45 ≡ :90
 ---
@@ -2964,7 +3000,7 @@ call a function G repeatedly, returning the first result where `αF` passes.
 #2a2 Until
 bind β to G
 #_1a2 Until Compare
-call a function G repeatedly, returning the first result where `αGFα` passes: F is passed the current iteration as α and the last iteration as β. `=╩` (or `≡╩`) is the fixed-point combinator:
+call a function G repeatedly, returning the first result where `αGFα` passes: F is passed the current iteration as α and the last iteration as β. `=_╩` (or `≡_╩`) is the fixed-point combinator:
 > 1=_╩(/▲) ≡ 5√▲½  ' golden ratio
 #_2a2 Until Compare
 bind β to G
