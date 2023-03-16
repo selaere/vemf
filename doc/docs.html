@@ -389,7 +389,7 @@ h2>code { background-color: inherit; white-space: pre; }
 </nav><main>
 <h2 class=prose id="About"><a class=h href="#About"></a>About</h2>
 <p>if you are reading this, you are reading the vemf documentation. the vemf documentation has information about all of the different characters, verbs, nouns and adverbs that vemf has.</p>
-<p>the documentation can be enjoyed in a <a href="https://github.com/selaere/vemf/blob/main/doc/raw.txt">"raw" text format</a> or in a <a href="https://selaere.github.io/vemf/doc/docs.html">nice html webpage format</a>. the raw format is converted to html with <a href="https://github.com/selaere/vemf/blob/main/doc/gen.vemf">a vemf script</a>.</p>
+<p>this documentation can be enjoyed in a <a href="https://github.com/selaere/vemf/blob/main/doc/raw.txt">"raw" text format</a> or in a <a href="https://selaere.github.io/vemf/doc/docs.html">nice html webpage format</a>. the raw format is converted to html with <a href="https://github.com/selaere/vemf/blob/main/doc/gen.vemf">a vemf script</a>.</p>
 <p>but not only does this documentation have text. in fact i am bad at explaining stuff, so there are way more examples than text. here's one!</p>
 <pre>"hello world i am a vemf test"\"aeiou" ≡ "hll wrld  m  vmf tst"</pre>
 <p>the vemf documentation is not only a documentation, it doubles as a test suite! when the tests are run, the expressions to both sides of the <code> ≡ </code> are evaluated, and checked for equality. if you see an example like this:</p>
@@ -436,7 +436,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <p>if you do want the number 123, you can use <a href="#Numeric Literal">Numeric Literal</a>s by prepending a <code>:</code> colon:</p>
 <pre>:123+1 ≡ :124
 :12:33:-4+ ≡ :41</pre>
-<p>or even shorter (and more obscure), we can use a <a href="#Character Literal">Character Literal</a> with a backtick. <code>z</code> is the 123th character in <a href="#The Codepage">the codepage</a>, so:</p>
+<p>or even shorter (and more obscure), we can use a <a href="#Character Literal">Character Literal</a> with a backtick. <code>z</code> is the 123rd character in <a href="#The Codepage">the codepage</a>, so:</p>
 <pre>`z+1 ≡ :123</pre>
 <p>note that whitespace matters when using numeric literals:</p>
 <pre>:12 34+ ≡ :19
@@ -628,7 +628,7 @@ f+n ≡ :1032</pre>
 <p>variables can be set with <code>→name</code> and retrieved as a noun with <code>.name</code>. the dot is not necessary for variables <code>a</code> to <code>z</code>.</p>
 <pre>:35/7→f 1/f ≡ :0.2
 :35/7→five 1/.five ≡ :0.2</pre>
-<p>builtin verbs are also variables, and that's why you can get them with a dot. <code>.</code> is the noun variable prefix, and <code>:</code> is the verb variable prefix:</p>
+<p>built-in verbs are also variables, and that's why you can get them with a dot. <code>.</code> is the noun variable prefix, and <code>:</code> is the verb variable prefix:</p>
 <pre>4:*3 ≡ :12</pre>
 <p>that was useless. but this means you can assign functions and use them as verbs!</p>
 <pre>*→mult 4:mult3 ≡ :12
@@ -2535,7 +2535,7 @@ _3± ≡ Θ
 "yeah!!!"▐` ⌡4 ≡ "!!!    "▐` 
 "yeah!!!"▐` ⌡2 ≡ "ah!!!  "▐` 
 (012)(345)(678)▐000⌡1 ≡ (345)(678)(000)▐000</pre>
-<p>a negative β acts like <a href="#Shift Left">Shift Left</a>:</p>
+<p>a negative β acts like <a href="#Shift Right">Shift Right</a>:</p>
 <pre>"yeah!!!"▐` ⌡_2 ≡ "  yeah!"▐` </pre>
 <p>and if <code>α~≤β</code>, the whole list will be filled:</p>
 <pre>12345678⌡8 ≡ ■■■■■■■■</pre>

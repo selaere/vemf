@@ -48,7 +48,7 @@ uh, hm. yes. this is not the number one hundred and twenty-three. consecutive va
 if you do want the number 123, you can use ||Numeric Literal||s by prepending a `:` colon:
 > :123+1 ≡ :124
 > :12:33:-4+ ≡ :41
-or even shorter (and more obscure), we can use a ||Character Literal|| with a backtick. `z` is the 123th character in ||the codepage@#The Codepage||, so:
+or even shorter (and more obscure), we can use a ||Character Literal|| with a backtick. `z` is the 123rd character in ||the codepage@#The Codepage||, so:
 > `z+1 ≡ :123
 note that whitespace matters when using numeric literals:
 > :12 34+ ≡ :19
@@ -243,7 +243,7 @@ characters from `a` to `z` are variables, which are given somewhat-convenient de
 variables can be set with `→name` and retrieved as a noun with `.name`. the dot is not necessary for variables `a` to `z`.
 > :35/7→f 1/f ≡ :0.2
 > :35/7→five 1/.five ≡ :0.2
-builtin verbs are also variables, and that's why you can get them with a dot. `.` is the noun variable prefix, and `:` is the verb variable prefix:
+built-in verbs are also variables, and that's why you can get them with a dot. `.` is the noun variable prefix, and `:` is the verb variable prefix:
 > 4:*3 ≡ :12
 that was useless. but this means you can assign functions and use them as verbs!
 > *→mult 4:mult3 ≡ :12
@@ -2667,7 +2667,7 @@ returns a list of the same length as α, with every item shifted to the left by 
 > "yeah!!!"▐` ⌡4 ≡ "!!!    "▐` 
 > "yeah!!!"▐` ⌡2 ≡ "ah!!!  "▐` 
 > (012)(345)(678)▐000⌡1 ≡ (345)(678)(000)▐000
-a negative β acts like ||Shift Left||:
+a negative β acts like ||Shift Right||:
 > "yeah!!!"▐` ⌡_2 ≡ "  yeah!"▐` 
 and if `α~≤β`, the whole list will be filled:
 > 12345678⌡8 ≡ ■■■■■■■■
