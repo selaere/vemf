@@ -1,6 +1,6 @@
 :title: About
 if you are reading this, you are reading the vemf documentation. the vemf documentation has information about all of the different characters, verbs, nouns and adverbs that vemf has.
-the documentation can be enjoyed in a "raw" text format or in a nice html webpage format. ||the raw format@https://github.com/selaere/vemf/blob/main/doc/raw.txt|| is converted to html with ||a vemf script@https://github.com/selaere/vemf/blob/main/doc/gen.vemf||.
+this documentation can be enjoyed in a ||"raw" text format@https://github.com/selaere/vemf/blob/main/doc/raw.txt|| or in a ||nice html webpage format@https://selaere.github.io/vemf/doc/docs.html||. the raw format is converted to html with ||a vemf script@https://github.com/selaere/vemf/blob/main/doc/gen.vemf||.
 but not only does this documentation have text. in fact i am bad at explaining stuff, so there are way more examples than text. here's one!
 > "hello world i am a vemf test"\"aeiou" ≡ "hll wrld  m  vmf tst"
 the vemf documentation is not only a documentation, it doubles as a test suite! when the tests are run, the expressions to both sides of the ` ≡ ` are evaluated, and checked for equality. if you see an example like this:

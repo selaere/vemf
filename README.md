@@ -1,5 +1,7 @@
 vemf is my silly little programming language. it is sort of golfy and arraylike and tacit and words words words etc etc.
 
+docs: <https://selaere.github.io/vemf/doc/docs.html>
+
 ## CAUTION CAUTION!!
 this language, its interpreter and its documentation is in its early stages and everything is going to change. you should expect that any code you write today will be not working tomorrow. if you have feedback, ideas, bugs, thoughts, issues, things please let me know
 
