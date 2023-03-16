@@ -483,7 +483,7 @@ h2>code { background-color: inherit; white-space: pre; }
 "cat"="cat" ≡ 111
 (0123)(456)(78)9>5 ≡ (0000)(001)(11)1
 "pickled peppers"~`p ≡ 011111110100111</pre>
-<p>though it's useful to compare if two lists are equal, so there also is <code>≡</code> <a href="#Matches">Matches</a> and <code>≈</code> <a href="#Not Matches">Not Matches</a></p>
+<p>though it's useful to compare if two lists are equal, so there is also <code>≡</code> <a href="#Matches">Matches</a> and <code>≈</code> <a href="#Not Matches">Not Matches</a></p>
 <pre>"cat"≡"cow" ≡ 0
 "cat"≡"cat" ≡ 1</pre>
 <p>we've seen that characters are not a separate type, and they are just their codepoints. subtracting an ascii lowercase letter by 32 makes it uppercase, so we can make a word uppercase by:</p>
@@ -549,12 +549,12 @@ h2>code { background-color: inherit; white-space: pre; }
 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║</pre>
 <p>these adverbs have a variety of uses. some of them are <a href="#Combinators">Combinators</a>, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.</p>
 <h3 id="Iteration"><a class=h href="#Iteration"></a>Iteration</h3>
-<p>vemf automatically vectorizes, so often explicit loops are not be necessary, but adverbs can be used to explicitly iterate in a certain way</p>
+<p>vemf automatically vectorizes, so often explicit loops are not be necessary. however, some adverbs can be used to explicitly iterate in a certain way</p>
 <p><code>α╕G</code> <a href="#Each">Each</a> applies G to every item in α:</p>
 <pre>(123)(45)(6789)"aaaaaa"╕~ ≡ 3246</pre>
 <p><code>α╕Gβ</code> <a href="#Each">Each</a> (dyadic) pairs the items up and applies G to each pair:</p>
 <pre>123╕,456 ≡ (14)(25)(36)</pre>
-<p><code>α╛Gβ</code> <a href="#Each Left">Each Left</a> and <code>α╘Gβ</code> <a href="#Each Right">Each Right</a> iterates through one argument, while passing the other argument:</p>
+<p><code>α╛Gβ</code> <a href="#Each Left">Each Left</a> and <code>α╘Gβ</code> <a href="#Each Right">Each Right</a> iterate through one argument, while passing the other argument:</p>
 <pre>123╛,456 ≡ (1456)(2456)(3456)
 123╘,456 ≡ (1234)(1235)(1236)</pre>
 <p>using both Each Left and Each Right we get something similar to APL's outer product, or a cartesian product:</p>
@@ -687,7 +687,7 @@ f+n ≡ :1032</pre>
 <p>we can create a variable from the triangular number function from earlier with a train.</p>
 <p>the <code>½</code> is applied atop the result of the fork, so as a single function this is an atop:</p>
 <pre>6▲╓*½ ≡ :21
-6┌(└◄*▲½) ≡ :21</pre>
+6┌(▲╓*½) ≡ :21</pre>
 <p>note that we need the <code>┌</code> for it to be interpreted as a function.</p>
 <p>we can set our function to a variable and use it.</p>
 <pre>▲╓*½→triang 6:triang ≡ :21</pre>
