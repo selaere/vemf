@@ -140,6 +140,7 @@ but `α¶β` ||Reshape|| starts taking from the start when it runs out of items:
 `↑`, `↓` and `¶` with a list as a right argument can reshape, or create a nested list with those dimensions:
 > 0123456789↑33 ≡ (012)(345)(678)
 > 0123456789↓33 ≡ (123)(456)(789)
+> 1234¶43 ≡ (123)(412)(341)(234)
 ---
 :title: Adverbs
 adverbs are a syntax for functions that take other functions. take one of the most basic: ||Selfie|| `┴G` takes a function `G` and returns a function that applies `G` with the same argument used twice:
@@ -163,7 +164,7 @@ the built-in adverbs are all box-drawing symbols (though not all box-drawing sym
 > 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║
 these adverbs have a variety of uses. some of them are ||Combinators||, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.
 # Iteration
-vemf automatically vectorizes, so often explicit loops are not be necessary. however, some adverbs can be used to explicitly iterate in a certain way
+vemf automatically vectorizes, so often explicit loops are usually not necessary. however, some adverbs can be used to explicitly iterate in a certain way
 `α╕G` ||Each|| applies G to every item in α:
 > (123)(45)(6789)"aaaaaa"╕~ ≡ 3246
 `α╕Gβ` ||Each|| (dyadic) pairs the items up and applies G to each pair:
@@ -380,7 +381,7 @@ the return value of the program (either from a `◘` ||Return|| in the top scope
 - if the result is a scalar, it is printed as a number in decimal
 - if the result is a flat list, it is printed as a Unicode string, where every element is a codepoint
 - if the result is a nested list, each of the inner lists will be printed as a separate line and delimited with newlines
-there are also input and output streams. there can be any number, but the cli uses input stream 0 for stdin, output stream 0 for stdout, and output stream 1 for stderr. `☺` ||Print|| and `☻` ||Print Line|| always print text to output stream 1.
+there are also input and output streams. there can be any number, but the cli uses input stream 0 for stdin, output stream 0 for stdout, and output stream 1 for stderr. `☺` ||Print|| and `☻` ||Print Line|| always print text to output stream 0.
 the streams are byte streams, and the functions `Ö` ||Write|| and `Ü` ||Read|| convert to/from UTF-8. you may use `_Ö` ||Write Bytes|| and `_Ü` ||Read Bytes|| to manipulate the byte streams directly.
 you also have access to a global random number generator (see `á` ||Pick||, `â` ||Sample||, `å` ||Choice||)
 ---
@@ -560,7 +561,7 @@ returns α
 :ascii: 'I
 :type: verb
 #1 Iota
-when α is a scalar, the output is the range of natural numbers [0, α); starting by 0, excluding α (see ||Inclusive Iota||).
+when α is a scalar, the output is the range of natural numbers [0, α); starting at 0, excluding α (see ||Inclusive Iota||).
 > 5↕ ≡ 01234
 > Φ↕ ≡ 0123456789
 therefore, `l~↕` is a list of the indices of the list `l` (vemf is 0-indexed), and
@@ -666,7 +667,7 @@ get only up to a specified depth, without fill.
 :ascii: 'J
 :type: verb
 #1 Inclusive Iota
-when α is a scalar, the output is the range of natural numbers [1, α]; starting by 1, including α.
+when α is a scalar, the output is the range of natural numbers [1, α]; starting at 1, including α.
 > 5↨ ≡ 12345
 > Φ↨ ≡ 123456789Φ
 this is really just ||Iota|| with every item incremented by 1, or `↕▲`.
@@ -688,7 +689,7 @@ make a new list with a prefix shape of β, where the elements are taken from α 
 > .►↑33 ≡ (012)(345)(678)
 > "testing"▐` ↑:21 ≡ "testing              "
 > "testing"↑3 ≡ "tes"
-||Reshape||, is similar, but it cycles through the array instead of using the fill.
+||Reshape|| is similar, but it cycles through the array instead of using the fill.
 when there is a single ||None|| in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-||None|| elements of β and the length of α, or `β▀*/(α~)⌠`)
 > "testing"▐`_↑2■ ≡ "test""ing_"
 > "testing"▐`_↑■2 ≡ "te""st""in""g_"
@@ -785,7 +786,7 @@ see also: ||Bump Down||, ||Add||
 run a binary search. when α is a list sorted in ascending order, it finds the position of the first element in α that is less than or equal to β. you can also think of the list α as intervals of shape [x, y)
 > 0259▲6 ≡ 3
 > 0259▲Θ0123456789Φ ≡ 011222333344
-see also: ||Bins Up||
+see also: ||Bins Down||
 ---
 :char: ▼
 :ascii: 'bd
@@ -803,7 +804,7 @@ run a binary search. when α is a list sorted in descending order, it finds the 
 > :18:13:8▼:15 ≡ 1
 > :18:13:8▼:12 ≡ 2
 > :18:13:8▼:2 ≡ 3
-see also: ||Bins Down||
+see also: ||Bins Up||
 ---
 :char:  
 :type: whitespace
@@ -986,7 +987,9 @@ see also: ||Reduce||, ||Product||
 #1 Flatten
 same as ||Reduce|| ||Concatenate|| `╧,`. this removes one level of nesting in α.
 > ¨foo¨bar¨bash, ≡ "foobarbash"
-> ¨foo¨bar¨bash, ≡ "foobarbash"
+> (012)(34(567))(89), ≡ 01234(567)89
+this returns ||None|| for empty lists:
+> φ, ≡ φ
 see also: ||Reshape||
 #2 Concatenate
 concatenate the two lists α and β
@@ -2460,7 +2463,7 @@ the number `0.5772156649015329`
 > π ≡ :3.141592653589793
 #_0 Tau
 the number `6.283185307179586`, or `π*2`
-#.0 Pi Halves
+#.0 Half Pi
 the number `1.5707963267948966`, or `π/2`
 ---
 :char: Σ
@@ -2899,7 +2902,7 @@ give an element to start with.
 :ascii: '/
 :type: 1-adverb
 #1a1 Reduce
-apply a dyadic operation over the elements a list, left to right, progrressively building up a value.
+apply a dyadic operation over the elements a list, left to right, progressively building up a value.
 this can be thought of as inserting the function between every element:
 > 12345╧♫ ≡ (((12)3)4)5
 > 1♫2♫3♫4♫5 ≡ (((12)3)4)5
@@ -2922,7 +2925,7 @@ gives an element to start with. `α╧fβ` is always `α⌐β╧f`. this also me
 :char: ┴
 :ascii: '`
 :type: 1-adverb
-#1a1 Commute
+#1a1 Selfie
 equivalent to `αGα`
 > 5+5 ≡ 5┴+
 #2a1 Swap

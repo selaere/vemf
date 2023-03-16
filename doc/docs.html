@@ -526,7 +526,8 @@ h2>code { background-color: inherit; white-space: pre; }
 "sal"¶5 ≡ "salsa"</pre>
 <p><code>↑</code>, <code>↓</code> and <code>¶</code> with a list as a right argument can reshape, or create a nested list with those dimensions:</p>
 <pre>0123456789↑33 ≡ (012)(345)(678)
-0123456789↓33 ≡ (123)(456)(789)</pre>
+0123456789↓33 ≡ (123)(456)(789)
+1234¶43 ≡ (123)(412)(341)(234)</pre>
 <h2 class=prose id="Adverbs"><a class=h href="#Adverbs"></a>Adverbs</h2>
 <p>adverbs are a syntax for functions that take other functions. take one of the most basic: <a href="#Selfie">Selfie</a> <code>┴G</code> takes a function <code>G</code> and returns a function that applies <code>G</code> with the same argument used twice:</p>
 <pre>123┴+ ≡ 246
@@ -549,7 +550,7 @@ h2>code { background-color: inherit; white-space: pre; }
 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║</pre>
 <p>these adverbs have a variety of uses. some of them are <a href="#Combinators">Combinators</a>, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.</p>
 <h3 id="Iteration"><a class=h href="#Iteration"></a>Iteration</h3>
-<p>vemf automatically vectorizes, so often explicit loops are not be necessary. however, some adverbs can be used to explicitly iterate in a certain way</p>
+<p>vemf automatically vectorizes, so often explicit loops are usually not necessary. however, some adverbs can be used to explicitly iterate in a certain way</p>
 <p><code>α╕G</code> <a href="#Each">Each</a> applies G to every item in α:</p>
 <pre>(123)(45)(6789)"aaaaaa"╕~ ≡ 3246</pre>
 <p><code>α╕Gβ</code> <a href="#Each">Each</a> (dyadic) pairs the items up and applies G to each pair:</p>
@@ -761,7 +762,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <li>if the result is a scalar, it is printed as a number in decimal</li>
 <li>if the result is a flat list, it is printed as a Unicode string, where every element is a codepoint</li>
 <li>if the result is a nested list, each of the inner lists will be printed as a separate line and delimited with newlines</li></ul>
-<p>there are also input and output streams. there can be any number, but the cli uses input stream 0 for stdin, output stream 0 for stdout, and output stream 1 for stderr. <code>☺</code> <a href="#Print">Print</a> and <code>☻</code> <a href="#Print Line">Print Line</a> always print text to output stream 1.</p>
+<p>there are also input and output streams. there can be any number, but the cli uses input stream 0 for stdin, output stream 0 for stdout, and output stream 1 for stderr. <code>☺</code> <a href="#Print">Print</a> and <code>☻</code> <a href="#Print Line">Print Line</a> always print text to output stream 0.</p>
 <p>the streams are byte streams, and the functions <code>Ö</code> <a href="#Write">Write</a> and <code>Ü</code> <a href="#Read">Read</a> convert to/from UTF-8. you may use <code>_Ö</code> <a href="#Write Bytes">Write Bytes</a> and <code>_Ü</code> <a href="#Read Bytes">Read Bytes</a> to manipulate the byte streams directly.</p>
 <p>you also have access to a global random number generator (see <code>á</code> <a href="#Pick">Pick</a>, <code>â</code> <a href="#Sample">Sample</a>, <code>å</code> <a href="#Choice">Choice</a>)</p>
 <h2 class="rverb" id="01"><a class=h href="#01"></a><code>☺</code> (0x01, <code>'pr</code>) <span class=rank>verb</span></h2>
@@ -891,7 +892,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <pre>1◄ ≡ 1</pre>
 <h2 class="rverb" id="12"><a class=h href="#12"></a><code>↕</code> (0x12, <code>'I</code>) <span class=rank>verb</span></h2>
 <h3 id="Iota"><a class=h href="#Iota"></a><code>α↕</code> Iota</h3>
-<p>when α is a scalar, the output is the range of natural numbers [0, α); starting by 0, excluding α (see <a href="#Inclusive Iota">Inclusive Iota</a>).</p>
+<p>when α is a scalar, the output is the range of natural numbers [0, α); starting at 0, excluding α (see <a href="#Inclusive Iota">Inclusive Iota</a>).</p>
 <pre>5↕ ≡ 01234
 Φ↕ ≡ 0123456789</pre>
 <p>therefore, <code>l~↕</code> is a list of the indices of the list <code>l</code> (vemf is 0-indexed), and</p>
@@ -982,7 +983,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 (1234)((56)(78))(90)▬1 ≡ ♪3</pre>
 <h2 class="rverb" id="17"><a class=h href="#17"></a><code>↨</code> (0x17, <code>'J</code>) <span class=rank>verb</span></h2>
 <h3 id="Inclusive Iota"><a class=h href="#Inclusive Iota"></a><code>α↨</code> Inclusive Iota</h3>
-<p>when α is a scalar, the output is the range of natural numbers [1, α]; starting by 1, including α.</p>
+<p>when α is a scalar, the output is the range of natural numbers [1, α]; starting at 1, including α.</p>
 <pre>5↨ ≡ 12345
 Φ↨ ≡ 123456789Φ</pre>
 <p>this is really just <a href="#Iota">Iota</a> with every item incremented by 1, or <code>↕▲</code>.</p>
@@ -1001,7 +1002,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 .►↑33 ≡ (012)(345)(678)
 "testing"▐` ↑:21 ≡ "testing              "
 "testing"↑3 ≡ "tes"</pre>
-<p><a href="#Reshape">Reshape</a>, is similar, but it cycles through the array instead of using the fill.</p>
+<p><a href="#Reshape">Reshape</a> is similar, but it cycles through the array instead of using the fill.</p>
 <p>when there is a single <a href="#None">None</a> in β, it will be computed in order to fit all the elements (the ceiling division of the product of the non-<a href="#None">None</a> elements of β and the length of α, or <code>β▀*/(α~)⌠</code>)</p>
 <pre>"testing"▐`_↑2■ ≡ "test""ing_"
 "testing"▐`_↑■2 ≡ "te""st""in""g_"
@@ -1080,7 +1081,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <p>run a binary search. when α is a list sorted in ascending order, it finds the position of the first element in α that is less than or equal to β. you can also think of the list α as intervals of shape [x, y)</p>
 <pre>0259▲6 ≡ 3
 0259▲Θ0123456789Φ ≡ 011222333344</pre>
-<p>see also: <a href="#Bins Up">Bins Up</a></p>
+<p>see also: <a href="#Bins Down">Bins Down</a></p>
 <h2 class="rverb" id="1F"><a class=h href="#1F"></a><code>▼</code> (0x1F, <code>'bd</code>) <span class=rank>verb</span></h2>
 <h3 id="Bump Down"><a class=h href="#Bump Down"></a><code>α▼</code> Bump Down</h3>
 <p>decrements the number by 1. equivalent to <code>-1</code>. scalar.</p>
@@ -1095,7 +1096,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 :18:13:8▼:15 ≡ 1
 :18:13:8▼:12 ≡ 2
 :18:13:8▼:2 ≡ 3</pre>
-<p>see also: <a href="#Bins Down">Bins Down</a></p>
+<p>see also: <a href="#Bins Up">Bins Up</a></p>
 <h2 class="rwhitespace" id="20"><a class=h href="#20"></a><code> </code> (0x20) <span class=rank>whitespace</span></h2>
 <h3 id="Space"><a class=h href="#Space"></a><code>&nbsp;</code> Space</h3>
 <p>whitespace. may change the parsing of some tokens:</p>
@@ -1252,7 +1253,9 @@ _1%_2 ≡ 1</pre>
 <h3 id="Flatten"><a class=h href="#Flatten"></a><code>α,</code> Flatten</h3>
 <p>same as <a href="#Reduce">Reduce</a> <a href="#Concatenate">Concatenate</a> <code>╧,</code>. this removes one level of nesting in α.</p>
 <pre>¨foo¨bar¨bash, ≡ "foobarbash"
-¨foo¨bar¨bash, ≡ "foobarbash"</pre>
+(012)(34(567))(89), ≡ 01234(567)89</pre>
+<p>this returns <a href="#None">None</a> for empty lists:</p>
+<pre>φ, ≡ φ</pre>
 <p>see also: <a href="#Reshape">Reshape</a></p>
 <h3 id="Concatenate"><a class=h href="#Concatenate"></a><code>α,β</code> Concatenate</h3>
 <p>concatenate the two lists α and β</p>
@@ -2379,7 +2382,7 @@ _2Ñ0 ≡ 0</pre>
 <pre>π ≡ :3.141592653589793</pre>
 <h3 id="Tau"><a class=h href="#Tau"></a><code>_π</code> Tau</h3>
 <p>the number <code>6.283185307179586</code>, or <code>π*2</code></p>
-<h3 id="Pi Halves"><a class=h href="#Pi Halves"></a><code>.π</code> Pi Halves</h3>
+<h3 id="Half Pi"><a class=h href="#Half Pi"></a><code>.π</code> Half Pi</h3>
 <p>the number <code>1.5707963267948966</code>, or <code>π/2</code></p>
 <h2 class="rvariable" id="E4"><a class=h href="#E4"></a><code>Σ</code> (0xE4, <code>'s+</code>) <span class=rank>variable</span></h2>
 <h3 id="Arity"><a class=h href="#Arity"></a><code>Σ</code> Arity</h3>
@@ -2722,7 +2725,7 @@ _1÷_2 ≡ 1</pre>
 <pre>12345╤+1 ≡ :2:4:7:11:16</pre>
 <h2 class="r1-adverb" id="CF"><a class=h href="#CF"></a><code>╧</code> (0xCF, <code>'/</code>) <span class=rank>1-adverb</span></h2>
 <h3 id="Reduce"><a class=h href="#Reduce"></a><code>α╧G</code> Reduce</h3>
-<p>apply a dyadic operation over the elements a list, left to right, progrressively building up a value.</p>
+<p>apply a dyadic operation over the elements a list, left to right, progressively building up a value.</p>
 <p>this can be thought of as inserting the function between every element:</p>
 <pre>12345╧♫ ≡ (((12)3)4)5
 1♫2♫3♫4♫5 ≡ (((12)3)4)5</pre>
@@ -2742,7 +2745,7 @@ _1÷_2 ≡ 1</pre>
 <pre>12345╧+0 ≡ :15
 φ╧+0 ≡ 0</pre>
 <h2 class="r1-adverb" id="C1"><a class=h href="#C1"></a><code>┴</code> (0xC1, <code>'`</code>) <span class=rank>1-adverb</span></h2>
-<h3 id="Commute"><a class=h href="#Commute"></a><code>α┴G</code> Commute</h3>
+<h3 id="Selfie"><a class=h href="#Selfie"></a><code>α┴G</code> Selfie</h3>
 <p>equivalent to <code>αGα</code></p>
 <pre>5+5 ≡ 5┴+</pre>
 <h3 id="Swap"><a class=h href="#Swap"></a><code>α┴Gβ</code> Swap</h3>
