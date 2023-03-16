@@ -163,12 +163,12 @@ the built-in adverbs are all box-drawing symbols (though not all box-drawing sym
 > 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║
 these adverbs have a variety of uses. some of them are ||Combinators||, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.
 # Iteration
-vemf automatically vectorizes, so often explicit loops are not be necessary, but adverbs can be used to explicitly iterate in a certain way
+vemf automatically vectorizes, so often explicit loops are not be necessary. however, some adverbs can be used to explicitly iterate in a certain way
 `α╕G` ||Each|| applies G to every item in α:
 > (123)(45)(6789)"aaaaaa"╕~ ≡ 3246
 `α╕Gβ` ||Each|| (dyadic) pairs the items up and applies G to each pair:
 > 123╕,456 ≡ (14)(25)(36)
-`α╛Gβ` ||Each Left|| and `α╘Gβ` ||Each Right|| iterates through one argument, while passing the other argument:
+`α╛Gβ` ||Each Left|| and `α╘Gβ` ||Each Right|| iterate through one argument, while passing the other argument:
 > 123╛,456 ≡ (1456)(2456)(3456)
 > 123╘,456 ≡ (1234)(1235)(1236)
 using both Each Left and Each Right we get something similar to APL's outer product, or a cartesian product:
@@ -303,7 +303,7 @@ trains are also useful when used with adverbs:
 we can create a variable from the triangular number function from earlier with a train.
 the `½` is applied atop the result of the fork, so as a single function this is an atop:
 > 6▲╓*½ ≡ :21
-> 6┌(└◄*▲½) ≡ :21
+> 6┌(▲╓*½) ≡ :21
 note that we need the `┌` for it to be interpreted as a function.
 we can set our function to a variable and use it.
 > ▲╓*½→triang 6:triang ≡ :21
