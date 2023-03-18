@@ -27,23 +27,45 @@ impl<'io> std::io::Write for Handle<'io> {
     fn flush(&mut self) -> IOResult<()> { self.0.flush() }
 }
 
+fn fmtstring(format: &str) -> Vec<Val> {
+    format.chars()
+        .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
+        .collect::<Vec<_>>()
+}
+
+#[allow(dead_code)]
 #[wasm_bindgen]
-pub fn evaluate(s: &str, fmt: &str) -> String {
+pub struct EvaluateRes {
+    output: String,
+    pub error: Option<i32>,
+}
+#[wasm_bindgen]
+impl EvaluateRes {
+    #[wasm_bindgen(getter)]
+    pub fn output(&self) -> String {
+        self.output.clone()
+    }
+}
+
+#[wasm_bindgen]
+pub fn evaluate(s: &str, fmt: &str) -> EvaluateRes {
     let outbuf = RefCell::new(Vec::new());
     let mut env = Env::new(bx(rand::thread_rng()));
     env.interface = bx(Output {bufref: &outbuf});
     env.include_stdlib();
-    let mut out = String::new();
-    env.include_string(s).format( &mut out,
-        &fmt.chars()
-        .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
-        .collect::<Vec<_>>()[..]).unwrap();
+    let error = env.run_string(s, &fmtstring(fmt));
     env.interface = bx(vemf::NoIO);
     let borrow = outbuf.borrow();
-    String::from_utf8_lossy(&borrow).into_owned() + &out
+
+    EvaluateRes{ output: String::from_utf8_lossy(&borrow).into_owned(), error: error.err() }
 }
 
 #[wasm_bindgen]
-pub fn rewrite(s: &str) -> String {
-    codepage::tochars_ln(&vemf::rewrite(&codepage::tobytes(s).unwrap()))
+pub fn escape1c(a: char) -> Option<char> {
+    Some(codepage::tochar(vemf::escape_1c(codepage::tobyte(a)?)?))
+}
+
+#[wasm_bindgen]
+pub fn escape2c(a: char, b: char) -> Option<char> {
+    Some(codepage::tochar(vemf::escape_2c([codepage::tobyte(a)?, codepage::tobyte(b)?])?))
 }

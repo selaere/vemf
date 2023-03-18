@@ -31,3 +31,8 @@ bin = ["std", "rand/std", "rand/std_rng"]
 
 [workspace]
 members = ["wasm"]
+
+[profile.wasm]
+inherits = "release"
+opt-level = "s"
+lto = true

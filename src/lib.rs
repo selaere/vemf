@@ -15,7 +15,7 @@ pub use run::{Env, Val, c64, io::{Interface, NoIO}};
 
 /// owned byte string type. length will be the same as a Vec in 64bit archs
 pub type Bstr = smallvec::SmallVec<[u8; 16]>;
-pub use token::rewrite;
+pub use token::{rewrite, escape_1c, escape_2c};
 
 pub fn bx<T>(x: T) -> alloc::boxed::Box<T> { alloc::boxed::Box::new(x) }
 

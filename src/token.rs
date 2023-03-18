@@ -295,7 +295,7 @@ pub fn rewrite(mut t: &[u8]) -> Vec<u8> {
 
 // !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
 // ‼═☻¶÷·─╙╜↔±○¬•╧╣┌│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘╕╛≈
-fn escape_1c(c: u8) -> Option<u8> {
+pub fn escape_1c(c: u8) -> Option<u8> {
     macro_rules! bee { ([$($f:tt $t:tt),*], _ => $else:expr) => {
         match c as char { $($f => b!($t),)* _ => $else } 
     }; }
@@ -309,7 +309,7 @@ fn escape_1c(c: u8) -> Option<u8> {
     ], _ => return None))
 }
 
-fn escape_2c(c: [u8; 2]) -> Option<u8> {
+pub fn escape_2c(c: [u8; 2]) -> Option<u8> {
     Some(match &c[..] {
         b"a'"=>b!('á'), b"a`"=>b!('à'), b"a\""=>b!('ä'), b"a^"=>b!('â'), b"a+"=>b!('Ä'),
         b"e'"=>b!('é'), b"e`"=>b!('è'), b"e\""=>b!('ë'), b"e^"=>b!('ê'), b"e+"=>b!('É'),
