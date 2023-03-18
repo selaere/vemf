@@ -20,6 +20,10 @@ textarea {
     width: 100%;
     box-sizing: border-box;
 }
+.center {
+    text-align: center;
+    margin: 0;
+}
 </style>
 </head>
 <body class=small>
@@ -30,9 +34,9 @@ textarea {
     <p><label><input type="checkbox" id="live"> live update (dangerous)</label><br>
     <label><input type="checkbox" id="esc" checked> quote escapes</label><br>
     <label>format: <input id="fmt" type="text" size="6"></label> (see <a href="https://selaere.github.io/vemf/doc/docs.html#Custom%20Format">ⁿ</a>)</p>
-    <p style="text-align: center"><button id="run">run</button></p>
     
-    <p><label for="inp">code:<br><textarea id="inp" rows=2></textarea></label></p>
+    <label for="inp">code:<br><textarea id="inp" rows=2></textarea></label>
+    <div class=center><button id="run">run (<kbd>Shift</kbd>+<kbd>Enter</kbd>)</button></div>
     
     <pre id="outp"></pre>
 <script type="module">
@@ -63,6 +67,7 @@ async function run() {
     id`run`.addEventListener('click', execute);
     id`inp`.onkeydown = e => {
         const modifiers = ["Alt", "AltGraph", "CapsLock", "Control", "Fn", "FnLock", "Hyper", "Meta", "NumLock", "ScrollLock", "Shift", "Super", "Symbol", "SymbolLock"];
+        if (e.key === "Enter" && e.shiftKey) { execute(); return false; }
         if (e.target.id != "inp" || !id`esc`.checked) {return}
         if (modifiers.includes(e.key)) {return}
         if (composing && e.key.length == 1) {
