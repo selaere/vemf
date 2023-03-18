@@ -78,7 +78,7 @@ async function run() {
     id`run`.addEventListener('click', execute);
     id`inp`.onkeydown = e => {
         const modifiers = ["Alt", "AltGraph", "CapsLock", "Control", "Fn", "FnLock", "Hyper", "Meta", "NumLock", "ScrollLock", "Shift", "Super", "Symbol", "SymbolLock"];
-        if (e.target.id != "inp" || id`esc`) {return}
+        if (e.target.id != "inp" || !id`esc`.checked) {return}
         if (modifiers.includes(e.key)) {return}
         if (composing && e.key.length == 1) {
             if (first_half) {
