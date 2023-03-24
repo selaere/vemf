@@ -72,18 +72,18 @@ _Ü_ë→Ü
 │+1╬_╘.inbinsup→▲
 │-1╬_╘.inbinsdown→▼
 
-.ingradedown╬┼:inlt→<
+.ingradeup╬┼:inlt→<
 │▬:inlen╬┼:inmatches→=
-.ingradeup╬┼:ingt→>
+.ingradedown╬┼:ingt→>
 
 (=0)╬♫╙,→¬
 (¬¬)╬♫╙;→⌐
 
 (↑■2)╬(⌐■)╙↑→♥
 (┴^Θ)╬(%¬)→ó
-.insortup  ╬│<¬→≥
+.insortup  ╬│>¬→≤
 .inlen     ╬│=¬→~
-.insortdown╬│>¬→≤
+.insortdown╬│<¬→≥
 
 ┼:insin╬:inbxor→î
 ┼:incos╬:inbor →ô

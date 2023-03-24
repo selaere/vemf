@@ -1433,13 +1433,13 @@ based := "0x" [0-9a-f]*
 <pre>5;4;3 ≡ 345
 123;456 ≡ 456123</pre>
 <h2 class="rverb" id="3C"><a class=h href="#3C"></a><code>&lt;</code> (0x3C) <span class=rank>verb</span></h2>
-<h3 id="Grade Down"><a class=h href="#Grade Down"></a><code>α<</code> Grade Down</h3>
-<p>Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α♣-</code> according to α.</p>
-<pre>37625&lt; ≡ 12403
-37625&lt;¡37625 ≡ 76532
-37625&lt;╖¡ ≡ 76532  ' more tacit</pre>
+<h3 id="Grade Up"><a class=h href="#Grade Up"></a><code>α<</code> Grade Up</h3>
+<p>Grade Up can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α~↕</code> according to α</p>
+<pre>37625&lt; ≡ 30421
+37625&lt;¡37625 ≡ 23567
+37625&lt;╖¡ ≡ 23567  ' more tacit</pre>
 <p>this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.</p>
-<p>see also: <a href="#Grade Up">Grade Up</a>, <a href="#Sort Down">Sort Down</a></p>
+<p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Up">Sort Up</a></p>
 <h3 id="Less Than"><a class=h href="#Less Than"></a><code>α<β</code> Less Than</h3>
 <p>return 1 if α &lt; b, else 0. scalar.</p>
 <pre>5&lt;3 ≡ 0
@@ -1470,13 +1470,13 @@ based := "0x" [0-9a-f]*
 <pre>■=■ ≡ 1</pre>
 <p>see also: <a href="#Matches">Matches</a>, <a href="#Not Equals">Not Equals</a></p>
 <h2 class="rverb" id="3E"><a class=h href="#3E"></a><code>></code> (0x3E) <span class=rank>verb</span></h2>
-<h3 id="Grade Up"><a class=h href="#Grade Up"></a><code>α></code> Grade Up</h3>
-<p>Grade Up can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α~↕</code> according to α</p>
-<pre>37625> ≡ 30421
-37625>¡37625 ≡ 23567
-37625>╖¡ ≡ 23567  ' more tacit</pre>
+<h3 id="Grade Down"><a class=h href="#Grade Down"></a><code>α></code> Grade Down</h3>
+<p>Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α♣-</code> according to α.</p>
+<pre>37625> ≡ 12403
+37625>¡37625 ≡ 76532
+37625>╖¡ ≡ 76532  ' more tacit</pre>
 <p>this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.</p>
-<p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Down">Sort Down</a></p>
+<p>see also: <a href="#Grade Up">Grade Up</a>, <a href="#Sort Down">Sort Down</a></p>
 <h3 id="Greater Than"><a class=h href="#Greater Than"></a><code>α>β</code> Greater Than</h3>
 <p>return 1 if α > b, else 0. scalar.</p>
 <pre>5>3 ≡ 1
@@ -2507,10 +2507,10 @@ _3± ≡ Θ
 3±4 ≡ 0</pre>
 <p>see also: <a href="#Matches">Matches</a></p>
 <h2 class="rverb" id="F2"><a class=h href="#F2"></a><code>≥</code> (0xF2, <code>'></code>) <span class=rank>verb</span></h2>
-<h3 id="Sort Up"><a class=h href="#Sort Up"></a><code>α≥</code> Sort Up</h3>
-<p>sorts the list α in ascending order</p>
-<pre>143042≥ ≡ 012344</pre>
-<p>see also: <a href="#Grade Up">Grade Up</a>, <a href="#Sort Down">Sort Down</a></p>
+<h3 id="Sort Down"><a class=h href="#Sort Down"></a><code>α≥</code> Sort Down</h3>
+<p>sorts the list α in descending order</p>
+<pre>143042≥ ≡ 443210</pre>
+<p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Up">Sort Up</a></p>
 <h3 id="Greater Than Or Equal"><a class=h href="#Greater Than Or Equal"></a><code>α≥β</code> Greater Than Or Equal</h3>
 <p>return 1 if α ≥ b, else 0. scalar.</p>
 <pre>5≥3 ≡ 1
@@ -2518,10 +2518,10 @@ _3± ≡ Θ
 3≥5 ≡ 0</pre>
 <p>see also: <a href="#Less Than Or Equal">Less Than Or Equal</a>, <a href="#Greater Than">Greater Than</a></p>
 <h2 class="rverb" id="F3"><a class=h href="#F3"></a><code>≤</code> (0xF3, <code>'<</code>) <span class=rank>verb</span></h2>
-<h3 id="Sort Down"><a class=h href="#Sort Down"></a><code>α≤</code> Sort Down</h3>
-<p>sorts the list α in descending order</p>
-<pre>143042≤ ≡ 443210</pre>
-<p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Up">Sort Up</a></p>
+<h3 id="Sort Up"><a class=h href="#Sort Up"></a><code>α≤</code> Sort Up</h3>
+<p>sorts the list α in ascending order</p>
+<pre>143042≤ ≡ 012344</pre>
+<p>see also: <a href="#Grade Up">Grade Up</a>, <a href="#Sort Down">Sort Down</a></p>
 <h3 id="Less Than Or Equal"><a class=h href="#Less Than Or Equal"></a><code>α≤β</code> Less Than Or Equal</h3>
 <p>return 1 if α ≤ b, else 0. scalar.</p>
 <pre>5≤3 ≡ 0

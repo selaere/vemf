@@ -1199,13 +1199,13 @@ concatenates β to α. same as `┴,`
 ---
 :char: <
 :type: verb
-#1 Grade Down
-Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array `α♣-` according to α.
-> 37625< ≡ 12403
-> 37625<¡37625 ≡ 76532
-> 37625<╖¡ ≡ 76532  ' more tacit
+#1 Grade Up
+Grade Up can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array `α~↕` according to α
+> 37625< ≡ 30421
+> 37625<¡37625 ≡ 23567
+> 37625<╖¡ ≡ 23567  ' more tacit
 this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.
-see also: ||Grade Up||, ||Sort Down||
+see also: ||Grade Down||, ||Sort Up||
 #2 Less Than
 return 1 if α < b, else 0. scalar.
 > 5<3 ≡ 0
@@ -1240,13 +1240,13 @@ see also: ||Matches||, ||Not Equals||
 ---
 :char: >
 :type: verb
-#1 Grade Up
-Grade Up can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array `α~↕` according to α
-> 37625> ≡ 30421
-> 37625>¡37625 ≡ 23567
-> 37625>╖¡ ≡ 23567  ' more tacit
+#1 Grade Down
+Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array `α♣-` according to α.
+> 37625> ≡ 12403
+> 37625>¡37625 ≡ 76532
+> 37625>╖¡ ≡ 76532  ' more tacit
 this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.
-see also: ||Grade Down||, ||Sort Up||
+see also: ||Grade Up||, ||Sort Down||
 #2 Greater Than
 return 1 if α > b, else 0. scalar.
 > 5>3 ≡ 1
@@ -2630,10 +2630,10 @@ see also: ||Matches||
 :char: ≥
 :ascii: '>
 :type: verb
-#1 Sort Up
-sorts the list α in ascending order
-> 143042≥ ≡ 012344
-see also: ||Grade Up||, ||Sort Down||
+#1 Sort Down
+sorts the list α in descending order
+> 143042≥ ≡ 443210
+see also: ||Grade Down||, ||Sort Up||
 #2 Greater Than Or Equal
 return 1 if α ≥ b, else 0. scalar.
 > 5≥3 ≡ 1
@@ -2644,10 +2644,10 @@ see also: ||Less Than Or Equal||, ||Greater Than||
 :char: ≤
 :ascii: '<
 :type: verb
-#1 Sort Down
-sorts the list α in descending order
-> 143042≤ ≡ 443210
-see also: ||Grade Down||, ||Sort Up||
+#1 Sort Up
+sorts the list α in ascending order
+> 143042≤ ≡ 012344
+see also: ||Grade Up||, ||Sort Down||
 #2 Less Than Or Equal
 return 1 if α ≤ b, else 0. scalar.
 > 5≤3 ≡ 0
