@@ -323,16 +323,39 @@ nested list literals can also get unwieldy:
 the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use. here are all the groupers:
 > 2 3 4 5 6 7 8 9 10
 > │ ├ ╞ ╟ ╠ ┤ ╡ ╢ ╣
-their basic function is grouping a number of words together. above, the number next to them specifies how many words will be grouped. the 2-grouper `│` will group 2 words:
+their basic function is grouping a number of nouns and verbs (or words) together. the number next to them specifies how many will be grouped. the 2-grouper `│` will group 2 words:
 > │01│23│45 ≡ (01)(23)(45)
 > │012││345│67 ≡ (01)2((34)5)(67)
 > ├123│45╞6789 ≡ (123)(45)(6789)
 > :42→a "I think ",│aª," is a good number." ≡ "I think 42 is a good number."
 there's a pattern to these: when they're pointing to the right the number of lines going out is the number of words grouped, and the symbols for 7, 8, 9, 10 groupers are flipped 3, 4, 5, 6 groupers.
-groupers also use the left of every 2-adverb is used as a word separator, so:
-> 7│+2╜/3 ≡ 3
-> 123456│~½╓₧ ≡ (123)(456)
-> "and""the""small""bee""wanted""to""fly"╕├~=3╨Ç ≡ "AND""THE""small""BEE""wanted""to""FLY"
+we said that groupers are alternatives to parentheses. in an expression, there are a few places where it makes sense to stop the expression, or to place a closing parenthesis. for example, for the expression `1+2+3`
+> (1)+2+3
+> (1+)2+3
+> (1+2)+3
+> (1+2+)3
+> (1+2+3)
+are all expressions that make sense. if you represent the places where the parentheses can end with spaces: `1 + 2 + 3`
+all that groupers do is pick which space to close with:
+> │1+2+3 ≡ (1 +)2 + 3
+> ├1+2+3 ≡ (1 + 2)+ 3
+> ╞1+2+3 ≡ (1 + 2 +)3
+> ╟1+2+3 ≡ (1 + 2 + 3)
+groupers won't break into literals, parentheses, other groupers, or any other nested structure. `1+(2/3)-:3.14` is split like `1 + (2/3) - :3.14 ²`:
+> │1+(2/3)-:3.14² ≡ (1 +)(2/3) - :3.14 ²
+> ├1+(2/3)-:3.14² ≡ (1 + (2/3))- :3.14 ²
+> ╞1+(2/3)-:3.14² ≡ (1 + (2/3) -):3.14 ²
+> ╟1+(2/3)-:3.14² ≡ (1 + (2/3) - :3.14)²
+a grouper can't break after an adverb, as adverbs always need a verb after them:
+> │a╒+b ≡ (a╒+)b
+> │a╕╕(♣♠)b ≡ (a╕╕(♣♠))b
+but it can break before a 2-adverb! this is actually really useful to adjust adverb precedence, as doing `(-╖!)║*` is different to `-╖!║*`
+> a -╖!║*b ≡ a - ╖! ║* b
+> a│-╖!║*b ≡ a(- ╖!)║* b
+groupers also can't break between the operands in a fork:
+> φ └+╛+╕+║- ≡ φ └+╛+╕+ ║-
+> φ┌└+╛+╕+║- ≡ φ(└+╛+╕+)║-
+(`┌` ||Verbize|| is also a 1-grouper. this is occasionally useful)
 ---
 :title: Statements
 there is a more explicit way of defining functions, and it looks more like lambda expressions you might be used to from other languages:
@@ -1177,7 +1200,7 @@ concatenates β to α. same as `┴,`
 :char: <
 :type: verb
 #1 Grade Down
-Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array `α~↕` according to α
+Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array `α♣-` according to α.
 > 37625< ≡ 12403
 > 37625<¡37625 ≡ 76532
 > 37625<╖¡ ≡ 76532  ' more tacit
@@ -3138,7 +3161,7 @@ after setting, it returns α. you can assign a function and use it right after:
 > 2─two+.two ≡ 4
 the uppercase ascii letters `A` `B` `C`... are assigned to be `─a` `─b` `─c` by default. this makes for a very convenient way of setting and querying variables:
 > 2T+t ≡ 4  ' αT sets α to the variable `t` and returns α
-this function, when used as a verb, is special in that if it are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:
+this function is special in that, when used as a verb and called with two arguments, the right argument will be interpreted after the variable is set. this allows for code like this:
 > 1A 2B (ab)+ ≡ 3
 even if `(ab)` is an argument of `B`, and would logically other functions evaluate their arguments before calling them.
 #α─nameβ Set Function

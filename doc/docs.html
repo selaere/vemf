@@ -706,16 +706,39 @@ f+n ≡ :1032</pre>
 <p>the solution is group characters. group characters act like parentheses, but instead of terminating when the closing parenthesis is found, how much will be grouped depends the character you use. here are all the groupers:</p>
 <pre>2 3 4 5 6 7 8 9 10
 │ ├ ╞ ╟ ╠ ┤ ╡ ╢ ╣</pre>
-<p>their basic function is grouping a number of words together. above, the number next to them specifies how many words will be grouped. the 2-grouper <code>│</code> will group 2 words:</p>
+<p>their basic function is grouping a number of nouns and verbs (or words) together. the number next to them specifies how many will be grouped. the 2-grouper <code>│</code> will group 2 words:</p>
 <pre>│01│23│45 ≡ (01)(23)(45)
 │012││345│67 ≡ (01)2((34)5)(67)
 ├123│45╞6789 ≡ (123)(45)(6789)
 :42→a "I think ",│aª," is a good number." ≡ "I think 42 is a good number."</pre>
 <p>there's a pattern to these: when they're pointing to the right the number of lines going out is the number of words grouped, and the symbols for 7, 8, 9, 10 groupers are flipped 3, 4, 5, 6 groupers.</p>
-<p>groupers also use the left of every 2-adverb is used as a word separator, so:</p>
-<pre>7│+2╜/3 ≡ 3
-123456│~½╓₧ ≡ (123)(456)
-"and""the""small""bee""wanted""to""fly"╕├~=3╨Ç ≡ "AND""THE""small""BEE""wanted""to""FLY"</pre>
+<p>we said that groupers are alternatives to parentheses. in an expression, there are a few places where it makes sense to stop the expression, or to place a closing parenthesis. for example, for the expression <code>1+2+3</code></p>
+<pre>(1)+2+3
+(1+)2+3
+(1+2)+3
+(1+2+)3
+(1+2+3)</pre>
+<p>are all expressions that make sense. if you represent the places where the parentheses can end with spaces: <code>1 + 2 + 3</code></p>
+<p>all that groupers do is pick which space to close with:</p>
+<pre>│1+2+3 ≡ (1 +)2 + 3
+├1+2+3 ≡ (1 + 2)+ 3
+╞1+2+3 ≡ (1 + 2 +)3
+╟1+2+3 ≡ (1 + 2 + 3)</pre>
+<p>groupers won't break into literals, parentheses, other groupers, or any other nested structure. <code>1+(2/3)-:3.14</code> is split like <code>1 + (2/3) - :3.14 ²</code>:</p>
+<pre>│1+(2/3)-:3.14² ≡ (1 +)(2/3) - :3.14 ²
+├1+(2/3)-:3.14² ≡ (1 + (2/3))- :3.14 ²
+╞1+(2/3)-:3.14² ≡ (1 + (2/3) -):3.14 ²
+╟1+(2/3)-:3.14² ≡ (1 + (2/3) - :3.14)²</pre>
+<p>a grouper can't break after an adverb, as adverbs always need a verb after them:</p>
+<pre>│a╒+b ≡ (a╒+)b
+│a╕╕(♣♠)b ≡ (a╕╕(♣♠))b</pre>
+<p>but it can break before a 2-adverb! this is actually really useful to adjust adverb precedence, as doing <code>(-╖!)║*</code> is different to <code>-╖!║*</code></p>
+<pre>a -╖!║*b ≡ a - ╖! ║* b
+a│-╖!║*b ≡ a(- ╖!)║* b</pre>
+<p>groupers also can't break between the operands in a fork:</p>
+<pre>φ └+╛+╕+║- ≡ φ └+╛+╕+ ║-
+φ┌└+╛+╕+║- ≡ φ(└+╛+╕+)║-</pre>
+<p>(<code>┌</code> <a href="#Verbize">Verbize</a> is also a 1-grouper. this is occasionally useful)</p>
 <h2 class=prose id="Statements"><a class=h href="#Statements"></a>Statements</h2>
 <p>there is a more explicit way of defining functions, and it looks more like lambda expressions you might be used to from other languages:</p>
 <pre>456{α+/(α~)} ≡ 5
@@ -783,7 +806,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <pre>"Calculating the square root of two..."☻2√ ≡ :1.4142135623730951</pre>
 <h3 id="Print Formatted"><a class=h href="#Print Formatted"></a><code>α_☻</code> <code>α_☻β</code> Print Formatted</h3>
 <p>prints <code>αⁿ</code> or <code>αⁿβ</code> and returns α unchanged. useful when debugging trains. equivalent to <code>ⁿ╖☻</code></p>
-<h2 class="rverb" id="03"><a class=h href="#03"></a><code>♥</code> (0x03, <code>'cx</code>) <span class=rank>verb</span></h2>
+<h2 class="rverb" id="03"><a class=h href="#03"></a><code>♥</code> (0x03, <code>'| 'cx</code>) <span class=rank>verb</span></h2>
 <h3 id="Pairs"><a class=h href="#Pairs"></a><code>α♥</code> Pairs</h3>
 <p>split α into pairs, using the fill of α if a pair isn't full. equivalent to <code>♥2</code></p>
 <pre>123456789♥ ≡ (12)(34)(56)(78)(9■)
@@ -816,7 +839,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <pre>"yes""no""maybe"♣2 ≡ │00│01│02│10│11│20│21│22│23│24
 323"to"(├100├010├001)♣2 ≡ ♪0♪1♪2 │30│31 │40│41│42
 323"to"(├100├010├001)♣3 ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422</pre>
-<p>if <code>β=∞</code>, this basically returns the indices of all the scalars. this can be, in general, a good indicator of the shape of an array</p>
+<p>if <code>β=∞</code>, this basically returns the indices of all the scalars. this can be a good representation of the shape of an array</p>
 <pre>323"to"(├100├010├001)♣∞ ≡ ♪0♪1♪2 │30│31 ├400├401├402├410├411├412├420├421├422
 1(2(3(4(5■))))♣∞ ≡ ♪0(10)(110)(1110)(11110)(11111)</pre>
 <h2 class="rverb" id="06"><a class=h href="#06"></a><code>♠</code> (0x06, <code>'R</code>) <span class=rank>verb</span></h2>
@@ -1196,7 +1219,7 @@ _1%_2 ≡ 1</pre>
 <p>there are more non-ascii characters than ascii characters in the codepage (256 − 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [<code>a</code>, <code>z</code>].</p>
 <p>the characters with single character escape sequences are the following:</p>
 <pre>!"#$%&'()*+,-./0123456789:;&lt;=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
-‼═☻¶÷·─╙╜↔±○¬•╧╣┌│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘╕╛≈</pre>
+‼╕☻¶÷·'╙╜↔±○¬•╧╣┌│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘♥╛≈</pre>
 <h3 id="Line Comment"><a class=h href="#Line Comment"></a><code>'&#x20;abc</code> Line Comment</h3>
 <p>all of the characters until the next line break will be ignored.</p>
 <h2 class="rgrammar" id="28"><a class=h href="#28"></a><code>(</code> (0x28) <span class=rank>grammar</span></h2>
@@ -1411,7 +1434,7 @@ based := "0x" [0-9a-f]*
 123;456 ≡ 456123</pre>
 <h2 class="rverb" id="3C"><a class=h href="#3C"></a><code>&lt;</code> (0x3C) <span class=rank>verb</span></h2>
 <h3 id="Grade Down"><a class=h href="#Grade Down"></a><code>α<</code> Grade Down</h3>
-<p>Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α~↕</code> according to α</p>
+<p>Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array <code>α♣-</code> according to α.</p>
 <pre>37625&lt; ≡ 12403
 37625&lt;¡37625 ≡ 76532
 37625&lt;╖¡ ≡ 76532  ' more tacit</pre>
@@ -1453,7 +1476,7 @@ based := "0x" [0-9a-f]*
 37625>¡37625 ≡ 23567
 37625>╖¡ ≡ 23567  ' more tacit</pre>
 <p>this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.</p>
-<p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Up">Sort Up</a></p>
+<p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Down">Sort Down</a></p>
 <h3 id="Greater Than"><a class=h href="#Greater Than"></a><code>α>β</code> Greater Than</h3>
 <p>return 1 if α > b, else 0. scalar.</p>
 <pre>5>3 ≡ 1
@@ -2631,7 +2654,7 @@ _1÷_2 ≡ 1</pre>
 <h3 id="None"><a class=h href="#None"></a><code>■</code> None</h3>
 <p>none, null, nil, NaN. used as a dummy value sometimes.</p>
 <p>see also: <a href="#Is None">Is None</a>, <a href="#Is Some">Is Some</a>, <a href="#Fill Holes">Fill Holes</a>, <a href="#Replace Holes">Replace Holes</a>, <a href="#Filter Holes">Filter Holes</a>, <a href="#Nullify">Nullify</a></p>
-<h2 class="r1-adverb" id="B8"><a class=h href="#B8"></a><code>╕</code> (0xB8, <code>'|</code>) <span class=rank>1-adverb</span></h2>
+<h2 class="r1-adverb" id="B8"><a class=h href="#B8"></a><code>╕</code> (0xB8, <code>'"</code>) <span class=rank>1-adverb</span></h2>
 <h3 id="Each"><a class=h href="#Each"></a><code>α╕G</code> Each</h3>
 <p>call G with each item in α.</p>
 <pre>123╕▲ ≡ 234
@@ -2896,7 +2919,7 @@ _1÷_2 ≡ 1</pre>
 <p>equivalent to <code>αFG(αH)</code>.</p>
 <h3 id="Fork"><a class=h href="#Fork"></a><code>α└FGHβ</code> Fork</h3>
 <p>equivalent to <code>αFβG(αHβ)</code>.</p>
-<h2 class="rgrammar" id="C4"><a class=h href="#C4"></a><code>─</code> (0xC4, <code>''</code>) <span class=rank>grammar</span></h2>
+<h2 class="rgrammar" id="C4"><a class=h href="#C4"></a><code>─</code> (0xC4, <code>'st</code>) <span class=rank>grammar</span></h2>
 <h3 id="Set Function"><a class=h href="#Set Function"></a><code>α─name</code> Set Function</h3>
 <p>set a local variable <code>.name</code> to the value α. similar to <code>→name</code> <a href="#Set">Set</a> but acts as a function.</p>
 <pre>2─two· .two+.two ≡ 4</pre>
@@ -2904,7 +2927,7 @@ _1÷_2 ≡ 1</pre>
 <pre>2─two+.two ≡ 4</pre>
 <p>the uppercase ascii letters <code>A</code> <code>B</code> <code>C</code>... are assigned to be <code>─a</code> <code>─b</code> <code>─c</code> by default. this makes for a very convenient way of setting and querying variables:</p>
 <pre>2T+t ≡ 4  ' αT sets α to the variable `t` and returns α</pre>
-<p>this function, when used as a verb, is special in that if it are called with two arguments, the right argument will be interpreted _after_ the variable is set. this allows for code like this:</p>
+<p>this function is special in that, when used as a verb and called with two arguments, the right argument will be interpreted after the variable is set. this allows for code like this:</p>
 <pre>1A 2B (ab)+ ≡ 3</pre>
 <p>even if <code>(ab)</code> is an argument of <code>B</code>, and would logically other functions evaluate their arguments before calling them.</p>
 <h3 id="Set Function"><a class=h href="#Set Function"></a><code>α─nameβ</code> Set Function</h3>
@@ -2912,7 +2935,7 @@ _1÷_2 ≡ 1</pre>
 <pre>1─a2─b3─c a+b+c ≡ 6
 1A2B3C +a+b ≡ 6</pre>
 <p>see also: <a href="#Mutate Function">Mutate Function</a>, <a href="#Set">Set</a></p>
-<h2 class="rgrammar" id="CD"><a class=h href="#CD"></a><code>═</code> (0xCD, <code>'"</code>) <span class=rank>grammar</span></h2>
+<h2 class="rgrammar" id="CD"><a class=h href="#CD"></a><code>═</code> (0xCD, <code>'mt</code>) <span class=rank>grammar</span></h2>
 <h3 id="Mutate Function"><a class=h href="#Mutate Function"></a><code>a═name</code> Mutate Function</h3>
 <p>change the variable <code>.name</code> using the function β. similar <code>↔name</code> <a href="#Mutate">Mutate</a> but acts as a function. returns the changed value.</p>
 <pre>1→a .▲═a· a ≡ 2
