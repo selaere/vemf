@@ -47,7 +47,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
         env.set_local(name, Val::AvBuilder(adverb::$name))
     } );* }}
     load_av!(
-        swap, constant, monadic, bind, atop,
+        swap, constant, toleft, toright, bind, atop,
         each, eachleft, eachtrim, conform, extend,
         scan, scanpairs, reduce, stencil, valences,
         overleft, overright, over, forkleft, forkright,

@@ -144,12 +144,12 @@ fn word(t: &mut&[Tok], morphemes: &mut usize) -> Option<(Role, Expr)> {
                 Verb => arg
             })
         },
-        Just(s @ b!('┌''│''├''╞''╟''╠''┤''╡''╢''╣')) => { step(t);
+        Just(s @ b!('┘''│''├''╞''╟''╠''┤''╡''╢''╣')) => { step(t);
             macro_rules! bl { [$($b:tt)+] => {[$(b!($b)),+]} }
             let p = phrase_by_morphemes(t, 
-                bl!['┌''│''├''╞''╟''╠''┤''╡''╢''╣'].iter().position(|x| x == s).unwrap() + 1);
+                bl!['┘''│''├''╞''╟''╠''┤''╡''╢''╣'].iter().position(|x| x == s).unwrap() + 1);
             let e = phrase_to_expr(p);
-            (if *s == b!('┌') {Verb} else {Noun}, e.unwrap_or(NAN))
+            (if *s == b!('┘') {Verb} else {Noun}, e.unwrap_or(NAN))
         },
         tok => if let Some(p) = value_token(tok.c()) { step(t); (Noun, p) } else {return None}
     };

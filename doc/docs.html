@@ -320,7 +320,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="rnone"><a href="#BC">╝</a></td>
 <td class="r2-adverb"><a href="#BD">╜</a></td>
 <td class="r1-adverb"><a href="#BE">╛</a></td>
-<td class="rnone"><a href="#BF">┐</a></td></tr>
+<td class="r1-adverb"><a href="#BF">┐</a></td></tr>
 <tr><td class="rgrammar"><a href="#C0">└</a></td>
 <td class="r1-adverb"><a href="#C1">┴</a></td>
 <td class="r1-adverb"><a href="#C2">┬</a></td>
@@ -346,8 +346,8 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="r2-adverb"><a href="#D6">╓</a></td>
 <td class="r2-adverb"><a href="#D7">╫</a></td>
 <td class="r1-adverb"><a href="#D8">╪</a></td>
-<td class="rnone"><a href="#D9">┘</a></td>
-<td class="rgrammar"><a href="#DA">┌</a></td>
+<td class="rgrammar"><a href="#D9">┘</a></td>
+<td class="r1-adverb"><a href="#DA">┌</a></td>
 <td class="rliteral"><a href="#DB">█</a></td>
 <td class="rverb"><a href="#DC">▄</a></td>
 <td class="rverb"><a href="#DD">▌</a></td>
@@ -546,7 +546,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <pre>4*┴║-5 ≡ 4(┴*)║-5
 4*┴║-5 ≡ 4*4-(5*5)</pre>
 <p>the built-in adverbs are all box-drawing symbols (though not all box-drawing symbols are adverbs). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:</p>
-<pre>1-adverbs: ╪┼┴┬╧╤╕╒╛╘
+<pre>1-adverbs: ╪┼┴┬╧╤╕╒╛╘┐┌
 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║</pre>
 <p>these adverbs have a variety of uses. some of them are <a href="#Combinators">Combinators</a>, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.</p>
 <h3 id="Iteration"><a class=h href="#Iteration"></a>Iteration</h3>
@@ -676,9 +676,9 @@ f+n ≡ :1032</pre>
 ~=0→empty φ:empty ≡ 1</pre>
 <p>we've been setting these trains to variables before using them. it won't work if you try to apply them directly with parentheses:</p>
 <pre>5(+/2)9</pre>
-<p>is a list with <code>5</code>, the function <code>+/2</code> (as a noun) and <code>9</code>. you can turn a noun into a verb with <a href="#Verbize">Verbize</a> <code>┌</code>:</p>
-<pre>5┌(+/2)9 ≡ 7
-6┌(↨*) ≡ :720</pre>
+<p>is a list with <code>5</code>, the function <code>+/2</code> (as a noun) and <code>9</code>. you can turn a noun into a verb with <a href="#Verbize">Verbize</a> <code>┘</code>:</p>
+<pre>5┘(+/2)9 ≡ 7
+6┘(↨*) ≡ :720</pre>
 <p>but you never actually need to do this! an inlined train will always be shorter:</p>
 <pre>5+9/2 ≡ 7
 6↨* ≡ :720</pre>
@@ -688,8 +688,8 @@ f+n ≡ :1032</pre>
 <p>we can create a variable from the triangular number function from earlier with a train.</p>
 <p>the <code>½</code> is applied atop the result of the fork, so as a single function this is an atop:</p>
 <pre>6▲╓*½ ≡ :21
-6┌(▲╓*½) ≡ :21</pre>
-<p>note that we need the <code>┌</code> for it to be interpreted as a function.</p>
+6┘(▲╓*½) ≡ :21</pre>
+<p>note that we need the <code>┘</code> for it to be interpreted as a function.</p>
 <p>we can set our function to a variable and use it.</p>
 <pre>▲╓*½→triang 6:triang ≡ :21</pre>
 <p>this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly (see <a href="#Statements">Statements</a>):</p>
@@ -737,8 +737,8 @@ f+n ≡ :1032</pre>
 a│-╖!║*b ≡ a(- ╖!)║* b</pre>
 <p>groupers also can't break between the operands in a fork:</p>
 <pre>φ └+╛+╕+║- ≡ φ └+╛+╕+ ║-
-φ┌└+╛+╕+║- ≡ φ(└+╛+╕+)║-</pre>
-<p>(<code>┌</code> <a href="#Verbize">Verbize</a> is also a 1-grouper. this is occasionally useful)</p>
+φ┘└+╛+╕+║- ≡ φ(└+╛+╕+)║-</pre>
+<p>(<code>┘</code> <a href="#Verbize">Verbize</a> is also a 1-grouper. this is occasionally useful)</p>
 <h2 class=prose id="Statements"><a class=h href="#Statements"></a>Statements</h2>
 <p>there is a more explicit way of defining functions, and it looks more like lambda expressions you might be used to from other languages:</p>
 <pre>456{α+/(α~)} ≡ 5
@@ -806,7 +806,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <pre>"Calculating the square root of two..."☻2√ ≡ :1.4142135623730951</pre>
 <h3 id="Print Formatted"><a class=h href="#Print Formatted"></a><code>α_☻</code> <code>α_☻β</code> Print Formatted</h3>
 <p>prints <code>αⁿ</code> or <code>αⁿβ</code> and returns α unchanged. useful when debugging trains. equivalent to <code>ⁿ╖☻</code></p>
-<h2 class="rverb" id="03"><a class=h href="#03"></a><code>♥</code> (0x03, <code>'| 'cx</code>) <span class=rank>verb</span></h2>
+<h2 class="rverb" id="03"><a class=h href="#03"></a><code>♥</code> (0x03, <code>'cx</code>) <span class=rank>verb</span></h2>
 <h3 id="Pairs"><a class=h href="#Pairs"></a><code>α♥</code> Pairs</h3>
 <p>split α into pairs, using the fill of α if a pair isn't full. equivalent to <code>♥2</code></p>
 <pre>123456789♥ ≡ (12)(34)(56)(78)(9■)
@@ -1103,7 +1103,8 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <h3 id="Bins Up"><a class=h href="#Bins Up"></a><code>α▲β</code> Bins Up</h3>
 <p>run a binary search. when α is a list sorted in ascending order, it finds the position of the first element in α that is less than or equal to β. you can also think of the list α as intervals of shape [x, y)</p>
 <pre>0259▲6 ≡ 3
-0259▲Θ0123456789Φ ≡ 011222333344</pre>
+0259▲Θ0123456789Φ ≡ 011222333344
+"Sample text was first invented in 1894 by James Sample."┴▲"0:" ≡ 2222220222202220222220222222220220111102202222202222220</pre>
 <p>see also: <a href="#Bins Down">Bins Down</a></p>
 <h2 class="rverb" id="1F"><a class=h href="#1F"></a><code>▼</code> (0x1F, <code>'bd</code>) <span class=rank>verb</span></h2>
 <h3 id="Bump Down"><a class=h href="#Bump Down"></a><code>α▼</code> Bump Down</h3>
@@ -1219,7 +1220,7 @@ _1%_2 ≡ 1</pre>
 <p>there are more non-ascii characters than ascii characters in the codepage (256 − 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [<code>a</code>, <code>z</code>].</p>
 <p>the characters with single character escape sequences are the following:</p>
 <pre>!"#$%&'()*+,-./0123456789:;&lt;=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
-‼╕☻¶÷·'╙╜↔±○¬•╧╣┌│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘♥╛≈</pre>
+‼╕☻¶÷·'╙╜↔±○¬•╧╣┘│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘┬╛≈</pre>
 <h3 id="Line Comment"><a class=h href="#Line Comment"></a><code>'&#x20;abc</code> Line Comment</h3>
 <p>all of the characters until the next line break will be ignored.</p>
 <h2 class="rgrammar" id="28"><a class=h href="#28"></a><code>(</code> (0x28) <span class=rank>grammar</span></h2>
@@ -2767,6 +2768,15 @@ _1÷_2 ≡ 1</pre>
 <p>gives an element to start with. <code>α╧fβ</code> is always <code>α⌐β╧f</code>. this also means the empty list will return <code>β</code>; in fact, this is how <a href="#Sum">Sum</a> and <a href="#Product">Product</a> are implemented.</p>
 <pre>12345╧+0 ≡ :15
 φ╧+0 ≡ 0</pre>
+<h2 class="r1-adverb" id="C2"><a class=h href="#C2"></a><code>┬</code> (0xC2, <code>'|</code>) <span class=rank>1-adverb</span></h2>
+<h3 id="Filter"><a class=h href="#Filter"></a><code>α┬G</code> Filter</h3>
+<p>call G to all elements of α, and return the list including only the items that returned a non-zero value. equivalent to <code>(╛G⌐)╓‼</code> or <code>α╛G⌐‼α</code></p>
+<pre>2370236075060501070613┬(&lt;3) ≡ 20200001001
+"Sample text was first invented by James Sample in 1894."┬(≥"a{"+~1) ≡ "S      J S  1894."</pre>
+<p>see also: <a href="#Replicate">Replicate</a>, <a href="#Power">Power</a></p>
+<h3 id="Filter"><a class=h href="#Filter"></a><code>αF┬G</code> Filter</h3>
+<p>bind β to G</p>
+<pre>2370236075060501070613┬&lt;3 ≡ 20200001001</pre>
 <h2 class="r1-adverb" id="C1"><a class=h href="#C1"></a><code>┴</code> (0xC1, <code>'`</code>) <span class=rank>1-adverb</span></h2>
 <h3 id="Selfie"><a class=h href="#Selfie"></a><code>α┴G</code> Selfie</h3>
 <p>equivalent to <code>αGα</code></p>
@@ -2774,12 +2784,18 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Swap"><a class=h href="#Swap"></a><code>α┴Gβ</code> Swap</h3>
 <p>equivalent to <code>βGα</code></p>
 <pre>1/4 ≡ 4┴/1</pre>
-<h2 class="r1-adverb" id="C2"><a class=h href="#C2"></a><code>┬</code> (0xC2, <code>'mo</code>) <span class=rank>1-adverb</span></h2>
-<h3 id="Monadic"><a class=h href="#Monadic"></a><code>┬G</code> Monadic</h3>
-<p>executes G, ignoring the right argument</p>
-<pre>3%   ≡ 8
-3┬%  ≡ 8
-3┬%4 ≡ 8</pre>
+<h2 class="r1-adverb" id="BF"><a class=h href="#BF"></a><code>┐</code> (0xBF, <code>'tl</code>) <span class=rank>1-adverb</span></h2>
+<h3 id="To Left"><a class=h href="#To Left"></a><code>┐G</code> To Left</h3>
+<p>executes G with the left argument, ignoring the right argument. equivalent to <code>(◄G)</code>.</p>
+<pre>3▲   ≡ 4
+3┐▲  ≡ 4
+3┐▲7 ≡ 4</pre>
+<h2 class="r1-adverb" id="DA"><a class=h href="#DA"></a><code>┌</code> (0xDA, <code>'tr</code>) <span class=rank>1-adverb</span></h2>
+<h3 id="To Right"><a class=h href="#To Right"></a><code>┌G</code> To Right</h3>
+<p>executes G with the right argument, or the left argument if not given. equivalent to <code>(►G)</code>.</p>
+<pre>3▲   ≡ 4
+3┌▲  ≡ 4
+3┌▲4 ≡ 5</pre>
 <h2 class="r1-adverb" id="C5"><a class=h href="#C5"></a><code>┼</code> (0xC5, <code>'cf</code>) <span class=rank>1-adverb</span></h2>
 <h3 id="Conform"><a class=h href="#Conform"></a><code>α┼G</code> Conform</h3>
 <p>call F to every scalar in α, keeping the list's structure. this is similar to <a href="#Each">Each</a> called arbitrarily many times.</p>
@@ -2944,12 +2960,12 @@ _1÷_2 ≡ 1</pre>
 <p>call the function with β as a right argument</p>
 <pre>1→a .+═a2· a ≡ 3</pre>
 <p>see also: <a href="#Set Function">Set Function</a>, <a href="#Mutate">Mutate</a></p>
-<h2 class="rgrammar" id="DA"><a class=h href="#DA"></a><code>┌</code> (0xDA, <code>'1</code>) <span class=rank>grammar</span></h2>
-<h3 id="Verbize"><a class=h href="#Verbize"></a><code>┌m</code> Verbize</h3>
-<p>turns the following morpheme into a verb.</p>
-<h3 id=""><a class=h href="#"></a><code>.┌</code> </h3>
+<h2 class="rgrammar" id="D9"><a class=h href="#D9"></a><code>┘</code> (0xD9, <code>'1</code>) <span class=rank>grammar</span></h2>
+<h3 id="Verbize"><a class=h href="#Verbize"></a><code>┘m</code> Verbize</h3>
+<p>turns the following word into a verb. acts as a 1-grouper, see <a href="#Groups">Groups</a></p>
+<h3 id=""><a class=h href="#"></a><code>.┘</code> </h3>
 <p>the number <code>1.5</code>, or <code>3/2</code></p>
-<h3 id=""><a class=h href="#"></a><code>_┌</code> </h3>
+<h3 id=""><a class=h href="#"></a><code>_┘</code> </h3>
 <p>the number <code>-0.5</code>, or <code>Θ½</code></p>
 <h2 class="rgrouper" id="B3"><a class=h href="#B3"></a><code>│</code> (0xB3, <code>'2</code>) <span class=rank>grouper</span></h2>
 <h3 id="2-Group"><a class=h href="#2-Group"></a><code>│mn</code> 2-Group</h3>

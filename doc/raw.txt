@@ -160,7 +160,7 @@ additionally, 1-adverbs can be used before 2-adverbs, and this applies them to t
 > 4*┴║-5 ≡ 4(┴*)║-5
 > 4*┴║-5 ≡ 4*4-(5*5)
 the built-in adverbs are all box-drawing symbols (though not all box-drawing symbols are adverbs). 1-adverbs have a single vertical line and 2-adverbs have a double vertical lines:
-> 1-adverbs: ╪┼┴┬╧╤╕╒╛╘
+> 1-adverbs: ╪┼┴┬╧╤╕╒╛╘┐┌
 > 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║
 these adverbs have a variety of uses. some of them are ||Combinators||, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.
 # Iteration
@@ -292,9 +292,9 @@ you can chain these, left-to-right
 > ~=0→empty φ:empty ≡ 1
 we've been setting these trains to variables before using them. it won't work if you try to apply them directly with parentheses:
 > 5(+/2)9
-is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with ||Verbize|| `┌`:
-> 5┌(+/2)9 ≡ 7
-> 6┌(↨*) ≡ :720
+is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with ||Verbize|| `┘`:
+> 5┘(+/2)9 ≡ 7
+> 6┘(↨*) ≡ :720
 but you never actually need to do this! an inlined train will always be shorter:
 > 5+9/2 ≡ 7
 > 6↨* ≡ :720
@@ -304,8 +304,8 @@ trains are also useful when used with adverbs:
 we can create a variable from the triangular number function from earlier with a train.
 the `½` is applied atop the result of the fork, so as a single function this is an atop:
 > 6▲╓*½ ≡ :21
-> 6┌(▲╓*½) ≡ :21
-note that we need the `┌` for it to be interpreted as a function.
+> 6┘(▲╓*½) ≡ :21
+note that we need the `┘` for it to be interpreted as a function.
 we can set our function to a variable and use it.
 > ▲╓*½→triang 6:triang ≡ :21
 this way of defining functions, stringing other functions together with combinators— is an important part of vemf. you might hear it being called "tacit programming" or "point-free style". note how we never refer to our arguments by name. we can also define this function explicitly (see ||Statements||):
@@ -354,8 +354,8 @@ but it can break before a 2-adverb! this is actually really useful to adjust adv
 > a│-╖!║*b ≡ a(- ╖!)║* b
 groupers also can't break between the operands in a fork:
 > φ └+╛+╕+║- ≡ φ └+╛+╕+ ║-
-> φ┌└+╛+╕+║- ≡ φ(└+╛+╕+)║-
-(`┌` ||Verbize|| is also a 1-grouper. this is occasionally useful)
+> φ┘└+╛+╕+║- ≡ φ(└+╛+╕+)║-
+(`┘` ||Verbize|| is also a 1-grouper. this is occasionally useful)
 ---
 :title: Statements
 there is a more explicit way of defining functions, and it looks more like lambda expressions you might be used to from other languages:
@@ -433,7 +433,7 @@ print α and return β
 prints `αⁿ` or `αⁿβ` and returns α unchanged. useful when debugging trains. equivalent to `ⁿ╖☻`
 ---
 :char: ♥
-:ascii: '| 'cx
+:ascii: 'cx
 :type: verb
 #1 Pairs
 split α into pairs, using the fill of α if a pair isn't full. equivalent to `♥2`
@@ -809,6 +809,7 @@ see also: ||Bump Down||, ||Add||
 run a binary search. when α is a list sorted in ascending order, it finds the position of the first element in α that is less than or equal to β. you can also think of the list α as intervals of shape [x, y)
 > 0259▲6 ≡ 3
 > 0259▲Θ0123456789Φ ≡ 011222333344
+> "Sample text was first invented in 1894 by James Sample."┴▲"0:" ≡ 2222220222202220222220222222220220111102202222202222220
 see also: ||Bins Down||
 ---
 :char: ▼
@@ -943,7 +944,7 @@ escapes are one way to write characters outside the ascii range (characters in t
 there are more non-ascii characters than ascii characters in the codepage (256 − 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [`a`, `z`].
 the characters with single character escape sequences are the following:
 > !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
-> ‼╕☻¶÷·'╙╜↔±○¬•╧╣┌│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘♥╛≈
+> ‼╕☻¶÷·'╙╜↔±○¬•╧╣┘│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘┬╛≈
 #'&#x20;abc Line Comment
 all of the characters until the next line break will be ignored.
 ---
@@ -2945,6 +2946,18 @@ gives an element to start with. `α╧fβ` is always `α⌐β╧f`. this also me
 > 12345╧+0 ≡ :15
 > φ╧+0 ≡ 0
 ---
+:char: ┬
+:ascii: '|
+:type: 1-adverb
+#1a1 Filter
+call G to all elements of α, and return the list including only the items that returned a non-zero value. equivalent to `(╛G⌐)╓‼` or `α╛G⌐‼α`
+> 2370236075060501070613┬(<3) ≡ 20200001001
+> "Sample text was first invented by James Sample in 1894."┬(≥"a{"+~1) ≡ "S      J S  1894."
+see also: ||Replicate||, ||Power||
+#1a2 Filter
+bind β to G
+> 2370236075060501070613┬<3 ≡ 20200001001
+---
 :char: ┴
 :ascii: '`
 :type: 1-adverb
@@ -2955,14 +2968,23 @@ equivalent to `αGα`
 equivalent to `βGα`
 > 1/4 ≡ 4┴/1
 ---
-:char: ┬
-:ascii: 'mo
+:char: ┐
+:ascii: 'tl
 :type: 1-adverb
-#a1 Monadic
-executes G, ignoring the right argument
-> 3%   ≡ 8
-> 3┬%  ≡ 8
-> 3┬%4 ≡ 8
+#a1 To Left
+executes G with the left argument, ignoring the right argument. equivalent to `(◄G)`.
+> 3▲   ≡ 4
+> 3┐▲  ≡ 4
+> 3┐▲7 ≡ 4
+---
+:char: ┌
+:ascii: 'tr
+:type: 1-adverb
+#a1 To Right
+executes G with the right argument, or the left argument if not given. equivalent to `(►G)`.
+> 3▲   ≡ 4
+> 3┌▲  ≡ 4
+> 3┌▲4 ≡ 5
 ---
 :char: ┼
 :ascii: 'cf
@@ -3182,11 +3204,11 @@ call the function with β as a right argument
 > 1→a .+═a2· a ≡ 3
 see also: ||Set Function||, ||Mutate||
 ---
-:char: ┌
+:char: ┘
 :ascii: '1
 :type: grammar
-#┌m Verbize
-turns the following morpheme into a verb.
+#┘m Verbize
+turns the following word into a verb. acts as a 1-grouper, see ||Groups||
 #.0
 the number `1.5`, or `3/2`
 #_0

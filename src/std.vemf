@@ -3,9 +3,10 @@
 
 .invalences→╬
 
-.inswap→┴ .inmonadic→┬
-.inoverleft→╜ .inoverright→╙
-.inforkleft→╖ .inforkright→╓
+.inswap→┴
+.inoverleft→╜.inoverright→╙
+.inforkleft→╖.inforkright→╓
+  .intoleft→┐  .intoright→┌
 .inatop→_╜ .inbind→_╙
 .inover→║
 
@@ -149,6 +150,7 @@ _Ü_ë→Ü
 ┼:inarg╬:"inatan2"→Ä
 
 .inreplicate→‼│♣╖‼╬‼→‼
+:╛┴:_╜.⌐┴:╓.‼→┬
 
 .intocp┼╬_╛.inencode→ê
 .infromcp┼╬{α▐0↓(β~▲)*(β♠╤*♠,1)+}→ë
@@ -197,7 +199,7 @@ _╘(┴~╙%)╓└♂,↑→«(«1)╬«→«
 
 .inget╬.inset→"←"
 
-9↨╕└(ª;`_)←-· ' set _2, _3
+9↨╕└(ª;`_)←-·
 Φ-→_Φ
 ∞-→_∞
 Γ-→_Γ
@@ -208,13 +210,13 @@ _╘(┴~╙%)╓└♂,↑→«(«1)╬«→«
 1^→Φ
 π/2→π
 :0.5772156649015329→Γ
-3211311115/2334467892┴╕←"┌│├╞╟╠┤╡╢╣"·
+3211311115/2334467892┴╕←"┘│├╞╟╠┤╡╢╣"·
 
 π*2→_π
 5√▲½→φ
 5√▼-½→_φ
 
-Θ½→_┌ 2√→_│ 3√→_├ :420→_╞ 5√→_╟ :360→_╠ :273.15→_┤
+Θ½→_┘ 2√→_│ 3√→_├ :420→_╞ 5√→_╟ :360→_╠ :273.15→_┤
 
 ─a→A─b→B─c→C─d→D─e→E─f→F─g→G─h→H─i→I─j→J─k→K─l→L─m→M
 ─n→N─o→O─p→P─q→Q─r→R─s→S─t→T─u→U─v→V─w→W─x→X─y→Y─z→Z

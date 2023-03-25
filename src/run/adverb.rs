@@ -19,7 +19,8 @@ macro_rules! adverb {
 
 adverb!(@env, a .swap g b => g.dyad(env, b.unwrap_or_else(|| a.c()), a));
 adverb!(@_ , _a .constant g _b => (**g).c() );
-adverb!(@env, a .monadic g _b => g.monad(env, a) );
+adverb!(@env, a .toleft g _b => g.monad(env, a) );
+adverb!(@env, a .toright g b => g.monad(env, b.unwrap_or(a)) );
 adverb!(@env, a f .valences g b => (if b.is_none() {f} else {g}).call(env, a, b));
 adverb!(@env, a f .over g b => {
     let l = f.monad(env, a);
