@@ -67,8 +67,8 @@ pub const fn tobyte(x: char) -> Option<u8> {
     })
 }
 
-pub fn tobytes(string: &str) -> Option<Bstr> {
-    let mut vector = Bstr::with_capacity(string.len() / 2);
+pub fn tobytes(string: &str) -> Option<Vec<u8>> {
+    let mut vector = Vec::with_capacity(string.len() / 2);
     for c in string.chars() {
         if let '\r' | '\u{200E}' | '\u{FE0E}' | '\u{FE0F}' = c { continue } // crlf moment
         vector.push(tobyte(c)?);

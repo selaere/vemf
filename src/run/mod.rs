@@ -251,7 +251,11 @@ impl<'io> Env<'io> {
     }
 
     pub fn run_string(&mut self, code: &str, format: &[Val]) -> Result<(), i32> {
-        let mut res = self.include_string(code);
+        self.run_bytes(&crate::codepage::tobytes(code).unwrap()[..], format)
+    }
+
+    pub fn run_bytes(&mut self, code: &[u8], format: &[Val]) -> Result<(), i32> {
+        let mut res = self.include_bytes(code);
         if let Val::Err(x) = res { return Err(x); }
         if res.is_infinite() { res = res.call(
             self,
