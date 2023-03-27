@@ -14,7 +14,7 @@ the main way to play around with vemf is the interactive repl.
 the indented lines are input, and the result is unindented and ||formatted@#Format|| automatically. the default formatting is not always what you want though:
 >     "hello world i am a vemf test"\"aeiou"
 > (104 108 108 32 119 114 108 100 32 32 109 32 32 118 109 102 32 116 115 116)
-in the repl, you can format it into a string by using `)4 ` (see ||Custom Format||)
+in the repl, you can format it into a string by using `)4 ` (see ||Format||)
 >     )4 "hello world i am a vemf test"\"aeiou"
 > "hll wrld  m  vmf tst"
 if you evaluate something like "tangent of pi radians", thanks to floating-point shenanigans, you can get small inaccuracies:
@@ -399,7 +399,7 @@ these are all of the symbols available to vemf programs. even if storing vemf sc
 # Execution
 a vemf file is a list of statements that are executed in order. there are only a few ways a vemf program can contact with the outside world
 the command line arguments are available as `δ` ||Arguments||. as a shorthand, `α` ||Alpha|| and `β` ||Beta|| are set to the first argument and second argument respectively, and `Σ` ||Arity|| is the number of arguments. arguments are always Unicode strings.
-the return value of the program (either from a `◘` ||Return|| in the top scope or the last statement in the program) is, by default, formatted and printed automatically. the formatting is the same as `ⁿ0` (see ||Custom Format||):
+the return value of the program (either from a `◘` ||Return|| in the top scope or the last statement in the program) is, by default, formatted and printed automatically. the formatting is the same as `ⁿ0` (see ||Format||):
 - if the result is a function, it is called with the arguments passed into the program (monadically with α if only one argument was passed, otherwise with α and β), and then formatted
 - if the result is a scalar, it is printed as a number in decimal
 - if the result is a flat list, it is printed as a Unicode string, where every element is a codepoint
@@ -2391,7 +2391,7 @@ let's represent the number 123456789. we can either use the ||Base Encode|| func
 > :123456789é:256 ≡ :7:91:205:21▐0
 alternatively, get the raw ||Bits|| of the number, partition it into ||Chunks|| of 8 bits, and ||Decode Binary|| them:
 > :123456789é♥8╕è ≡ :0:0:0:0:7:91:205:21
-we can represent the bytes as a codepage string (see ||Custom Format||):
+we can represent the bytes as a codepage string (see ||Format||):
 >     :7:91:205:21ⁿ5☻·
 > "•[═§"
 if we try it out,
@@ -2775,13 +2775,14 @@ calculate the βth root of α. scalar.
 :char: ⁿ
 :ascii: 'n, 'ft
 :type: verb
-#1 Format
-format α with default settings
+#1 Default Format
+format α with default settings. equivalent to `ⁿ1`
+> :123ⁿ ≡ "123"
 > 123ⁿ ≡ "(1 2 3)"
-#2 Custom Format
+#2 Format
 when this is called with a right argument, it will be interpreted in the following way:
 - 0: format for printing (see ||Execution||)
-- 1: float
+- 1: default format
 - 2: integer
 - 3: Unicode character
 - 4: Unicode string

@@ -41,7 +41,7 @@ fn parse_args() -> Options {
         let arg = iter.next();
         match arg.as_deref() {
             Some("-f" | "--format") => {
-                opts.format = iter.next().unwrap_or_else(|| String::from(""));
+                opts.format = iter.next().unwrap_or_else(|| String::from("1"));
             }
             Some("-h" | "--help") => {
                 print!("\
@@ -115,7 +115,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 fn repl(mut env: Env, mut opts: Options) {
     println!("welcome to vemf repl. enjoy your stay");
-    opts.format = String::from("");
+    opts.format = String::from("1");
     loop {
         print!("{}", opts.prompt);
         _ = std::io::stdout().flush();

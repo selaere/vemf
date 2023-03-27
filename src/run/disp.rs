@@ -13,7 +13,6 @@ pub fn format(&self, f: &mut impl Write, slice: &[Val]) -> FResult {
     let rest  = slice.get(1..).unwrap_or(&[]);
     match slice.first().and_then(|x| x.try_int()) {
         Some(0) => return write!(f, "{}", self.display_string()),
-        Some(1) => if self.is_scalar() { return write!(f, "{self}"); }
         Some(2) => if let Some(n) = self.try_int() { return write!(f, "{n}") }
         Some(3) => if let Some(c) = self.try_int() { return match char::from_u32(c as u32) {
             Some('\x00'..='\x1F' | '\x7F'..='\u{9F}' | '\\') =>

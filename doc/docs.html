@@ -403,7 +403,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <p>the indented lines are input, and the result is unindented and <a href="#Format">formatted</a> automatically. the default formatting is not always what you want though:</p>
 <pre>    "hello world i am a vemf test"\"aeiou"
 (104 108 108 32 119 114 108 100 32 32 109 32 32 118 109 102 32 116 115 116)</pre>
-<p>in the repl, you can format it into a string by using <code>)4 </code> (see <a href="#Custom Format">Custom Format</a>)</p>
+<p>in the repl, you can format it into a string by using <code>)4 </code> (see <a href="#Format">Format</a>)</p>
 <pre>    )4 "hello world i am a vemf test"\"aeiou"
 "hll wrld  m  vmf tst"</pre>
 <p>if you evaluate something like "tangent of pi radians", thanks to floating-point shenanigans, you can get small inaccuracies:</p>
@@ -780,7 +780,7 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <h3 id="Execution"><a class=h href="#Execution"></a>Execution</h3>
 <p>a vemf file is a list of statements that are executed in order. there are only a few ways a vemf program can contact with the outside world</p>
 <p>the command line arguments are available as <code>δ</code> <a href="#Arguments">Arguments</a>. as a shorthand, <code>α</code> <a href="#Alpha">Alpha</a> and <code>β</code> <a href="#Beta">Beta</a> are set to the first argument and second argument respectively, and <code>Σ</code> <a href="#Arity">Arity</a> is the number of arguments. arguments are always Unicode strings.</p>
-<p>the return value of the program (either from a <code>◘</code> <a href="#Return">Return</a> in the top scope or the last statement in the program) is, by default, formatted and printed automatically. the formatting is the same as <code>ⁿ0</code> (see <a href="#Custom Format">Custom Format</a>):</p>
+<p>the return value of the program (either from a <code>◘</code> <a href="#Return">Return</a> in the top scope or the last statement in the program) is, by default, formatted and printed automatically. the formatting is the same as <code>ⁿ0</code> (see <a href="#Format">Format</a>):</p>
 <ul><li>if the result is a function, it is called with the arguments passed into the program (monadically with α if only one argument was passed, otherwise with α and β), and then formatted</li>
 <li>if the result is a scalar, it is printed as a number in decimal</li>
 <li>if the result is a flat list, it is printed as a Unicode string, where every element is a codepoint</li>
@@ -2334,7 +2334,7 @@ _2Ñ0 ≡ 0</pre>
 <pre>:123456789é:256 ≡ :7:91:205:21▐0</pre>
 <p>alternatively, get the raw <a href="#Bits">Bits</a> of the number, partition it into <a href="#Chunks">Chunks</a> of 8 bits, and <a href="#Decode Binary">Decode Binary</a> them:</p>
 <pre>:123456789é♥8╕è ≡ :0:0:0:0:7:91:205:21</pre>
-<p>we can represent the bytes as a codepage string (see <a href="#Custom Format">Custom Format</a>):</p>
+<p>we can represent the bytes as a codepage string (see <a href="#Format">Format</a>):</p>
 <pre>    :7:91:205:21ⁿ5☻·
 "•[═§"</pre>
 <p>if we try it out,</p>
@@ -2622,13 +2622,14 @@ _1÷_2 ≡ 1</pre>
 <p>calculate the βth root of α. scalar.</p>
 <pre>2√3^3 ≡ 2</pre>
 <h2 class="rverb" id="FC"><a class=h href="#FC"></a><code>ⁿ</code> (0xFC, <code>'n, 'ft</code>) <span class=rank>verb</span></h2>
-<h3 id="Format"><a class=h href="#Format"></a><code>αⁿ</code> Format</h3>
-<p>format α with default settings</p>
-<pre>123ⁿ ≡ "(1 2 3)"</pre>
-<h3 id="Custom Format"><a class=h href="#Custom Format"></a><code>αⁿβ</code> Custom Format</h3>
+<h3 id="Default Format"><a class=h href="#Default Format"></a><code>αⁿ</code> Default Format</h3>
+<p>format α with default settings. equivalent to <code>ⁿ1</code></p>
+<pre>:123ⁿ ≡ "123"
+123ⁿ ≡ "(1 2 3)"</pre>
+<h3 id="Format"><a class=h href="#Format"></a><code>αⁿβ</code> Format</h3>
 <p>when this is called with a right argument, it will be interpreted in the following way:</p>
 <ul><li>0: format for printing (see <a href="#Execution">Execution</a>)</li>
-<li>1: float</li>
+<li>1: default format</li>
 <li>2: integer</li>
 <li>3: Unicode character</li>
 <li>4: Unicode string</li>
