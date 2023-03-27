@@ -14,7 +14,8 @@ pub use run::{Env, Val, c64, io::{Interface, NoIO}};
 #[cfg(feature="std")] pub use run::io::{io_result, StdIO, FromIoWrite};
 
 /// owned byte string type. length will be the same as a Vec in 64bit archs
-pub type Bstr = smallvec::SmallVec<[u8; 16]>;
+#[cfg(feature="smallvec")] pub type Bstr = smallvec::SmallVec<[u8; 16]>;
+#[cfg(not(feature="smallvec"))] pub type Bstr = alloc::vec::Vec<u8>;
 pub use token::{rewrite, escape_1c, escape_2c};
 
 pub fn bx<T>(x: T) -> alloc::boxed::Box<T> { alloc::boxed::Box::new(x) }
@@ -28,7 +29,8 @@ mod prelude {
     
     pub use {b, or_nan, func};
     pub use alloc::{vec, format};
-    pub use smallvec::smallvec as bstr;
+    #[cfg(feature="smallvec")] pub use smallvec::smallvec as bstr;
+    #[cfg(not(feature="smallvec"))] pub use vec as bstr;
     pub use crate::{Bstr, bx};
 
     // vemf does a lot of cloning. i got tired of the same 8 characters appearing so often

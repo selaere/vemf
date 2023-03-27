@@ -13,7 +13,7 @@ required-features = ["bin"]
 
 [dependencies]
 # small byte strings
-smallvec = { version = "1.10", features = ["union"] }
+smallvec = { version = "1.10", features = ["union"], optional = true }
 # random number generation
 rand = { version = "0.8", default-features = false, features = ["alloc"] }
 # complex numbers
@@ -26,6 +26,7 @@ libm = "0.2"
 hashbrown = "0.13"
 
 [features]
+default = ["smallvec"]
 std = []
 bin = ["std", "rand/std", "rand/std_rng"]
 
