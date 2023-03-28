@@ -61,16 +61,16 @@ impl Val {
         }
     }
 
-    pub fn cmpval(&self, other: &Val) -> Ordering {
-        match (self, other) {
-            (Int(m), Int(n)) => m.cmp(n),
-            (a, b) => match (a.try_c(), b.try_c()) {
-                (Some(m), Some(n)) => complexcmp(m, n),
-                (None,    Some(_)) => Ordering::Greater,
-                (Some(_), None) => Ordering::Less,
-                (None,    None) => Ordering::Less,
-            }
+    pub fn cmpval(&self, env: &mut Env, other: &Val) -> Ordering {
+        if let (Int(m), Int(n)) = (self, other) { return m.cmp(n) }
+        if let (Some(m), Some(n)) = (self.try_c(), other.try_c()) { return complexcmp(m, n) }
+        for i in 0..(usize::min(self.len(), other.len()).saturating_add(1)) {
+            let a = self.index(env, i);
+            let b = other.index(env, i);
+            let cmp = a.cmpval(env, &b);
+            if cmp.is_ne() { return cmp }
         }
+        Ordering::Equal
     }
         
     pub fn monad(&self, env: &mut Env, a: Val) -> Val { 

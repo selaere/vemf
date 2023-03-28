@@ -155,6 +155,8 @@ fn repl(mut env: Env, mut opts: Options) {
                     x.format(&mut FromIoWrite(std::io::stdout()), &fmtstring(cmd)).unwrap();
                     opts.format = cmd.to_string()
                 }
+                println!();
+                continue;
             }
         }
         if opts.rewrite { println!(" r: {}", codepage::tochars(&vemf::rewrite(

@@ -1442,11 +1442,21 @@ based := "0x" [0-9a-f]*
 <p>this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.</p>
 <p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Up">Sort Up</a></p>
 <h3 id="Less Than"><a class=h href="#Less Than"></a><code>α<β</code> Less Than</h3>
-<p>return 1 if α &lt; b, else 0. scalar.</p>
+<p>return 1 if α &lt; β, else 0. scalar.</p>
 <pre>5&lt;3 ≡ 0
 3&lt;3 ≡ 0
 3&lt;5 ≡ 1</pre>
-<p>see also: <a href="#Less Than">Less Than</a></p>
+<p>see also: <a href="#Greater Than">Greater Than</a></p>
+<h3 id="Lexicographic Less Than"><a class=h href="#Lexicographic Less Than"></a><code>α_<β</code> Lexicographic Less Than</h3>
+<p>return 1 if α &lt; β, else 0. this function is not scalar; if any of the two elements are lists, it will compare lexicographically:</p>
+<pre>234_&lt;235 ≡ 1
+234_&lt;233 ≡ 0
+234_&lt;263 ≡ 1
+334_&lt;263 ≡ 0</pre>
+<p>if both lists don't have the same length, the extra items are compared with the smaller's list fill. the default fill is <a href="#None">None</a>, and <a href="#None">None</a> is less than every other value, so a list is greater than its prefixes:</p>
+<pre>"cat"_&lt;"catnip" ≡ 1
+"cat"▐`z_&lt;"catnip" ≡ 0</pre>
+<p>see also: <a href="#Lexicographic Greater Than">Lexicographic Greater Than</a></p>
 <h2 class="rverb" id="3D"><a class=h href="#3D"></a><code>=</code> (0x3D) <span class=rank>verb</span></h2>
 <h3 id="Depth"><a class=h href="#Depth"></a><code>α=</code> Depth</h3>
 <p>get the depth of the deepest element in α. same as <code>▬~</code></p>
@@ -1484,6 +1494,16 @@ based := "0x" [0-9a-f]*
 3>3 ≡ 0
 3>5 ≡ 0</pre>
 <p>see also: <a href="#Less Than">Less Than</a></p>
+<h3 id="Lexicographic Greater Than"><a class=h href="#Lexicographic Greater Than"></a><code>α_>β</code> Lexicographic Greater Than</h3>
+<p>return 1 if α &lt; β, else 0. this function is not scalar; if any of the two elements are lists, it will compare lexicographically:</p>
+<pre>234_>235 ≡ 0
+234_>233 ≡ 1
+234_>263 ≡ 0
+334_>263 ≡ 1</pre>
+<p>if both lists don't have the same length, the extra items are compared with the smaller's list fill. the default fill is <a href="#None">None</a>, and <a href="#None">None</a> is less than every other value, so a list is greater than its prefixes:</p>
+<pre>"cat"_>"catnip" ≡ 0
+"cat"▐`z_>"catnip" ≡ 1</pre>
+<p>see also: <a href="#Lexicographic Less Than">Lexicographic Less Than</a></p>
 <h2 class="rstatement" id="3F"><a class=h href="#3F"></a><code>?</code> (0x3F) <span class=rank>statement</span></h2>
 <h3 id="Then"><a class=h href="#Then"></a><code>x?y</code> Then</h3>
 <p>execute statement y if x is not 0 or <a href="#Null">Null</a>. if x is a function, it will be called with α and, if <code>Σ~1</code>, β.</p>
@@ -2513,22 +2533,28 @@ _3± ≡ Θ
 <pre>143042≥ ≡ 443210</pre>
 <p>see also: <a href="#Grade Down">Grade Down</a>, <a href="#Sort Up">Sort Up</a></p>
 <h3 id="Greater Than Or Equal"><a class=h href="#Greater Than Or Equal"></a><code>α≥β</code> Greater Than Or Equal</h3>
-<p>return 1 if α ≥ b, else 0. scalar.</p>
+<p>return 1 if α ≥ β, else 0. scalar. equivalent to <code>&lt;¬</code></p>
 <pre>5≥3 ≡ 1
 3≥3 ≡ 1
 3≥5 ≡ 0</pre>
 <p>see also: <a href="#Less Than Or Equal">Less Than Or Equal</a>, <a href="#Greater Than">Greater Than</a></p>
+<h3 id="Lexicographic Greater Than Or Equal"><a class=h href="#Lexicographic Greater Than Or Equal"></a><code>α_≥β</code> Lexicographic Greater Than Or Equal</h3>
+<p>return 1 if α ≥ β, else 0. if any of the two elements are lists, it will compare lexicographically. equivalent to <code>_&lt;¬</code></p>
+<p>see also: <a href="#Lexicographic Greater Than">Lexicographic Greater Than</a>, <a href="#Lexicographic Less Than">Lexicographic Less Than</a></p>
 <h2 class="rverb" id="F3"><a class=h href="#F3"></a><code>≤</code> (0xF3, <code>'<</code>) <span class=rank>verb</span></h2>
 <h3 id="Sort Up"><a class=h href="#Sort Up"></a><code>α≤</code> Sort Up</h3>
 <p>sorts the list α in ascending order</p>
 <pre>143042≤ ≡ 012344</pre>
 <p>see also: <a href="#Grade Up">Grade Up</a>, <a href="#Sort Down">Sort Down</a></p>
 <h3 id="Less Than Or Equal"><a class=h href="#Less Than Or Equal"></a><code>α≤β</code> Less Than Or Equal</h3>
-<p>return 1 if α ≤ b, else 0. scalar.</p>
+<p>return 1 if α ≤ β, else 0. scalar.</p>
 <pre>5≤3 ≡ 0
 3≤3 ≡ 1
 3≤5 ≡ 1</pre>
 <p>see also: <a href="#Greater Than Or Equal">Greater Than Or Equal</a>, <a href="#Less Than">Less Than</a></p>
+<h3 id="Lexicographic Greater Than Or Equal"><a class=h href="#Lexicographic Greater Than Or Equal"></a><code>α_≤β</code> Lexicographic Greater Than Or Equal</h3>
+<p>return 1 if α ≤ β, else 0. if any of the two elements are lists, it will compare lexicographically. equivalent to <code>_>¬</code></p>
+<p>see also: <a href="#Lexicographic Less Than">Lexicographic Less Than</a>, <a href="#Lexicographic Greater Than">Lexicographic Greater Than</a></p>
 <h2 class="rverb" id="F4"><a class=h href="#F4"></a><code>⌠</code> (0xF4, <code>'cl</code>) <span class=rank>verb</span></h2>
 <h3 id="Ceiling"><a class=h href="#Ceiling"></a><code>α⌠</code> Ceiling</h3>
 <p>round up α. scalar.</p>

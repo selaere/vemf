@@ -288,36 +288,36 @@ pub fn ireplicate(env: &mut Env, a: Val, b: Val) -> Vec<Val> {
     lis
 }
 
-func!(a :gradeup => if let Lis {l, ..} = a {
+func!(@env, a :gradeup => if let Lis {l, ..} = a {
     let mut lis = (0..l.len()).collect::<Vec<_>>();
-    lis.sort_by(|&a, &b| l[a].cmpval(&l[b]));
+    lis.sort_by(|&a, &b| l[a].cmpval(env, &l[b]));
     Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
 } else { Val::lis(vec![Int(0)]) });
 
-func!(a :gradedown => if let Lis {l, ..} = a {
+func!(@env, a :gradedown => if let Lis {l, ..} = a {
     let mut lis = (0..l.len()).collect::<Vec<_>>();
-    lis.sort_by(|&a, &b| l[a].cmpval(&l[b]).reverse());
+    lis.sort_by(|&a, &b| l[a].cmpval(env, &l[b]).reverse());
     Val::lis(lis.into_iter().map(|x| Int(x as i64)).collect())
 } else { Val::lis(vec![Int(0)]) } );
 
-func!( a :sortup => if let Lis {l, ..} = a {
+func!(@env, a :sortup => if let Lis {l, ..} = a {
     let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).c());
-    list.sort_by(|a, b| a.cmpval(b));
+    list.sort_by(|a, b| a.cmpval(env, b));
     Val::lis(list)
 } else { Val::lis(vec![a]) } );
 
-func!(a :sortdown => if let Lis {l, ..} = a {
+func!(@env, a :sortdown => if let Lis {l, ..} = a {
     let mut list = Rc::try_unwrap(l).unwrap_or_else(|x| (*x).c());
-    list.sort_by(|a, b| a.cmpval(b).reverse());
+    list.sort_by(|a, b| a.cmpval(env, b).reverse());
     Val::lis(list)
 } else { Val::lis(vec![a]) });
 
-func!(a :binsup b => if let Lis {l, ..} = a {
-    Int(l.partition_point(|x| x.cmpval(&b).is_le()) as i64)
+func!(@env, a :binsup b => if let Lis {l, ..} = a {
+    Int(l.partition_point(|x| x.cmpval(env, &b).is_le()) as i64)
 } else { Int(0) } );
 
-func!( a :binsdown b => if let Lis {l, ..} = a {
-    Int(l.partition_point(|x| x.cmpval(&b).is_gt()) as i64)
+func!(@env, a :binsdown b => if let Lis {l, ..} = a {
+    Int(l.partition_point(|x| x.cmpval(env, &b).is_gt()) as i64)
 } else { Int(0) });
 
 func!( @env, a :group b => {

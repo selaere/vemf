@@ -105,14 +105,8 @@ func!(a :pow b => match (a, b) {
     (a, b) => Num(a.as_c().powc(b.as_c())),
 });
 func!(a :log b => Num(a.as_c().log(b.as_c().norm())));
-func!(a :lt b => match (a, b) {
-    (Int(a), Int(b)) => Val::bool(a < b),
-    (a, b) => a.try_c().zip(b.try_c()).map_or(NAN, |(a, b)| Val::bool(complexcmp(a, b).is_lt()))
-});
-func!(a :gt b => match (a, b) {
-    (Int(a), Int(b)) => Val::bool(a > b),
-    (a, b) => a.try_c().zip(b.try_c()).map_or(NAN, |(a, b)| Val::bool(complexcmp(a, b).is_gt()))
-});
+func!(@env, a :lt b => Val::bool(a.cmpval(env, &b).is_lt()));
+func!(@env, a :gt b => Val::bool(a.cmpval(env, &b).is_gt()));
 func!(a :and b => Val::bool(a.as_bool() && b.as_bool()));
 func!(a :or  b => Val::bool(a.as_bool() || b.as_bool()));
 func!(a :max b => match (a, b) {

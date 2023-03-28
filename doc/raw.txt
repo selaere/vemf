@@ -1208,11 +1208,21 @@ Grade Up can be used for sorting. it returns a permutation, or list of indices, 
 this uses stable sorting: the same array will always yield the same permutation, and equal arguments are ordered by position.
 see also: ||Grade Down||, ||Sort Up||
 #2 Less Than
-return 1 if α < b, else 0. scalar.
+return 1 if α < β, else 0. scalar.
 > 5<3 ≡ 0
 > 3<3 ≡ 0
 > 3<5 ≡ 1
-see also: ||Less Than||
+see also: ||Greater Than||
+#_2 Lexicographic Less Than
+return 1 if α < β, else 0. this function is not scalar; if any of the two elements are lists, it will compare lexicographically:
+> 234_<235 ≡ 1
+> 234_<233 ≡ 0
+> 234_<263 ≡ 1
+> 334_<263 ≡ 0
+if both lists don't have the same length, the extra items are compared with the smaller's list fill. the default fill is ||None||, and ||None|| is less than every other value, so a list is greater than its prefixes:
+> "cat"_<"catnip" ≡ 1
+> "cat"▐`z_<"catnip" ≡ 0
+see also: ||Lexicographic Greater Than||
 ---
 :char: =
 :type: verb
@@ -1254,6 +1264,16 @@ return 1 if α > b, else 0. scalar.
 > 3>3 ≡ 0
 > 3>5 ≡ 0
 see also: ||Less Than||
+#_2 Lexicographic Greater Than
+return 1 if α < β, else 0. this function is not scalar; if any of the two elements are lists, it will compare lexicographically:
+> 234_>235 ≡ 0
+> 234_>233 ≡ 1
+> 234_>263 ≡ 0
+> 334_>263 ≡ 1
+if both lists don't have the same length, the extra items are compared with the smaller's list fill. the default fill is ||None||, and ||None|| is less than every other value, so a list is greater than its prefixes:
+> "cat"_>"catnip" ≡ 0
+> "cat"▐`z_>"catnip" ≡ 1
+see also: ||Lexicographic Less Than||
 ---
 :char: ?
 :type: statement
@@ -2636,11 +2656,14 @@ sorts the list α in descending order
 > 143042≥ ≡ 443210
 see also: ||Grade Down||, ||Sort Up||
 #2 Greater Than Or Equal
-return 1 if α ≥ b, else 0. scalar.
+return 1 if α ≥ β, else 0. scalar. equivalent to `<¬`
 > 5≥3 ≡ 1
 > 3≥3 ≡ 1
 > 3≥5 ≡ 0
 see also: ||Less Than Or Equal||, ||Greater Than||
+#_2 Lexicographic Greater Than Or Equal
+return 1 if α ≥ β, else 0. if any of the two elements are lists, it will compare lexicographically. equivalent to `_<¬`
+see also: ||Lexicographic Greater Than||, ||Lexicographic Less Than||
 ---
 :char: ≤
 :ascii: '<
@@ -2650,11 +2673,14 @@ sorts the list α in ascending order
 > 143042≤ ≡ 012344
 see also: ||Grade Up||, ||Sort Down||
 #2 Less Than Or Equal
-return 1 if α ≤ b, else 0. scalar.
+return 1 if α ≤ β, else 0. scalar.
 > 5≤3 ≡ 0
 > 3≤3 ≡ 1
 > 3≤5 ≡ 1
 see also: ||Greater Than Or Equal||, ||Less Than||
+#_2 Lexicographic Greater Than Or Equal
+return 1 if α ≤ β, else 0. if any of the two elements are lists, it will compare lexicographically. equivalent to `_>¬`
+see also: ||Lexicographic Less Than||, ||Lexicographic Greater Than||
 ---
 :char: ⌠
 :ascii: 'cl

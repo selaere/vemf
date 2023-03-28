@@ -76,6 +76,8 @@ _Ü_ë→Ü
 .ingradeup╬┼:inlt→<
 │▬:inlen╬┼:inmatches→=
 .ingradedown╬┼:ingt→>
+:inlt→_<
+:ingt→_>
 
 (=0)╬♫╙,→¬
 (¬¬)╬♫╙;→⌐
@@ -85,6 +87,8 @@ _Ü_ë→Ü
 .insortup  ╬│>¬→≤
 .inlen     ╬│=¬→~
 .insortdown╬│<¬→≥
+_>¬→_≥
+_<¬→_≤
 
 ┼:insin╬:inbxor→î
 ┼:incos╬:inbor →ô
