@@ -65,8 +65,8 @@ function execute(ev) {
 async function run() {
     await init();
     const params = new URLSearchParams(window.location.search);
-    let code;
-    if ((code = params.get("code", "")) !== undefined) {
+    let code = params.get("code");
+    if (code !== null) {
         const string = atob(code);
         let bytes = new Uint8Array(string.length);
         for (let i = 0; i < string.length; i++) {
@@ -74,6 +74,8 @@ async function run() {
         }
         id`inp`.value = tochars(bytes);
     }
+    let fmt = params.get("fmt");
+    if (fmt !== null) { id`fmt`.value = fmt; }
     id`inp`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`fmt`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`run`.addEventListener('click', execute);
