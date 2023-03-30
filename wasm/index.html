@@ -86,7 +86,7 @@ async function run() {
         for (let i = 0; i < code.length; i++) {
             string += String.fromCharCode(code[i]);
         }
-        params.set("code", btoa(string).replace("=", ""));
+        params.set("code", btoa(string).replaceAll("=", ""));
         params.set("fmt", id`fmt`.value);
         if (id`fmt`.value === "1") { params.delete("fmt"); }            
         const newURL = new URL(window.location.href);
