@@ -108,10 +108,11 @@ async function run() {
                 const r = escape1c(e.key);
                 if (r) { type(r) } else { type('\''); return true; }
             }
+            return false;
         } else if (e.key === "'") {
             composing = true;
+            return false;
         }
-        return false;
     }
 }
 
