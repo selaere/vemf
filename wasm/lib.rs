@@ -69,3 +69,13 @@ pub fn escape1c(a: char) -> Option<char> {
 pub fn escape2c(a: char, b: char) -> Option<char> {
     Some(codepage::tochar(vemf::escape_2c([codepage::tobyte(a)?, codepage::tobyte(b)?])?))
 }
+
+#[wasm_bindgen]
+pub fn tobytes(a: &str) -> Option<Box<[u8]>> {
+    codepage::tobytes(a).map(Vec::into_boxed_slice)
+}
+
+#[wasm_bindgen]
+pub fn tochars(a: &[u8]) -> String {
+    codepage::tochars_ln(a)
+}

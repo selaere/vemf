@@ -37,13 +37,14 @@ textarea {
     <label>format: <input id=fmt type=text size=6 value=1></label> (see <a href="https://selaere.github.io/vemf/doc/docs.html#Custom%20Format">Format</a>)</p>
     
     <label for=inp>code:<br><textarea id=inp rows=2></textarea></label>
-    <div class=center><button id=run>run (<kbd>Shift</kbd>+<kbd>Enter</kbd>)</button></div>
+    <div class=center>
+        <button id=run>run (<kbd>Shift</kbd>+<kbd>Enter</kbd>)</button>
+        <button id=genurl>generate url</button>
+    </div>
     
     <pre id=outp></pre>
 <script type=module>
-
-// generated with `$ wasm-pack build --target web --no-typescript wasm`
-import init, {evaluate, escape1c, escape2c} from '../../other/vemfwasm.js';
+import init, {evaluate, escape1c, escape2c, tochars, tobytes} from './pkg/vemfwasm.js';
 
 const id = x => document.getElementById(x);
 
@@ -63,32 +64,54 @@ function execute(ev) {
 
 async function run() {
     await init();
+    const params = new URLSearchParams(window.location.search);
+    let code;
+    if ((code = params.get("code", "")) !== undefined) {
+        const string = atob(code);
+        let bytes = new Uint8Array(string.length);
+        for (let i = 0; i < string.length; i++) {
+            bytes[i] = string.charCodeAt(i);
+        }
+        id`inp`.value = tochars(bytes);
+    }
     id`inp`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`fmt`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`run`.addEventListener('click', execute);
+    id`genurl`.addEventListener('click', () => {
+        let params = new URLSearchParams(window.location.search);
+        const code = tobytes(id`inp`.value);
+        let string = '';
+        for (let i = 0; i < code.length; i++) {
+            string += String.fromCharCode(code[i]);
+        }
+        params.set("code", btoa(string).replace("=", ""));
+        params.set("fmt", id`fmt`.value);
+        if (id`fmt`.value === "1") { params.delete("fmt"); }            
+        const newURL = new URL(window.location.href);
+        newURL.search = params.toString();
+        window.history.replaceState(null, '', newURL.href);
+    })
     id`inp`.onkeydown = e => {
         const modifiers = ["Alt", "AltGraph", "CapsLock", "Control", "Fn", "FnLock", "Hyper", "Meta", "NumLock", "ScrollLock", "Shift", "Super", "Symbol", "SymbolLock"];
         if (e.key === "Enter" && e.shiftKey) { execute(); return false; }
-        if (e.target.id != "inp" || !id`esc`.checked) {return}
-        if (modifiers.includes(e.key)) {return}
-        if (composing && e.key.length == 1) {
+        if (!id`esc`.checked || modifiers.includes(e.key)) { return; }
+        if (composing && e.key.length === 1) {
             if (first_half) {
                 composing = false;
                 const r = escape2c(first_half, e.key);
                 if (r) { type(r) } else { type('\''+first_half); first_half=null; return true; }
                 first_half = null;
-            } else if ('a'<=e.key&&e.key<='z') {
+            } else if ('a'<=e.key && e.key<='z') {
                 first_half = e.key;
             } else {
                 composing = false;
                 const r = escape1c(e.key);
                 if (r) { type(r) } else { type('\''); return true; }
             }
-            return false;
-        } else if (e.key == "'") {
+        } else if (e.key === "'") {
             composing = true;
-            return false;
         }
+        return false;
     }
 }
 
