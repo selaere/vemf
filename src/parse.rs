@@ -46,8 +46,8 @@ impl Display for Expr {
 fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
     match self {
         Var(v) => write!(m, ".{}", display(v)),
-        Int(n) => write!(m, "'{n}"),
-        Flt(n) => write!(m, "'{n}"),
+        Int(n) => write!(m, ":{n}"),
+        Flt(n) => write!(m, ":{n}"),
         Snd(l) => {
             write!(m, "(")?;
             for v in l { write!(m, "{v}")?; }
@@ -55,8 +55,8 @@ fn fmt(&self, m: &mut alloc::fmt::Formatter<'_>) -> alloc::fmt::Result {
         Ok(()) },
         Afn1(a, f) => write!(m, "({a} {f})"),
         Afn2(a, f, b) => write!(m, "({a} {f} {b})"),
-        SetVar(v) => write!(m, "→{}", display(v)),
-        MutVar(v) => write!(m, "↔{}", display(v)),
+        SetVar(v) => write!(m, "─{}", display(v)),
+        MutVar(v) => write!(m, "═{}", display(v)),
         Aav1(v, g) => write!(m, "[•{} {}]", display(v), g),
         Aav2(f, v, g) => write!(m, "[{} ○{} {}]", f, display(v), g),
         Bind(f, b) => write!(m, "[{f} with {b}]"),

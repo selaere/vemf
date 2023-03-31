@@ -227,14 +227,15 @@ impl<'io> Env<'io> {
         NAN
     }
     pub fn include_string(&mut self, code: &str) -> Val {
-        self.include_bytes(&crate::codepage::tobytes(code).unwrap()[..])
+        use crate::{token, parse};
+        let tokens = token::tokenize_str(code);
+        let parsed = parse::parse(&tokens);
+        self.eval_block(&parsed)
     }
     pub fn include_bytes(&mut self, code: &[u8]) -> Val {
         use crate::{token, parse};
-        let tokens = token::tokenize(code);
-        //println!("{:?}", tokens);
+        let tokens = token::tokenize_bytes(code);
         let parsed = parse::parse(&tokens);
-        //for i in &parsed { println!("parsed: {i}"); }
         self.eval_block(&parsed)
     }
 
@@ -251,11 +252,16 @@ impl<'io> Env<'io> {
     }
 
     pub fn run_string(&mut self, code: &str, format: &[Val]) -> Result<(), i32> {
-        self.run_bytes(&crate::codepage::tobytes(code).unwrap()[..], format)
+        let res = self.include_string(code);
+        self.run_value(res, format)
     }
 
     pub fn run_bytes(&mut self, code: &[u8], format: &[Val]) -> Result<(), i32> {
-        let mut res = self.include_bytes(code);
+        let res = self.include_bytes(code);
+        self.run_value(res, format)
+    }
+
+    pub fn run_value(&mut self, mut res: Val, format: &[Val]) -> Result<(), i32> {
         if let Val::Err(x) = res { return Err(x); }
         if res.is_infinite() { res = res.call(
             self,

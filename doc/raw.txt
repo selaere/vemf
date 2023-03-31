@@ -867,9 +867,9 @@ string literal; every character until the next `"` will be put into a list with 
 > "abc" ≡ `a`b`c
 this uses the codepage codepoints:
 > "☺☻♥♦" ≡ 1234
-with some special characters used specially: `¨` stands for `"` (0x22) and `·` stands for `'` (0x27). `'` may be used for escaping:
+with some special characters used specially: `¨` stands for `"` (0x22) and `·` stands for `'` (0x27). `'` may be used for escaping these:
 > "he said ¨hi¨"   ≡ "he said ",`","hi",`"
-> "umlaut ─ 'nm ← diaeresis" ≡ "umlaut ─ ",`¨," ← diaeresis"
+> "umlaut ─ '¨ ← diaeresis" ≡ "umlaut ─ ",`¨," ← diaeresis"
 ---
 :char: #
 :type: verb
@@ -2336,7 +2336,7 @@ calculates the ||greatest common divisor@https://en.wikipedia.org/wiki/Greatest_
 > :30¼:45 ≡ :15
 ---
 :char: ¡
-:ascii: '@
+:ascii: '@ 'ie
 :type: verb
 #1 Last
 get the last element of the list in α
@@ -2389,7 +2389,7 @@ shorthand for an ||Integer Literal|| with 2 bytes (same as `█2`)
 shorthand for an ||Integer Literal|| with 3 bytes (same as `█3`)
 ---
 :char: ▓
-:ascii: 'l4 'c2
+:ascii: 'c2
 :type: literal
 #▓ab Digraph Literal
 a 2 character literal.

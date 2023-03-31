@@ -1153,9 +1153,9 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 "abc" ≡ `a`b`c</pre>
 <p>this uses the codepage codepoints:</p>
 <pre>"☺☻♥♦" ≡ 1234</pre>
-<p>with some special characters used specially: <code>¨</code> stands for <code>"</code> (0x22) and <code>·</code> stands for <code>'</code> (0x27). <code>'</code> may be used for escaping:</p>
+<p>with some special characters used specially: <code>¨</code> stands for <code>"</code> (0x22) and <code>·</code> stands for <code>'</code> (0x27). <code>'</code> may be used for escaping these:</p>
 <pre>"he said ¨hi¨"   ≡ "he said ",`","hi",`"
-"umlaut ─ 'nm ← diaeresis" ≡ "umlaut ─ ",`¨," ← diaeresis"</pre>
+"umlaut ─ '¨ ← diaeresis" ≡ "umlaut ─ ",`¨," ← diaeresis"</pre>
 <h2 class="rverb" id="23"><a class=h href="#23"></a><code>#</code> (0x23) <span class=rank>verb</span></h2>
 <h3 id="First True"><a class=h href="#First True"></a><code>α#</code> First True</h3>
 <p>find the first non-0 value and return its index, or else <a href="#None">None</a>.</p>
@@ -2298,7 +2298,7 @@ _2Ñ0 ≡ 0</pre>
 <p>calculates the <a href="https://en.wikipedia.org/wiki/Greatest_common_divisor">greatest common divisor</a> of two integers α and β, or gcd(α, β). scalar.</p>
 <pre>8¼:12 ≡ 4
 :30¼:45 ≡ :15</pre>
-<h2 class="rverb" id="AD"><a class=h href="#AD"></a><code>¡</code> (0xAD, <code>'@</code>) <span class=rank>verb</span></h2>
+<h2 class="rverb" id="AD"><a class=h href="#AD"></a><code>¡</code> (0xAD, <code>'@ 'ie</code>) <span class=rank>verb</span></h2>
 <h3 id="Last"><a class=h href="#Last"></a><code>α¡</code> Last</h3>
 <p>get the last element of the list in α</p>
 <pre>"aeiou"¡ ≡ `u
@@ -2336,7 +2336,7 @@ _2Ñ0 ≡ 0</pre>
 <h2 class="rliteral" id="B1"><a class=h href="#B1"></a><code>▒</code> (0xB1, <code>'l3</code>) <span class=rank>literal</span></h2>
 <h3 id="Long Literal"><a class=h href="#Long Literal"></a><code>▒☺☻♥</code> Long Literal</h3>
 <p>shorthand for an <a href="#Integer Literal">Integer Literal</a> with 3 bytes (same as <code>█3</code>)</p>
-<h2 class="rliteral" id="B2"><a class=h href="#B2"></a><code>▓</code> (0xB2, <code>'l4 'c2</code>) <span class=rank>literal</span></h2>
+<h2 class="rliteral" id="B2"><a class=h href="#B2"></a><code>▓</code> (0xB2, <code>'c2</code>) <span class=rank>literal</span></h2>
 <h3 id="Digraph Literal"><a class=h href="#Digraph Literal"></a><code>▓ab</code> Digraph Literal</h3>
 <p>a 2 character literal.</p>
 <pre>▓() ≡ `(`)

@@ -2,7 +2,7 @@ use core::cell::RefCell;
 
 use alloc::collections::VecDeque;
 use rand::rngs;
-use crate::{prelude::*, run::io::io_result};
+use crate::{prelude::*, run::io::io_result, codepage::{tobyte, tochars, tochar, tobytes}};
 
 const DOCS: &str = include_str!("../doc/raw.txt");
 
@@ -44,10 +44,9 @@ fn docs() -> Result<(), String> {
 
 #[test]
 fn docs_escapes() {
-    use crate::codepage::{tobyte, tochars, tochar};
     let mut trolls = Vec::new();
     for page in DOCS.split("\n---\n") {
-        let Some(char) = page.lines().flat_map(|x| x.strip_prefix(":char: ")).next() else {continue};
+        let Some(char  ) = page.lines().flat_map(|x| x.strip_prefix(":char: " )).next() else {continue};
         let Some(escape) = page.lines().flat_map(|x| x.strip_prefix(":ascii: ")).next() else {continue};
         for e in escape.split(' ') {
             let re = crate::rewrite(
@@ -60,6 +59,17 @@ fn docs_escapes() {
         }
     }
     if !trolls.is_empty() { panic!("{}", trolls.join("\n")) }
+}
+
+#[test]
+fn rewrite() {
+    const INPUT: &str = r#"
+:12'I'cx3_'#5,`''&
+"string'nla string'! ¨quote '"yeah'¨ 'ae'aE"'pr'&
+_'e^.'H.name'pi
+"#;
+    const OUTPUT :&str = r#"◙:12↕♥3_☻5,`'·◙"string¤a string‼ ¨quote ╕yeah'¨ æÆ"☺·◙_ê.►.nameπ◙"#;
+    assert_eq!(OUTPUT, tochars(&crate::rewrite(&tobytes(INPUT).unwrap())));
 }
 
 #[allow(clippy::type_complexity)]
