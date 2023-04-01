@@ -50,7 +50,8 @@ impl EvaluateRes {
 #[wasm_bindgen]
 pub fn evaluate(s: &str, fmt: &str) -> EvaluateRes {
     let outbuf = RefCell::new(Vec::new());
-    let mut env = Env::new(bx(rand::thread_rng()));
+    let mut env = Env::new();
+    env.rng = bx(rand::thread_rng());
     env.interface = bx(Output {bufref: &outbuf});
     env.include_stdlib();
     let error = env.run_string(s, &fmtstring(fmt));

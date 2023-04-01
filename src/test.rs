@@ -1,7 +1,6 @@
 use core::cell::RefCell;
 
 use alloc::collections::VecDeque;
-use rand::rngs;
 use crate::{prelude::*, run::io::io_result, codepage::{tobyte, tochars, tochar, tobytes}};
 
 const DOCS: &str = include_str!("../doc/raw.txt");
@@ -11,7 +10,7 @@ fn docs() -> Result<(), String> {
     println!("doing doc tests...");
     let mut tested = 0;
     let mut failed = 0;
-    let mut env = super::run::Env::new(bx(rngs::mock::StepRng::new(0, 0)));
+    let mut env = super::run::Env::new();
     env.include_stdlib();
     for (n, line) in DOCS.lines().enumerate() {
         if let Some(line) = line.strip_prefix("> ") {
@@ -111,7 +110,7 @@ fn input_output() -> Result<(), ()> {
         Vec::new(),
         Vec::new()));
 
-    let mut env = crate::Env::new(bx(rngs::mock::StepRng::new(0, 0)));
+    let mut env = crate::Env::new();
     env.interface = bx(TestIO(&refcell));
     env.include_stdlib();
     env.include_string(PROGRAM);
@@ -140,7 +139,7 @@ fn dispbytes(a: &[u8]) -> String { a.iter().map(|x| match x {
 
 #[test]
 fn scripts() {
-    let mut env = crate::Env::new(bx(rngs::mock::StepRng::new(0, 0)));
+    let mut env = crate::Env::new();
     env.include_stdlib();
     assert_eq!(&env.include_string(include_str!("../scripts/pascal.vemf")).display_string(), &r#"
                                                1                                          
@@ -239,7 +238,7 @@ macro_rules! aoc { ($name:ident,$num:tt, $res:expr) => {
         let refcell = RefCell::new((
             VecDeque::from(*include_bytes!(concat!("../scripts/aoc2022/in/d",$num,".txt"))),
             VecDeque::<u8>::new(), Vec::<u8>::new(), Vec::<u8>::new()));
-        let mut env = crate::Env::new(bx(rngs::mock::StepRng::new(0, 0)));
+        let mut env = crate::Env::new();
         env.include_stdlib();
         env.interface = bx(TestIO(&refcell));
         env.run_string(

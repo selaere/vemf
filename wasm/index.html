@@ -51,7 +51,7 @@ const id = x => document.getElementById(x);
 let composing = false;
 let first_half = null;
 
-function execute(ev) {
+function execute() {
     const a = evaluate(id`inp`.value, id`fmt`.value);
     id`outp`.innerText = a.output;
     if (a.error) {

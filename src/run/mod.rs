@@ -3,11 +3,9 @@
 use crate::parse::{Expr, Stmt};
 use crate::prelude::*;
 use adverb::AvT;
-
-const STDLIB: &str = include_str!("../std.vemf");
-
 pub use num_complex::Complex64 as c64;
 
+const STDLIB: &str = include_str!("../std.vemf");
 pub const NAN: Val = Num(c64::new(f64::NAN, f64::NAN));
 
 pub type Frame = HashMap<Bstr, Val>;
@@ -52,12 +50,16 @@ impl Default for Val {
 
 impl<'io> Env<'io> {
     
-    pub fn new<'a>(rng: Box<dyn rand::RngCore>) -> Env<'a> {
-        Env::from_frame(HashMap::new(), rng)
+    pub fn new<'a>() -> Env<'a> {
+        Env::from_frame(HashMap::new())
     }
 
-    pub fn from_frame<'a>(frame: Frame, rng: Box<dyn rand::RngCore>) -> Env<'a> {
-        Env { stack: vec![frame], interface: bx(io::NoIO), rng }
+    pub fn from_frame<'a>(frame: Frame) -> Env<'a> {
+        Env {
+            stack: vec![frame],
+            interface: bx(io::NoIO),
+            rng: bx(rand::rngs::mock::StepRng::new(0, 0))
+        }
     }
 
     pub fn locals(&self) -> &Frame { self.stack.last().unwrap() }

@@ -5,16 +5,14 @@ struct Options {
     filename: Option<PathBuf>,
     arguments: Vec<String>,
     no_stdlib: bool,
+    no_rng: bool,
     inspect: bool,
     format: String,
     rewrite: bool,
     prompt: String,
-    use_utf8: bool,
-    code: Option<String>
-}
-
-fn rewrite(thing: &[u8]) {
-    println!("{}", codepage::tochars_ln(&vemf::rewrite(thing)));
+    binary: bool,
+    code: Option<String>,
+    reencode: Option<Encoding>,
 }
 
 fn fmtstring(format: &str) -> Vec<Val> {
@@ -22,6 +20,7 @@ fn fmtstring(format: &str) -> Vec<Val> {
         .filter_map(|x| x.is_ascii_digit().then_some(Val::Int(x as i64 - 0x30)))
         .collect::<Vec<_>>()
 }
+enum Encoding{ Utf8, Vemf }
 
 fn parse_args() -> Options {
     let mut iter = std::env::args();
@@ -29,12 +28,14 @@ fn parse_args() -> Options {
         filename: None,
         arguments: vec![],
         no_stdlib: false,
+        no_rng: false,
         inspect: false,
         format: String::from("0"),
         rewrite: false,
         prompt: std::env::var("VEMF_PROMPT").unwrap_or_else(|_| String::from("    ")),
-        use_utf8: true,
+        binary: false,
         code: None,
+        reencode: None
     };
     _ = iter.next();
     loop {
@@ -45,31 +46,37 @@ fn parse_args() -> Options {
             }
             Some("-h" | "--help") => {
                 print!("\
-usage: vemf [options] [filename] [arguments]
-  <filename>: filename of the file that will be executed. optional. if not given, opens up a REPL
-  <arguments>: arguments given to the script. all arguments after the filename will be passed to \
-the script unchanged. sets α, β and δ accordingly.
-  -h/--help: print this
-  -f/--format <format>: how to format the output, 0 by default. use like dyadic ⁿ. ignored in repl.
-  -r/--rewrite: if given, print to stdout the file, rewritten without ' escapes (doesn't work very well right now)
-  -i/--inspect: open the repl after running file
-  --no-stdlib: do not use the standard library
-  -p/--prompt <prompt>: repl only. use <prompt> as the input prompt
-  -b: read file using the vemf codepage instead of utf-8
-  -e <code>: execute <code> instead of reading file
-");
+                usage: vemf [options] [filename] [arguments]
+                  <filename>: filename of the file that will be executed. optional. if not given, opens up a REPL
+                  <arguments>: arguments given to the script. all arguments after the filename will be passed to \
+                the script unchanged. sets α, β and δ accordingly.
+                  -h/--help: print this
+                  -f/--format <format>: how to format the output, 0 by default. use like dyadic ⁿ. ignored in repl.
+                  -i/--inspect: open the repl after running file
+                  -p/--prompt <prompt>: repl only. use <prompt> as the input prompt
+                  -b/--binary: read file using the vemf codepage instead of utf-8
+                  -e/--execute <code>: execute <code> instead of reading file
+                  --no-stdlib: do not use the standard library
+                  --no-rng:    do not use a random number generator
+                  -r/--rewrite: print the file rewritten without ' escapes
+                  -c/--encode:  print the file reencoded in the vemf codepage
+                  -C/--decode:  print the file reencoded in utf-8 (use along with -b)
+                ");
                 std::process::exit(0);
             },
             Some("-r" | "--rewrite") => { opts.rewrite   = true; }
             Some("--no-stdlib")      => { opts.no_stdlib = true; }
+            Some("--no-rng")         => { opts.no_rng    = true; }
             Some("-i" | "--inspect") => { opts.inspect   = true; }
-            Some("-b")               => { opts.use_utf8  = false; }
+            Some("-b" | "--binary")  => { opts.binary    = true; }
             Some("-p" | "--prompt") => {
                 opts.prompt = iter.next().unwrap_or_else(|| String::from(""));
             }
-            Some("-e") => {
+            Some("-e" | "--execute") => {
                 opts.code = Some(iter.next().unwrap_or_else(|| String::from("░♪₧Ö·")));
             }
+            Some("-c" | "--encode") => opts.reencode = Some(Encoding::Vemf),
+            Some("-C" | "--decode") => opts.reencode = Some(Encoding::Utf8),
             Some(x) if x.starts_with('-') => {
                 panic!("unrecognized option {x}")
             }
@@ -86,8 +93,9 @@ the script unchanged. sets α, β and δ accordingly.
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opts = parse_args();
-    let mut env = Env::new(bx(rand::thread_rng()));
-    let mut code;
+    let mut env = Env::new();
+    if !opts.no_rng { env.rng = bx(rand::thread_rng()); }
+    let mut code: Vec<u8>;
     if !opts.no_stdlib { env.include_stdlib(); }
     env.interface = bx(vemf::StdIO {});
     env.include_args(&opts.arguments);
@@ -100,12 +108,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         repl(env, opts);
         return Ok(());
     }
-    if opts.use_utf8 {
-        code = codepage::tobytes(core::str::from_utf8(&code)?)
-            .ok_or("input contains characters outside codepage")?;
+    if opts.reencode.is_some() || opts.rewrite {
+        if !opts.binary {
+            code = codepage::tobytes(core::str::from_utf8(&code)?)
+                .ok_or("input contains characters outside codepage")?;
+        }
+        if opts.rewrite { code = vemf::rewrite(&code) }
+        if let Some(Encoding::Vemf) = opts.reencode {
+            std::io::stdout().write_all(&code)?;
+        } else {
+            print!("{}", codepage::tochars(&code));
+        }
+        return Ok(());
     }
-    if opts.rewrite { rewrite(&code); return Ok(()) }
-    if let Err(x) = env.run_bytes(&code, &fmtstring(&opts.format)) {
+    let val = match !opts.binary {
+        true  => env.include_string(core::str::from_utf8(&code)?),
+        false => env.include_bytes(&code),
+    };
+    if let Err(x) = env.run_value(val, &fmtstring(&opts.format)) {
         std::process::exit(x)
     };
     println!();
