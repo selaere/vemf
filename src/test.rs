@@ -231,6 +231,15 @@ fn scripts() {
 █░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░█░
 ████████████████████████████████████████████████████████████████"#.trim());
 }
+#[test]
+fn brainfuck() {
+    let refcell = RefCell::new((VecDeque::<u8>::new(), VecDeque::<u8>::new(), Vec::<u8>::new(), Vec::<u8>::new()));
+    let mut env = crate::Env::new();
+    env.include_stdlib();
+    env.interface = bx(TestIO(&refcell));
+    env.include_string(include_str!("../scripts/brainfuck.vemf"));
+    assert_eq!(&refcell.take().2, b"Hello World!\n");
+}
 
 macro_rules! aoc { ($name:ident,$num:tt, $res:expr) => {
     #[test]
