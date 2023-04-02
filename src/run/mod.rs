@@ -21,7 +21,7 @@ pub struct Env<'io> {
 macro_rules! or_nan { ($expr:expr) => {
     match $expr {
         Some(x) => x,
-        None => return NAN,
+        None => return Val::NAN,
     }
 } }
 

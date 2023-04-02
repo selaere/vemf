@@ -33,7 +33,7 @@ textarea {
         <a href="https://github.com/selaere/vemf/tree/main">source</a></p>
 
     <p><label><input type=checkbox id=live> live update (dangerous)</label><br>
-    <label><input type=checkbox id=esc checked> quote escapes</label> (see <a href="https://selaere.github.io/vemf/doc/docs.html#Escape">Escape</a>)<br>
+    <label><input type=checkbox id=esc checked> quote escapes</label> (see <a href="https://selaere.github.io/vemf/doc/docs.html#Escape">Escape</a>) <button id=rew>rewrite</button><br>
     <label>format: <input id=fmt type=text size=6 value=1></label> (see <a href="https://selaere.github.io/vemf/doc/docs.html#Custom%20Format">Format</a>)</p>
     
     <label for=inp>code:<br><textarea id=inp rows=2></textarea></label>
@@ -44,7 +44,7 @@ textarea {
     
     <pre id=outp></pre>
 <script type=module>
-import init, {evaluate, escape1c, escape2c, tochars, tobytes} from './pkg/vemfwasm.js';
+import init, {evaluate, escape1c, escape2c, tochars, tobytes, rewrite} from './pkg/vemfwasm.js';
 
 const id = x => document.getElementById(x);
 
@@ -79,6 +79,7 @@ async function run() {
     id`inp`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`fmt`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`run`.addEventListener('click', execute);
+    id`rew`.addEventListener('click', () => { id`inp`.value = rewrite(id`inp`.value) });
     id`genurl`.addEventListener('click', () => {
         let params = new URLSearchParams(window.location.search);
         const code = tobytes(id`inp`.value);

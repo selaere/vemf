@@ -80,3 +80,8 @@ pub fn tobytes(a: &str) -> Option<Box<[u8]>> {
 pub fn tochars(a: &[u8]) -> String {
     codepage::tochars_ln(a)
 }
+
+#[wasm_bindgen]
+pub fn rewrite(s: &str) -> String {
+    codepage::tochars_ln(&vemf::rewrite(&codepage::tobytes(s).unwrap()))
+}
