@@ -904,8 +904,8 @@ calculate 2 to the power of α. equivalent to `┴^2`. scalar.
 > 0% ≡ 1
 > 4% ≡ :16
 > :32% ≡ :4294967296
-#2 Remainder
-returns the remainder of α divided by β, also known as the ||modulo@https://en.m.wikipedia.org/wiki/Modulo||. scalar.
+#2 Modulo
+returns the ||modulo@https://en.m.wikipedia.org/wiki/Modulo|| of α divided by β, also known as the remaider. scalar.
 > 7%5 ≡ 2
 > 2%5 ≡ 2
 > _3%5 ≡ 2
@@ -2178,7 +2178,7 @@ calculate `β + α*i`. scalar.
 :ascii: 'o'
 :type: verb
 #1 Signs
-calculate (−1)^α. if α is an integer, this means 1 for odd α, and −1 for even α. scalar. equivalent to `┴^Θ`
+calculate (−1)^α. if α is an integer, this means −1 for odd α, and 1 for even α. scalar. equivalent to `┴^Θ`
 > 012345ó ≡ 1Θ1Θ1Θ
 see also: ||Minus One||
 #2 Divides
@@ -2188,6 +2188,7 @@ return 1 if α is divisible by β, otherwise 0. scalar. equivalent to `%¬`
 > 2ó3 ≡ 0
 > 3ó3 ≡ 1
 > :20↕ó4 ≡ 10001000100010001000
+see also: ||Remainder||
 ---
 :char: ú
 :ascii: 'u'
@@ -3161,11 +3162,11 @@ see also: ||Trains||
 :ascii: '(
 :type: 2-adverb
 #1a2 At Right
-equivalent to `aF`.
+equivalent to `aG`.
 #2a2 At Right
-equivalent to `αF(βG)`.
+equivalent to `αG(βF)`.
 #_a2 Bind
-adverb form of bind, same as the train `Gf`, where `f` is F interpreted as a noun, (or rather, `.F`). note that the arguments are reversed. `αF_╙G` and `αF_╙Gβ` are equivalent to `αGf`; this ignores the second operand. useful when composing functions tacitly.
+adverb form of bind. same as the train `Gf`, where `f` is F interpreted as a noun, (or rather, `.F`). note that the arguments are reversed. `αf_╙G` and `αf_╙Gβ` are equivalent to `αGf`; this ignores the second operand. useful when composing functions tacitly.
 see also: ||Trains||
 ---
 :char: ╖
@@ -3180,9 +3181,9 @@ equivalent to `αFβGβ`.
 :ascii: '[
 :type: 2-adverb
 #1a2 On Right
-equivalent to `αF(αG)`.
+equivalent to `αG(αF)`.
 #2a2 On Right
-equivalent to `αF(αGβ)`.
+equivalent to `αG(αFβ)`.
 ---
 :char: ║
 :ascii: 'ov

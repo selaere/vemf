@@ -183,7 +183,7 @@ func!(@env, a :output b => {
     env.interface.write(stm, &bytes).map_or(NAN, |x| Int(x as i64))
 });
 func!(@env, a :input b => {
-    let chars = or_nan!(a.try_int().and_then(|x| isize::try_from(x).ok()));
+    let chars = or_nan!(a.try_c()).re as isize;
     let stm =   or_nan!(b.try_int().and_then(|x| usize::try_from(x).ok()));
     let mut buf;
     let size = or_nan!(if chars < 0 { // read line

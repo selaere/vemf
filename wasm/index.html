@@ -25,6 +25,12 @@ textarea {
     text-align: center;
     margin: 0;
 }
+ol {
+    margin-top: 0;
+}
+button {
+    background-color: var(--table-header);
+}
 </style>
 </head>
 <body class=small>
@@ -32,16 +38,29 @@ textarea {
     <p> <a href="https://selaere.github.io/vemf/doc/docs.html">documentation</a>,
         <a href="https://github.com/selaere/vemf/tree/main">source</a></p>
 
+    <p><details><summary>command line arguments</summary><ol id=args>
+        <button id=addarg>add argument</button>
+    </ol></details></p>
+    <p><details><summary>input streams</summary><ol id=input start=0>
+        <button id=addinput>add input</button>
+    </ol></details></p>
+
     <p><label><input type=checkbox id=live> live update (dangerous)</label><br>
-    <label><input type=checkbox id=esc checked> quote escapes</label> (see <a href="https://selaere.github.io/vemf/doc/docs.html#Escape">Escape</a>) <button id=rew>rewrite</button><br>
+    <label><input type=checkbox id=esc checked> quote escapes</label> (see <a href="https://selaere.github.io/vemf/doc/docs.html#Escape">Escape</a>)<br>
     <label>format: <input id=fmt type=text size=6 value=1></label> (see <a href="https://selaere.github.io/vemf/doc/docs.html#Custom%20Format">Format</a>)</p>
-    
-    <label for=inp>code:<br><textarea id=inp rows=2></textarea></label>
+
+    <label for=code>code:</label> <button id=rew>rewrite</button> <br><textarea id=code rows=2></textarea>
     <div class=center>
         <button id=run>run (<kbd>Shift</kbd>+<kbd>Enter</kbd>)</button>
         <button id=genurl>generate url</button>
     </div>
     
+    <template id="targs">
+        <li><input type=text> <button class=remove>remove</button></li>
+    </template>
+    <template id="tinput">
+        <li><button class=remove>remove</button> <textarea rows=2></textarea></li>
+    </template>
     <pre id=outp></pre>
 <script type=module>
 import init, {evaluate, escape1c, escape2c, tochars, tobytes, rewrite} from './pkg/vemfwasm.js';
@@ -52,12 +71,17 @@ let composing = false;
 let first_half = null;
 
 function execute() {
-    const a = evaluate(id`inp`.value, id`fmt`.value);
-    id`outp`.innerText = a.output;
+    const a = evaluate(
+        id`code`.value,
+        id`fmt`.value,
+        [...id`args` .children].slice(0, -1).map(e=>e.querySelector("input"   ).value),
+        [...id`input`.children].slice(0, -1).map(e=>e.querySelector("textarea").value)
+    );
+    id`outp`.textContent = a.output;
     if (a.error) {
         let e = document.createElement`span`;
         e.style = "color:red";
-        e.innerText = `ERROR: ${a.error}`;
+        e.textContent = `ERROR: ${a.error}`;
         id`outp`.appendChild(e)
     }
 }
@@ -72,17 +96,32 @@ async function run() {
         for (let i = 0; i < string.length; i++) {
             bytes[i] = string.charCodeAt(i);
         }
-        id`inp`.value = tochars(bytes);
+        id`code`.value = tochars(bytes);
     }
     let fmt = params.get("fmt");
     if (fmt !== null) { id`fmt`.value = fmt; }
-    id`inp`.addEventListener('input', () => { if (id`live`.checked) execute(); });
+
+    id`addarg`.addEventListener('click', (ev) => {
+        let elem = id`targs`.content.cloneNode(true);
+        elem.querySelector(".remove").addEventListener("click", 
+            ev=>ev.target.parentElement.remove());
+        id`args`.insertBefore(elem, ev.target);
+    });
+    id`addinput`.addEventListener('click', (ev) => {
+        let elem = id`tinput`.content.cloneNode(true);
+        elem.querySelector(".remove").addEventListener("click", 
+            ev=>ev.target.parentElement.remove());
+        id`input`.insertBefore(elem, ev.target);
+    });
+
+    id`code`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`fmt`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`run`.addEventListener('click', execute);
-    id`rew`.addEventListener('click', () => { id`inp`.value = rewrite(id`inp`.value) });
+    id`rew`.addEventListener('click', () => { id`code`.value = rewrite(id`code`.value) });
     id`genurl`.addEventListener('click', () => {
+        // TODO save input and arguments
         let params = new URLSearchParams(window.location.search);
-        const code = tobytes(id`inp`.value);
+        const code = tobytes(id`code`.value);
         let string = '';
         for (let i = 0; i < code.length; i++) {
             string += String.fromCharCode(code[i]);
@@ -94,7 +133,7 @@ async function run() {
         newURL.search = params.toString();
         window.history.replaceState(null, '', newURL.href);
     })
-    id`inp`.onkeydown = e => {
+    id`code`.onkeydown = e => {
         const modifiers = ["Alt", "AltGraph", "CapsLock", "Control", "Fn", "FnLock", "Hyper", "Meta", "NumLock", "ScrollLock", "Shift", "Super", "Symbol", "SymbolLock"];
         if (e.key === "Enter" && e.shiftKey) { execute(); return false; }
         if (!id`esc`.checked || modifiers.includes(e.key)) { return; }
@@ -120,9 +159,9 @@ async function run() {
 }
 
 const type = c => {
-    const [s, e] = [id`inp`.selectionStart, id`inp`.selectionEnd]
-    id`inp`.value = (id`inp`.value.slice(0, s) + c + id`inp`.value.slice(e));
-    id`inp`.setSelectionRange(s + c.length, s + c.length);
+    const [s, e] = [id`code`.selectionStart, id`code`.selectionEnd]
+    id`code`.value = (id`code`.value.slice(0, s) + c + id`code`.value.slice(e));
+    id`code`.setSelectionRange(s + c.length, s + c.length);
     if (id`live`.checked) execute();
 }
 

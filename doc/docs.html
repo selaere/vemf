@@ -1184,8 +1184,8 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <pre>0% ≡ 1
 4% ≡ :16
 :32% ≡ :4294967296</pre>
-<h3 id="Remainder"><a class=h href="#Remainder"></a><code>α%β</code> Remainder</h3>
-<p>returns the remainder of α divided by β, also known as the <a href="https://en.m.wikipedia.org/wiki/Modulo">modulo</a>. scalar.</p>
+<h3 id="Modulo"><a class=h href="#Modulo"></a><code>α%β</code> Modulo</h3>
+<p>returns the <a href="https://en.m.wikipedia.org/wiki/Modulo">modulo</a> of α divided by β, also known as the remaider. scalar.</p>
 <pre>7%5 ≡ 2
 2%5 ≡ 2
 _3%5 ≡ 2
@@ -2172,7 +2172,7 @@ _4¢ ≡ 4
 3í2² ± :12í_5</pre>
 <h2 class="rverb" id="A2"><a class=h href="#A2"></a><code>ó</code> (0xA2, <code>'o'</code>) <span class=rank>verb</span></h2>
 <h3 id="Signs"><a class=h href="#Signs"></a><code>αó</code> Signs</h3>
-<p>calculate (−1)^α. if α is an integer, this means 1 for odd α, and −1 for even α. scalar. equivalent to <code>┴^Θ</code></p>
+<p>calculate (−1)^α. if α is an integer, this means −1 for odd α, and 1 for even α. scalar. equivalent to <code>┴^Θ</code></p>
 <pre>012345ó ≡ 1Θ1Θ1Θ</pre>
 <p>see also: <a href="#Minus One">Minus One</a></p>
 <h3 id="Divides"><a class=h href="#Divides"></a><code>αóβ</code> Divides</h3>
@@ -2182,6 +2182,7 @@ _4¢ ≡ 4
 2ó3 ≡ 0
 3ó3 ≡ 1
 :20↕ó4 ≡ 10001000100010001000</pre>
+<p>see also: <a href="#Remainder">Remainder</a></p>
 <h2 class="rverb" id="A3"><a class=h href="#A3"></a><code>ú</code> (0xA3, <code>'u'</code>) <span class=rank>verb</span></h2>
 <h3 id="Imaginary Part"><a class=h href="#Imaginary Part"></a><code>αú</code> Imaginary Part</h3>
 <p>get the imaginary part of a complex number α. scalar.</p>
@@ -2936,11 +2937,11 @@ _1÷_2 ≡ 1</pre>
 <p>see also: <a href="#Trains">Trains</a></p>
 <h2 class="r2-adverb" id="D3"><a class=h href="#D3"></a><code>╙</code> (0xD3, <code>'(</code>) <span class=rank>2-adverb</span></h2>
 <h3 id="At Right"><a class=h href="#At Right"></a><code>αF╙G</code> At Right</h3>
-<p>equivalent to <code>aF</code>.</p>
+<p>equivalent to <code>aG</code>.</p>
 <h3 id="At Right"><a class=h href="#At Right"></a><code>αF╙Gβ</code> At Right</h3>
-<p>equivalent to <code>αF(βG)</code>.</p>
+<p>equivalent to <code>αG(βF)</code>.</p>
 <h3 id="Bind"><a class=h href="#Bind"></a><code>F_╙G</code> Bind</h3>
-<p>adverb form of bind, same as the train <code>Gf</code>, where <code>f</code> is F interpreted as a noun, (or rather, <code>.F</code>). note that the arguments are reversed. <code>αF_╙G</code> and <code>αF_╙Gβ</code> are equivalent to <code>αGf</code>; this ignores the second operand. useful when composing functions tacitly.</p>
+<p>adverb form of bind. same as the train <code>Gf</code>, where <code>f</code> is F interpreted as a noun, (or rather, <code>.F</code>). note that the arguments are reversed. <code>αf_╙G</code> and <code>αf_╙Gβ</code> are equivalent to <code>αGf</code>; this ignores the second operand. useful when composing functions tacitly.</p>
 <p>see also: <a href="#Trains">Trains</a></p>
 <h2 class="r2-adverb" id="B7"><a class=h href="#B7"></a><code>╖</code> (0xB7, <code>']</code>) <span class=rank>2-adverb</span></h2>
 <h3 id="On Left"><a class=h href="#On Left"></a><code>αF╖G</code> On Left</h3>
@@ -2949,9 +2950,9 @@ _1÷_2 ≡ 1</pre>
 <p>equivalent to <code>αFβGβ</code>.</p>
 <h2 class="r2-adverb" id="D6"><a class=h href="#D6"></a><code>╓</code> (0xD6, <code>'[</code>) <span class=rank>2-adverb</span></h2>
 <h3 id="On Right"><a class=h href="#On Right"></a><code>αF╓G</code> On Right</h3>
-<p>equivalent to <code>αF(αG)</code>.</p>
+<p>equivalent to <code>αG(αF)</code>.</p>
 <h3 id="On Right"><a class=h href="#On Right"></a><code>αF╓Gβ</code> On Right</h3>
-<p>equivalent to <code>αF(αGβ)</code>.</p>
+<p>equivalent to <code>αG(αFβ)</code>.</p>
 <h2 class="r2-adverb" id="BA"><a class=h href="#BA"></a><code>║</code> (0xBA, <code>'ov</code>) <span class=rank>2-adverb</span></h2>
 <h3 id="Over"><a class=h href="#Over"></a><code>αF║G</code> Over</h3>
 <p>equivalent to <code>αFG</code>.</p>

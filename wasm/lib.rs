@@ -1,13 +1,32 @@
-use std::cell::{RefCell, RefMut};
+use std::{cell::{RefCell, RefMut}, collections::VecDeque};
 
 use vemf::{self, Env, codepage, Val, bx};
 use wasm_bindgen::prelude::*;
 
 struct Output<'io> {
-    bufref: &'io RefCell<Vec<u8>>
+    bufref: &'io RefCell<Vec<u8>>,
+    inputs: Box<[VecDeque<u8>]>,
 }
 impl<'io> vemf::Interface<'io> for Output<'io> {
-    fn read(&mut self, _: usize, _: &mut [u8]) -> Option<usize> { None }
+    fn read(&mut self, stm: usize, slice: &mut [u8]) -> Option<usize> {
+        self.inputs.get_mut(stm).and_then(|inp|
+            std::io::Read::read(inp, slice).ok()
+        )
+    }
+    fn read_line(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
+        self.inputs.get_mut(stm).map(|inp| {
+            let a = inp.iter().position(|x| *x == b'\n').unwrap_or(inp.len());
+            buf.extend(inp.drain(0..(a+1)));
+            a+1
+        })
+    }
+    fn read_to_end(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
+        self.inputs.get_mut(stm).map(|inp| {
+            let len = inp.len();
+            buf.extend(inp.drain(0..));
+            len
+        })
+    }
     fn write(&mut self, stm: usize, slice: &[u8]) -> Option<usize> {
         if stm == 0 || stm == 1 {
             let mut borrow = self.bufref.borrow_mut();
@@ -48,12 +67,20 @@ impl EvaluateRes {
 }
 
 #[wasm_bindgen]
-pub fn evaluate(s: &str, fmt: &str) -> EvaluateRes {
+#[allow(clippy::boxed_local)]
+pub fn evaluate(s: &str, fmt: &str, args: Box<[JsValue]>, inputs: Box<[JsValue]>) -> EvaluateRes {
     let outbuf = RefCell::new(Vec::new());
     let mut env = Env::new();
     env.rng = bx(rand::thread_rng());
-    env.interface = bx(Output {bufref: &outbuf});
+    env.interface = bx(Output {
+        bufref: &outbuf,
+        inputs: inputs.iter()
+            .map(|x| VecDeque::from(x.as_string().unwrap_or(String::new()).into_bytes()))
+            .collect::<Vec<_>>()
+            .into_boxed_slice()
+    });
     env.include_stdlib();
+    env.include_args(&args.iter().map(|x| x.as_string().unwrap_or(String::new())).collect::<Vec<_>>());
     let error = env.run_string(s, &fmtstring(fmt));
     env.interface = bx(vemf::NoIO);
     let borrow = outbuf.borrow();
