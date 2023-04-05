@@ -185,15 +185,13 @@ func!(@env, a :output b => {
 func!(@env, a :input b => {
     let chars = or_nan!(a.try_c()).re as isize;
     let stm =   or_nan!(b.try_int().and_then(|x| usize::try_from(x).ok()));
-    let mut buf;
-    let size = or_nan!(if chars < 0 { // read line
-        buf = Vec::with_capacity(128); env.interface.read_line(stm, &mut buf)
+    or_nan!(if chars < 0 { // read line
+        env.interface.read_line(stm)
     } else if chars == isize::MAX { // don't allocate an infinite buffer
-        buf = Vec::with_capacity(128); env.interface.read_to_end(stm, &mut buf)
+        env.interface.read_to_end(stm)
     } else {
-        buf = vec![0; chars as usize]; env.interface.read(stm, &mut buf)
-    });
-    buf.into_iter().take(size).map(|i| Int(i64::from(i))).collect()
+        env.interface.read(stm, chars)
+    }).into_iter().map(|i| Int(i64::from(i))).collect()
 });
 func!(a :fromutf8 => String::from_utf8_lossy(
     &a.iterf().flat_map(|x| x.try_int().map(|x| (x & 0xff) as u8)).collect::<Vec<_>>()

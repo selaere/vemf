@@ -8,23 +8,20 @@ struct Output<'io> {
     inputs: Box<[VecDeque<u8>]>,
 }
 impl<'io> vemf::Interface<'io> for Output<'io> {
-    fn read(&mut self, stm: usize, slice: &mut [u8]) -> Option<usize> {
-        self.inputs.get_mut(stm).and_then(|inp|
-            std::io::Read::read(inp, slice).ok()
+    fn read(&mut self, stm: usize, size: isize) -> Option<Vec<u8>> {
+        self.inputs.get_mut(stm).map(|inp|
+            inp.drain(..(size as usize).min(inp.len())).collect()
         )
     }
-    fn read_line(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
+    fn read_line(&mut self, stm: usize) -> Option<Vec<u8>> {
         self.inputs.get_mut(stm).map(|inp| {
             let a = inp.iter().position(|x| *x == b'\n').unwrap_or(inp.len());
-            buf.extend(inp.drain(0..(a+1)));
-            a+1
+            inp.drain(0..(a+1)).collect()
         })
     }
-    fn read_to_end(&mut self, stm: usize, buf: &mut Vec<u8>) -> Option<usize> {
+    fn read_to_end(&mut self, stm: usize) -> Option<Vec<u8>> {
         self.inputs.get_mut(stm).map(|inp| {
-            let len = inp.len();
-            buf.extend(inp.drain(0..));
-            len
+            inp.drain(..).collect()
         })
     }
     fn write(&mut self, stm: usize, slice: &[u8]) -> Option<usize> {

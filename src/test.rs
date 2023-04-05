@@ -1,7 +1,7 @@
 use core::cell::RefCell;
 
 use alloc::collections::VecDeque;
-use crate::{prelude::*, run::io::io_result, codepage::{tobyte, tochars, tochar, tobytes}};
+use crate::{prelude::*, codepage::{tobyte, tochars, tochar, tobytes}};
 
 const DOCS: &str = include_str!("../doc/raw.txt");
 
@@ -75,11 +75,15 @@ _'e^.'H.name'pi
 struct TestIO<'io> (&'io RefCell<(VecDeque<u8>, VecDeque<u8>, Vec<u8>, Vec<u8>)>);
 impl<'io> crate::Interface<'io> for TestIO<'io> {
     // we should implement read_to_end and read_line, but i want to see if the default defs work
-    fn read(&mut self, stm: usize, slice: &mut [u8]) -> Option<usize> {
+    fn read(&mut self, stm: usize, size: isize) -> Option<Vec<u8>> {
         if stm == 0 {
-            io_result(std::io::Read::read(&mut self.0.borrow_mut().0, slice))
+            let mut b = self.0.borrow_mut();
+            let len = (size as usize).min(b.0.len());
+            Some(b.0.drain(..len).collect())
         } else if stm == 1 {
-            io_result(std::io::Read::read(&mut self.0.borrow_mut().1, slice))
+            let mut b = self.0.borrow_mut();
+            let len = (size as usize).min(b.1.len());
+            Some(b.1.drain(..len).collect())
         } else { None }
     }
     fn write(&mut self, stm: usize, slice: &[u8]) -> Option<usize> {

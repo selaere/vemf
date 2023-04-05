@@ -1,1 +1,2 @@
 doc/docs.html linguist-generated=true
+wasm/pkg/* linguist-generated=true
