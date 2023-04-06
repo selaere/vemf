@@ -38,10 +38,10 @@ button {
     <p> <a href="https://selaere.github.io/vemf/doc/docs.html">documentation</a>,
         <a href="https://github.com/selaere/vemf/tree/main">source</a></p>
 
-    <p><details><summary>command line arguments</summary><ol id=args>
+    <p><details><summary>command line arguments</summary><ol id=arg>
         <button id=addarg>add argument</button>
     </ol></details></p>
-    <p><details><summary>input streams</summary><ol id=input start=0>
+    <p><details><summary>input files</summary><ol id=input start=0>
         <button id=addinput>add input</button>
     </ol></details></p>
 
@@ -55,10 +55,10 @@ button {
         <button id=genurl>generate url</button>
     </div>
     
-    <template id="targs">
+    <template id=targ>
         <li><input type=text> <button class=remove>remove</button></li>
     </template>
-    <template id="tinput">
+    <template id=tinput>
         <li><button class=remove>remove</button> <textarea rows=2></textarea></li>
     </template>
     <pre id=outp></pre>
@@ -70,11 +70,28 @@ const id = x => document.getElementById(x);
 let composing = false;
 let first_half = null;
 
+function tobase64(code) { // Uint8Array -> string
+    let string = '';
+    for (let i = 0; i < code.length; i++) {
+        string += String.fromCharCode(code[i]);
+    }
+    return btoa(string).replaceAll("=", "").replaceAll("+", "-").replaceAll("/", "_")
+}
+
+function frombase64(code) { // string -> Uint8Array
+    const string = atob(code.replaceAll("-", "+").replaceAll("_", "/"));
+    let bytes = new Uint8Array(string.length);
+    for (let i = 0; i < string.length; i++) {
+        bytes[i] = string.charCodeAt(i);
+    }
+    return bytes
+}
+
 function execute() {
     const a = evaluate(
         id`code`.value,
         id`fmt`.value,
-        [...id`args` .children].slice(0, -1).map(e=>e.querySelector("input"   ).value),
+        [...id`arg`  .children].slice(0, -1).map(e=>e.querySelector("input"   ).value),
         [...id`input`.children].slice(0, -1).map(e=>e.querySelector("textarea").value)
     );
     id`outp`.textContent = a.output;
@@ -86,50 +103,53 @@ function execute() {
     }
 }
 
+function insertField(type, content) {
+    let elem = id(`t${type}`).content.cloneNode(true);
+    elem.querySelector(".remove").addEventListener('click', ev=>ev.target.parentElement.remove());
+    if (content) { elem.querySelector(type === "arg" ? 'input' : 'textarea').value = content; }
+    return id(type).insertBefore(elem, id(type).lastElementChild);
+}
+
 async function run() {
     await init();
     const params = new URLSearchParams(window.location.search);
-    let code = params.get("code");
-    if (code !== null) {
-        const string = atob(code);
-        let bytes = new Uint8Array(string.length);
-        for (let i = 0; i < string.length; i++) {
-            bytes[i] = string.charCodeAt(i);
-        }
-        id`code`.value = tochars(bytes);
-    }
-    let fmt = params.get("fmt");
+    const code = params.get("code");
+    if (code !== null) { id`code`.value = tochars(frombase64(code)); }
+    const fmt = params.get("fmt");
     if (fmt !== null) { id`fmt`.value = fmt; }
 
-    id`addarg`.addEventListener('click', (ev) => {
-        let elem = id`targs`.content.cloneNode(true);
-        elem.querySelector(".remove").addEventListener("click", 
-            ev=>ev.target.parentElement.remove());
-        id`args`.insertBefore(elem, ev.target);
-    });
-    id`addinput`.addEventListener('click', (ev) => {
-        let elem = id`tinput`.content.cloneNode(true);
-        elem.querySelector(".remove").addEventListener("click", 
-            ev=>ev.target.parentElement.remove());
-        id`input`.insertBefore(elem, ev.target);
-    });
+    id`addarg`  .addEventListener('click', () => insertField("arg"  ));
+    id`addinput`.addEventListener('click', () => insertField("input"));
+
+    if (params.get("args") !== null) {
+        params.get("args").split(".")
+            .forEach(code=>insertField( "arg",   new TextDecoder("utf-8").decode(frombase64(code)) ));
+        id`arg` .parentElement.open = true;
+    }
+    if (params.get("inputs") !== null) {
+        params.get("inputs").split(".")
+            .forEach(code=>insertField( "input", new TextDecoder("utf-8").decode(frombase64(code)) ));
+        id`input`.parentElement.open = true;
+    }
 
     id`code`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`fmt`.addEventListener('input', () => { if (id`live`.checked) execute(); });
     id`run`.addEventListener('click', execute);
     id`rew`.addEventListener('click', () => { id`code`.value = rewrite(id`code`.value) });
     id`genurl`.addEventListener('click', () => {
-        // TODO save input and arguments
         let params = new URLSearchParams(window.location.search);
-        const code = tobytes(id`code`.value);
-        let string = '';
-        for (let i = 0; i < code.length; i++) {
-            string += String.fromCharCode(code[i]);
-        }
-        params.set("code", btoa(string).replaceAll("=", ""));
+        params.set("code", tobase64(tobytes(id`code`.value)));
         params.set("fmt", id`fmt`.value);
-        if (id`fmt`.value === "1") { params.delete("fmt"); }            
-        const newURL = new URL(window.location.href);
+        if (id`fmt`.value === "1") { params.delete("fmt"); }
+        if (id`arg`.children.length > 1) params.set("args", 
+            [...id`arg`.children].slice(0, -1)
+            .map(e=>tobase64(new TextEncoder().encode(e.querySelector("input"   ).value)))
+            .join("."));
+        if (id`input`.children.length > 1) params.set("inputs", 
+            [...id`input`.children].slice(0, -1)
+            .map(e=>tobase64(new TextEncoder().encode(e.querySelector("textarea").value)))
+            .join("."));
+        let newURL = new URL(window.location.href);
         newURL.search = params.toString();
         window.history.replaceState(null, '', newURL.href);
     })
