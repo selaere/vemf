@@ -67,7 +67,7 @@ fn rewrite() {
 "string'nla string'! ¨quote '"yeah'¨ 'ae'aE"'pr'&
 _'e^.'H.name'pi
 "#;
-    const OUTPUT :&str = r#"◙:12↕♥3_☻5,`'·◙"string¤a string‼ ¨quote ╕yeah'¨ æÆ"☺·◙_ê.►.nameπ◙"#;
+    const OUTPUT: &str = r#"◙:12↕♥3_☻5,`'·◙"string¤a string‼ ¨quote ╕yeah'¨ æÆ"☺·◙_ê.►.nameπ◙"#;
     assert_eq!(OUTPUT, tochars(&crate::rewrite(&tobytes(INPUT).unwrap())));
 }
 

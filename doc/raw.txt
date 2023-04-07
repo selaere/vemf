@@ -2919,8 +2919,18 @@ Each applies only to one level of nesting, unlike ||Conform||:
 > (│01│23)(│45│67)(89)╕╕,0 ≡   (├010├230)(├450├670)(│80│90)
 > (│01│23)(│45│67)(89)╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
 > (│01│23)(│45│67)(89)╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
-> (│01│23)(│45│67)(89)┼,0    ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
+> (│01│23)(│45│67)(89)_╕,0   ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 see also: ||Each Left||, ||Each Right||, ||Conform||
+#_1a1 Conform
+call F to every scalar in α, keeping the list's structure. this is similar to ||Each|| called arbitrarily many times.
+> (│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
+> (│01│23)(│45│67)(89) _╕(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
+#_2a1 Conform
+apply a function to every scalar in α and β, following the same rules as ||Each||, recursively.
+> 0(123)(456)(789) _╕+ 0(123)(12)1 ≡ 0(246)(57■)(89Φ)
+> (│01│23)(│45│67)(89) _╕, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
+> 123_╕,456 ≡ (14)(25)(36)
+> 123(45)6 _╕, 6789 ≡ (16)(27)(38)(│49│59)(6■)
 ---
 :char: ╒
 :ascii: 'et
@@ -3048,18 +3058,12 @@ executes G with the right argument, or the left argument if not given. equivalen
 > 3┌▲4 ≡ 5
 ---
 :char: ┼
-:ascii: 'cf
+:ascii: 'fp
 :type: 1-adverb
-#1a1 Conform
-call F to every scalar in α, keeping the list's structure. this is similar to ||Each|| called arbitrarily many times.
-> (│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
-> (│01│23)(│45│67)(89) ┼(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
-#2a1 Conform
-apply a function to every scalar in α and β, following the same rules as ||Each||, recursively.
-> 0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57■)(89Φ)
-> (│01│23)(│45│67)(89) ┼, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
-> 123┼,456 ≡ (14)(25)(36)
-> 123(45)6 ┼, 6789 ≡ (16)(27)(38)(│49│59)(6■)
+#1a1 Fix Point
+execute G repeatedly until the value stops changing. equivalent to `≡_╩`
+> 1┼(/▲) ≡ 5√▲½  ' golden ratio
+see also: ||Until Compare||
 ---
 :char: ╪
 :ascii: 's2
@@ -3091,11 +3095,13 @@ call G.
 #1a2 Scan Until
 call a function G repeatedly, returning all the different iterations, until F passes. F is passed the current iteration as α and the last iteration as β.
 > :100(<5)╦½ ≡ :100:50:25:12.5:6.25:3.125
+see also: ||Until||
 #2a2 Scan Until
 bind β to G
 #_1a2 Scan Until Compare
-call a function G repeatedly, returning all the different iterations, until `αGFα` passes: F is passed the current iteration as α and the last iteration as β. `=╩` (or `≡╩`) is the fixed-point combinator:
-> 1=_╦(/▲) ↑:12 *_f⌡/_f ≡ :1.000:2.000:1.500:1.666:1.600:1.625:1.615:1.619:1.617:1.618:1.617:1.618
+call a function G repeatedly, returning all the different iterations, until `αGFα` passes: F is passed the current iteration as α and the last iteration as β.
+> 1≡_╦(/▲) ↑:12 *_f⌡/_f ≡ :1.000:2.000:1.500:1.666:1.600:1.625:1.615:1.619:1.617:1.618:1.617:1.618
+see also: ||Until Compare||
 #_2a2 Scan Until Compare
 bind β to G
 ---
@@ -3106,11 +3112,12 @@ bind β to G
 call a function G repeatedly, returning the first result where `αF` passes.
 > :100(<5)╩½ ≡ :3.125
 > :100(<1)╩½ ≡ :0.78125
+see also: ||Scan Until||
 #2a2 Until
 bind β to G
 #_1a2 Until Compare
-call a function G repeatedly, returning the first result where `αGFα` passes: F is passed the current iteration as α and the last iteration as β. `=_╩` (or `≡_╩`) is the fixed-point combinator:
-> 1=_╩(/▲) ≡ 5√▲½  ' golden ratio
+call a function G repeatedly, returning the first result where `αGFα` passes: F is passed the current iteration as α and the last iteration as β. `≡_╩` is the same as ||Fix Point||:
+> 1≡_╩(/▲) ≡ 5√▲½  ' golden ratio
 #_2a2 Until Compare
 bind β to G
 ---

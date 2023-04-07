@@ -293,7 +293,7 @@ pub fn escape_2c(c: [u8; 2]) -> Option<u8> {
         b"iq"'¿', b"ie"'¡', b"cl"'⌠', b"fl"'⌡', b"sn"'☼', b"bl"'⌐', b"nl"'¤', b"fd"'£',
         b"hf"'½', b"db"'¼', b"sq"'²', b"pi"'π', b"in"'ε', b"ft"'ⁿ',
         b"is"'∩', b"if"'∞', b"dg"'°', b"nm"'¨', b"vr"'←',
-        b"mo"'┬', b"cf"'┼', b"s2"'╪', b"et"'╒', b"tl"'┐', b"tr"'┌',
+        b"mo"'┬', b"fp"'┼', b"s2"'╪', b"et"'╒', b"tl"'┐', b"tr"'┌',
         b"vl"'╬', b"wn"'╫', b"am"'╔', b"su"'╦', b"sp"'╥', b"ov"'║', b"dr"'╗',
         b"st"'─', b"mt"'═', 
         b"x1"'╚', b"x2"'╝' // ← these will be changed probably

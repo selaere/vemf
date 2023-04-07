@@ -20,7 +20,7 @@
 .inscanpairs→╪
 .instencil→╫
 
-.inconform→┼
+.inconform→_╕
 .inextend→_╛
 :┴:_╛:┴→_╘
 
@@ -50,32 +50,32 @@ _Ü_ë→Ü
 
 .inconcat→,♫┴╬┴,→;│╧,φ╬,→,
 
-┼:inneg╬:insub→-
+_╕:inneg╬:insub→-
 
-┼.inadd→+│╧+0╬+→+
-┼.inmul→*│╧*1╬*→*
-┼.inand→&│╧&1╬&→&
-┼.inor →|│╧|0╬|→|
-┼.inmax→Ñ│╧Ñ(∞-)╬Ñ→Ñ
-┼.inmin→ñ│╧ñ∞╬ñ→ñ
+_╕.inadd→+│╧+0╬+→+
+_╕.inmul→*│╧*1╬*→*
+_╕.inand→&│╧&1╬&→&
+_╕.inor →|│╧|0╬|→|
+_╕.inmax→Ñ│╧Ñ(∞-)╬Ñ→Ñ
+_╕.inmin→ñ│╧ñ∞╬ñ→ñ
 
 .indiv→/
-┼│┴/1╬/→/
+_╕│┴/1╬/→/
 
-┼:inexp╬:inpow→^
+_╕:inexp╬:inpow→^
 
-┼│┴^2╬:inrem→%
+_╕│┴^2╬:inrem→%
 
-┼:inln╬:inlog→∟
+_╕:inln╬:inlog→∟
 
-┼:insqrt╬/╙^→√
+_╕:insqrt╬/╙^→√
 
 │+1╬_╘.inbinsup→▲
 │-1╬_╘.inbinsdown→▼
 
-.ingradeup╬┼:inlt→<
-│▬:inlen╬┼:inmatches→=
-.ingradedown╬┼:ingt→>
+.ingradeup╬_╕:inlt→<
+│▬:inlen╬_╕:inmatches→=
+.ingradedown╬_╕:ingt→>
 :inlt→_<
 :ingt→_>
 
@@ -90,26 +90,26 @@ _Ü_ë→Ü
 _>¬→_≥
 _<¬→_≤
 
-┼:insin╬:inbxor→î
-┼:incos╬:inbor →ô
-┼:intan╬:inband→â
+_╕:insin╬:inbxor→î
+_╕:incos╬:inbor →ô
+_╕:intan╬:inband→â
 
-┼:inasin╬⌐║~→ï
-┼:inacos╬│|¬→ö
-┼:inatan╬│&¬→ä
+_╕:inasin╬⌐║~→ï
+_╕:inacos╬│|¬→ö
+_╕:inatan╬│&¬→ä
 
-(^2)╬┼.inbinom→²
-(/2)╬┼.inlcm→½
-(*2)╬┼.ingcd→¼
+(^2)╬_╕.inbinom→²
+(/2)╬_╕.inlcm→½
+(*2)╬_╕.ingcd→¼
 
 .iniota→↕
-↕╬┼┴(-Ñ0↕)╖+→↕
-│↕▲╬┼┴(-▲Ñ0↕)╖+→↨
+↕╬_╕┴(-Ñ0↕)╖+→↕
+│↕▲╬_╕┴(-▲Ñ0↕)╖+→↨
 (~↕)╬_╘:indomainto→♣
 
 .inabs→¢
-┼:insign╬:inapprox→±
-┼¢╬├²║+√→¢
+_╕:insign╬:inapprox→±
+_╕¢╬├²║+√→¢
 
 .inindex→@│@0╬@→@
 ╘@→¿
@@ -120,46 +120,46 @@ _<¬→_≤
 .inpower→╨ .inpowerscan→╥
 
 :ingetfill╬:insetfill→▐
-.inisnan┼ ╬ ╕►╨■ →▄
+.inisnan_╕ ╬ ╕►╨■ →▄
 │▄¬ ╬ ╕│►¬╨■→▀
 .inreverse→♠
 
 (:incall■)╬.incall→$
 
-:inceil┼╬_╘ └(└♀♫├¢╙~╜ñ╓(▐♫)╜§)╖╟>0¡.,.;╙┴$ ▐│◄▐→⌠
-:infloor┼╬-╙⌠→⌡
-┼:inround╬.indive→÷
+:inceil_╕╬_╘ └(└♀♫├¢╙~╜ñ╓(▐♫)╜§)╖╟>0¡.,.;╙┴$ ▐│◄▐→⌠
+:infloor_╕╬-╙⌠→⌡
+_╕:inround╬.indive→÷
 .informat→ⁿ
 ⁿ╖☻→_☻
 (╟▬2ñ↕╕;╓╕@)╬╘@→¿
 
 ╛(◄▄)╨►→▌(▐╓▌)╬▌→▌
 
-├~=0╬.inmatches→≡
-≡¬→≈
+├~=0╬.inmatches→≡ ≡¬→≈
+:_╩.≡→┼
 
 2*π→τ
 │*├π/:180→°
-┼│*├:180/π╬│-¢→Å
+_╕│*├:180/π╬│-¢→Å
 
 ││♣▲╓╘↓╬↓→↓
 ││♣▲╓╘↑╬↑→↑
 
-.inpick→á┼├á1@╬á→á
+.inpick→á_╕├á1@╬á→á
 (│~á╓@)╬_╘(~╜á)╓¿→å
 (~╜┴┴:insample)╓¿→à
 
-:incomplex→í┼│í0╬í→í
-:incis→ì┼│ì1╬ì→ì
-┼:inarg╬:"inatan2"→Ä
+:incomplex→í_╕│í0╬í→í
+:incis→ì_╕│ì1╬ì→ì
+_╕:inarg╬:"inatan2"→Ä
 
 .inreplicate→‼│♣╖‼╬‼→‼
 :╛┴:_╜.⌐┴:╓.‼→┬
 
-.intocp┼╬_╛.inencode→ê
-.infromcp┼╬{α▐0↓(β~▲)*(β♠╤*♠,1)+}→ë
+.intocp_╕╬_╛.inencode→ê
+.infromcp_╕╬{α▐0↓(β~▲)*(β♠╤*♠,1)+}→ë
 (│♣♠╜┴^)╓*+→è│è2╬_╘è→è
-┼.inbrepr╬(¢╜(¬╦÷♀♠)╖%▐0)→é
+_╕.inbrepr╬(¢╜(¬╦÷♀♠)╖%▐0)→é
 
 (┴▲`a`{=1*:32)╓-→Ç
 (┴▲`A`[=1*:32)╓+→ç
@@ -167,8 +167,8 @@ _<¬→_≤
 ╞(Ñ▲↕)╖╛│=+▐0→ÿ
 
 (⌐‼@)    ╬ ╘├╛≡‼@→#
-:inreal ┼╬ ╘(╛≡+)→ù
-:inimag ┼╬ ╘├╛≡‼¡→ú
+:inreal _╕╬ ╘(╛≡+)→ù
+:inimag _╕╬ ╘├╛≡‼¡→ú
 :inislist╬ ╛(╘≡|)→ε
 ε¬→É
 :inocccount╬:inuio→û
@@ -181,9 +181,9 @@ _<¬→_≤
 "0123456789abcdefghijklmnopqrstuvwxyz"→base
 .inparse╬(ç┴#.base)╖è→º
 ' {αéβ│►¬╨│¬0α¡.base├►<0╨│⌐`-α}
-┼:innumfmt╬(é╓┴(│►¬╨│¬0¡.base))╓┴├►<0╨│⌐`-▐■→ª
+_╕:innumfmt╬(é╓┴(│►¬╨│¬0¡.base))╓┴├►<0╨│⌐`-▐■→ª
 
-┼:infact→!
+_╕:infact→!
 !╬(-╓!║/)→!
 
 :3486→_¶
@@ -191,11 +191,11 @@ _<¬→_≤
 _╘(┴~╙%)╓└↓,♀→»(»1)╬»→»
 _╘(┴~╙%)╓└♂,↑→«(«1)╬«→«
 
-:inconj┼╬.ingroup→ü
+:inconj_╕╬.ingroup→ü
 (╛,,)╖~╙♀→æ
 .infind→£
 (£└(=0╤+)▀▄)╓ü▐■→¥│¥Φ╬¥→¥
-(┼└ù♫ú) ╬ └(┴ÿ╜~╙↑╤+)╓ü↑├►~▲→₧
+(_╕└ù♫ú) ╬ └(┴ÿ╜~╙↑╤+)╓ü↑├►~▲→₧
 
 ┴:_╙♪┴@→Æ Æ╬(▐Æ)→Æ
 .indrill→╗ .inamend→╔

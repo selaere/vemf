@@ -2757,8 +2757,18 @@ _1÷_2 ≡ 1</pre>
 (│01│23)(│45│67)(89)╕╕,0 ≡   (├010├230)(├450├670)(│80│90)
 (│01│23)(│45│67)(89)╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
 (│01│23)(│45│67)(89)╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
-(│01│23)(│45│67)(89)┼,0    ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
+(│01│23)(│45│67)(89)_╕,0   ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
 <p>see also: <a href="#Each Left">Each Left</a>, <a href="#Each Right">Each Right</a>, <a href="#Conform">Conform</a></p>
+<h3 id="Conform"><a class=h href="#Conform"></a><code>α_╕G</code> Conform</h3>
+<p>call F to every scalar in α, keeping the list's structure. this is similar to <a href="#Each">Each</a> called arbitrarily many times.</p>
+<pre>(│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
+(│01│23)(│45│67)(89) _╕(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
+<h3 id="Conform"><a class=h href="#Conform"></a><code>α_╕Gβ</code> Conform</h3>
+<p>apply a function to every scalar in α and β, following the same rules as <a href="#Each">Each</a>, recursively.</p>
+<pre>0(123)(456)(789) _╕+ 0(123)(12)1 ≡ 0(246)(57■)(89Φ)
+(│01│23)(│45│67)(89) _╕, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
+123_╕,456 ≡ (14)(25)(36)
+123(45)6 _╕, 6789 ≡ (16)(27)(38)(│49│59)(6■)</pre>
 <h2 class="r1-adverb" id="D5"><a class=h href="#D5"></a><code>╒</code> (0xD5, <code>'et</code>) <span class=rank>1-adverb</span></h2>
 <h3 id="Each Trim"><a class=h href="#Each Trim"></a><code>╒G</code> Each Trim</h3>
 <p>similar to <a href="#Each">Each</a>, but instead of extending the shorter list to fit, it will clip the longer list to match the shorter one. the resulting list will always have <a href="#None">None</a> fill.</p>
@@ -2857,17 +2867,11 @@ _1÷_2 ≡ 1</pre>
 <pre>3▲   ≡ 4
 3┌▲  ≡ 4
 3┌▲4 ≡ 5</pre>
-<h2 class="r1-adverb" id="C5"><a class=h href="#C5"></a><code>┼</code> (0xC5, <code>'cf</code>) <span class=rank>1-adverb</span></h2>
-<h3 id="Conform"><a class=h href="#Conform"></a><code>α┼G</code> Conform</h3>
-<p>call F to every scalar in α, keeping the list's structure. this is similar to <a href="#Each">Each</a> called arbitrarily many times.</p>
-<pre>(│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
-(│01│23)(│45│67)(89) ┼(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)</pre>
-<h3 id="Conform"><a class=h href="#Conform"></a><code>α┼Gβ</code> Conform</h3>
-<p>apply a function to every scalar in α and β, following the same rules as <a href="#Each">Each</a>, recursively.</p>
-<pre>0(123)(456)(789) ┼+ 0(123)(12)1 ≡ 0(246)(57■)(89Φ)
-(│01│23)(│45│67)(89) ┼, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
-123┼,456 ≡ (14)(25)(36)
-123(45)6 ┼, 6789 ≡ (16)(27)(38)(│49│59)(6■)</pre>
+<h2 class="r1-adverb" id="C5"><a class=h href="#C5"></a><code>┼</code> (0xC5, <code>'fp</code>) <span class=rank>1-adverb</span></h2>
+<h3 id="Fix Point"><a class=h href="#Fix Point"></a><code>α┼G</code> Fix Point</h3>
+<p>execute G repeatedly until the value stops changing. equivalent to <code>≡_╩</code></p>
+<pre>1┼(/▲) ≡ 5√▲½  ' golden ratio</pre>
+<p>see also: <a href="#Until Compare">Until Compare</a></p>
 <h2 class="r1-adverb" id="D8"><a class=h href="#D8"></a><code>╪</code> (0xD8, <code>'s2</code>) <span class=rank>1-adverb</span></h2>
 <h3 id="Scan Pairs"><a class=h href="#Scan Pairs"></a><code>α╪G</code> Scan Pairs</h3>
 <p>run F through 2-item pairs of α, passing the left item as the left argument and the right item as the right argument. the first item will be left unchanged.</p>
@@ -2890,11 +2894,13 @@ _1÷_2 ≡ 1</pre>
 <h3 id="Scan Until"><a class=h href="#Scan Until"></a><code>αF╦G</code> Scan Until</h3>
 <p>call a function G repeatedly, returning all the different iterations, until F passes. F is passed the current iteration as α and the last iteration as β.</p>
 <pre>:100(&lt;5)╦½ ≡ :100:50:25:12.5:6.25:3.125</pre>
+<p>see also: <a href="#Until">Until</a></p>
 <h3 id="Scan Until"><a class=h href="#Scan Until"></a><code>αF╦Gβ</code> Scan Until</h3>
 <p>bind β to G</p>
 <h3 id="Scan Until Compare"><a class=h href="#Scan Until Compare"></a><code>αF_╦G</code> Scan Until Compare</h3>
-<p>call a function G repeatedly, returning all the different iterations, until <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β. <code>=╩</code> (or <code>≡╩</code>) is the fixed-point combinator:</p>
-<pre>1=_╦(/▲) ↑:12 *_f⌡/_f ≡ :1.000:2.000:1.500:1.666:1.600:1.625:1.615:1.619:1.617:1.618:1.617:1.618</pre>
+<p>call a function G repeatedly, returning all the different iterations, until <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β.</p>
+<pre>1≡_╦(/▲) ↑:12 *_f⌡/_f ≡ :1.000:2.000:1.500:1.666:1.600:1.625:1.615:1.619:1.617:1.618:1.617:1.618</pre>
+<p>see also: <a href="#Until Compare">Until Compare</a></p>
 <h3 id="Scan Until Compare"><a class=h href="#Scan Until Compare"></a><code>αF_╦Gβ</code> Scan Until Compare</h3>
 <p>bind β to G</p>
 <h2 class="r2-adverb" id="CA"><a class=h href="#CA"></a><code>╩</code> (0xCA, <code>'U</code>) <span class=rank>2-adverb</span></h2>
@@ -2902,11 +2908,12 @@ _1÷_2 ≡ 1</pre>
 <p>call a function G repeatedly, returning the first result where <code>αF</code> passes.</p>
 <pre>:100(&lt;5)╩½ ≡ :3.125
 :100(&lt;1)╩½ ≡ :0.78125</pre>
+<p>see also: <a href="#Scan Until">Scan Until</a></p>
 <h3 id="Until"><a class=h href="#Until"></a><code>αF╩Gβ</code> Until</h3>
 <p>bind β to G</p>
 <h3 id="Until Compare"><a class=h href="#Until Compare"></a><code>αF_╩G</code> Until Compare</h3>
-<p>call a function G repeatedly, returning the first result where <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β. <code>=_╩</code> (or <code>≡_╩</code>) is the fixed-point combinator:</p>
-<pre>1=_╩(/▲) ≡ 5√▲½  ' golden ratio</pre>
+<p>call a function G repeatedly, returning the first result where <code>αGFα</code> passes: F is passed the current iteration as α and the last iteration as β. <code>≡_╩</code> is the same as <a href="#Fix Point">Fix Point</a>:</p>
+<pre>1≡_╩(/▲) ≡ 5√▲½  ' golden ratio</pre>
 <h3 id="Until Compare"><a class=h href="#Until Compare"></a><code>αF_╩Gβ</code> Until Compare</h3>
 <p>bind β to G</p>
 <h2 class="r2-adverb" id="D2"><a class=h href="#D2"></a><code>╥</code> (0xD2, <code>'sp</code>) <span class=rank>2-adverb</span></h2>
