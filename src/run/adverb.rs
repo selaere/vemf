@@ -187,24 +187,42 @@ adverb!(@env, a f .untilcmp g b => {
 });
 
 adverb!(@env, a f .powerscan g b => {
-    let num = f.call(env, a.c(), b.c()).try_int().map_or(0, |x| x.try_into().unwrap_or(0));
-    let mut values = Vec::with_capacity(num);
-    values.push(a.c());
-    let mut val = a;
-    for _ in 0..num {
-        val = g.call(env, val, b.c());
-        values.push(val.c());
-    }
-    Val::lis(values)
+    let num = f.call(env, a.c(), b.c());
+    if let Some(num) = num.try_int() {
+        let mut values = Vec::with_capacity(num as _);
+        values.push(a.c());
+        let mut val = a;
+        for _ in 0..num {
+            val = g.call(env, val, b.c());
+            values.push(val.c());
+        }
+        Val::lis(values)
+    } else if num.is_list() {
+        let mut buf = Vec::with_capacity(num.len());
+        for (i, f) in num.into_iterf().enumerate() {
+            let l = a.index(env, i);
+            buf.push(powerscan(env, l, b.c(), Some(&f.rc()), g));
+        }
+        Val::lis(buf)
+    } else { NAN }
 });
 
 adverb!(@env, a f .power g b => {
-    let num = f.call(env, a.c(), b.c()).try_int().map_or(0, |x| x.try_into().unwrap_or(0));
-    let mut val = a;
-    for _ in 0..num {
-        val = g.call(env, val, b.c());
-    }
-    val
+    let num = f.call(env, a.c(), b.c());
+    if let Some(num) = num.try_int() {
+        let mut val = a;
+        for _ in 0..num {
+            val = g.call(env, val, b.c());
+        }
+        val
+    } else if num.is_list() {
+        let mut buf = Vec::with_capacity(num.len());
+        for (i, f) in num.into_iterf().enumerate() {
+            let l = a.index(env, i);
+            buf.push(power(env, l, b.c(), Some(&f.rc()), g));
+        }
+        Val::lis(buf)
+    } else { NAN }
 });
 
 adverb!(@env, a .scanpairs g b => {

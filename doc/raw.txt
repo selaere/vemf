@@ -3136,6 +3136,9 @@ bind β to F and G
 #1a2 Power
 call a function G repeatedly, `αF` times. F will be executed with the arguments.
 > :100 7╨½ ≡ :0.78125
+if the result of `αF` is a list, repeat each of the elements.
+> 123456789 (020110000)╨¼ ≡ 1838Φ6789
+> 1(23)()(4()56)()(89) ≡╕╨Θ ≡ 1(23)Θ(4()56)Θ(89)
 #2a2 Power
 bind β to F and G
 ---
