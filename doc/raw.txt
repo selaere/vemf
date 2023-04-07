@@ -1322,76 +1322,78 @@ in this case, null selects all the items. this can be useful for retrieving colu
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─a`.
-#_0
+#_0 Uppercase Letters
 the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZ"`
 ---
 :char: B
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─b`.
-#_0
+#_0 Letters
 the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"`
 ---
 :char: C
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─c`.
-#_0
+#_0 Lowercase Letters
 the string `"abcdefghijklmnopqrstuvwxyz"`
 ---
 :char: D
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─d`.
-#_0
+#_0 Digits
 the string `"0123456789"`
 ---
 :char: E
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─e`.
-#_0
+#_0 Digits and Letters
 the string `"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"`
 ---
 :char: F
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─f`.
-#_0
+#_0 Digits and Uppercase Letters
 the string `"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"`
 ---
 :char: G
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─g`.
-#_0
+#_0 Digits and Lowercase Letters
 the string `"0123456789abcdefghijklmnopqrstuvwxyz"`
 ---
 :char: H
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─h`.
-#_0
+#_0 Uppercase Hexadecimal
 the string `"0123456789ABCDEF"`
 ---
 :char: I
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─i`.
-#_0
+#_0 Lowercase Hexadecimal
 the string `"0123456789abcdef"`
 ---
 :char: J
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─j`.
-#_0
-the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"`
+#_0 Base-64
+the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"`
 ---
 :char: K
 :type: verb_variable
 #12
 general-purpose verb variable. by default, `─k`.
+#_0 Alternate Base-64
+the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"`
 ---
 :char: L
 :type: verb_variable
@@ -2273,7 +2275,7 @@ convert the number α to a string. scalar.
 > 4í3ª ≡ "3+4i"
 see also: ||Parse||
 #2 Represent Base
-convert the number α to a string in base β. behaviour unspecified for bases not in [2, 36]. scalar.
+convert the number α to a string in base β, using the characters ||`0`-`9` and `a`-`z`@Digits and Lowercase Letters||. unspecified behaviour for bases not in [2, 36]. scalar.
 > :35ª2 ≡ "100011"
 > :42ªΦ ≡ "42"
 > :3054ª:16 ≡ "bee"
@@ -2474,12 +2476,15 @@ see also: ||Nullify||
 :ascii: 'hl
 :type: verb
 #1 Fill Holes
-replace ||None||s in the list α with its fill.
+replace ||None||s in the list α with its fill. equivalent to `▐╓▌`
 > 12■456■78▐0▌ ≡ 120456078▐0
 > 12■456■78▌ ≡ 12■456■78
 #2 Replace Holes
 replace ||None||s in the list α with β.
 > 12■456■78▌0 ≡ 120456078
+note that this function is not pervasive:
+> 12■45(0■2■4)6■7  ▌0 ≡ 12045(0■2■4)607
+> 12■45(0■2■4)6■7_╕▌0 ≡ 12045(00204)607
 ---
 :char: ▐
 :ascii: 'hr
