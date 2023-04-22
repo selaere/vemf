@@ -96,8 +96,8 @@ pub fn escape2c(a: char, b: char) -> Option<char> {
 }
 
 #[wasm_bindgen]
-pub fn tobytes(a: &str) -> Option<Box<[u8]>> {
-    codepage::tobytes(a).map(Vec::into_boxed_slice)
+pub fn tobytes(a: &str) -> Box<[u8]> {
+    codepage::tobytes(a).into_boxed_slice()
 }
 
 #[wasm_bindgen]
@@ -107,5 +107,5 @@ pub fn tochars(a: &[u8]) -> String {
 
 #[wasm_bindgen]
 pub fn rewrite(s: &str) -> String {
-    codepage::tochars_ln(&vemf::rewrite(&codepage::tobytes(s).unwrap()))
+    vemf::rewrite(&codepage::tobytes(s))
 }

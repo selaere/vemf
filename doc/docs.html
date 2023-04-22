@@ -776,7 +776,19 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <li><code>  20</code> is a space</li>
 <li><code>¨ F9</code> represents <code>¨ U+00A8 DIAERESIS</code>, while CP-437 uses a small middle dot. it is encoded in Unicode as <code>∙ U+2219 BULLET OPERATOR</code>, but most modern fonts don't make the distinction with <code>· FA</code> or <code>• F7</code>. (the related codepage <a href="https://en.wikipedia.org/wiki/Code_page_850">CP-850</a> does this too)</li>
 <li><code>¤ 00</code> and <code>⎕ FF</code> are control characters in CP-437. they are assigned other characters in vemf (<code>¤ U+00A4 CURRENCY SIGN</code> and <code>⎕ U+2395 APL FUNCTIONAL SYMBOL QUAD</code> respectively) but (for now) they are syntax errors outside of literals</li></ul>
-<p>these are all of the symbols available to vemf programs. even if storing vemf scripts byte-by-byte is more efficient, they use utf-8 by default.</p>
+<p>these are all of the symbols available to vemf programs. vemf files can be encoded in Unicode (UTF-8) or the vemf codepage byte-by-byte.</p>
+<p>some confusable characters are changed to the codepage:</p>
+<ul><li>U+2212 MINUS SIGN <code>−</code> and U+2013 EN DASH <code>–</code> to hyphens <code>-</code> (0x2D)</li>
+<li>U+23AE INTEGRAL EXTENSION <code>⎮</code> to box-drawing character <code>│</code> (0xB3)</li>
+<li>U+237A APL FUNCTIONAL SYMBOL ALPHA <code>⍺</code> to alpha <code>α</code> (0xE0)</li>
+<li>U+00DF LATIN SMALL LETTER SHARP S <code>ß</code> to beta <code>β</code> (0xE1)</li>
+<li>U+2211 N-ARY SUMMATION <code>∑</code> to uppercase sigma <code>Σ</code> (0xE4)</li>
+<li>U+00B5 MICRO SIGN <code>µ</code> to mu <code>μ</code> (0xE6)</li>
+<li>U+2126 OHM SIGN <code>Ω</code> to uppercase omega (0xEA)</li>
+<li>U+00F0 LATIN SMALL LETTER ETH <code>ð</code> to delta (0xEB)</li>
+<li>U+03D5 GREEK PHI SYMBOL <code>ϕ</code> and U+0278 LATIN SMALL LETTER PHI <code>ɸ</code> to phi (0xED)</li>
+<li>U+025B LATIN SMALL LETTER OPEN E <code>ɛ</code> to epsilon <code>ε</code> (0xEE)</li>
+<li>U+2219 BULLET OPERATOR <code>∙</code> to diaereses <code>¨</code> (0xF9)</li></ul>
 <h3 id="Execution"><a class=h href="#Execution"></a>Execution</h3>
 <p>a vemf file is a list of statements that are executed in order. there are only a few ways a vemf program can contact with the outside world</p>
 <p>the command line arguments are available as <code>δ</code> <a href="#Arguments">Arguments</a>. as a shorthand, <code>α</code> <a href="#Alpha">Alpha</a> and <code>β</code> <a href="#Beta">Beta</a> are set to the first argument and second argument respectively, and <code>Σ</code> <a href="#Arity">Arity</a> is the number of arguments. arguments are always Unicode strings.</p>

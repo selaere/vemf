@@ -223,7 +223,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Tok::Chr2(x, y) => Snd(vec![Int(i64::from(x)), Int(i64::from(y))]),
         Tok::Num(l) => Int(l),
         Tok::Flt(l) => Flt(l),
-        Tok::Str(x) => Snd(x.iter().map(|&x| Int(i64::from(x))).collect()),
+        Tok::Str(x) => Snd(x.into_iter().map(Int).collect()),
         _ => return None,
     })
 }

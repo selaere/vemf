@@ -1,7 +1,7 @@
 use core::cell::RefCell;
 
 use alloc::collections::VecDeque;
-use crate::{prelude::*, codepage::{tobyte, tochars, tochar, tobytes}};
+use crate::{prelude::*, codepage::tobytes};
 
 const DOCS: &str = include_str!("../doc/raw.txt");
 
@@ -50,10 +50,10 @@ fn docs_escapes() {
         for e in escape.split(' ') {
             let re = crate::rewrite(
                 &iter::once(b'"').chain(e.bytes()).chain(iter::once(b'"')).collect::<Vec<u8>>()[..]
-            );
-            let th = tobyte(char.chars().next().unwrap()).unwrap();
-            if re[..] != [b'"', th, b'"'] {
-                trolls.push(format!("{} != \"{}\"", tochars(&re), tochar(th)));
+            ).chars().nth(1).unwrap();
+            let th = char.chars().next().unwrap();
+            if re != th {
+                trolls.push(format!("{} != \"{}\"", re, th));
             }
         }
     }
@@ -67,8 +67,12 @@ fn rewrite() {
 "string'nla string'! ¨quote '"yeah'¨ 'ae'aE"'pr'&
 _'e^.'H.name'pi
 "#;
-    const OUTPUT: &str = r#"◙:12↕♥3_☻5,`'·◙"string¤a string‼ ¨quote ╕yeah'¨ æÆ"☺·◙_ê.►.nameπ◙"#;
-    assert_eq!(OUTPUT, tochars(&crate::rewrite(&tobytes(INPUT).unwrap())));
+    const OUTPUT: &str = r#"
+:12↕♥3_☻5,`'·
+"string¤a string‼ ¨quote ╕yeah'¨ æÆ"☺·
+_ê.►.nameπ
+"#;
+    assert_eq!(OUTPUT, &crate::rewrite(&tobytes(INPUT)));
 }
 
 #[allow(clippy::type_complexity)]

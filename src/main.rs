@@ -110,24 +110,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     if opts.reencode.is_some() || opts.rewrite {
         if !opts.binary {
-            code = codepage::tobytes(core::str::from_utf8(&code)?)
-                .ok_or("input contains characters outside codepage")?;
+            code = codepage::tobytes(core::str::from_utf8(&code)?);
         }
-        if opts.rewrite { code = vemf::rewrite(&code) }
-        if let Some(Encoding::Vemf) = opts.reencode {
-            std::io::stdout().write_all(&code)?;
-        } else {
-            print!("{}", codepage::tochars(&code));
+        match opts.reencode {
+            Some(Encoding::Vemf) => print!("{}", match opts.rewrite {
+                true  => vemf::rewrite(&code),
+                false => codepage::tochars(&code),
+            }),
+            _ => std::io::stdout().write_all(&match opts.rewrite {
+                true  => codepage::tobytes(&vemf::rewrite(&code)),
+                false => code,
+            })?,
         }
         return Ok(());
     }
-    let val = match !opts.binary {
-        true  => env.include_string(core::str::from_utf8(&code)?),
-        false => env.include_bytes(&code),
+    let val = match opts.binary {
+        true  => env.include_bytes(&code),
+        false => env.include_string(core::str::from_utf8(&code)?),
     };
-    if let Err(x) = env.run_value(val, &fmtstring(&opts.format)) {
-        std::process::exit(x)
-    };
+    if let Err(x) = env.run_value(val, &fmtstring(&opts.format)) { std::process::exit(x); }
     println!();
     if opts.inspect { repl(env, opts); }
     Ok(())
@@ -148,9 +149,9 @@ fn repl(mut env: Env, mut opts: Options) {
                 opts.rewrite = !opts.rewrite;
                 continue;
             } else if let Some(code) = cmd.strip_prefix("r ") {
-                println!(" r: {}", codepage::tochars(&vemf::rewrite(
-                    &codepage::tobytes(code.trim_end()).unwrap()
-                )));
+                println!(" r: {}", vemf::rewrite(
+                    &codepage::tobytes(code.trim_end())
+                ));
                 continue;
             } else if let Some(code) = cmd.strip_prefix("prompt ") {
                 opts.prompt = code.to_string();
@@ -179,9 +180,9 @@ fn repl(mut env: Env, mut opts: Options) {
                 continue;
             }
         }
-        if opts.rewrite { println!(" r: {}", codepage::tochars(&vemf::rewrite(
-            &codepage::tobytes(code.trim_end()).unwrap()
-        )));}
+        if opts.rewrite { println!(" r: {}", vemf::rewrite(
+            &codepage::tobytes(code.trim_end())
+        )); }
         let val = env.include_string(&code);
         if !val.is_nan() {
             val.format(&mut FromIoWrite(std::io::stdout()), &fmtstring(&opts.format)).unwrap();

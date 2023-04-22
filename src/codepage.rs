@@ -40,14 +40,10 @@ macro_rules! b {
 }
 
 pub fn tochar(x: u8) -> char { CHARS[x as usize] }
+pub fn tochar_ln(x: u8) -> char { if x == 10 {'\n'} else {tochar(x)} }
 
-pub fn tochars_ln(bytes: &[u8]) -> String {
-    bytes.iter().map(|&x| if x == 10 {'\n'} else {tochar(x)}).collect()
-}
-
-pub fn tochars(bytes: &[u8]) -> String {
-    bytes.iter().map(|&x| tochar(x)).collect()
-}
+pub fn tochars_ln(bytes: &[u8]) -> String { bytes.iter().map(|&x| tochar_ln(x)).collect() }
+pub fn tochars   (bytes: &[u8]) -> String { bytes.iter().map(|&x| tochar   (x)).collect() }
 
 pub const fn tobyte(x: char) -> Option<u8> {
     macro_rules! bee { ( $($c:tt)* ) => {
@@ -58,20 +54,38 @@ pub const fn tobyte(x: char) -> Option<u8> {
     } }
     Some(match x {
         '\0'..=' ' => x as u8,
-        '␀'=>0, '‘'|'’'|'′'|'ʹ'|'ʻ'|'ʼ'|'ʽ'=>b'\'', '−'|'–'=>b'-', '“'|'”'|'″'|'ʺ'=>b'"', '≠'=>b'~',
-        ';'=>b';', '♬'=>b!('♫'), '¦'=>b'|', 'Δ'|'∆'=>b!('⌂'), '⎮'=>b!('│'), '⍺'|'ɑ'=>b!('α'),
-        'ß'|'ϐ'=>b!('β'), 'Π'|'∏'|'ϖ'=>b!('π'), '∑'=>b!('Σ'), 'µ'=>b!('μ'), 'θ'|'ϑ'=>b!('Θ'),
-        'Ω'=>b!('Ω'), 'ð'|'∂'=>b!('δ'), 'ϕ'|'ɸ'|'∅'|'Ø'|'ø'=>b!('φ'), '∈'|'∊'|'€'|'ɛ'=>b!('ε'),
-        '≢'=>b!('≈'), '∙'|'˙'=>b!('¨'), '⌼'=>b!('◘'), '⍽'=>b!('⎕'),
+        '−'|'–'=>b'-', '⎮'=>b!('│'), '⍺'=>b!('α'), 'ß'=>b!('β'), '∑'=>b!('Σ'), 'µ'=>b!('μ'),
+        'Ω'=>b!('Ω'), 'ð'=>b!('δ'), 'ϕ'|'ɸ'=>b!('φ'), 'ɛ'=>b!('ε'), '∙'=>b!('¨'),
         _ => return chars!(bee)
     })
 }
 
-pub fn tobytes(string: &str) -> Option<Vec<u8>> {
+pub fn tobyte_wide(x: char) -> Result<u8, [u8; 4]> {
+    tobyte(x).ok_or_else(|| {
+        let [_, a, b, c] = u32::from(x).to_be_bytes();
+        [b'\'', 0x80+a, b, c]
+    })
+}
+
+pub fn tobyte_write(x: char, buf: &mut Vec<u8>) {
+    match tobyte_wide(x) {
+        Ok(a) => buf.push(a),
+        Err(a) => buf.extend(a.into_iter()),
+    }
+}
+
+pub fn tobstr(x: char) -> Bstr {
+    match tobyte_wide(x) {
+        Ok(a) => bstr![a],
+        Err(a) => Bstr::from(&a[..]),
+    }
+}
+
+pub fn tobytes(string: &str) -> Vec<u8> {
     let mut vector = Vec::with_capacity(string.len() / 2);
     for c in string.chars() {
         if let '\r' | '\u{200E}' | '\u{FE0E}' | '\u{FE0F}' = c { continue } // crlf moment
-        vector.push(tobyte(c)?);
+        tobyte_write(c, &mut vector);
     }
-    Some(vector)
+    vector
 }

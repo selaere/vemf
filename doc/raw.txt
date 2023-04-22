@@ -395,7 +395,21 @@ this is based on the ||CP-437@https://en.wikipedia.org/wiki/Code_page_437|| code
 - `  20` is a space
 - `¨ F9` represents `¨ U+00A8 DIAERESIS`, while CP-437 uses a small middle dot. it is encoded in Unicode as `∙ U+2219 BULLET OPERATOR`, but most modern fonts don't make the distinction with `· FA` or `• F7`. (the related codepage ||CP-850@https://en.wikipedia.org/wiki/Code_page_850|| does this too)
 - `¤ 00` and `⎕ FF` are control characters in CP-437. they are assigned other characters in vemf (`¤ U+00A4 CURRENCY SIGN` and `⎕ U+2395 APL FUNCTIONAL SYMBOL QUAD` respectively) but (for now) they are syntax errors outside of literals
-these are all of the symbols available to vemf programs. even if storing vemf scripts byte-by-byte is more efficient, they use utf-8 by default.
+these are all of the symbols available to vemf programs. vemf files can be encoded in Unicode (UTF-8) or the vemf codepage byte-by-byte.
+some confusable characters are translated to the codepage:
+- U+2212 MINUS SIGN `−` and U+2013 EN DASH `–` to hyphens `-` (0x2D)
+- U+23AE INTEGRAL EXTENSION `⎮` to box-drawing character `│` (0xB3)
+- U+237A APL FUNCTIONAL SYMBOL ALPHA `⍺` to alpha `α` (0xE0)
+- U+00DF LATIN SMALL LETTER SHARP S `ß` to beta `β` (0xE1)
+- U+2211 N-ARY SUMMATION `∑` to uppercase sigma `Σ` (0xE4)
+- U+00B5 MICRO SIGN `µ` to mu `μ` (0xE6)
+- U+2126 OHM SIGN `Ω` to uppercase omega `Ω` (0xEA)
+- U+00F0 LATIN SMALL LETTER ETH `ð` to delta `δ` (0xEB)
+- U+03D5 GREEK PHI SYMBOL `ϕ` and U+0278 LATIN SMALL LETTER PHI `ɸ` to phi (0xED)
+- U+025B LATIN SMALL LETTER OPEN E `ɛ` to epsilon `ε` (0xEE)
+- U+2219 BULLET OPERATOR `∙` to diaereses `¨` (0xF9)
+- control characters 0x00-0x1F are converted literally
+if a character is not in the codepage or in this list, it will be implicitly converted into a ||Unicode Escape||.
 # Execution
 a vemf file is a list of statements that are executed in order. there are only a few ways a vemf program can contact with the outside world
 the command line arguments are available as `δ` ||Arguments||. as a shorthand, `α` ||Alpha|| and `β` ||Beta|| are set to the first argument and second argument respectively, and `Σ` ||Arity|| is the number of arguments. arguments are always Unicode strings.
@@ -939,14 +953,29 @@ see also: ||And||, ||Any||
 ---
 :char: '
 :type: literal
+#'&#x20;abc Line Comment
+all of the characters until the next line break will be ignored.
 #'A,'ab Escape
 escapes are one way to write characters outside the ascii range (characters in the range 0x20 ` ` to 0x7E `~`, the ones that you almost certainly have in your keyboard). you will see the escapes in the documentation of each character.
 there are more non-ascii characters than ascii characters in the codepage (256 − 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [`a`, `z`].
 the characters with single character escape sequences are the following:
 > !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
 > ‼╕☻¶÷·'╙╜↔±○¬•╧╣┘│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘┬╛≈
-#'&#x20;abc Line Comment
-all of the characters until the next line break will be ignored.
+#'[ÇüéâäàåçêëèïîìÄÅÉ]ab Unicode Escape
+Unicode Escapes are vemf's wacky way of allowing unicode text in source code while still using the vemf codepage internally.
+the first character can be any of "ÇüéâäàåçêëèïîìÄÅÉ" (or 0x80-0x91), and it specifies the bits 16-21 of the unicode codepoint, or the ||plane number@https://en.wikipedia.org/wiki/Plane_(Unicode)|| (plus 128). the next two bytes encode the other two bytes of the codepoint.
+though currently only planes 0, 1, 2, 3, 14, 15, 16 (`ÇüéâÄÅÉ`) are used, the whole range of unicode characters up to U+10FFFF is supported, except for the UTF-16 surrogates U+D800-U+DFFF.
+for example, to encode the emoji 🐈, with codepoint `U+1F408`, use the characters `0x81 0xF4 0x08` or `'ü⌠◘`:
+> "'ü⌠◘" ≡ "🐈"
+most characters you care about are in the plane 0, or the Basic Multilingual Plane. they will always start with `'Ç`.
+> "'Ç¤«" ≡ "®" ' U+00AE REGISTERED SIGN
+> "'Ç"`" ≡ "≠" ' U+2260 NOT EQUAL TO
+> "'é¤!" ≡ "𠀡" ' U+20021 CJK UNIFIED IDEOGRAPH-20021
+> "'â►l" ≡ "𱁬" ' U+3106C CJK UNIFIED IDEOGRAPH-3106C
+escaping characters that are in the vemf codepage correspond to just the characters:
+> "'Ç♥╡" ≡ ♪`ε ' U+03B5 GREEK SMALL LETTER EPSILON
+unicode characters outside of literals can be verbs, adverbs or nouns depending on the character. see more details in src/token.rs.
+> √3→∛ :64∛ ± 4
 ---
 :char: (
 :type: grammar
