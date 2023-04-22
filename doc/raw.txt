@@ -974,7 +974,7 @@ most characters you care about are in the plane 0, or the Basic Multilingual Pla
 > "'â►l" ≡ "𱁬" ' U+3106C CJK UNIFIED IDEOGRAPH-3106C
 escaping characters that are in the vemf codepage correspond to just the characters:
 > "'Ç♥╡" ≡ ♪`ε ' U+03B5 GREEK SMALL LETTER EPSILON
-unicode characters outside of literals can be verbs, adverbs or nouns depending on the character. see more details in src/token.rs.
+unicode characters outside of literals can be verbs, adverbs or nouns depending on the character. see more details in ||the source@https://github.com/selaere/vemf/blob/01c1dc4f8d7171aa9b2d1445c8c62ae5aa31e3b8/src/token.rs#L119-L137||.
 > √3→∛ :64∛ ± 4
 ---
 :char: (

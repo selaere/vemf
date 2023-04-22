@@ -777,18 +777,20 @@ xE | αβΓπΣσμτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°¨·√ⁿ²■�
 <li><code>¨ F9</code> represents <code>¨ U+00A8 DIAERESIS</code>, while CP-437 uses a small middle dot. it is encoded in Unicode as <code>∙ U+2219 BULLET OPERATOR</code>, but most modern fonts don't make the distinction with <code>· FA</code> or <code>• F7</code>. (the related codepage <a href="https://en.wikipedia.org/wiki/Code_page_850">CP-850</a> does this too)</li>
 <li><code>¤ 00</code> and <code>⎕ FF</code> are control characters in CP-437. they are assigned other characters in vemf (<code>¤ U+00A4 CURRENCY SIGN</code> and <code>⎕ U+2395 APL FUNCTIONAL SYMBOL QUAD</code> respectively) but (for now) they are syntax errors outside of literals</li></ul>
 <p>these are all of the symbols available to vemf programs. vemf files can be encoded in Unicode (UTF-8) or the vemf codepage byte-by-byte.</p>
-<p>some confusable characters are changed to the codepage:</p>
+<p>some confusable characters are translated to the codepage:</p>
 <ul><li>U+2212 MINUS SIGN <code>−</code> and U+2013 EN DASH <code>–</code> to hyphens <code>-</code> (0x2D)</li>
 <li>U+23AE INTEGRAL EXTENSION <code>⎮</code> to box-drawing character <code>│</code> (0xB3)</li>
 <li>U+237A APL FUNCTIONAL SYMBOL ALPHA <code>⍺</code> to alpha <code>α</code> (0xE0)</li>
 <li>U+00DF LATIN SMALL LETTER SHARP S <code>ß</code> to beta <code>β</code> (0xE1)</li>
 <li>U+2211 N-ARY SUMMATION <code>∑</code> to uppercase sigma <code>Σ</code> (0xE4)</li>
 <li>U+00B5 MICRO SIGN <code>µ</code> to mu <code>μ</code> (0xE6)</li>
-<li>U+2126 OHM SIGN <code>Ω</code> to uppercase omega (0xEA)</li>
-<li>U+00F0 LATIN SMALL LETTER ETH <code>ð</code> to delta (0xEB)</li>
+<li>U+2126 OHM SIGN <code>Ω</code> to uppercase omega <code>Ω</code> (0xEA)</li>
+<li>U+00F0 LATIN SMALL LETTER ETH <code>ð</code> to delta <code>δ</code> (0xEB)</li>
 <li>U+03D5 GREEK PHI SYMBOL <code>ϕ</code> and U+0278 LATIN SMALL LETTER PHI <code>ɸ</code> to phi (0xED)</li>
 <li>U+025B LATIN SMALL LETTER OPEN E <code>ɛ</code> to epsilon <code>ε</code> (0xEE)</li>
-<li>U+2219 BULLET OPERATOR <code>∙</code> to diaereses <code>¨</code> (0xF9)</li></ul>
+<li>U+2219 BULLET OPERATOR <code>∙</code> to diaereses <code>¨</code> (0xF9)</li>
+<li>control characters 0x00-0x1F are converted literally</li></ul>
+<p>if a character is not in the codepage or in this list, it will be implicitly converted into a <a href="#Unicode Escape">Unicode Escape</a>.</p>
 <h3 id="Execution"><a class=h href="#Execution"></a>Execution</h3>
 <p>a vemf file is a list of statements that are executed in order. there are only a few ways a vemf program can contact with the outside world</p>
 <p>the command line arguments are available as <code>δ</code> <a href="#Arguments">Arguments</a>. as a shorthand, <code>α</code> <a href="#Alpha">Alpha</a> and <code>β</code> <a href="#Beta">Beta</a> are set to the first argument and second argument respectively, and <code>Σ</code> <a href="#Arity">Arity</a> is the number of arguments. arguments are always Unicode strings.</p>
@@ -1227,14 +1229,29 @@ _1%_2 ≡ 1</pre>
 <pre>φ& ≡ 1</pre>
 <p>see also: <a href="#And">And</a>, <a href="#Any">Any</a></p>
 <h2 class="rliteral" id="27"><a class=h href="#27"></a><code>'</code> (0x27) <span class=rank>literal</span></h2>
+<h3 id="Line Comment"><a class=h href="#Line Comment"></a><code>'&#x20;abc</code> Line Comment</h3>
+<p>all of the characters until the next line break will be ignored.</p>
 <h3 id="Escape"><a class=h href="#Escape"></a><code>'A,'ab</code> Escape</h3>
 <p>escapes are one way to write characters outside the ascii range (characters in the range 0x20 <code> </code> to 0x7E <code>~</code>, the ones that you almost certainly have in your keyboard). you will see the escapes in the documentation of each character.</p>
 <p>there are more non-ascii characters than ascii characters in the codepage (256 − 95 = 161), so some characters need two character escape sequences. these start with a lowercase letter [<code>a</code>, <code>z</code>].</p>
 <p>the characters with single character escape sequences are the following:</p>
 <pre>!"#$%&'()*+,-./0123456789:;&lt;=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`{|}~
 ‼╕☻¶÷·'╙╜↔±○¬•╧╣┘│├╞╟╠┤╡╢♪♫≤≡≥¿¡αβ¢♀♂ƒ◄►↕↨└∟▬■◘╨Θ♠↓♦╩√↑Φ¥φ╓╤╖→⌐┴╘┬╛≈</pre>
-<h3 id="Line Comment"><a class=h href="#Line Comment"></a><code>'&#x20;abc</code> Line Comment</h3>
-<p>all of the characters until the next line break will be ignored.</p>
+<h3 id="Unicode Escape"><a class=h href="#Unicode Escape"></a><code>'[ÇüéâäàåçêëèïîìÄÅÉ]ab</code> Unicode Escape</h3>
+<p>Unicode Escapes are vemf's wacky way of allowing unicode text in source code while still using the vemf codepage internally.</p>
+<p>the first character can be any of "ÇüéâäàåçêëèïîìÄÅÉ" (or 0x80-0x91), and it specifies the bits 16-21 of the unicode codepoint, or the <a href="https://en.wikipedia.org/wiki/Plane_(Unicode)">plane number</a> (plus 128). the next two bytes encode the other two bytes of the codepoint.</p>
+<p>though currently only planes 0, 1, 2, 3, 14, 15, 16 (<code>ÇüéâÄÅÉ</code>) are used, the whole range of unicode characters up to U+10FFFF is supported, except for the UTF-16 surrogates U+D800-U+DFFF.</p>
+<p>for example, to encode the emoji 🐈, with codepoint <code>U+1F408</code>, use the characters <code>0x81 0xF4 0x08</code> or <code>'ü⌠◘</code>:</p>
+<pre>"'ü⌠◘" ≡ "🐈"</pre>
+<p>most characters you care about are in the plane 0, or the Basic Multilingual Plane. they will always start with <code>'Ç</code>.</p>
+<pre>"'Ç¤«" ≡ "®" ' U+00AE REGISTERED SIGN
+"'Ç"`" ≡ "≠" ' U+2260 NOT EQUAL TO
+"'é¤!" ≡ "𠀡" ' U+20021 CJK UNIFIED IDEOGRAPH-20021
+"'â►l" ≡ "𱁬" ' U+3106C CJK UNIFIED IDEOGRAPH-3106C</pre>
+<p>escaping characters that are in the vemf codepage correspond to just the characters:</p>
+<pre>"'Ç♥╡" ≡ ♪`ε ' U+03B5 GREEK SMALL LETTER EPSILON</pre>
+<p>unicode characters outside of literals can be verbs, adverbs or nouns depending on the character. see more details in <a href="https://github.com/selaere/vemf/blob/01c1dc4f8d7171aa9b2d1445c8c62ae5aa31e3b8/src/token.rs#L119-L137">the source</a>.</p>
+<pre>√3→∛ :64∛ ± 4</pre>
 <h2 class="rgrammar" id="28"><a class=h href="#28"></a><code>(</code> (0x28) <span class=rank>grammar</span></h2>
 <h3 id="Opening Parenthesis"><a class=h href="#Opening Parenthesis"></a><code>(x)</code> Opening Parenthesis</h3>
 <p>groups multiple words in a single noun. often used to change verb or adverb precedence,</p>
