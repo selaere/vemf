@@ -976,6 +976,28 @@ escaping characters that are in the vemf codepage correspond to just the charact
 > "'Ç♥╡" ≡ ♪`ε ' U+03B5 GREEK SMALL LETTER EPSILON
 unicode characters outside of literals can be verbs, adverbs or nouns depending on the character. see more details in ||the source@https://github.com/selaere/vemf/blob/01c1dc4f8d7171aa9b2d1445c8c62ae5aa31e3b8/src/token.rs#L119-L137||.
 > √3→∛ :64∛ ± 4
+#'[│├╞╟╠┤╡]☺☻♥♦ Integer Literals
+a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the `█` there will be a grouper character from 2 (`│`) to 8 (`╡`) that specifies the number of bytes of the integer. `░` ||Short Literal||s and `▒` ||Long Literal||s are equivalent to `'│` and `'├` respectively.
+an example: `█3☻♥♦` is the number `131844`. after the quote there is `├`, so it will read three bytes. those bytes are `☻` `♥` `♦`, which means the output will be 0x020304, or `2*256^2 + 3*256 + 4`, or 131844.
+> '├☻♥♦ ≡ :131844
+> '├☻♥♦ ≡ 2*(:256^2) + (3*:256) + 4
+`▒` can also be used here:
+> ▒☻♥♦ ≡ :131844
+let's represent the number 123456789. we can either use the ||Base Encode|| function: 
+> :123456789é:256 ≡ :7:91:205:21▐0
+alternatively, get the raw ||Bits|| of the number, partition it into ||Chunks|| of 8 bits, and ||Decode Binary|| them:
+> :123456789é♥8╕è ≡ :0:0:0:0:7:91:205:21
+we can represent the bytes as a codepage string (see ||Format||):
+>     :7:91:205:21ⁿ5☻·
+> "•[═§"
+if we try it out,
+> '╞•[═§ ≡ :123456789
+byte literals support negative numbers as well, using the two's complement when the first byte is over 127. `░²²` is not `253*256 + 253` or 64009, it's `65536 - 64009` or −515.
+> ░²² ≡ :-515
+integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF
+> ░²²é♥8╕è ≡ :255:255:255:255:255:255:253:253
+this is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.
+see also: ||Short Literal||, ||Long Literal||, ||Character Literal||, ||Digraph Literal||
 ---
 :char: (
 :type: grammar
@@ -2461,32 +2483,6 @@ a 2 character literal.
 > ▓() ≡ `(`)
 > ▓012 ≡ (`0`1)2
 see also: ||Character Literal||
----
-:char: █
-:ascii: 'il
-:type: literal
-#█4☺☻♥♦ Integer Literals
-a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the `█` there will be a digit from 1 to 8 that specifies the number of bytes of the integer. `░` ||Short Literal||s and `▒` ||Long Literal||s are equivalent to `█2` and `█3` respectively.
-an example: `█3☻♥♦` is the number `131844`. the number after the `█` is 3, so it will read three bytes. those bytes are `☻` `♥` `♦`, which means the output will be 0x020304, or `2*256^2 + 3*256 + 4`, or 131844.
-> █3☻♥♦ ≡ :131844
-> █3☻♥♦ ≡ 2*(:256^2) + (3*:256) + 4
-`▒` can also be used here:
-> ▒☻♥♦ ≡ :131844
-let's represent the number 123456789. we can either use the ||Base Encode|| function: 
-> :123456789é:256 ≡ :7:91:205:21▐0
-alternatively, get the raw ||Bits|| of the number, partition it into ||Chunks|| of 8 bits, and ||Decode Binary|| them:
-> :123456789é♥8╕è ≡ :0:0:0:0:7:91:205:21
-we can represent the bytes as a codepage string (see ||Format||):
->     :7:91:205:21ⁿ5☻·
-> "•[═§"
-if we try it out,
-> █4•[═§ ≡ :123456789
-byte literals support negative numbers as well, using the two's complement when the first byte is over 127. `░²²` is not `253*256 + 253` or 64009, it's `65536 - 64009` or −515.
-> ░²² ≡ :-515
-integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF
-> ░²²é♥8╕è ≡ :255:255:255:255:255:255:253:253
-`█` is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.
-see also: ||Short Literal||, ||Long Literal||, ||Character Literal||, ||Digraph Literal||
 ---
 :char: ▄
 :ascii: 'hd

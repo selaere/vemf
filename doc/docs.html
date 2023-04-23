@@ -348,7 +348,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="r1-adverb"><a href="#D8">╪</a></td>
 <td class="rgrammar"><a href="#D9">┘</a></td>
 <td class="r1-adverb"><a href="#DA">┌</a></td>
-<td class="rliteral"><a href="#DB">█</a></td>
+<td class="rnone"><a href="#DB">█</a></td>
 <td class="rverb"><a href="#DC">▄</a></td>
 <td class="rverb"><a href="#DD">▌</a></td>
 <td class="rverb"><a href="#DE">▐</a></td>
@@ -1252,6 +1252,28 @@ _1%_2 ≡ 1</pre>
 <pre>"'Ç♥╡" ≡ ♪`ε ' U+03B5 GREEK SMALL LETTER EPSILON</pre>
 <p>unicode characters outside of literals can be verbs, adverbs or nouns depending on the character. see more details in <a href="https://github.com/selaere/vemf/blob/01c1dc4f8d7171aa9b2d1445c8c62ae5aa31e3b8/src/token.rs#L119-L137">the source</a>.</p>
 <pre>√3→∛ :64∛ ± 4</pre>
+<h3 id="Integer Literals"><a class=h href="#Integer Literals"></a><code>'[│├╞╟╠┤╡]☺☻♥♦</code> Integer Literals</h3>
+<p>a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the <code>█</code> there will be a grouper character from 2 (<code>│</code>) to 8 (<code>╡</code>) that specifies the number of bytes of the integer. <code>░</code> <a href="#Short Literal">Short Literal</a>s and <code>▒</code> <a href="#Long Literal">Long Literal</a>s are equivalent to <code>'│</code> and <code>'├</code> respectively.</p>
+<p>an example: <code>█3☻♥♦</code> is the number <code>131844</code>. after the quote there is <code>├</code>, so it will read three bytes. those bytes are <code>☻</code> <code>♥</code> <code>♦</code>, which means the output will be 0x020304, or <code>2*256^2 + 3*256 + 4</code>, or 131844.</p>
+<pre>'├☻♥♦ ≡ :131844
+'├☻♥♦ ≡ 2*(:256^2) + (3*:256) + 4</pre>
+<p><code>▒</code> can also be used here:</p>
+<pre>▒☻♥♦ ≡ :131844</pre>
+<p>let's represent the number 123456789. we can either use the <a href="#Base Encode">Base Encode</a> function: </p>
+<pre>:123456789é:256 ≡ :7:91:205:21▐0</pre>
+<p>alternatively, get the raw <a href="#Bits">Bits</a> of the number, partition it into <a href="#Chunks">Chunks</a> of 8 bits, and <a href="#Decode Binary">Decode Binary</a> them:</p>
+<pre>:123456789é♥8╕è ≡ :0:0:0:0:7:91:205:21</pre>
+<p>we can represent the bytes as a codepage string (see <a href="#Format">Format</a>):</p>
+<pre>    :7:91:205:21ⁿ5☻·
+"•[═§"</pre>
+<p>if we try it out,</p>
+<pre>'╞•[═§ ≡ :123456789</pre>
+<p>byte literals support negative numbers as well, using the two's complement when the first byte is over 127. <code>░²²</code> is not <code>253*256 + 253</code> or 64009, it's <code>65536 - 64009</code> or −515.</p>
+<pre>░²² ≡ :-515</pre>
+<p>integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF</p>
+<pre>░²²é♥8╕è ≡ :255:255:255:255:255:255:253:253</pre>
+<p>this is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.</p>
+<p>see also: <a href="#Short Literal">Short Literal</a>, <a href="#Long Literal">Long Literal</a>, <a href="#Character Literal">Character Literal</a>, <a href="#Digraph Literal">Digraph Literal</a></p>
 <h2 class="rgrammar" id="28"><a class=h href="#28"></a><code>(</code> (0x28) <span class=rank>grammar</span></h2>
 <h3 id="Opening Parenthesis"><a class=h href="#Opening Parenthesis"></a><code>(x)</code> Opening Parenthesis</h3>
 <p>groups multiple words in a single noun. often used to change verb or adverb precedence,</p>
@@ -2407,29 +2429,6 @@ _2Ñ0 ≡ 0</pre>
 <pre>▓() ≡ `(`)
 ▓012 ≡ (`0`1)2</pre>
 <p>see also: <a href="#Character Literal">Character Literal</a></p>
-<h2 class="rliteral" id="DB"><a class=h href="#DB"></a><code>█</code> (0xDB, <code>'il</code>) <span class=rank>literal</span></h2>
-<h3 id="Integer Literals"><a class=h href="#Integer Literals"></a><code>█4☺☻♥♦</code> Integer Literals</h3>
-<p>a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the <code>█</code> there will be a digit from 1 to 8 that specifies the number of bytes of the integer. <code>░</code> <a href="#Short Literal">Short Literal</a>s and <code>▒</code> <a href="#Long Literal">Long Literal</a>s are equivalent to <code>█2</code> and <code>█3</code> respectively.</p>
-<p>an example: <code>█3☻♥♦</code> is the number <code>131844</code>. the number after the <code>█</code> is 3, so it will read three bytes. those bytes are <code>☻</code> <code>♥</code> <code>♦</code>, which means the output will be 0x020304, or <code>2*256^2 + 3*256 + 4</code>, or 131844.</p>
-<pre>█3☻♥♦ ≡ :131844
-█3☻♥♦ ≡ 2*(:256^2) + (3*:256) + 4</pre>
-<p><code>▒</code> can also be used here:</p>
-<pre>▒☻♥♦ ≡ :131844</pre>
-<p>let's represent the number 123456789. we can either use the <a href="#Base Encode">Base Encode</a> function: </p>
-<pre>:123456789é:256 ≡ :7:91:205:21▐0</pre>
-<p>alternatively, get the raw <a href="#Bits">Bits</a> of the number, partition it into <a href="#Chunks">Chunks</a> of 8 bits, and <a href="#Decode Binary">Decode Binary</a> them:</p>
-<pre>:123456789é♥8╕è ≡ :0:0:0:0:7:91:205:21</pre>
-<p>we can represent the bytes as a codepage string (see <a href="#Format">Format</a>):</p>
-<pre>    :7:91:205:21ⁿ5☻·
-"•[═§"</pre>
-<p>if we try it out,</p>
-<pre>█4•[═§ ≡ :123456789</pre>
-<p>byte literals support negative numbers as well, using the two's complement when the first byte is over 127. <code>░²²</code> is not <code>253*256 + 253</code> or 64009, it's <code>65536 - 64009</code> or −515.</p>
-<pre>░²² ≡ :-515</pre>
-<p>integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF</p>
-<pre>░²²é♥8╕è ≡ :255:255:255:255:255:255:253:253</pre>
-<p><code>█</code> is mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.</p>
-<p>see also: <a href="#Short Literal">Short Literal</a>, <a href="#Long Literal">Long Literal</a>, <a href="#Character Literal">Character Literal</a>, <a href="#Digraph Literal">Digraph Literal</a></p>
 <h2 class="rverb" id="DC"><a class=h href="#DC"></a><code>▄</code> (0xDC, <code>'hd</code>) <span class=rank>verb</span></h2>
 <h3 id="Is None"><a class=h href="#Is None"></a><code>α▄</code> Is None</h3>
 <p>1 if α is none, otherwise 0. scalar.</p>

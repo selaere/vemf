@@ -230,10 +230,6 @@ fn hnum<'a, T: TokenInput<'a>>(t: &mut T, first: u8, is_neg: bool) -> Tok {
 fn token<'a, T: TokenInput<'a>>(t: &mut T) -> Option<Tok> {
     Some(match t.escape_step() {
         Bare(b'"') => Str(string(t)),
-        Bare(b!('█')) => {
-            let Some(n @ b'1'..=b'8') = t.step() else { return None }; // rethink this
-            byte_lit(t, n - b'0')
-        }
         Bare(b'`') => Chr(t.step_or(0x20)),
         Bare(b'_') => {
             let c = match t.escape_step() {
@@ -258,8 +254,13 @@ fn token<'a, T: TokenInput<'a>>(t: &mut T) -> Option<Tok> {
                 c => VNoun(bstr![b'_', c]),
             }
         }
-        Bare(b!('░')) => byte_lit(t, 2),
-        Bare(b!('▒')) => byte_lit(t, 3),
+        Bare  (b!('░')) | Quoted(b!('│')) => byte_lit(t, 2),
+        Bare  (b!('▒')) | Quoted(b!('├')) => byte_lit(t, 3),
+        Quoted(b!('╞')) => byte_lit(t, 4),
+        Quoted(b!('╟')) => byte_lit(t, 5),
+        Quoted(b!('╠')) => byte_lit(t, 6),
+        Quoted(b!('┤')) => byte_lit(t, 7),
+        Quoted(b!('╡')) => byte_lit(t, 8),
         Bare(b!('▓')) => Chr2(t.step_or(0), t.step_or(0)),
         Bare(b!('.')) => VNoun(ident(t)),
         Bare(b!('•')) => VAv1 (ident(t)), Bare(b!('○')) => VAv2 (vec![], ident(t)),
