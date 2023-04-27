@@ -2484,6 +2484,20 @@ a 2 character literal.
 > ▓012 ≡ (`0`1)2
 see also: ||Character Literal||
 ---
+:char: █
+:ascii: 'us
+:type: literal
+#█äβçðḗꞙ█ Unicode String
+start a list of unicode codepoints.
+for basic ascii, this is the same as a regular string:
+> "abcdef" ≡ █abcdef█
+but characters outside of ascii will get stored as their unicode codepoints:
+> █αβΓδ≡█ ≡ :945:946:915:948:8801
+> "αβΓδ≡" ≡ :224:225:226:235:240
+||Unicode Escapes|| will also use their codepoints:
+> █Ӓᘮ█ ≡ :1234:5678
+note that some characters are converted automatically, including the vemf characters from 0x00 to 0x1F; see ||Codepage||
+---
 :char: ▄
 :ascii: 'hd
 :type: verb

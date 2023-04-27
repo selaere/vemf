@@ -348,7 +348,7 @@ h2>code { background-color: inherit; white-space: pre; }
 <td class="r1-adverb"><a href="#D8">╪</a></td>
 <td class="rgrammar"><a href="#D9">┘</a></td>
 <td class="r1-adverb"><a href="#DA">┌</a></td>
-<td class="rnone"><a href="#DB">█</a></td>
+<td class="rliteral"><a href="#DB">█</a></td>
 <td class="rverb"><a href="#DC">▄</a></td>
 <td class="rverb"><a href="#DD">▌</a></td>
 <td class="rverb"><a href="#DE">▐</a></td>
@@ -2429,6 +2429,17 @@ _2Ñ0 ≡ 0</pre>
 <pre>▓() ≡ `(`)
 ▓012 ≡ (`0`1)2</pre>
 <p>see also: <a href="#Character Literal">Character Literal</a></p>
+<h2 class="rliteral" id="DB"><a class=h href="#DB"></a><code>█</code> (0xDB, <code>'us</code>) <span class=rank>literal</span></h2>
+<h3 id="Unicode String"><a class=h href="#Unicode String"></a><code>█äβçðḗꞙ█</code> Unicode String</h3>
+<p>start a list of unicode codepoints.</p>
+<p>for basic ascii, this is the same as a regular string:</p>
+<pre>"abcdef" ≡ █abcdef█</pre>
+<p>but characters outside of ascii will get stored as their unicode codepoints:</p>
+<pre>█αβΓδ≡█ ≡ :945:946:915:948:8801
+"αβΓδ≡" ≡ :224:225:226:235:240</pre>
+<p><a href="#Unicode Escapes">Unicode Escapes</a> will also use their codepoints:</p>
+<pre>█Ӓᘮ█ ≡ :1234:5678</pre>
+<p>note that some characters are converted automatically, including the vemf characters from 0x00 to 0x1F; see <a href="#Codepage">Codepage</a></p>
 <h2 class="rverb" id="DC"><a class=h href="#DC"></a><code>▄</code> (0xDC, <code>'hd</code>) <span class=rank>verb</span></h2>
 <h3 id="Is None"><a class=h href="#Is None"></a><code>α▄</code> Is None</h3>
 <p>1 if α is none, otherwise 0. scalar.</p>

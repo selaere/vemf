@@ -262,6 +262,18 @@ fn token<'a, T: TokenInput<'a>>(t: &mut T) -> Option<Tok> {
         Quoted(b!('┤')) => byte_lit(t, 7),
         Quoted(b!('╡')) => byte_lit(t, 8),
         Bare(b!('▓')) => Chr2(t.step_or(0), t.step_or(0)),
+        Bare(b!('█')) => {
+            let mut buf = Vec::new();
+            loop { match t.escape_step() {
+                Bare(b!('█')) | EscapableU8::None => break,
+                Bare(b!('¨')) => buf.push('"' as i64),
+                Bare(b!('·')) => buf.push('\'' as i64),
+                Bare(c) => buf.push(codepage::tochar_ln(c) as i64),
+                Quoted(c) => { buf.push('"' as i64); buf.push(codepage::tochar_ln(c) as i64); }
+                Unicode(c) => buf.push(c as i64),
+            }}
+            Str(buf)
+        }
         Bare(b!('.')) => VNoun(ident(t)),
         Bare(b!('•')) => VAv1 (ident(t)), Bare(b!('○')) => VAv2 (vec![], ident(t)),
         Bare(b!('→')) => VSetS(ident(t)), Bare(b!('↔')) => VMutS(ident(t)),
@@ -365,7 +377,7 @@ pub fn escape_2c(c: [u8; 2]) -> Option<u8> {
         b"pr"'☺', b"pl"'☻', b"tp"'♦', b"dm"'♣', b"cx"'♥', b"ex"'⌂', b"sh"'▬',
         b"hl"'▌', b"hr"'▐', b"hu"'▀', b"hd"'▄',
         b"rl"'«', b"rr"'»', b"bu"'▲', b"bd"'▼',
-        b"l2"'░', b"l3"'▒', b"c2"'▓', b"il"'█',
+        b"l2"'░', b"l3"'▒', b"c2"'▓', b"us"'█',
         b"iq"'¿', b"ie"'¡', b"cl"'⌠', b"fl"'⌡', b"sn"'☼', b"bl"'⌐', b"nl"'¤', b"fd"'£',
         b"hf"'½', b"db"'¼', b"sq"'²', b"pi"'π', b"in"'ε', b"ft"'ⁿ',
         b"is"'∩', b"if"'∞', b"dg"'°', b"nm"'¨', b"vr"'←',
