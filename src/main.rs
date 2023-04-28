@@ -45,23 +45,22 @@ fn parse_args() -> Options {
                 opts.format = iter.next().unwrap_or_else(|| String::from("1"));
             }
             Some("-h" | "--help") => {
-                print!("\
-                usage: vemf [options] [filename] [arguments]
-                  <filename>: filename of the file that will be executed. optional. if not given, opens up a REPL
-                  <arguments>: arguments given to the script. all arguments after the filename will be passed to \
-                the script unchanged. sets α, β and δ accordingly.
-                  -h/--help: print this
-                  -f/--format <format>: how to format the output, 0 by default. use like dyadic ⁿ. ignored in repl.
-                  -i/--inspect: open the repl after running file
-                  -p/--prompt <prompt>: repl only. use <prompt> as the input prompt
-                  -b/--binary: read file using the vemf codepage instead of utf-8
-                  -e/--execute <code>: execute <code> instead of reading file
-                  --no-stdlib: do not use the standard library
-                  --no-rng:    do not use a random number generator
-                  -r/--rewrite: print the file rewritten without ' escapes
-                  -c/--encode:  print the file reencoded in the vemf codepage
-                  -C/--decode:  print the file reencoded in utf-8 (use along with -b)
-                ");
+                println!("\
+usage: vemf [options] [filename] [arguments]
+    <filename>: filename of the file that will be executed. optional. if not given, opens up a REPL
+    <arguments>: arguments given to the script. all arguments after the filename will be passed to \
+the script unchanged. sets α, β and δ accordingly.
+    -h/--help: print this
+    -f/--format <format>: how to format the output, 0 by default. use like dyadic ⁿ. ignored in repl.
+    -i/--inspect: open the repl after running file
+    -p/--prompt <prompt>: repl only. use <prompt> as the input prompt
+    -b/--binary: read file using the vemf codepage instead of utf-8
+    -e/--execute <code>: execute <code> instead of reading file
+    --no-stdlib: do not use the standard library
+    --no-rng:    do not use a random number generator
+    -r/--rewrite: print the file rewritten without ' escapes
+    -c/--encode:  print the file reencoded in the vemf codepage
+    -C/--decode:  print the file reencoded in utf-8 (use along with -b)");
                 std::process::exit(0);
             },
             Some("-r" | "--rewrite") => { opts.rewrite   = true; }
@@ -157,13 +156,12 @@ fn repl(mut env: Env, mut opts: Options) {
                 opts.prompt = code.to_string();
                 continue;
             } else if cmd.starts_with("help") {
-                print!("\
+                println!("\
 )help: show this
 )<fmt>: format using <fmt>
 )r: toggle rewriting
 )exit: exit repl (^C should also work)
-)prompt <prompt>: change prompt
-");
+)prompt <prompt>: change prompt");
                 continue;
             } else if cmd.starts_with(|x: char| char::is_ascii_digit(&x)) {
                 if let Some((l, r)) = cmd.split_once(' ') {
