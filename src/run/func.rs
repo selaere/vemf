@@ -36,7 +36,8 @@ pub fn load_intrinsics(env: &mut super::Env) {
         add, sub, mul, div, dive, rem, pow, log, lt, gt, and, or, max, min, atan2, approx, band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp, sin, asin, cos, acos, tan, atan, sqrt, round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
         left, right, get, set, call, islist, eval,
         shape, len, index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, matches,
-        print, println, output, input, fromutf8, toutf8, fromcp, tocp, exit, format, numfmt, parse,
+        print, println, output, input, inputraw, fromutf8, toutf8, fromcp, tocp, exit,
+        format, numfmt, parse,
         takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find, uio,
         reverse, gradeup, gradedown, sortup, sortdown, binsup, binsdown, encode, group, occcount,
         domainto,
@@ -170,10 +171,12 @@ func!(a :matches b => Val::bool(a == b));
 
 func!(@env, a :print b? => {
     _ = env.interface.write(0, a.display_string().as_bytes());
+    _ = env.interface.flush(0);
 b.unwrap_or(a) });
 func!(@env, a :println b? => {
     _ = env.interface.write(0, a.display_string().as_bytes());
     _ = env.interface.write(0, b"\n");
+    _ = env.interface.flush(0);
 b.unwrap_or(a) });
 func!(@env, a :output b => {
     let stm = or_nan!(b.try_int().and_then(|x| usize::try_from(x).ok()));
@@ -182,16 +185,33 @@ func!(@env, a :output b => {
         .collect::<Vec<_>>();
     env.interface.write(stm, &bytes).map_or(NAN, |x| Int(x as i64))
 });
+func!(@env, a :inputraw b => {
+    let chars = or_nan!(a.try_c()).re as isize;
+    let stm =   or_nan!(b.try_int().and_then(|x| usize::try_from(x).ok()));
+    or_nan!(if chars == isize::MAX {
+        env.interface.read_to_end(stm)
+    } else if chars >= 0 {
+        env.interface.read_bytes(stm, chars)
+    } else {
+        env.interface.read_until(stm, or_nan!(u8::try_from(-chars).ok()))
+    }).into_iter().map(|i| Int(i64::from(i))).collect()
+});
 func!(@env, a :input b => {
     let chars = or_nan!(a.try_c()).re as isize;
     let stm =   or_nan!(b.try_int().and_then(|x| usize::try_from(x).ok()));
-    or_nan!(if chars < 0 { // read line
-        env.interface.read_line(stm)
-    } else if chars == isize::MAX { // don't allocate an infinite buffer
+    String::from_utf8_lossy(&or_nan!(if chars == isize::MAX {
         env.interface.read_to_end(stm)
+    } else if chars == 1 {
+        let mut string = or_nan!(env.interface.read_until(stm, b'\n'));
+        while string.last().map_or(false, |x| [b'\n', b'\r'].contains(x)) {
+            string.pop();
+        }
+        Some(string)
+    } else if chars == 2 {
+        return env.interface.flush(stm).map_or(NAN, |()| Int(1));
     } else {
-        env.interface.read(stm, chars)
-    }).into_iter().map(|i| Int(i64::from(i))).collect()
+        env.interface.read_until(stm, or_nan!(u8::try_from(-chars).ok()))
+    })).chars().map(|i| Int(i as i64)).collect()
 });
 func!(a :fromutf8 => String::from_utf8_lossy(
     &a.iterf().flat_map(|x| x.try_int().map(|x| (x & 0xff) as u8)).collect::<Vec<_>>()

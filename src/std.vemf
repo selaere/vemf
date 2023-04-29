@@ -27,12 +27,12 @@
 .inprint→☺
 .inprintln→☻
 .inoutput→_Ö
-.ininput →_Ü
+.ininputraw→_Ü
 
 ."intoutf8"→_ê
 ."infromutf8"→_ë
 _ê╜_Ö→Ö
-_Ü_ë→Ü
+.ininput→Ü
 .inexit→⌂
 
 .inenlist╬.inpair→♫

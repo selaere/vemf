@@ -8,14 +8,14 @@ struct Output<'io> {
     inputs: Box<[VecDeque<u8>]>,
 }
 impl<'io> vemf::Interface<'io> for Output<'io> {
-    fn read(&mut self, stm: usize, size: isize) -> Option<Vec<u8>> {
+    fn read_bytes(&mut self, stm: usize, size: isize) -> Option<Vec<u8>> {
         self.inputs.get_mut(stm).map(|inp|
             inp.drain(..(size as usize).min(inp.len())).collect()
         )
     }
-    fn read_line(&mut self, stm: usize) -> Option<Vec<u8>> {
+    fn read_until(&mut self, stm: usize, delim: u8) -> Option<Vec<u8>> {
         self.inputs.get_mut(stm).map(|inp| {
-            let a = inp.iter().position(|x| *x == b'\n').unwrap_or(inp.len());
+            let a = inp.iter().position(|x| *x == delim).unwrap_or(inp.len());
             inp.drain(0..(a+1)).collect()
         })
     }

@@ -2168,15 +2168,18 @@ _2Ä0 ≡ π½-</pre>
 <p>write a list of bytes α to output stream 0. equivalent to <code>_Ö0</code>.</p>
 <h2 class="rverb" id="9A"><a class=h href="#9A"></a><code>Ü</code> (0x9A, <code>'u+</code>) <span class=rank>verb</span></h2>
 <h3 id="Read"><a class=h href="#Read"></a><code>αÜβ</code> Read</h3>
-<p>read α bytes from input stream β and decode them from UTF-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.</p>
-<p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
-<p>may return <a href="#None">None</a> in case of an IO error.</p>
+<p>if α is a negative integer greater than 256, read bytes from input stream β until the byte <code>α-</code> is reached and decode them from UTF-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.</p>
+<p>for <code>α=∞</code>, read until the end of file. other positive values are implementation-dependent and depend on the stream. however, some common values are:</p>
+<ul><li>for <code>α=1</code>, read a line from the stream, stripping out carriage returns and line breaks.</li>
+<li>for <code>α=2</code>, flush the stream. may do nothing. used by <a href="#Print">Print</a> and <a href="#Print Line">Print Line</a>.</li></ul>
+<p>this function will return <a href="#None">None</a> in case of an IO error.</p>
 <h3 id="Read Stdin"><a class=h href="#Read Stdin"></a><code>αÜ</code> Read Stdin</h3>
 <p>read from input stream 0. equivalent to <code>Ü0</code>.</p>
 <h3 id="Read Bytes"><a class=h href="#Read Bytes"></a><code>α_Üβ</code> Read Bytes</h3>
-<p>read α bytes from input stream β.</p>
-<p>for <code>α=∞</code>, read until the end of file. for <code>α=Θ</code>, read until the next line break (0x0A byte).</p>
-<p>may return <a href="#None">None</a> in case of an IO error.</p>
+<p>if α is a non-negative integer and less than 256, read bytes from input stream β until the byte α is reached.</p>
+<p>if α is a negative integer, read <code>α-</code> bytes form input stream β.</p>
+<p>for <code>α=∞</code>, read until the end of file.</p>
+<p>this function will return <a href="#None">None</a> in case of an IO error.</p>
 <h3 id="Read Bytes from Stdin"><a class=h href="#Read Bytes from Stdin"></a><code>α_Ü</code> Read Bytes from Stdin</h3>
 <p>read from input stream 0. equivalent to <code>_Ü0</code>.</p>
 <h2 class="rverb" id="9B"><a class=h href="#9B"></a><code>¢</code> (0x9B, <code>'C</code>) <span class=rank>verb</span></h2>

@@ -79,7 +79,7 @@ _ê.►.nameπ
 struct TestIO<'io> (&'io RefCell<(VecDeque<u8>, VecDeque<u8>, Vec<u8>, Vec<u8>)>);
 impl<'io> crate::Interface<'io> for TestIO<'io> {
     // we should implement read_to_end and read_line, but i want to see if the default defs work
-    fn read(&mut self, stm: usize, size: isize) -> Option<Vec<u8>> {
+    fn read_bytes(&mut self, stm: usize, size: isize) -> Option<Vec<u8>> {
         if stm == 0 {
             let mut b = self.0.borrow_mut();
             let len = (size as usize).min(b.0.len());
@@ -101,19 +101,20 @@ impl<'io> crate::Interface<'io> for TestIO<'io> {
 fn input_output() -> Result<(), ()> {
     const PROGRAM: &str = r#"
         "Hello, World!!"☻·"print"☺"ln"☻ ' basic printing
-        "line of file: ",(ΘÜ)Ö0· ' line reading
-        5Ü;"5 bytes: "Ö· ' byte reading
+        "line of file: ",(1Ü)Ö0· ' line reading
+        "another: ",(_ΦÜ)Ö0· ' delimeter reading
+        5_Ü;"5 bytes: "Ö· ' byte reading
         ∞Ü;"the rest: "☺· ' all reading
         "errors",ΦÖ1=7*1☺· ' writing to other stream
-        "thís fïl"ë≡(ΦÜ1)*2☺· ' reading from other stream also WOW chars != bytes
-        "e c",:0xfffd≡(4Ü1)*3☺· ' U+FFFDing when illegal sequence
+        "thís fïl"ë≡(Φ_Ü1_ë)*2☺· ' reading from other stream also WOW chars != bytes
+        "e c",:0xfffd≡(4_Ü1_ë)*3☺· ' U+FFFDing when illegal sequence
         "╕nt"≡(3_Ü1)*4ⁿ_Ö· ' binary data, even when invalid utf-8
-        "ains"≡(4Ü1)*5☻· ' for ascii, utf-8 and cp437 are  the same
+        "ains"≡(4_Ü1)*5☻· ' for ascii, utf-8 and cp437 are  the same
         7_Ü1_Ö· ' pass bytes without modifying
         ∞_Ü1+:11_Ö· ' outputting raw bytes
     "#;
     let refcell = RefCell::new((
-        VecDeque::from(*b"this is a file.\nit has content"),
+        VecDeque::from(*b"this is a file.\r\nvery good file.\nit has content"),
         VecDeque::from("thís fïle cøntains ∨alid ∪⊤ƒ—八".as_bytes().to_vec()),
         Vec::new(),
         Vec::new()));
@@ -127,7 +128,8 @@ fn input_output() -> Result<(), ()> {
     if o[..] == b"\
         Hello, World!!\n\
         println\n\
-        line of file: this is a file.\n\
+        line of file: this is a file.\
+        another: very good file.\n\
         5 bytes: it ha\
         the rest: s content\
         12345\n \

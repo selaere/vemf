@@ -1,46 +1,47 @@
 use crate::prelude::*;
 
 pub trait Interface<'io> {
-    /// read from input stream `stm` into a slice `buf`. used by `αÜβ` and `α_Üβ` when α is 
-    /// non-negative and finite. corresponds to `Read::read(_, buf)`. this method is required, but
+    /// read bytes from input stream `stm`. used by `αÜβ` and `α_Üβ` when α is negative and finite.
+    /// corresponds to `Read::read(_, buf)`. this method is required, but
     /// feel free to return None if you don't have output capabilities
-    fn read(&mut self, stm: usize, size: isize) -> Option<Vec<u8>>;
-    /// write to output stream `stm` a slice of bytes `slice`. used by `É` `_É` and `☻` `☺` (to 
+    fn read_bytes(&mut self, stm: usize, size: isize) -> Option<Vec<u8>>;
+    /// write to output stream `stm` a slice of bytes `slice`. used by `Ö` `_Ö` and `☻` `☺` (to 
     /// stream 0). corresponds to `Write::write(_, buf)`. this method is required, but
     /// feel free to return None if you don't have input capabilities
     fn write(&mut self, stm: usize, slice: &[u8]) -> Option<usize>;
-    /// read a line from input stream `stm`. used by `αÜβ` and `α_Üβ` when α is negative.
-    /// corresponds to like `ReadBuf::read_until(_, b'\n', buf)`
+    /// read until a delimiter from input stream `stm`. used by `αÜβ` and `α_Üβ` when α is positive.
+    /// corresponds to like `ReadBuf::read_until(_, delim, buf)`
     /// the default definition is inefficient but it's the best way of doing this generically,
     /// implementers SHOULD implement this better.
-    fn read_line(&mut self, stm: usize) -> Option<Vec<u8>> {
-        let mut buf = self.read(stm, 1)?;
+    fn read_until(&mut self, stm: usize, delim: u8) -> Option<Vec<u8>> {
+        let mut buf = self.read_bytes(stm, 1)?;
         if buf[0] == b'\n' { return None }
-        while let Some(&[c]) = self.read(stm, 1).as_ref().map(|x| &x[..]) {
+        while let Some(&[c]) = self.read_bytes(stm, 1).as_ref().map(|x| &x[..]) {
             buf.push(c);
-            if c == b'\n' { break; }
+            if c == delim { break; }
         }
         Some(buf)
     }
-    /// read all from input stream `stm`. used by `∞Üβ` and `∞_Üβ`.
+    /// read all from input stream `stm`. used by `ΘÖβ` and `Θ_Öβ`.
     /// corresponds to `Read::read_to_end(_, buf)`.
     fn read_to_end(&mut self, stm: usize) -> Option<Vec<u8>> {
-        let mut buf = self.read(stm, 1024)?;
+        let mut buf = self.read_bytes(stm, 1024)?;
         if buf.len() < 1024 { return Some(buf); }
-        while let Some(a) = self.read(stm, 1024) {
+        while let Some(a) = self.read_bytes(stm, 1024) {
             let len = a.len();
             buf.extend(a.into_iter());
             if len < 1024 { return Some(buf)}
         }
         Some(buf)
     }
+    fn flush(&mut self, _stm: usize) -> Option<()> { None }
 }
 
 pub struct NoIO;
 
 impl<'io> Interface<'io> for NoIO {
-    fn read       (&mut self, _: usize, _: isize) -> Option<Vec<u8>> { None }
-    fn read_line  (&mut self, _: usize)           -> Option<Vec<u8>> { None }
+    fn read_bytes (&mut self, _: usize, _: isize) -> Option<Vec<u8>> { None }
+    fn read_until (&mut self, _: usize, _: u8)    -> Option<Vec<u8>> { None }
     fn read_to_end(&mut self, _: usize)           -> Option<Vec<u8>> { None }
     fn write      (&mut self, _: usize, _: &[u8]) -> Option<usize> { None }
 }
@@ -66,7 +67,7 @@ mod standard {
     pub struct StdIO {}
 
     impl super::Interface<'_> for StdIO {
-        fn read(&mut self, stm: usize, size: isize) -> Option<Vec<u8>> {
+        fn read_bytes(&mut self, stm: usize, size: isize) -> Option<Vec<u8>> {
             if stm == 0 {
                 let mut buf = vec![0; size as usize];
                 let size = io_result(std::io::stdin().read(&mut buf))?;
@@ -74,10 +75,10 @@ mod standard {
                 Some(buf)
             } else { None }
         }
-        fn read_line(&mut self, stm: usize) -> Option<Vec<u8>> {
+        fn read_until(&mut self, stm: usize, delim: u8) -> Option<Vec<u8>> {
             if stm == 0 {
                 let mut buf = Vec::new();
-                io_result(std::io::stdin().lock().read_until(b'\n', &mut buf))?;
+                io_result(std::io::stdin().lock().read_until(delim, &mut buf))?;
                 Some(buf)
             } else { None }
         }
@@ -93,6 +94,9 @@ mod standard {
             1 => io_result(std::io::stderr().write(slice)),
             _ => None,
         }}
+        fn flush(&mut self, _stm: usize) -> Option<()> {
+            std::io::stdout().flush().ok()
+        }
     }
 
     pub struct FromIoWrite<T: std::io::Write>(pub T);

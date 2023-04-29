@@ -2150,15 +2150,18 @@ write a list of bytes α to output stream 0. equivalent to `_Ö0`.
 :ascii: 'u+
 :type: verb
 #2 Read
-read α bytes from input stream β and decode them from UTF-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.
-for `α=∞`, read until the end of file. for `α=Θ`, read until the next line break (0x0A byte).
-may return ||None|| in case of an IO error.
+if α is a negative integer greater than 256, read bytes from input stream β until the byte `α-` is reached and decode them from UTF-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.
+for `α=∞`, read until the end of file. other positive values are implementation-dependent and depend on the stream. however, some common values are:
+- for `α=1`, read a line from the stream, stripping out carriage returns and line breaks.
+- for `α=2`, flush the stream. may do nothing. used by ||Print|| and ||Print Line||.
+this function will return ||None|| in case of an IO error.
 #1 Read Stdin
 read from input stream 0. equivalent to `Ü0`.
 #_2 Read Bytes
-read α bytes from input stream β.
-for `α=∞`, read until the end of file. for `α=Θ`, read until the next line break (0x0A byte).
-may return ||None|| in case of an IO error.
+if α is a non-negative integer and less than 256, read bytes from input stream β until the byte α is reached.
+if α is a negative integer, read `α-` bytes form input stream β.
+for `α=∞`, read until the end of file.
+this function will return ||None|| in case of an IO error.
 #_1 Read Bytes from Stdin
 read from input stream 0. equivalent to `_Ü0`.
 ---
