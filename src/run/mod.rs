@@ -271,7 +271,9 @@ impl<'io> Env<'io> {
             self.get_var(&[b!('β')]),
         ); }
         if let Val::Err(x) = res { return Err(x); }
-        res.format(&mut io::FromInterface(&mut *self.interface), format).unwrap();
+        if !res.is_nan() {
+            res.format(&mut io::FromInterface(&mut *self.interface), format).unwrap();
+        }
         Ok(())
     }
 
