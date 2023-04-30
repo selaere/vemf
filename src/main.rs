@@ -112,14 +112,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             code = codepage::tobytes(core::str::from_utf8(&code)?);
         }
         match opts.reencode {
-            Some(Encoding::Vemf) => print!("{}", match opts.rewrite {
-                true  => vemf::rewrite(&code),
-                false => codepage::tochars(&code),
-            }),
-            _ => std::io::stdout().write_all(&match opts.rewrite {
+            Some(Encoding::Vemf) => std::io::stdout().write_all(&match opts.rewrite {
                 true  => codepage::tobytes(&vemf::rewrite(&code)),
                 false => code,
             })?,
+            _ => print!("{}", match opts.rewrite {
+                true  => vemf::rewrite(&code),
+                false => codepage::tochars(&code),
+            }),
         }
         return Ok(());
     }
