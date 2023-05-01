@@ -40,7 +40,7 @@ jobs:
       
     - name: "make docs"
       run: |
-        PATH="$PATH:$PWD/target/debug" doc/do && tail doc/head
+        PATH="$PATH:$PWD/target/debug" doc/do && tail doc/docs.html
       
     - name: "make wasm"
       run: |
