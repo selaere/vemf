@@ -11,4 +11,4 @@ crate-type = ["cdylib"]
 vemf = { path = ".." }
 rand = { version = "0.8", features = ["std"] }
 getrandom = { version = "0.2", features = ["js"] }
-wasm-bindgen = "0.2.81"
+wasm-bindgen = "0.2.84"

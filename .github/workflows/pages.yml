@@ -22,11 +22,12 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  start:
+  build-docs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: checkout
+      uses: actions/checkout@v3
 
     - name: toolchain for x86
       uses: actions-rs/toolchain@v1.0.6
@@ -35,6 +36,29 @@ jobs:
         target: "x86_64-unknown-linux-gnu"
         default: true
         profile: minimal
+        
+    - name: "change script permissions"
+      run: "chmod +x doc/do"
+
+    - name: "build vemf for x86_64"
+      run: "cargo build --features bin --verbose"
+
+    - name: "make docs"
+      run: 'PATH="$PATH:$PWD/target/debug" doc/do'
+
+    - name: "upload file"
+      uses: actions/upload-artifact@v3
+      with:
+        name: docs
+        path: doc/docs.txt
+    
+  build-wasm:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
 
     - name: toolchain for wasm
       uses: actions-rs/toolchain@v1.0.6
@@ -43,36 +67,60 @@ jobs:
         target: "wasm32-unknown-unknown"
         default: false
         profile: minimal
-        
-    - name: "build vemf for x86_64"
-      run: "cargo build --features bin --verbose"
-    
+
     - name: "change script permissions"
-      run: "chmod +x {doc,wasm}/do"
+      run: "chmod +x wasm/do"
       
-    - name: "make docs"
-      run: |
-        PATH="$PATH:$PWD/target/debug" doc/do && tail doc/docs.html
-      
-    - name: "make wasm"
+    - name: "download packages"
       run: |
         set -ex
         curl -L "https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.84/wasm-bindgen-0.2.84-x86_64-unknown-linux-musl.tar.gz" | tar -xvz
         curl -L "https://github.com/WebAssembly/binaryen/releases/download/version_112/binaryen-version_112-x86_64-linux.tar.gz" | tar -xvz
         mkdir esbuild
         curl "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.17.18.tgz" | tar -xvz --directory esbuild
+
+    - name: "make wasm"
+      run: |
         PATH="$PATH:$PWD/binaryen-version_112/bin:$PWD/esbuild/package/bin:$PWD/wasm-bindgen-0.2.84-x86_64-unknown-linux-musl" wasm/do
         
-    - name: "make site ready"
+    - name: "upload file"
+      uses: actions/upload-artifact@v3
+      with:
+        name: wasm_pkg
+        path: wasm/pkg/
+
+  deploy:
+    needs:
+    - build-docs
+    - build-wasm
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: "checkout"
+      uses: actions/checkout@v3
+
+    - name: "setup directories and static data"
       run: |
         set -ex
-        mkdir _site
-        mkdir _site/doc
-        cp doc/docs.html _site/doc/docs.html
-        mkdir _site/wasm
+        mkdir _site/{,doc,wasm}
         cp wasm/index.html _site/wasm/index.html
-        cp -r wasm/pkg _site/wasm/pkg
-        tree _site
+    
+    - name: "download docs"
+      uses: actions/download-artifact@v3
+      with:
+        name: docs
+        path: _site/doc/docs.html
+
+    - name: "download wasm"
+      uses: actions/download-artifact@v3
+      with:
+        name: wasm_pkg
+        path: _site/wasm/pkg
+
+    - name: "tree :)"
+      run: tree -C _site
     
     - name: "configure GitHub Pages"
       uses: actions/configure-pages@v3.0.2
@@ -80,13 +128,6 @@ jobs:
     - name: "upload pages artifact"
       uses: actions/upload-pages-artifact@v1.0.7
 
-  deploy:
-    needs: start
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+    - name: "deploy to GitHub Pages"
+      id: deployment
+      uses: actions/deploy-pages@v2
