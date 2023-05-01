@@ -111,7 +111,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: docs
-        path: _site/doc/docs.html
+        path: _site/doc
 
     - name: "download wasm"
       uses: actions/download-artifact@v3
