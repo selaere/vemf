@@ -44,8 +44,9 @@ jobs:
       
     - name: "make wasm"
       run: |
-        mkdir esbuild
+        cargo install wasm-bindgen-cli
         curl -L "https://github.com/WebAssembly/binaryen/releases/download/version_112/binaryen-version_112-x86_64-linux.tar.gz" | tar -xz
+        mkdir esbuild
         curl "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.17.18.tgz" | tar -xz --directory esbuild
         PATH="$PATH:$PWD/binaryen-version_112/bin:$PWD/esbuild/package/bin" wasm/do
         
