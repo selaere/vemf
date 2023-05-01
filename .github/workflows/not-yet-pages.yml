@@ -33,7 +33,9 @@ jobs:
         profile: minimal
         
     - name: "build vemf for x86_64"
-      run: "cargo build --features bin --verbose"
+      run: |
+        cargo build --features bin --verbose
+        export PATH="$PATH:$PWD/target/debug"
     
     - name: "change script permissions"
       run: "chmod +x {doc,wasm}/do"
