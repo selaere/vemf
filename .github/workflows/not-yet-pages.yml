@@ -44,11 +44,11 @@ jobs:
       
     - name: "make wasm"
       run: |
-        cargo install wasm-bindgen-cli
+        curl -L "https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.84/wasm-bindgen-0.2.84-aarch64-unknown-linux-gnu.tar.gz" | tar -xz
         curl -L "https://github.com/WebAssembly/binaryen/releases/download/version_112/binaryen-version_112-x86_64-linux.tar.gz" | tar -xz
         mkdir esbuild
         curl "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.17.18.tgz" | tar -xz --directory esbuild
-        PATH="$PATH:$PWD/binaryen-version_112/bin:$PWD/esbuild/package/bin" wasm/do
+        PATH="$PATH:$PWD/binaryen-version_112/bin:$PWD/esbuild/package/bin:$PWD/wasm-bindgen-0.2.84-aarch64-unknown-linux-gnu" wasm/do
         
     - name: "make site ready"
       run: |
