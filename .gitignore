@@ -1,6 +1,8 @@
 /.vscode
 /target
 /tmp
+/doc/docs.html
+/wasm/pkg
 /scripts/aoc2022/d15.vemf
 /scripts/aoc2022/d16.vemf
 /scripts/aoc2022/d17.vemf
