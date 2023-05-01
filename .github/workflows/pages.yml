@@ -65,7 +65,7 @@ jobs:
       with:
         toolchain: "1.69.0"
         target: "wasm32-unknown-unknown"
-        default: false
+        default: true
         profile: minimal
 
     - name: "change script permissions"
