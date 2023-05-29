@@ -35,8 +35,7 @@ chars!( byte_maker //lol
 
 #[macro_export]
 macro_rules! b {
-    ($a:tt) => {byte!($a)};
-    ($a:tt $($b:tt)+) => {byte!($a) $( | byte!($b))+};
+    ($a:tt $($b:tt)*) => {byte!($a) $( | byte!($b))*};
 }
 
 pub fn tochar(x: u8) -> char { CHARS[x as usize] }

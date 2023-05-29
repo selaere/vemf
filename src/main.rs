@@ -11,6 +11,7 @@ struct Options {
     rewrite: bool,
     prompt: String,
     binary: bool,
+    file_from_stdin: bool,
     code: Option<String>,
     reencode: Option<Encoding>,
 }
@@ -21,6 +22,54 @@ fn fmtstring(format: &str) -> Vec<Val> {
         .collect::<Vec<_>>()
 }
 enum Encoding{ Utf8, Vemf }
+
+
+fn add_option(opts: &mut Options, iter: &mut impl Iterator<Item=String>, option: &str) {
+    match option {
+        "f" | "-format" => {
+            opts.format = iter.next().unwrap_or_else(|| String::from("1"));
+        }
+        "h" | "-help" => {
+            println!("\
+USAGE: vemf [options] [filename] [arguments]
+    <filename>: filename of the file that will be executed. optional. if not
+        given, opens up a REPL. if `-`, read from stdin.
+    <arguments>: arguments given to the script. all arguments after the 
+        filename will be passed to the script as strings unchanged.
+OPTIONS:
+    -h/--help: print this
+    -f/--format <format>: how to format the output, 0 by default. use like 
+    dyadic ⁿ. ignored in repl.
+    -i/--inspect: open the repl after running file
+    -p/--prompt <prompt>: repl only. use <prompt> as the input prompt
+    -b/--binary: read file using the vemf codepage instead of utf-8
+    -e/--execute <code>: execute <code> instead of reading file
+    --no-stdlib: do not use the standard library
+    --no-rng:    do not use a random number generator
+    -r/--rewrite: print the file rewritten without ' escapes
+    -c/--encode:  print the file reencoded in the vemf codepage
+    -C/--decode:  print the file reencoded in utf-8 (use along with -b)");
+            std::process::exit(0);
+        },
+        "r" | "-rewrite" => { opts.rewrite   = true; }
+        "-no-stdlib"     => { opts.no_stdlib = true; }
+        "-no-rng"        => { opts.no_rng    = true; }
+        "i" | "-inspect" => { opts.inspect   = true; }
+        "b" | "-binary"  => { opts.binary    = true; }
+        "p" | "-prompt"  => {
+            opts.prompt = iter.next().unwrap_or_else(|| String::from(""));
+        }
+        "e" | "-execute" => {
+            opts.code = Some(iter.next().unwrap_or_else(|| String::from("░♪₧Ö·")));
+        }
+        "c" | "-encode" => opts.reencode = Some(Encoding::Vemf),
+        "C" | "-decode" => opts.reencode = Some(Encoding::Utf8),
+        x => {
+            println!("unrecognized option -{x}");
+            std::process::exit(0);
+        }
+    }
+}
 
 fn parse_args() -> Options {
     let mut iter = std::env::args();
@@ -34,57 +83,27 @@ fn parse_args() -> Options {
         rewrite: false,
         prompt: std::env::var("VEMF_PROMPT").unwrap_or_else(|_| String::from("    ")),
         binary: false,
+        file_from_stdin: false,
         code: None,
         reencode: None
     };
     _ = iter.next();
     loop {
-        let arg = iter.next();
-        match arg.as_deref() {
-            Some("-f" | "--format") => {
-                opts.format = iter.next().unwrap_or_else(|| String::from("1"));
+        let Some(arg) = iter.next() else { break };
+        if let Some(options) = arg.strip_prefix('-') {
+            if options.chars().next() == Some('-') {
+                add_option(&mut opts, &mut iter, options);
+            } else if options.len() == 0 {
+                opts.file_from_stdin = true;
+            } else {
+                for (n, c) in options.char_indices() {
+                    add_option(&mut opts, &mut iter, &options[n..n+c.len_utf8()]);
+                }
             }
-            Some("-h" | "--help") => {
-                println!("\
-usage: vemf [options] [filename] [arguments]
-    <filename>: filename of the file that will be executed. optional. if not given, opens up a REPL
-    <arguments>: arguments given to the script. all arguments after the filename will be passed to \
-the script unchanged. sets α, β and δ accordingly.
-    -h/--help: print this
-    -f/--format <format>: how to format the output, 0 by default. use like dyadic ⁿ. ignored in repl.
-    -i/--inspect: open the repl after running file
-    -p/--prompt <prompt>: repl only. use <prompt> as the input prompt
-    -b/--binary: read file using the vemf codepage instead of utf-8
-    -e/--execute <code>: execute <code> instead of reading file
-    --no-stdlib: do not use the standard library
-    --no-rng:    do not use a random number generator
-    -r/--rewrite: print the file rewritten without ' escapes
-    -c/--encode:  print the file reencoded in the vemf codepage
-    -C/--decode:  print the file reencoded in utf-8 (use along with -b)");
-                std::process::exit(0);
-            },
-            Some("-r" | "--rewrite") => { opts.rewrite   = true; }
-            Some("--no-stdlib")      => { opts.no_stdlib = true; }
-            Some("--no-rng")         => { opts.no_rng    = true; }
-            Some("-i" | "--inspect") => { opts.inspect   = true; }
-            Some("-b" | "--binary")  => { opts.binary    = true; }
-            Some("-p" | "--prompt") => {
-                opts.prompt = iter.next().unwrap_or_else(|| String::from(""));
-            }
-            Some("-e" | "--execute") => {
-                opts.code = Some(iter.next().unwrap_or_else(|| String::from("░♪₧Ö·")));
-            }
-            Some("-c" | "--encode") => opts.reencode = Some(Encoding::Vemf),
-            Some("-C" | "--decode") => opts.reencode = Some(Encoding::Utf8),
-            Some(x) if x.starts_with('-') => {
-                panic!("unrecognized option {x}")
-            }
-            Some(_) => {
-                opts.filename = Some(PathBuf::from(arg.unwrap()));
-                opts.arguments.extend(iter.by_ref());
-                break                
-            }
-            None => break,
+        } else {
+            opts.filename = Some(PathBuf::from(arg));
+            opts.arguments.extend(iter.by_ref());
+            break
         }
     }
     opts
@@ -103,6 +122,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else if let Some(path) = opts.filename.as_ref() {
         code = Vec::new();
         File::open(path)?.read_to_end(&mut code)?;
+    } else if opts.file_from_stdin {
+        code = Vec::new();
+        std::io::stdin().read_to_end(&mut code)?;
     } else {
         repl(env, opts);
         return Ok(());
@@ -118,7 +140,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             })?,
             _ => print!("{}", match opts.rewrite {
                 true  => vemf::rewrite(&code),
-                false => codepage::tochars(&code),
+                false => codepage::tochars_ln(&code),
             }),
         }
         return Ok(());
