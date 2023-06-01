@@ -81,7 +81,7 @@ jobs:
 
     - name: "make wasm"
       run: |
-        PATH="$PATH:$PWD/binaryen-version_112/bin:$PWD/esbuild/package/bin:$PWD/wasm-bindgen-0.2.84-x86_64-unknown-linux-musl" wasm/do
+        PATH="$PATH:$PWD/binaryen-version_113/bin:$PWD/esbuild/package/bin:$PWD/wasm-bindgen-0.2.86-x86_64-unknown-linux-musl" wasm/do
         
     - name: "upload file"
       uses: actions/upload-artifact@v3
