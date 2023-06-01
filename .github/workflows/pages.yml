@@ -74,10 +74,10 @@ jobs:
     - name: "download packages"
       run: |
         set -ex
-        curl -L "https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.84/wasm-bindgen-0.2.84-x86_64-unknown-linux-musl.tar.gz" | tar -xvz
-        curl -L "https://github.com/WebAssembly/binaryen/releases/download/version_112/binaryen-version_112-x86_64-linux.tar.gz" | tar -xvz
+        curl -L "https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.86/wasm-bindgen-0.2.86-x86_64-unknown-linux-musl.tar.gz" | tar -xvz
+        curl -L "https://github.com/WebAssembly/binaryen/releases/download/version_113/binaryen-version_113-x86_64-linux.tar.gz" | tar -xvz
         mkdir esbuild
-        curl "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.17.18.tgz" | tar -xvz --directory esbuild
+        curl "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.17.19.tgz" | tar -xvz --directory esbuild
 
     - name: "make wasm"
       run: |
