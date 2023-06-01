@@ -207,3 +207,29 @@ fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
     }
 }
 }
+
+fn _gcd(a: i64, b: i64) -> i64 {
+    if a == 0 { return b; }
+    if b == 0 { return a; }
+    let mut m = a >> a.trailing_zeros();
+    let mut n = b >> b.trailing_zeros();
+    while m != n {
+        if m < n { (m, n) = (n, m); }
+        m -= n;
+        m >>= m.trailing_zeros();
+    }
+    return n << (a | b).trailing_zeros();
+}
+
+intfunc!(a :gcd b => Int(_gcd(a, b)));
+
+intfunc!(a :lcm b => {
+    if a == 0 || b == 0 { return Int(0) }
+    Int(i64::max(a, b) / _gcd(a, b) * i64::min(a, b))
+});
+
+intfunc!(n :binom k => {
+    if n < k || k < 0 { return Int(0); }
+    let k = i64::min(k, n - k); // nCk == nC(n-k)
+    Int((0..k).fold(1, |j,i| j * (n - i) / (i + 1)))
+});

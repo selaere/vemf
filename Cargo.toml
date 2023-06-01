@@ -18,8 +18,6 @@ smallvec = { version = "1.10", features = ["union"], optional = true }
 rand = { version = "0.8", default-features = false, features = ["alloc"] }
 # complex numbers
 num-complex = "0.4"
-# gcd, lcm, binom (i should write these myself)
-num-integer = "0.1"
 # gamma (not complex (i have to look for a better library))
 libm = "0.2"
 # HashMap and HashSet for no_std

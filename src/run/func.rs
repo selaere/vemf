@@ -26,7 +26,7 @@ macro_rules! intfunc {
 }
 
 pub fn load_intrinsics(env: &mut super::Env) {
-    use list::*; use super::val::encode;
+    use list::*; use super::val::{encode, binom, gcd, lcm};
     macro_rules! load_func {($($name:ident,)*) => { $( {
         let mut name = Bstr::from(&b"in"[..]);
         name.extend(stringify!($name).bytes());
@@ -124,9 +124,6 @@ func!(a :atan2 b => {
 });
 func!(a :approx b => Val::bool(Val::approx(&a, &b)));
 func!(a :isnan    => Val::bool(a.is_nan()));
-intfunc!(a :gcd b    => Int(num_integer::gcd(a, b)));
-intfunc!(a :lcm b    => Int(num_integer::lcm(a, b)));
-intfunc!(a :binom b  => Int(num_integer::binomial(a, b)));
 intfunc!(a :band b   => Int(a & b));
 intfunc!(a :bor b    => Int(a | b));
 intfunc!(a :bxor b   => Int(a ^ b));
@@ -187,7 +184,7 @@ func!(@env, a :output b => {
 });
 func!(@env, a :inputraw b => {
     let chars = or_nan!(a.try_c()).re as isize;
-    let stm =   or_nan!(b.try_int().and_then(|x| usize::try_from(x).ok()));
+    let stm   = or_nan!(b.try_int().and_then(|x| usize::try_from(x).ok()));
     or_nan!(if chars == isize::MAX {
         env.interface.read_to_end(stm)
     } else if chars >= 0 {
