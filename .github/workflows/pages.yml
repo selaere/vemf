@@ -53,41 +53,28 @@ jobs:
         path: doc/docs.html
     
   build-wasm:
-
     runs-on: ubuntu-latest
 
     steps:
     - name: checkout
       uses: actions/checkout@v3
 
-    - name: toolchain for wasm
-      uses: actions-rs/toolchain@v1.0.6
+    - name: install nix
+      uses: cachix/install-nix-action@v19
       with:
-        toolchain: "1.69.0"
-        target: "wasm32-unknown-unknown"
-        default: true
-        profile: minimal
+        nix_path: nixpkgs=channel:nixos-unstable
 
-    - name: "change script permissions"
-      run: "chmod +x wasm/do"
-      
-    - name: "download packages"
-      run: |
-        set -ex
-        curl -L "https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.86/wasm-bindgen-0.2.86-x86_64-unknown-linux-musl.tar.gz" | tar -xvz
-        curl -L "https://github.com/WebAssembly/binaryen/releases/download/version_113/binaryen-version_113-x86_64-linux.tar.gz" | tar -xvz
-        mkdir esbuild
-        curl "https://registry.npmjs.org/@esbuild/linux-x64/-/linux-x64-0.17.19.tgz" | tar -xvz --directory esbuild
+    - name: make app
+      run:  "nix build ./wasm --verbose"
 
-    - name: "make wasm"
-      run: |
-        PATH="$PATH:$PWD/binaryen-version_113/bin:$PWD/esbuild/package/bin:$PWD/wasm-bindgen-0.2.86-x86_64-unknown-linux-musl" wasm/do
-        
+    - name: copy files  # See (https://github.com/actions/deploy-pages/issues/58)
+      run: cp -r -L --no-preserve=mode,ownership result pkg
+
     - name: "upload file"
       uses: actions/upload-artifact@v3
       with:
         name: wasm_pkg
-        path: wasm/pkg/
+        path: pkg/
 
   deploy:
     needs:
