@@ -578,12 +578,12 @@ create a list with the elements α and β. this is equivalent to `{αβ}`. for s
 :ascii: 'sn
 :type: verb
 #1 UTC Calendar
-interpret a UNIX timestamp, like those returned from `τ` ||Current Time||, as a date and time in the proleptic Gregorian calendar in UTC. returns a list with the following numbers: year, month (1-12), day (1-31), hour, minute, second, microseconds.
+interpret a UNIX timestamp, like those returned from `τ` ||Current Timestamp||, as a date and time in the proleptic Gregorian calendar in UTC. returns a list with the following numbers: year, month (1-12), day (1-31), hour, minute, second, microseconds.
 > 0☼     ≡ :1970:1:1:0:0:0:0    ' UNIX epoch: 1970-01-01 00:00:00.000000Z (arbitrary, standard)
 > Φ^9☼   ≡ :2001:9:9:1:46:40:0  ' UNIX billenium: 2001-09-09 01:46:40.000000Z (a few nerds celebrated)
 > 2^:31☼ ≡ :2038:1:19:3:14:8:0  ' i32 rollover time: 2038-01-19 3:14:08.000000Z (stuff will break)
 #_1 Local Calendar
-interpret a UNIX timestamp, like those returned from `τ` ||Current Time||, as a date and time in the proleptic Gregorian calendar in local time. UTC might be used if there is no local timezone known. returns a list in the same format as ||UTC Calendar||
+interpret a UNIX timestamp, like those returned from `τ` ||Current Timestamp||, as a date and time in the proleptic Gregorian calendar in local time. UTC might be used if there is no local timezone known. returns a list in the same format as ||UTC Calendar||
 > 2^:31_☼ ?≡ :2038:1:19:4:14:8:0  ' oh no! it's one hour ahead! in my machine, anyway.
 ---
 :char: ►
@@ -2624,16 +2624,10 @@ references `β` from the outer scope. useful for defining adverbs or higher-orde
 :char: τ
 :ascii: 't-
 :type: variable
-#0 Timestamp
+#0 Current Timestamp
 return the current UNIX timestamp, in seconds, with microsecond precision. can be 0 if this operation is not supported.
 > τ ?≡ :1717795741.658366   ' or well, at least it was when i just typed it.
 see also: ||UTC Calendar||, ||Local Calendar||
----
-:char: δ
-:ascii: 'd-
-:type: noun
-#0 Arguments
-the list of arguments passed in the command line (not including the executable name, flags or the script filename)
 ---
 :char: Φ
 :ascii: 'X 'f+
