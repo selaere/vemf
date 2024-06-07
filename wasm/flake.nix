@@ -26,7 +26,7 @@ outputs = { self, nixpkgs, crane, rust-overlay }: { packages =
       vemfwasm = cranelib.buildPackage {
         src = pkgs.lib.cleanSourceWith { src=cranelib.path ./..; inherit filter; };
         CARGO_PROFILE = "wasm";
-        cargoExtraArgs = ["--target" "wasm32-unknown-unknown" "--package" "vemfwasm"];
+        cargoExtraArgs = "--target wasm32-unknown-unknown --package vemfwasm";
         doCheck = false;
         buildInputs = [];
       };
