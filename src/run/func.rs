@@ -1,3 +1,4 @@
+use chrono::{DateTime, Datelike, Local, TimeZone, Timelike};
 use crate::prelude::*;
 use super::{Val::{self, Num, Int}, NAN, adverb, c64, val::complexcmp, list};
 
@@ -33,11 +34,14 @@ pub fn load_intrinsics(env: &mut super::Env) {
         env.set_local(name, Val::Func($name))
     } );* }}
     load_func!(
-        add, sub, mul, div, dive, rem, pow, log, lt, gt, and, or, max, min, atan2, approx, band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp, sin, asin, cos, acos, tan, atan, sqrt, round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
+        add, sub, mul, div, dive, rem, pow, log, lt, gt, and, or, max, min, atan2, approx,
+        band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp,
+        sin, asin, cos, acos, tan, atan, sqrt,
+        round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
         left, right, get, set, call, islist, eval,
         shape, len, index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, matches,
         print, println, output, input, inputraw, fromutf8, toutf8, fromcp, tocp, exit,
-        format, numfmt, parse,
+        format, numfmt, parse, time, date, dateloc,
         takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find, uio,
         reverse, gradeup, gradedown, sortup, sortdown, binsup, binsdown, encode, group, occcount,
         domainto,
@@ -279,3 +283,13 @@ func!(@env, a :eval =>
     a.iterf().map(|x| x.try_int().and_then(|x| x.try_into().ok()) )
     .collect::<Option<Vec<u8>>>()
     .map_or(NAN, |x| env.include_bytes(&x)));
+func!(@env, _a :time =>
+    Val::flt(if env.can_time {Local::now().timestamp_micros() as f64 / 1.0e6} else {0.}));
+fn gregory<T: TimeZone>(d: DateTime<T>) -> Val {
+    Val::lis([d.year() as _, d.month()  as _, d.day()    as _,
+              d.hour() as _, d.minute() as _, d.second() as _,d.timestamp_subsec_micros() as _]
+             .into_iter().map(Val::Int).collect())
+}
+func!(a :date    => DateTime::from_timestamp_micros((a.as_c().re*1.0e6) as i64).map_or(NAN, gregory));
+func!(a :dateloc => DateTime::from_timestamp_micros((a.as_c().re*1.0e6) as i64)
+                     .map(DateTime::<Local>::from).map_or(NAN, gregory));

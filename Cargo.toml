@@ -22,6 +22,8 @@ num-complex = "0.4"
 libm = "0.2"
 # HashMap and HashSet for no_std
 hashbrown = "0.13"
+# time query, local timezone, calendar information
+chrono = { version = "0.4.38" }
 
 [features]
 default = ["smallvec"]

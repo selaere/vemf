@@ -11,6 +11,7 @@ struct Options {
     rewrite: bool,
     prompt: String,
     binary: bool,
+    no_time: bool,
     file_from_stdin: bool,
     code: Option<String>,
     reencode: Option<Encoding>,
@@ -32,28 +33,29 @@ fn add_option(opts: &mut Options, iter: &mut impl Iterator<Item=String>, option:
         "h" | "-help" => {
             println!("\
 USAGE: vemf [options] [filename] [arguments]
-    <filename>: filename of the file that will be executed. optional. if not
-        given, opens up a REPL. if `-`, read from stdin.
+    <filename>: filename of the file that will be executed. optional. 
+        if not given, opens up a REPL. if `-`, read from stdin.
     <arguments>: arguments given to the script. all arguments after the 
-        filename will be passed to the script as strings unchanged.
+        filename will be passed to the script as strings unperturbed.
 OPTIONS:
-    -h/--help: print this
-    -f/--format <format>: how to format the output, 0 by default. use like 
-    dyadic ⁿ. ignored in repl.
-    -i/--inspect: open the repl after running file
-    -p/--prompt <prompt>: repl only. use <prompt> as the input prompt
-    -b/--binary: read file using the vemf codepage instead of utf-8
+    -h/--help:     print this
+    -f/--format <format>: how to format the output, 0 by default. use like ⁿ. ignored in repl.
+    -i/--inspect:  open the repl after running file
     -e/--execute <code>: execute <code> instead of reading file
-    --no-stdlib: do not use the standard library
-    --no-rng:    do not use a random number generator
-    -r/--rewrite: print the file rewritten without ' escapes
-    -c/--encode:  print the file reencoded in the vemf codepage
-    -C/--decode:  print the file reencoded in utf-8 (use along with -b)");
+    -p/--prompt <prompt>: repl only. use <prompt> as the input prompt
+    -b/--binary:   read file using the vemf codepage instead of utf-8
+    -r/--rewrite:  print the file rewritten without ' escapes
+    -c/--encode:   print the file reencoded in the vemf codepage
+    -C/--decode:   print the file reencoded in utf-8 (use along with -b)
+    --no-stdlib:   do not use the standard library
+    --no-rng:      do not use a random number generator
+    --no-time:     do not allow access of current date/time");
             std::process::exit(0);
         },
         "r" | "-rewrite" => { opts.rewrite   = true; }
         "-no-stdlib"     => { opts.no_stdlib = true; }
         "-no-rng"        => { opts.no_rng    = true; }
+        "-no-time"       => { opts.no_time   = true; }
         "i" | "-inspect" => { opts.inspect   = true; }
         "b" | "-binary"  => { opts.binary    = true; }
         "p" | "-prompt"  => {
@@ -85,6 +87,7 @@ fn parse_args() -> Options {
         binary: false,
         file_from_stdin: false,
         code: None,
+        no_time: false,
         reencode: None
     };
     _ = iter.next();
@@ -115,6 +118,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if !opts.no_rng { env.rng = bx(rand::thread_rng()); }
     let mut code: Vec<u8>;
     if !opts.no_stdlib { env.include_stdlib(); }
+    if opts.no_time { env.can_time = false; }
     env.interface = bx(vemf::StdIO {});
     env.include_args(&opts.arguments);
     if let Some(c) = opts.code.as_ref() {

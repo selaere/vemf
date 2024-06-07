@@ -11,10 +11,12 @@ pub const NAN: Val = Num(c64::new(f64::NAN, f64::NAN));
 pub type Frame = HashMap<Bstr, Val>;
 
 /// vemf interpreter state
+#[non_exhaustive]
 pub struct Env<'io> {
     pub stack: Vec<Frame>,
     pub rng: Box<dyn rand::RngCore>,
     pub interface: Box<dyn io::Interface<'io> + 'io>,
+    pub can_time: bool, // TODO replace this with something better
 }
 
 #[macro_export]
@@ -58,7 +60,8 @@ impl<'io> Env<'io> {
         Env {
             stack: vec![frame],
             interface: bx(io::NoIO),
-            rng: bx(rand::rngs::mock::StepRng::new(0, 0))
+            rng: bx(rand::rngs::mock::StepRng::new(0, 0)),
+            can_time: true,
         }
     }
 

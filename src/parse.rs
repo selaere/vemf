@@ -218,6 +218,7 @@ fn value_token(chr: Tok) -> Option<Expr> {
         Just(b!('■')) => NAN,
         Just(b!('φ')) => Snd(Vec::new()),
         Just(b!('π')) => Flt(c64::new(core::f64::consts::PI, 0.)),
+        Just(b!('τ')) => Afn1(bx(NAN), bx(Var(bstr![b!('τ')]))),
         Tok::VNoun(x) => Var(x),
         Tok::Chr(x) => Int(i64::from(x)),
         Tok::Chr2(x, y) => Snd(vec![Int(i64::from(x)), Int(i64::from(y))]),
