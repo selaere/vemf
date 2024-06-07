@@ -26,7 +26,7 @@ outputs = { self, nixpkgs, crane, rust-overlay }: { packages =
       vemfwasm = cranelib.buildPackage {
         src = pkgs.lib.cleanSourceWith { src=cranelib.path ./..; inherit filter; };
         CARGO_PROFILE = "wasm";
-        cargoExtraArgs = "--target wasm32-unknown-unknown --package vemfwasm";
+        cargoExtraArgs = ["--target" "wasm32-unknown-unknown" "--package" "vemfwasm"];
         doCheck = false;
         buildInputs = [];
       };
@@ -49,7 +49,7 @@ outputs = { self, nixpkgs, crane, rust-overlay }: { packages =
         pname = "vemfwasm";
         version = "0.0.1";
         dontUnpack = true;
-        buildInputs = [pkgs.binaryen wasm-bindgen pkgs.esbuild];
+        buildInputs = [pkgs.binaryen pkgs.esbuild wasm-bindgen];
         inherit vemfwasm;
         buildPhase = ''
           set -ex
