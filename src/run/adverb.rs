@@ -1,4 +1,4 @@
-use super::{Val, Env, NAN};
+use super::{list::idepth, Env, Val, NAN};
 use crate::prelude::*;
 
 pub type AvT = fn(&mut Env, Val, Option<Val>, Option<&Rc<Val>>, &Rc<Val>) -> Val;
@@ -34,39 +34,12 @@ adverb!(@env, a f .overright g b => { let r = b.map(|b| f.monad(env, b)); g.call
 adverb!(@env, a f .forkleft  g b => { let l = f.call(env, a.c(), b.c()); g.dyad(env, l, b.unwrap_or(a)) });
 adverb!(@env, a f .forkright g b => { let r = f.call(env, a.c(), b); g.dyad(env, a, r) });
 
-adverb!(@env, a .each g b => {
-    let Some(b) = b else { return eachleft(env, a, None, None, g); };
-    if a.is_infinite() || b.is_infinite() {
-        return Val::Fork(a.rc(), g.c(), b.rc());
-    }
-    let items = (0..match (a.is_scalar(), b.is_scalar()) {
-        ( true,  true) => return g.call(env, a, Some(b)),
-        (false,  true) => a.len(),
-        ( true, false) => b.len(),
-        (false, false) => usize::max(a.len(), b.len()),
-    }).map(|n| {
-        let l = a.index(env, n); let r = b.index(env, n); g.dyad(env, l, r)
-    }).collect();
-    let mut fill = NAN;
-    if b.is_scalar() && !a.fill().is_nan() { fill = g.dyad(env, a.fill(), b.c()); }
-    if a.is_scalar() && !b.fill().is_nan() { fill = g.dyad(env, a.c(), b.fill()); }
-    if !a.fill().is_nan() && !b.fill().is_nan() { fill = g.dyad(env, a.fill(), b.fill()); };
-    Val::lis_fill(items, fill)
-});
-
-adverb!(@env, a .eachleft g b =>
-    if a.is_scalar() {
-        g.call(env, a, b)
-    } else if a.is_infinite() { match b {
-        Some(b) => Val::Fork(a.rc(), Rc::clone(g), b.rc()),
-        None    => Val::atop(a.rc(), Rc::clone(g)),
-    }} else {
-        Val::lis_fill(
-            a.iterf().map(|x| g.call(env, x.c(), b.c())).collect(),
-            if a.fill().is_nan() { NAN } else { g.call(env, a.fill(), b.c()) }
-        )
-    }
-);
+adverb!(@env, a .each        g b => at_depths(env, a, b, g, 1, 1));
+adverb!(@env, a .eachleft    g b => at_depths(env, a, b, g, 1, 0));
+adverb!(@env, a .eachright   g b => { let b = b.unwrap_or_else(|| a.c()); at_depths(env, a, Some(b), g, 0, 1)} ) ;
+adverb!(@env, a .conform     g b => at_depths(env, a, b, g,-1,-1));
+adverb!(@env, a .extend      g b => at_depths(env, a, b, g,-1, 0));
+adverb!(@env, a .extendright g b => { let b = b.unwrap_or_else(|| a.c()); at_depths(env, a, Some(b), g, 0, -1)} ) ;
 
 adverb!(@env, a .eachtrim g b => {
     let Some(b) = b else { return eachleft(env, a, None, None, g); };
@@ -82,40 +55,6 @@ adverb!(@env, a .eachtrim g b => {
         let l = a.index(env, n); let r = b.index(env, n); g.dyad(env, l, r)
     }).collect()
 });
-
-adverb!(@env, a .conform g b => {
-    let Some(b) = b else { return extend(env, a, None, None, g); };
-    if a.is_infinite() || b.is_infinite() {
-        return Val::Fork(a.rc(), Val::Av(conform, None, g.c()).rc(), b.rc());
-    }
-    let items = (0..match (a.is_scalar(), b.is_scalar()) {
-        ( true,  true) => return g.call(env, a, Some(b)),
-        (false,  true) => a.len(),
-        ( true, false) => b.len(),
-        (false, false) => usize::max(a.len(), b.len()),
-    }).map(|n| {
-        let l = a.index(env, n); let r = b.index(env, n); conform(env, l, Some(r), None, g)
-    }).collect();
-    let mut fill = NAN;
-    if b.is_scalar() && !a.fill().is_nan() { fill = conform(env, a.fill(), Some(b.c()), None, g); }
-    if a.is_scalar() && !b.fill().is_nan() { fill = conform(env, a.c(), Some(b.fill()), None, g); }
-    if !a.fill().is_nan() && !b.fill().is_nan() { 
-        fill = conform(env, a.fill(), Some(b.fill()), None, g);
-    };
-    Val::lis_fill(items, fill)
-});
-
-adverb!(@env, a .extend g b =>
-    if a.is_scalar() {
-        g.call(env, a, b)
-    } else if a.is_infinite() { match b {
-        Some(b) => Val::Fork(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc(), b.rc()),
-        None    => Val::atop(a.rc(), Val::Av(conform, None, Rc::clone(g)).rc()),
-    }} else {
-        let fill = if a.fill().is_nan() { NAN } else { extend(env, a.fill(), b.c(), None, g) };
-        Val::lis_fill(a.into_iterf().map(|x| extend(env, x, b.c(), None, g)).collect(), fill)
-    }
-);
 
 adverb!(@env, a .scan g b => {
     if a.is_infinite() { return NAN; }
@@ -303,3 +242,57 @@ adverb!(@env, a f .amend g b => {
 adverb!(@env, a .cycle g _b => {
     a.try_int().map_or(NAN, |a| g.index(env, (a as usize) % g.len()))
 });
+adverb!(@env, a f .depthleft g b => {
+    let mut d = or_nan!(f.try_int());
+    if d < 0 { d = 0.max(d+idepth(&a)); }
+    at_depths(env, a, b, g, d, 0)
+});
+adverb!(@env, a f .depthright g b => {
+    let b = b.unwrap_or_else(|| a.c());
+    let mut d = or_nan!(f.try_int());
+    if d < 0 { d = 0.max(d+idepth(&b)); }
+    at_depths(env, a, Some(b), g, 0, d)
+});
+adverb!(@env, a f .depthboth g b => {
+    let (mut d1,mut d2) = or_nan!(Option::zip(f.index(env,0).try_int(), f.index(env,1).try_int()));
+    if d1 < 0 { d1 = 0.max(d1+idepth(&a)); }
+    if let Some(ref b) = b { if d2 < 0 { d2 = 0.max(d2+idepth(b)); } }
+    at_depths(env, a, b, g, d1, d2)
+});
+
+pub fn at_depths(env: &mut Env, a: Val, b: Option<Val>, g: &Rc<Val>, d1: i64, d2: i64) -> Val {
+    #[inline] fn dec(x: i64) -> i64 { if x==0 {0} else {x-1} }
+    macro_rules! deeper {($l:expr,$r:expr)=>{ at_depths(env, $l, $r, g, dec(d1), dec(d2))}}
+    if let Some(b) = b {
+        // Dyadic case
+        if a.is_infinite() && d1!=0 || b.is_infinite() && d2!=0 {
+            return Val::Fork(a.rc(), Val::Av(depthboth, 
+                Some(Val::lis(vec![Val::Int(dec(d1)),Val::Int(dec(d2))]).rc()), g.c()
+            ).rc(), b.rc());
+        }
+        let items = (0..match (a.is_scalar()||d1==0, b.is_scalar()||d2==0) {
+            ( true,  true) => return g.dyad(env, a, b),
+            (false,  true) => a.len(),
+            ( true, false) => b.len(),
+            (false, false) => usize::max(a.len(), b.len()),
+        }).map(|n| {
+            let l = if d1==0 {a.c()} else {a.index(env, n)};
+            let r = if d2==0 {b.c()} else {b.index(env, n)};
+            deeper!(l,Some(r))
+        }).collect();
+        let fill = if !a.fill().is_nan() && !b.fill().is_nan() { deeper!(a.fill(), Some(b.fill())) }
+                   else {NAN};
+        Val::lis_fill(items, fill)
+    // Monadic case
+    } else if a.is_scalar() || d1==0 {
+        g.monad(env, a)
+    } else if a.is_infinite() {
+        Val::atop(a.rc(), Val::Av(depthleft, Some(Val::Int(dec(d1)).rc()), g.c()).rc())
+    } else {
+        let fill = if !a.fill().is_nan() { deeper!(a.fill(), None) } else { NAN };
+        Val::lis_fill(a.into_iterf().map(|x| deeper!(x, None)).collect(), fill)
+    }
+}
+
+
+

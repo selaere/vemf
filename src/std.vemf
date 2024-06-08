@@ -10,10 +10,8 @@
 .inatop→_╜ .inbind→_╙
 .inover→║
 
-.ineach→╕
-.ineachtrim→╒
-.ineachleft→╛
-:┴:╛:┴→╘
+.ineach→╕ .ineachtrim→╒
+.ineachleft→╛ .ineachright→╘
 
 .inscan→╤
 .inreduce→╧
@@ -21,8 +19,8 @@
 .instencil→╫
 
 .inconform→_╕
-.inextend→_╛
-:┴:_╛:┴→_╘
+.inextend→_╛   .inextendright→_╘
+.indepthleft→╝ .indepthright→╚
 
 .inprint→☺
 .inprintln→☻
@@ -74,7 +72,7 @@ _╕:insqrt╬/╙^→√
 │-1╬_╘.inbinsdown→▼
 
 .ingradeup╬_╕:inlt→<
-│▬:inlen╬_╕:inmatches→=
+.indepth╬_╕:inmatches→=
 .ingradedown╬_╕:ingt→>
 :inlt→_<
 :ingt→_>
@@ -157,8 +155,8 @@ _╕:inarg╬:"inatan2"→Ä
 :╛┴:_╜.⌐┴:╓.‼→┬
 
 .intocp_╕╬_╛.inencode→ê
-.infromcp_╕╬{α▐0↓(β~▲)*(β♠╤*♠,1)+}→ë
-(│♣♠╜┴^)╓*+→è│è2╬_╘è→è
+.infromcp_╕╬Θ○indepthboth{α▐0↓(β~▲)*(β♠╤*♠,1)+}→ë
+(│♣♠╜┴^)╓*+→è  │Θ∞○indepthboth│è2╬è→è
 _╕.inbrepr╬(¢╜(¬╦÷♀♠)╖%▐0)→é
 
 (┴▲`a`{=1*:32)╓-→Ç
@@ -183,7 +181,7 @@ _╕.inbrepr╬(¢╜(¬╦÷♀♠)╖%▐0)→é
 `A↨`F;_D→_H _Hç→_I
 _A_C_D▓+/,→_J _A_C_D▓-_,→_K _A_C_D,→_L
 
-.inparse╬(ç┴#_G)╖è→º
+│Θ∞○indepthboth.inparse╬(ç┴#_G)╖è→º
 _╕:innumfmt╬(é╓┴(¬┌╨│¬0¡_G))╓┴├►<0╨│⌐`-▐■→ª
 
 _╕:infact→!

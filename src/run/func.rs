@@ -38,8 +38,9 @@ pub fn load_intrinsics(env: &mut super::Env) {
         band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp,
         sin, asin, cos, acos, tan, atan, sqrt,
         round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
-        left, right, get, set, call, islist, eval,
-        shape, len, index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, matches,
+        left, right, get, set, call, islist, eval, shape, depth, len,
+        index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, 
+        matches,
         print, println, output, input, inputraw, fromutf8, toutf8, fromcp, tocp, exit,
         format, numfmt, parse, time, date, dateloc,
         takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find, uio,
@@ -53,7 +54,8 @@ pub fn load_intrinsics(env: &mut super::Env) {
     } );* }}
     load_av!(
         swap, constant, toleft, toright, bind, atop,
-        each, eachleft, eachtrim, conform, extend,
+        each, eachleft, eachright, conform, extend, extendright, depthleft, depthright, depthboth,
+        eachtrim, 
         scan, scanpairs, reduce, stencil, valences,
         overleft, overright, over, forkleft, forkright,
         until, untilscan, power, powerscan, untilcmp, untilscancmp,
@@ -239,8 +241,10 @@ func!(a :format b? => {
 });
 func!(a :numfmt => if !a.is_scalar() {NAN} else { 
     format!("{a}").chars().map(|x| Int(x as i64)).collect() });
-func!(a :parse => if let Some(a @ 0x30..=0x39) = a.try_int() { Int(a - 0x30) } else {
-    a.display_string().parse::<c64>().map(Num).unwrap_or(NAN)
+func!(a :parse => match a.try_int() {
+    Some(a @ 0x30..=0x39) => Int(a - 0x30),
+    Some(_) => NAN,
+    None => a.display_string().parse::<c64>().map(Num).unwrap_or(NAN)
 });
 
 func!(a :fromcp => { if a.is_nan() {return NAN}; a.try_int()

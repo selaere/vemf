@@ -1932,11 +1932,15 @@ represent a string as a UTF-8 list of bytes, converting invalid values to � U+
 convert characters from vemf codepage into Unicode, or ||None|| if not possible. scalar.
 > "•♥☺ƒe"ë ≡ :8226:9829:9786:402`e
 #2 Decode
-decode α from the radix system β in big-endian order. this is an inverse of ||Encode||
+decode α from the radix system β in big-endian order. this is an inverse of ||Encode||.
 > 0:1:6:40ë:24:60:60 ≡ :4000
 > :1:6:40ë:24:60:60 ≡ :4000
+> 1234ëΦΦΦ ≡ :1234
 > :12:3.45ë:10 ± :123.45
 > :123:0.45ë1 ± :123.45
+applies to the deepest lists in α and β. effectively a no-op for a scalar α.
+> (:1:6:40)(:2:13:20)ë:24:60:60 ≡ :4000:8000
+> (:1:6:40)(:1:7:6)ë(:24:60:60)(:1:20:12) ≡ :4000:330
 #_1 Decode UTF-8
 converts a list of bytes into a string, converting invalid sequences to � U+FFFD REPLACEMENT CHARACTER.
 > "a─ì╩ñ╨ªΓÇáτÜä≡ƒô«≡æÇ╡"_ë ≡ `a:269:676:1062:8224:30340:128238:69685
@@ -1945,13 +1949,15 @@ converts a list of bytes into a string, converting invalid sequences to � U+FF
 :ascii: 'e`
 :type: verb
 #2 Decode Base
-converts a list α from positional base β, in little-endian order. β-pervasive.
+converts a list α from positional base β, in little-endian order. pervasive in β, applies to the deepest lists in α.
 > 3054èΦ ≡ :3054
+> (3054)(2137)èΦ ≡ :3054:2137
 see also: ||Encode Base||, ||Parse Base||
 #1 Decode Binary
 use 2 as the base
 > 0101è ≡ 5
 > 101111101110è2 ≡ :3054
+> (0101)(1010)è ≡ 5 Φ
 ---
 :char: ï
 :ascii: 'i"
@@ -2355,17 +2361,24 @@ see also: ||Parse Base||, ||Encode Base||
 :ascii: 'o,
 :type: verb
 #1 Parse
-convert the string/character α to a number, or ||None||
-> `4º ≡ 4
+convert the string α to a number, or ||None|| if this conversion failed.
 > "123"º ≡ :123
 > "123.45"º ≡ :123.45
 > "123+5i"º ≡ 5í:123
+> "1 234"º ≡ ■
+this function applies at the deepest text strings in α. if α is a character it returns a single number.
+> `4º ≡ 4
+> `eº ≡ ■
+> "123""456""789""abc"º ≡ :123:456:789■
 see also: ||Represent||
 #2 Parse Base
 convert the string α in base β to a number. behaviour unspecified for bases not in [2, 36].
 > "bee"º:16 ≡ :3054
 > "bee"º:36 ≡ :14774
 > "A5A5"º:16 ≡ :42405
+applies at the deepest text strings in α. pervasive in β
+> "111""222""333""444"º2345 ≡ :7:26:63:124
+> "31"º8Φ ≡ :25:31
 see also: ||Represent Base||, ||Decode Base||
 ---
 :char: ¿
@@ -3009,15 +3022,16 @@ this also means it is useful with functions, taking as many items as needed:
 :ascii: '}
 :type: 1-adverb
 #2a1 Each Left
-iterates through α, passing β in each iteration
+iterates through α, passing β in each iteration. same as `1╝F`.
 > 123╛♫456 ≡ (1├456)(2├456)(3├456)
 > 123╛;1 ≡ (11)(12)(13)
-see also: ||Each Right||
+see also: ||Depth Left||, ||Each Right||
 #1a1 Each Left
 monadically, this is the same as ||Each||:
 > 123╛; ≡ (11)(22)(33)
-#_2a1 Extend
-call G to every scalar in α, keeping the list's structure, while passing β in each iteration.
+#_2a1 Extend Left
+call G to every scalar in α, keeping the list's structure, while passing β in each iteration. same as `∞╝F`
+> (123)(45)6  ╛, 78 ≡ (12378)(4578)(678)
 > (123)(45)6 _╛, 78 ≡ (├178├278├378)(├478├578)├678
 see also: ||Extend Right||
 #_1a1 Extend
@@ -3028,19 +3042,19 @@ monadically, it is the same as ||Conform||:
 :ascii: '{
 :type: 1-adverb
 #2a1 Each Right
-iterates through β, passing α in each iteration
+iterates through β, passing α in each iteration. same as `1╚F`
 > 123╘♫456 ≡ (├1234)(├1235)(├1236)
 see also: ||Each Left||
 #1a1 Each Right
-monadically, it acts like `┴╘f`; iterates through α, passing it in each iteration
+monadically, it acts like `┴╘F`; iterates through α, passing it in each iteration
 > 123╘* ≡ ((123)(246)(369))
 > 123╘╛, ≡ (│11│21│31)(│12│22│32)(│13│23│33)
 #_2a1 Extend Right
-call G to every scalar in β, keeping the list's structure, while passing α in each iteration.
+call G to every scalar in β, keeping the list's structure, while passing α in each iteration. same as `∞╚F`
 > 78 _╘, (123)(45)6 ≡ (├781├782├783)(├784├785)├786
 see also: ||Extend||
 #_1a1 Extend
-monadically, this is equivalent to `α_╘Gα`:
+monadically, this is equivalent to `┴_╘G`:
 > (123)4 _╘, ≡ ( (├12341) (├12342) (├12343) ) (├12344)
 ---
 :char: ╤
@@ -3213,20 +3227,20 @@ apply a function G to each successive slice ("window") of length `αF` of the li
 for a searched list of length `n` and window length `k`, the number of windows will be `n-k+1Ñ0` (even for `k=0`):
 > "thing"0╫► ≡ ()()()()()()
 see also: ||Scan Pairs||
-#2a2 Power
+#2a2 Scan Windows
 bind β to G
 ---
 :char: ╗
-:ascii: 'dr
+:ascii: 'ad
 :type: 2-adverb
-#1a2 Drill
+#1a2 Amend Deep
 return a list `α` with an item modified. the function G is run on item `αF`.
 > (123)(456)(789) φ╗▲ ≡ (234)(567)(89Φ)
 > (123)(456)(789) 0╗▲ ≡ (234)(456)(789)
 > "x../xo./..o"(#`.)╗`x ≡ "xx./xo./..o"
 if the result of `αF` is a list, it can modify items deep in a nested list:
 > (123)(456)(789) (12)╗▲ ≡ (123)(457)(789)
-#2a2 Drill
+#2a2 Amend Deep
 bind β to F
 ---
 :char: ╔
@@ -3250,6 +3264,39 @@ and if the result list from G is longer than `αF`, the last values will be inse
 > "big brown fox"(4↕9)╔(‼2) ≡ "big bbrroowwnn fox"
 #2a2 Amend
 bind β to F and G
+---
+:char: ╝
+:ascii: 'dl
+:type: 2-adverb
+#a2 Depth Left
+call the function G at depth F, passing β unchanged if present. same as applying `╛` ||Each Left|| a specific number of times.
+> (12(34))(45)6 0╝, 78 ≡ (12(34))(45)678                   ' depth 0 is expectedly useless
+> (12(34))(45)6 1╝, 78 ≡ ((12(34)78)(4578)(678))           ' apply to each element
+> (12(34))(45)6 2╝, 78 ≡ (├178├278╞3478)(├478├578)├678     ' apply to each element's element
+> (12(34))(45)6 3╝, 78 ≡ (├178├278(├378├478))(├478├578)├678' apply to each element's element's element
+positive values of F are relative depths. negative values of F are absolute depths, which are computed with the depth of the deepest scalars in the argument like `α=+F⌠0`. -0 is the same as 0, but luckily ∞ ||Infinity|| does the same thing.
+> (12(34))(45)6 _3╝, 78 ≡ (12(34))(45)678                   ' apply to each list of lists of lists
+> (12(34))(45)6 _2╝, 78 ≡ ((12(34)78)(4578)(678))           ' apply to each list of lists
+> (12(34))(45)6 _1╝, 78 ≡ (├178├278╞3478)(├478├578)├678     ' apply to each list of scalars
+> (12(34))(45)6  ∞╝, 78 ≡ (├178├278(├378├478))(├478├578)├678' apply to each scalars
+effectively, a value of -F limits the maximum depth that G can take as a left argument. this is useful, for example, in implementing functions like `º` ||Parse|| which work with text strings, and it does't make sense to give it a nested list. though note also that the depth is only computed once for the whole argument. so something like `Θ╝~` doesn't count the length of `(45)` here:
+> (12(34))(45)6 Θ╝~ ≡ (112)(11)1
+---
+:char: ╚
+:ascii: 'dr
+:type: 2-adverb
+#a2 Depth Right
+call the function G at depth F, passing α unchanged if present. same as applying `╘` ||Each Right|| a specific number of times.
+> 78 0╚, (12(34))(45)6 ≡ 78(12(34))(45)6
+> 78 1╚, (12(34))(45)6 ≡ ((7812(34))(7845)(786))
+> 78 2╚, (12(34))(45)6 ≡ (├781├782╞7834)(├784├785)├786
+> 78 3╚, (12(34))(45)6 ≡ (├781├782(├783├784))(├784├785)├786
+deals with negative depths like ||Depth Left||.
+> 78 _3╚, (12(34))(45)6 ≡ 78(12(34))(45)6
+> 78 _2╚, (12(34))(45)6 ≡ ((7812(34))(7845)(786))
+> 78 _1╚, (12(34))(45)6 ≡ (├781├782╞7834)(├784├785)├786
+> 78  ∞╚, (12(34))(45)6 ≡ (├781├782(├783├784))(├784├785)├786
+when called dyadically, the one argument is duplicated, just like ||Each Right||.
 ---
 :char: ╜
 :ascii: ')

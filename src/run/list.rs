@@ -265,6 +265,12 @@ pub fn ishape(a: &Val, lim: i64) -> Vec<usize> {
     shp
 }
 
+func!(a :depth => Val::Int(idepth(&a)));
+
+pub fn idepth(a: &Val) -> i64 {
+    if !a.is_list() { 0 } else { a.iterf().map(idepth).max().unwrap_or(0) + 1 }
+}
+
 func!(@env, a :replicate b => { let fill = a.fill();
     Val::lis_fill(ireplicate(env, a, b), fill)
 });
