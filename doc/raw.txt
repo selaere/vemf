@@ -164,7 +164,7 @@ the built-in adverbs are all box-drawing symbols (though not all box-drawing sym
 > 2-adverbs: ╬╫╨╥╩╦╖╓╜╙╗╔║
 these adverbs have a variety of uses. some of them are ||Combinators||, like the ones that we've just seen, and they apply the operands in various ways. some are more interesting, though.
 # Iteration
-vemf automatically vectorizes, so often explicit loops are usually not necessary. however, some adverbs can be used to explicitly iterate in a certain way
+vemf automatically vectorises, so often explicit loops are usually not necessary. however, some adverbs can be used to explicitly iterate in a certain way
 `α╕G` ||Each|| applies G to every item in α:
 > (123)(45)(6789)"aaaaaa"╕~ ≡ 3246
 `α╕Gβ` ||Each|| (dyadic) pairs the items up and applies G to each pair:
@@ -292,7 +292,7 @@ you can chain these, left-to-right
 > ~=0→empty φ:empty ≡ 1
 we've been setting these trains to variables before using them. it won't work if you try to apply them directly with parentheses:
 > 5(+/2)9
-is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with ||Verbize|| `┘`:
+is a list with `5`, the function `+/2` (as a noun) and `9`. you can turn a noun into a verb with ||Verbise|| `┘`:
 > 5┘(+/2)9 ≡ 7
 > 6┘(↨*) ≡ :720
 but you never actually need to do this! an inlined train will always be shorter:
@@ -355,7 +355,7 @@ but it can break before a 2-adverb! this is actually really useful to adjust adv
 groupers also can't break between the operands in a fork:
 > φ └+╛+╕+║- ≡ φ └+╛+╕+ ║-
 > φ┘└+╛+╕+║- ≡ φ(└+╛+╕+)║-
-(`┘` ||Verbize|| is also a 1-grouper. this is occasionally useful)
+(`┘` ||Verbise|| is also a 1-grouper. this is occasionally useful)
 ---
 :title: Statements
 there is a more explicit way of defining functions, and it looks more like lambda expressions you might be used to from other languages:
@@ -558,7 +558,7 @@ drop 1 element from the right
 :type: literal
 #♪a Enclosed
 for a noun `a`, literal for a list with the one argument. same as `(a♫)`
-#♪F Nominalize
+#♪F Nominalise
 for a verb F, interpret it as a noun
 ---
 :char: ♫
@@ -2052,7 +2052,7 @@ for every item in the list α, check if it is not in β. equivalent to `ε¬`
 > 0123456789É012073167140 ≡ 0000010011
 > 1 É 012073167140 ≡ 0
 > 5 É 012073167140 ≡ 1
-> "unauthorized equation"É"aeiou" ≡ 010011010101101001001
+> "unauthorised equation"É"aeiou" ≡ 010011010101101001001
 see also: ||Includes||
 ---
 :char: æ
@@ -2708,8 +2708,8 @@ for every item in the list α, check if it is in β. equivalent to `╛(╘≡&#
 > 0123456789ε012073167140 ≡ 1111101100
 > 1 ε 012073167140 ≡ 1
 > 5 ε 012073167140 ≡ 0
-> "unauthorized equation"ε"aeiou" ≡ 101100101010010110110
-> "unauthorized equation"(ε*:32-)╓+"aeiou" ≡ "UnAUthOrIzEd EqUAtIOn"
+> "unauthorised equation"ε"aeiou" ≡ 101100101010010110110
+> "unauthorised equation"(ε*:32-)╓+"aeiou" ≡ "UnAUthOrIsEd EqUAtIOn"
 see also: ||Excludes||
 ---
 :char: ∩
@@ -2742,7 +2742,7 @@ see also: ||Equals||
 :ascii: '+
 :type: verb
 #1 Signum
-returns the signum of α. this is −1 for negative numbers, 1 for positive numbers, and 0 for zero. for complex numbers, this is generalized as `α/abs(α)` or `¢╓/`
+returns the signum of α. this is −1 for negative numbers, 1 for positive numbers, and 0 for zero. for complex numbers, this is generalised as `α/abs(α)` or `¢╓/`
 > 5± ≡ 1
 > 0± ≡ 0
 > _3± ≡ Θ
@@ -3152,18 +3152,6 @@ run F through 2-item pairs of α, passing the left item as the left argument and
 > 12345 ╪♫ ≡ 1(12)(23)(34)(45)
 > 12345 ╪♫0 ≡ (01)(12)(23)(34)(45)
 ---
-:char: ╬
-:ascii: 'vl
-:type: 2-adverb
-#1a2 Valences
-call F.
-> 1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ} ≡ "monad 1"
-> 1■╬►  ≡ ■
-#2a2 Valences
-call G.
-> 1{"monad ",│αⁿ}╬{"dyad ",│αⁿ,` ,│βⁿ}2 ≡ "dyad 1 2"
-> 1■╬►2 ≡ 2
----
 :char: ╦
 :ascii: 'su
 :type: 2-adverb
@@ -3298,6 +3286,33 @@ deals with negative depths like ||Depth Left||.
 > 78  ∞╚, (12(34))(45)6 ≡ (├781├782(├783├784))(├784├785)├786
 when called dyadically, the one argument is duplicated, just like ||Each Right||.
 ---
+:char: ╬
+:ascii: 'vl
+:type: 2-adverb
+#α│AB╬Gβ Depth Both
+this 2-adverb takes a list of two numbers, A and B, in its left operand. if it's a single number, that number will be the value for both A and B. it specifies the depths at which G will apply to each of its operands, A being the depth of its left operand α, and B being the depth of its left operand β. negative depths are interpreted as absolute, being converted to relative depths of `α=+A⌠0` and `β=+B⌠0` respectively. using Depth Both is not the same as applying ||Depth Left|| and ||Depth Right|| separately like `A╝B╚G`, as Depth Both tries to match up the arguments (like Each). Depth Both is, however, the most generic list iteration primitive, which also means that you probably won't actually need to use it. look:
+> Each          ╕F ↔   1╚F
+> Each Left     ╛F ↔ │10╚F
+> Each Right    ╘F ↔ │01╚F
+> Conform      _╕F ↔   ∞╚F
+> Extend Left  _╛F ↔ │∞0╚F
+> Extend Right _╘F ↔ │0∞╚F
+> Depth Right  F╝G ↔ │0F╚G
+> Depth Right  F╚G ↔ │F0╚G
+(note the exclusion of ||Each Trim||). but Depth Both is directly used in the definitions of `º` ||Parse||, `ë` ||Decode|| and `ë` ||Decode Base||, for its negative depth behaviour
+#α│AB╬G Depth Both
+same as `αA╝G`
+#a2 Depth Both
+same as `│FF╬G`, i.e. it operates on each argument with the same depth number.
+#_1a2 Valences
+call F.
+> 1{"monad ",│αⁿ}_╬{"dyad ",│αⁿ,` ,│βⁿ} ≡ "monad 1"
+> 1■_╬►  ≡ ■
+#_2a2 Valences
+call G.
+> 1{"monad ",│αⁿ}_╬{"dyad ",│αⁿ,` ,│βⁿ}2 ≡ "dyad 1 2"
+> 1■_╬►2 ≡ 2
+---
 :char: ╜
 :ascii: ')
 :type: 2-adverb
@@ -3386,7 +3401,7 @@ see also: ||Set Function||, ||Mutate||
 :char: ┘
 :ascii: '1
 :type: grammar
-#┘m Verbize
+#┘m Verbise
 turns the following word into a verb. acts as a 1-grouper, see ||Groups||
 #.0
 the number `1.5`, or `3/2`
