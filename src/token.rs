@@ -248,6 +248,7 @@ fn token<'a, T: TokenInput<'a>>(t: &mut T) -> Option<Tok> {
                 EscapableU8::None => b'_',
             };
             match c {
+                b'`' => Num(-i64::from(t.step_or(0x20))),
                 c @ short_verb!() => VVerb(bstr![b'_', c]),
                 c @ short_av1!()  => VAv1(bstr![b'_', c]),
                 c @ short_av2!()  => VAv2(vec![], bstr![b'_', c]),

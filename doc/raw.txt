@@ -990,7 +990,7 @@ unicode characters outside of literals can be verbs, adverbs or nouns depending 
 > √3→∛ :64∛ ± 4
 #'[│├╞╟╠┤╡]☺☻♥♦ Integer Literal
 a convenient literal syntax for large integers by specifying their bytes. integer literals are length-prefixed: after the `█` there will be a grouper character from 2 (`│`) to 8 (`╡`) that specifies the number of bytes of the integer. `░` ||Short Literal||s and `▒` ||Long Literal||s are equivalent to `'│` and `'├` respectively.
-an example: `'├☻♥♦` is the number `131844`. after the quote there is a `├`, so it will read three bytes. those bytes are `☻` `♥` `♦`, which means the output will be 0x020304, or `2*256^2 + 3*256 + 4`, or 131844.
+an example: `'├☻♥♦` is the number 131844. after the quote there is a `├`, so it will read three bytes. those bytes are `☻` `♥` `♦`, which means the output will be 0x020304, or `2*256^2 + 3*256 + 4`, or 131844.
 > '├☻♥♦ ≡ :131844
 > '├☻♥♦ ≡ 2*(:256^2) + (3*:256) + 4
 `▒` can also be used here:
@@ -1006,7 +1006,7 @@ if we try it out,
 > '╞•[═§ ≡ :123456789
 byte literals support negative numbers as well, using the two's complement when the first byte is over 127. `░²²` is not `253*256 + 253` or 64009, it's `65536 - 64009` or −515.
 > ░²² ≡ :-515
-integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF
+integers in vemf are represented with signed two's-complement integers, so this is the same as making all the other bytes 0xFF.
 > ░²²é♥8╕è ≡ :255:255:255:255:255:255:253:253
 integer literals are mostly useful when using large numbers. if your number happens to be a vemf constant or has a trivial computation, use that instead.
 see also: ||Short Literal||, ||Long Literal||, ||Character Literal||, ||Digraph Literal||
@@ -1043,6 +1043,7 @@ calculate α × β. scalar.
 > 2*3 ≡ 6
 > 4*4 ≡ :16
 > `a*`b ≡ `b*`a
+> `a+`b*`c ≡ `a*`c+(`b*`c)
 #1 Product
 multiply all the items in α. equivalent to `╧*`.
 > 234* ≡ :24
@@ -1129,7 +1130,9 @@ calculate α / β. scalar
 #0 Zero
 the integer 0
 #.0 
-the number `0.01`, or `:100/`
+the number 0.01, or `:100/`
+#_0 
+the number 0.05, or `:20/`
 ---
 :char: 1
 :type: noun
@@ -1138,7 +1141,7 @@ the integer 1
 #_0 Minus One
 the integer −1
 #.0 
-the number `0.1`, or `Φ/`
+the number 0.1, or `Φ/`
 ---
 :char: 2
 :type: noun
@@ -1147,7 +1150,7 @@ the integer 2
 #_0 Minus Two
 the integer −2
 #.0
-the number `0.2`, or `5/`
+the number 0.2, or `5/`
 ---
 :char: 3
 :type: noun
@@ -1156,7 +1159,7 @@ the integer 3
 #_0 Minus Three
 the integer −3
 #.0
-the number `0.3`, or `3/Φ`
+the number 0.3, or `3/Φ`
 ---
 :char: 4
 :type: noun
@@ -1165,7 +1168,7 @@ the integer 4
 #_0 Minus Four
 the integer −4
 #.0
-the number `0.4`, or `2/5`
+the number 0.4, or `2/5`
 ---
 :char: 5
 :type: noun
@@ -1174,7 +1177,7 @@ the integer 5
 #_0 Minus Five
 the integer −5
 #.0
-the number `0.5`, or `5/Φ`
+the number 0.5, or `5/Φ`
 ---
 :char: 6
 :type: noun
@@ -1183,7 +1186,7 @@ the integer 6
 #_0 Minus Six
 the integer −6
 #.0
-the number `0.6`, or `3/5`
+the number 0.6, or `3/5`
 ---
 :char: 7
 :type: noun
@@ -1192,7 +1195,7 @@ the integer 7
 #_0 Minus Seven
 the integer −7
 #.0
-the number `0.7`, or `7/Φ`
+the number 0.7, or `7/Φ`
 ---
 :char: 8
 :type: noun
@@ -1201,7 +1204,7 @@ the integer 8
 #_0 Minus Eight
 the integer −8
 #.0
-the number `0.8`, or `4/5`
+the number 0.8, or `4/5`
 ---
 :char: 9
 :type: noun
@@ -1210,7 +1213,7 @@ the integer 9
 #_0 Minus Nine
 the integer −9
 #.0
-the number `0.9`, or `9/Φ`
+the number 0.9, or `9/Φ`
 ---
 :char: :
 :type: grammar
@@ -1584,6 +1587,7 @@ uppercase ascii letters (`A`-`Z`) store convenient constants:
 > _I ≡ "0123456789abcdef"
 > _J ≡ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 > _K ≡ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
+> _L ≡ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 ---
 :char: `
 :type: literal
@@ -1593,6 +1597,10 @@ the position of `a` in the codepage
 > `b ≡ :98
 > `⌡ ≡ :245
 see also: ||Digraph Literal||
+#_`a Negative Character Literal
+the position of `a` in the codepage, negated
+> _`a ≡ :-97
+> _`⌡ ≡ :-245
 ---
 :char: a
 :type: variable
@@ -2604,7 +2612,7 @@ the ||imaginary Unit@https://en.wikipedia.org/wiki/Imaginary_unit|| i
 #_0 Negative Imaginary Unit
 the complex number -i, or `Γ-`
 #.0 Euler–Mascheroni Constant
-the number `0.5772156649015329`
+the number 0.5772156649015329
 ---
 :char: π
 :ascii: 'p- 'pi
@@ -2613,9 +2621,9 @@ the number `0.5772156649015329`
 ||pi@https://en.wikipedia.org/wiki/Pi||, archimedes constant, ratio of a semicircle to its radius, or at least the best approximation possible in 64-bit floating point.
 > π ≡ :3.141592653589793
 #_0 Tau
-the number `6.283185307179586`, or `π*2`
+the number 6.283185307179586, or `π*2`
 #.0 Half Pi
-the number `1.5707963267948966`, or `π/2`
+the number 1.5707963267948966, or `π/2`
 ---
 :char: Σ
 :ascii: 's+
@@ -2653,7 +2661,7 @@ the integer 10
 the integer −10
 > _Φ ≡ :-10
 #.0 Euler's Number
-||euler's number@https://en.wikipedia.org/wiki/E_(mathematical_constant)|| e, or the number `2.718281828459045`
+the number 2.718281828459045, or ||euler's number@https://en.wikipedia.org/wiki/E_(mathematical_constant)|| e
 > 1^ ≡ .Φ
 ---
 :char: Θ
@@ -2662,6 +2670,9 @@ the integer −10
 #0 Minus One
 the number −1
 > Θ ≡ :-1
+#_0 
+the number −0.1, or `Φ/-`
+> .Θ ≡ :-0.1
 ---
 :char: Ω
 :ascii: 'w+
@@ -2698,9 +2709,9 @@ the maximum integer representable by a signed 64-bit integer, or `:9223372036854
 literal for an empty list with ||None|| fill
 > φ~ ≡ 0
 #.0 Golden Ratio
-the number `1.618033988749895`, or `5√▲½`
-#_0
-the number `-0.6180339887498949`, or `5√▼-½`
+the number 1.618033988749895, or `5√▲½`
+#_0 
+the number -0.6180339887498949, or `5√▼-½`
 ---
 :char: ε
 :ascii: 'in 'e-
@@ -3412,9 +3423,9 @@ see also: ||Set Function||, ||Mutate||
 #┘m Verbise
 turns the following word into a verb. acts as a 1-grouper, see ||Groups||
 #.0
-the number `1.5`, or `3/2`
-#_0
-the number `-0.5`, or `Θ½`
+the number 1.5, or `3/2`
+#_0 
+the number -0.5, or `Θ½`
 ---
 :char: │
 :ascii: '2
@@ -3422,9 +3433,9 @@ the number `-0.5`, or `Θ½`
 #│mn 2-Group
 see ||Groups||
 #.0
-the number `0.6666666666666666`, or `2/3`
-#_0
-the number `1.4142135623730951`, or `2√`
+the number 0.6666666666666666, or `2/3`
+#_0 
+the number 1.4142135623730951, or `2√`
 ---
 :char: ├
 :ascii: '3
@@ -3432,9 +3443,9 @@ the number `1.4142135623730951`, or `2√`
 #├mno 3-Group
 see ||Groups||
 #.0
-the number `0.3333333333333333`, or `1/3`
-#_0
-the number `1.7320508075688772`, or `3√`
+the number 0.3333333333333333, or `1/3`
+#_0 
+the number 1.7320508075688772, or `3√`
 ---
 :char: ╞
 :ascii: '4
@@ -3442,9 +3453,9 @@ the number `1.7320508075688772`, or `3√`
 #╞mnop 4-Group
 see ||Groups||
 #.0
-the number `0.25`, or `1/4`
-#_0
-the number `420`
+the number 0.25, or `1/4`
+#_0 
+the number 420`
 ---
 :char: ╟
 :ascii: '5
@@ -3452,9 +3463,9 @@ the number `420`
 #╟mnopq 5-Group
 see ||Groups||
 #.0
-the number `0.75`, or `3/4`
-#_0
-the number `2.23606797749979`, `5√`
+the number 0.75, or `3/4`
+#_0 
+the number 2.23606797749979, `5√`
 ---
 :char: ╠
 :ascii: '6
@@ -3462,9 +3473,9 @@ the number `2.23606797749979`, `5√`
 #╠mnopqr 6-Group
 see ||Groups||
 #.0
-the number `0.16666666666666666`, or `1/6`
-#_0
-the number `360`
+the number 0.16666666666666666, or `1/6`
+#_0 
+the number 360
 ---
 :char: ┤
 :ascii: '7
@@ -3472,9 +3483,9 @@ the number `360`
 #┤mnopqrs 7-Group
 see ||Groups||
 #.0
-the number `0.14285714285714285`, or `1/7`
-#_0
-the number `273.15`
+the number 0.14285714285714285, or `1/7`
+#_0 
+the number 273.15
 ---
 :char: ╡
 :ascii: '8
@@ -3482,7 +3493,9 @@ the number `273.15`
 #╡mnopqrst 8-Group
 see ||Groups||
 #.0
-the number `0.125`, or `1/8`
+the number 0.125, or `1/8`
+#_0 
+the number 2.54
 ---
 :char: ╢
 :ascii: '9
@@ -3490,7 +3503,9 @@ the number `0.125`, or `1/8`
 #╢mnopqrstu 9-Group
 see ||Groups||
 #.0
-the number `0.1111111111111111`, or `1/9`
+the number 0.1111111111111111, or `1/9`
+#_0 
+the number 365
 ---
 :char: ╣
 :ascii: '0
@@ -3498,4 +3513,6 @@ the number `0.1111111111111111`, or `1/9`
 #╣mnopqrstuv 10-Group
 see ||Groups||
 #.0
-the number `2.5`, or `5/2`
+the number 2.5, or `5/2`
+#_0 
+the number 1337
