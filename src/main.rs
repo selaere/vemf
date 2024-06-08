@@ -94,9 +94,9 @@ fn parse_args() -> Options {
     loop {
         let Some(arg) = iter.next() else { break };
         if let Some(options) = arg.strip_prefix('-') {
-            if options.chars().next() == Some('-') {
+            if options.starts_with('-') {
                 add_option(&mut opts, &mut iter, options);
-            } else if options.len() == 0 {
+            } else if options.is_empty() {
                 opts.file_from_stdin = true;
             } else {
                 for (n, c) in options.char_indices() {

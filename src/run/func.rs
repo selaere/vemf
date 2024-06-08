@@ -286,8 +286,8 @@ func!(@env, a :eval =>
 func!(@env, _a :time =>
     Val::flt(if env.can_time {Local::now().timestamp_micros() as f64 / 1.0e6} else {0.}));
 fn gregory<T: TimeZone>(d: DateTime<T>) -> Val {
-    Val::lis([d.year() as _, d.month()  as _, d.day()    as _,
-              d.hour() as _, d.minute() as _, d.second() as _,d.timestamp_subsec_micros() as _]
+    Val::lis([d.year().into(), d.month() .into(), d.day()   .into(),
+              d.hour().into(), d.minute().into(), d.second().into(),d.timestamp_subsec_micros().into()]
              .into_iter().map(Val::Int).collect())
 }
 func!(a :date    => DateTime::from_timestamp_micros((a.as_c().re*1.0e6) as i64).map_or(NAN, gregory));

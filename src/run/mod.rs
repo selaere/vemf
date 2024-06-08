@@ -282,7 +282,7 @@ impl<'io> Env<'io> {
 
     pub fn include_args(&mut self, args: &[String]) {
         let args: Vec<Val> = args.iter().map(|s| s.chars().map(|x| Int(x as i64)).collect()).collect();
-        if let Some(x) = args.get(0) { self.set_local(bstr![b!('α')], x.c()); }
+        if let Some(x) = args.first(){ self.set_local(bstr![b!('α')], x.c()); }
         if let Some(x) = args.get(1) { self.set_local(bstr![b!('β')], x.c()); }
         self.set_local(bstr![b!('Σ')], Int(args.len() as _));
         self.set_local(bstr![b!('δ')], Val::lis(args.c()));

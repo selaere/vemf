@@ -30,21 +30,7 @@ outputs = { self, nixpkgs, crane, rust-overlay }: { packages =
         doCheck = false;
         buildInputs = [];
       };
-      # wasm-bindgen 0.2.86 is NOT packaged in nixpkgs (as of 02-06-2023)
-      wasm-bindgen = pkgs.wasm-bindgen-cli.overrideAttrs (old: rec {
-        version = "0.2.86";
-        src = pkgs.fetchCrate {
-          inherit version;
-          inherit (old) pname;
-          sha256 = "sha256-56EOiLbdgAcoTrkyvB3t9TjtLaRvGxFUXx4haLwE2QY=";
-        };
-        # you can't override cargoSha256 directly
-        cargoDeps = old.cargoDeps.overrideAttrs (_: {
-          inherit src;
-          outputHash = "sha256-xPgVWQ6tvU+CarfFrkaSMa3UmnP+0r4kexmS59TNQ+o=";
-        });
-        doCheck = false;
-      });
+      wasm-bindgen = pkgs.wasm-bindgen-cli; # <-ver: 0.2.92
       default = pkgs.stdenv.mkDerivation {
         pname = "vemfwasm";
         version = "0.0.1";

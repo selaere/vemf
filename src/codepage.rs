@@ -69,7 +69,7 @@ pub fn tobyte_wide(x: char) -> Result<u8, [u8; 4]> {
 pub fn tobyte_write(x: char, buf: &mut Vec<u8>) {
     match tobyte_wide(x) {
         Ok(a) => buf.push(a),
-        Err(a) => buf.extend(a.into_iter()),
+        Err(a) => buf.extend(a),
     }
 }
 

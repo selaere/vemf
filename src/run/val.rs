@@ -218,7 +218,7 @@ fn _gcd(a: i64, b: i64) -> i64 {
         m -= n;
         m >>= m.trailing_zeros();
     }
-    return n << (a | b).trailing_zeros();
+    n << (a | b).trailing_zeros()
 }
 
 intfunc!(a :gcd b => Int(_gcd(a, b)));

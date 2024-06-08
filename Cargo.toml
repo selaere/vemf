@@ -13,7 +13,7 @@ required-features = ["bin"]
 
 [dependencies]
 # small byte strings
-smallvec = { version = "1.10", features = ["union"], optional = true }
+smallvec = { version = "1.13", features = ["union"], optional = true }
 # random number generation
 rand = { version = "0.8", default-features = false, features = ["alloc"] }
 # complex numbers
@@ -23,7 +23,7 @@ libm = "0.2"
 # HashMap and HashSet for no_std
 hashbrown = "0.13"
 # time query, local timezone, calendar information
-chrono = { version = "0.4.38" }
+chrono = { version = "0.4" }
 
 [features]
 default = ["smallvec"]

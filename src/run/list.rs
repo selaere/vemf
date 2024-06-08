@@ -4,12 +4,12 @@ use super::{Val::{self, Lis, Num, Int}, Env, NAN, adverb, func::left};
 
 impl Val {
 
-    #[allow(clippy::len_without_is_empty)] // shut up!!! shut up!!!!
     pub fn len(&self) -> usize { match self {
         Num(_) | Int(_) => 1,
         Lis { l, .. } => l.len(),
         _ => usize::MAX,
     }}
+    pub fn is_empty(&self) -> bool { self.len() == 0 }
 
     pub fn fill(&self) -> Val { match self {
         Num(_) | Int(_) => self.c(),
@@ -73,10 +73,6 @@ impl Val {
 
 pub trait GoodIter<V>: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator + FusedIterator {}
 impl<F, V> GoodIter<V> for F where F: Iterator<Item=V> + ExactSizeIterator + DoubleEndedIterator + FusedIterator {}
-
-pub trait InconvenientIter<'r, 'io>: Iterator<Item=Val> {}
-impl<'r, 'io, F> InconvenientIter<'r, 'io> for F where F: Iterator<Item=Val> {}
-
 
 func!(@env, a :index b => {
     let mut a = a;

@@ -33,7 +33,7 @@ impl<'io> vemf::Interface<'io> for Output<'io> {
     }
 }
 
-struct Handle<'io>(RefMut<'io, Vec<u8>>);
+pub struct Handle<'io>(RefMut<'io, Vec<u8>>);
 use std::io::{Result as IOResult, IoSlice};
 
 impl<'io> std::io::Write for Handle<'io> {
@@ -72,12 +72,12 @@ pub fn evaluate(s: &str, fmt: &str, args: Box<[JsValue]>, inputs: Box<[JsValue]>
     env.interface = bx(Output {
         bufref: &outbuf,
         inputs: inputs.iter()
-            .map(|x| VecDeque::from(x.as_string().unwrap_or(String::new()).into_bytes()))
+            .map(|x| VecDeque::from(x.as_string().unwrap_or_default().into_bytes()))
             .collect::<Vec<_>>()
             .into_boxed_slice()
     });
     env.include_stdlib();
-    env.include_args(&args.iter().map(|x| x.as_string().unwrap_or(String::new())).collect::<Vec<_>>());
+    env.include_args(&args.iter().map(|x| x.as_string().unwrap_or_default()).collect::<Vec<_>>());
     let error = env.run_string(s, &fmtstring(fmt));
     env.interface = bx(vemf::NoIO);
     let borrow = outbuf.borrow();

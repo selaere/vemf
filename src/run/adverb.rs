@@ -226,7 +226,7 @@ adverb!(@env, a f .power g b => {
 });
 
 adverb!(@env, a .scanpairs g b => {
-    if a.len() == 0 { return Val::lis_fill(Vec::new(), a.fill()); }
+    if a.is_empty() { return Val::lis_fill(Vec::new(), a.fill()); }
     let elems = a.iterf().collect::<Vec<_>>();
     let mut list = Vec::with_capacity(elems.len());
     let first = if let Some(b) = b { g.dyad(env, b, elems[0].c()) } else { elems[0].c() };
