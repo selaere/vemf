@@ -22,7 +22,7 @@ pub trait Interface<'io> {
         }
         Some(buf)
     }
-    /// read all from input stream `stm`. used by `ΘÖβ` and `Θ_Öβ`.
+    /// read all from input stream `stm`. used by `∞Öβ` and `∞_Öβ`.
     /// corresponds to `Read::read_to_end(_, buf)`.
     fn read_to_end(&mut self, stm: usize) -> Option<Vec<u8>> {
         let mut buf = self.read_bytes(stm, 1024)?;

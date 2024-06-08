@@ -2175,6 +2175,7 @@ for `α=∞`, read until the end of file. other positive values are implementati
 this function will return ||None|| in case of an IO error.
 #1 Read Stdin
 read from input stream 0. equivalent to `Ü0`.
+see also: ||All Input||
 #_2 Read Bytes
 if α is a non-negative integer and less than 256, read bytes from input stream β until the byte α is reached.
 if α is a negative integer, read `α-` bytes form input stream β.
@@ -2661,6 +2662,13 @@ the integer −10
 #0 Minus One
 the number −1
 > Θ ≡ :-1
+---
+:char: Ω
+:ascii: 'w+
+:type: noun
+#0 All Input
+Ω stores all the input until EOF decoded as text from stream 0, as if read with `∞Ü`. the variable is only filled at its first use, so you can read from the file before ever mentioning Ω, but probably not the other way around.
+see also: ||Read||
 ---
 :char: δ
 :ascii: 'd-

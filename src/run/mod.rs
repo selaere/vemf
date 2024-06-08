@@ -141,7 +141,14 @@ impl<'io> Env<'io> {
             }
         }}
         match expr {
-            Expr::Var(s) => self.get_var(s).unwrap_or_default(),
+            Expr::Var(s) => {
+                self.get_var(s).unwrap_or_else(|| if **s == [b!('Ω')] {
+                    let v: Val = self.interface.read_to_end(0).map_or(NAN,
+                        |x| String::from_utf8_lossy(&x).chars().map(|i| Int(i as i64)).collect());
+                    self.stack.first_mut().unwrap().insert(s.c(), v.c());
+                    v
+                } else {NAN})
+            },
             Expr::Int(n) => Int(*n),
             Expr::Flt(n) => Num(*n),
             Expr::Snd(l) => {    
