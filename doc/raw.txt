@@ -3106,7 +3106,7 @@ call G to every scalar in α, keeping the list's structure, while passing β in 
 > (123)(45)6  ╛, 78 ≡ (12378)(4578)(678)
 > (123)(45)6 _╛, 78 ≡ (├178├278├378)(├478├578)├678
 see also: ||Extend Right||
-#_1a1 Extend
+#_1a1 
 monadically, it is the same as ||Conform||:
 > (123)(45)6 _╛♫ ≡ (♪1♪2♪3)(♪4♪5)♪6
 ---
@@ -3125,7 +3125,7 @@ monadically, it acts like `┴╘F`; iterates through α, passing it in each ite
 call G to every scalar in β, keeping the list's structure, while passing α in each iteration. same as `∞╚F`
 > 78 _╘, (123)(45)6 ≡ (├781├782├783)(├784├785)├786
 see also: ||Extend||
-#_1a1 Extend
+#_1a1 
 monadically, this is equivalent to `┴_╘G`:
 > (123)4 _╘, ≡ ( (├12341) (├12342) (├12343) ) (├12344)
 ---
