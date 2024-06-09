@@ -506,7 +506,7 @@ reverse a list.
 #n 1-Adverb
 the variable `name` with 1-adverb role
 > {{αβσμ}}→d 1•d23 ≡ 1 3 2 ■
-see also: ||Dyadic Adverb||
+see also: ||2-Adverb||
 ---
 :char: ◘
 :ascii: 'O
@@ -522,7 +522,7 @@ see also: ||Discard||, ||Then||
 #n 2-Adverb
 the variable `name` with 2-adverb role
 > {{αβσμ}}→d12○d34 ≡ 1 4 3 2
-see also: ||Monadic Adverb||
+see also: ||1-Adverb||
 ---
 :char: ◙
 :type: whitespace
@@ -537,9 +537,11 @@ return the list α, with β elements removed from the left. β-pervasive. if β 
 > "testing"♂3 ≡ "ting"
 > "testing"♂_3 ≡ "test"
 > "testing"♂9 ≡ φ
+see also: ||Take||
 #1 Behead
 drop 1 element from the left
 > "testing"♂ ≡ "esting"
+see also: ||First||
 ---
 :char: ♀
 :ascii: 'D
@@ -549,9 +551,11 @@ returns the list α, with β elements removed from the right. β-pervasive. if �
 > "testing"♀3 ≡ "test"
 > "testing"♀_3 ≡ "ting"
 > "testing"♀9 ≡ φ
+see also: ||Take Right||
 #1 Curtail
 drop 1 element from the right
 > "testing"♀ ≡ "testin"
+see also: ||Last||
 ---
 :char: ♪
 :ascii: ':
@@ -1853,10 +1857,14 @@ calculate `tan α`. scalar.
 > πâ ± 0
 > π*3½â ± ■
 > π*2â ± 0
+see also: ||Sine||, ||Cosine||, ||Arctangent||
 #2 Bitwise And
 calculate bitwise AND of integers α and β. scalar.
 > (0011è)â(0101è) ≡ 0001è
 > :3054â:255 ≡ :238
+see also: ||And||, ||Bitwise Or||, ||Bitwise Xor||
+#_1 Hyperbolic Tangent
+calculate `tanh α`. scalar.
 ---
 :char: ä
 :ascii: 'a"
@@ -1866,12 +1874,16 @@ calculate `arctan α` or `tan⁻¹ α`. scalar.
 > 0ä ± 0
 > 3√ä ± π/3
 > 1ä ± π/4
+see also: ||Tangent||, ||Atan2||
 #2 Nand
 calculate boolean NAND of α and β. scalar. equivalent to `&¬`
 > 0ä0 ≡ 1
 > 0ä1 ≡ 1
 > 1ä0 ≡ 1
 > 1ä1 ≡ 0
+see also: ||And||
+#_1 Hyperbolic Inverse Tangent
+calculate `artanh α`. scalar.
 ---
 :char: à
 :ascii: 'a`
@@ -1975,12 +1987,16 @@ calculate `arcsin α` or `sin⁻¹ α`. scalar.
 > Θï ± π½-
 > 0ï ± 0
 > 1ï ± π½
+see also: ||Sine||
 #2 Xor
 calculate boolean XOR of α and β. scalar. equivalent to `⌐║~`
 > 0ï0 ≡ 0
 > 0ï1 ≡ 1
 > 1ï0 ≡ 1
 > 1ï1 ≡ 0
+see also: ||Or||, ||Not Equals||
+#_1 Hyperbolic Inverse Sine
+calculate `arsinh α`. scalar.
 ---
 :char: î
 :ascii: 'i^
@@ -1995,10 +2011,14 @@ calculate `sin α`. scalar.
 > πî ± 0
 > π*3½î ± Θ
 > π*2î ± 0
+see also: ||Arcsine||, ||Cosine||, ||Tangent||
 #2 Bitwise Xor
 calculate bitwise XOR of α and β. scalar.
 > (0011è)î(0101è) ≡ 0110è
 > :3054î8 ≡ :3046
+see also: ||Bitwise And||, ||Bitwise Or||, ||Xor||
+#_1 Hyperbolic Sine
+calculate `sinh α`. scalar.
 ---
 :char: ì
 :ascii: 'i`
@@ -2030,21 +2050,24 @@ calculate atan2(α, β). equivalent to `íÄ`. scalar.
 > 2Ä0 ≡ π½
 > 0Ä_2 ≡ π
 > _2Ä0 ≡ π½-
+see also: ||Arctangent||
 ---
 :char: Å
 :ascii: 'aO
 :type: verb
-#1 Radians
+#1 As Radians
 converts α radians to degrees. equivalent to `*├:180/π`. scalar.
 > 2*πÅ ≡ :360
 > πÅ ≡ :180
 > π½Å ≡ :90
 > π¼Å ≡ :360
+see also: ||As Degrees||
 #2 Absolute Difference
 calculate the absolute difference of α and β. equivalent to `-¢`. scalar.
 > 3Å5 ≡ 2
 > 5Å3 ≡ 2
 > Φ↕Å3 ≡ 3210123456
+see also: ||Approximately Equal||
 ---
 :char: É
 :ascii: 'e+
@@ -2066,6 +2089,10 @@ see also: ||Includes||
 :char: æ
 :ascii: 'ae
 :type: verb
+#1 Bitwise Not
+return the bitwise NOT of α. scalar. equivalent to `-α-1` or `▲-`
+> 7 3æ ≡ _8_4
+see also: ||Bitwise Xor||
 #2 Join
 join the lists in α with the separator β
 > "bee""bees""apioids"æ` ◄ ≡ "bee bees apioids"
@@ -2097,9 +2124,13 @@ calculate `cos α`. scalar.
 > πô ± Θ
 > π*3½ô ± 0
 > π*2ô ± 1
+see also: ||Sine||, ||Tangent||, ||Arccosine||
 #2 Bitwise Or
 calculate bitwise OR of integers α and β. scalar.
 > (0011è)ô(0101è) ≡ 0111è
+see also: ||Or||, ||Bitwise And||, ||Bitwise Xor||
+#_1 Hyperbolic Cosine
+calculate `cosh α`. scalar.
 ---
 :char: ö
 :ascii: 'o"
@@ -2109,12 +2140,16 @@ calculate `arccos α` or `cos⁻¹ α`. scalar.
 > Θö ± π
 > 0ö ± π½
 > 1ö ± 0
+see also: ||Cosine||
 #2 Nor
 compute boolean NOR of α and β. scalar. equivalent to `&#x7c;¬`.
 > 0ö0 ≡ 1
 > 0ö1 ≡ 0
 > 1ö0 ≡ 0
 > 1ö1 ≡ 0
+see also: ||Or||
+#_1 Hyperbolic Inverse Cosine
+calculate `arcosh α`. scalar.
 ---
 :char: ò
 :ascii: 'o`
@@ -2134,6 +2169,7 @@ for every element of α, count the number of occurences of that element in the p
 therefore, `û¬` detects if an element is the first in the array:
 > 320110433250û¬ ≡ 111100100010
 > 320110433250(û¬)╓‼ ≡ 320145  ' same as α∩
+see also: ||Count||, ||Unique||
 #2 Unique Index Of
 for every element in β, find the index of the first unused match in α, or ||None||.
 > 22235 û 223357 ≡ 013■4■
@@ -2146,9 +2182,11 @@ for every element in β, find the index of the first unused match in α, or ||No
 get the real part of a complex number α. scalar.
 > 3í4ù ≡ 4
 > 3ù ≡ 3
+see also: ||Parts||, ||Imaginary Part||
 #2 Count
-count the number of occurences of β in α. β-pervasive.
+count the number of matches of β in α. β-pervasive.
 > 012073167140ù0123456789 ≡ 3311101200
+see also: ||Occurence Count||
 ---
 :char: ÿ
 :ascii: 'y"
@@ -2252,6 +2290,7 @@ get a list of the real and imaginary parts of α. scalar. equivalent to `└ù�
 > 4í_2 ₧ ≡ _2 4
 > 4₧ ≡ 4 0
 > 456_30í_2_3024₧ ≡ │_24│_35│06│2_3│40
+see also: ||Real Part||, ||Imaginary Part||
 ---
 :char: ƒ
 :ascii: 'F 'f,
@@ -2284,6 +2323,7 @@ pick β times. this is the same as doing `α§βá`
 calculate `α*i`, where `i` is the imaginary unit. scalar.
 > 1í ≡ Γ
 > 3í ≡ 3*Γ
+see also: ||Imaginary Unit||
 #2 Complex
 calculate `β + α*i`. scalar.
 > 1í² ± _1
@@ -2313,9 +2353,11 @@ see also: ||Remainder||
 get the imaginary part of a complex number α. scalar.
 > 3í4ú ≡ 3
 > 3ú ≡ 0
+see also: ||Parts||, ||Real Part||
 #2 Index of Last
 find the last exact match in the list and return its index, or else ||None||. β-pervasive.
 > 012073167140ú0123456789 ≡ :11 925Φ■78■■
+see also: ||Index Of||
 ---
 :char: ñ
 :ascii: 'n- 'n~
@@ -2481,8 +2523,9 @@ moves the last β elements of the list α to the front. β-pervasive.
 > 12345«6 ≡ 23451
 if β is negative, this acts like ||Rotate Right||.
 > 12345«_3 ≡ 34512
+see also: ||Shift Left||
 #1 Rotate Left Once
-equivalent to `«1`
+equivalent to `«1`.
 > 12345« ≡ 23451
 ---
 :char: »
@@ -2496,6 +2539,7 @@ moves the first β elements of the list α to the back. β-pervasive.
 > 12345»6 ≡ 51234
 if β is negative, this acts like ||Rotate Left||.
 > 12345»_3 ≡ 45123
+see also: ||Shift Right||
 #1 Rotate Right Once
 equivalent to `»1`
 > 12345» ≡ 51234
@@ -2609,6 +2653,7 @@ the right argument. if not in a function definition, the second argument passed 
 the ||imaginary Unit@https://en.wikipedia.org/wiki/Imaginary_unit|| i
 > Γ ≡ Θ√
 > 3*Γ+2 ≡ 3í2
+see also: ||Imaginary||, ||Complex||
 #_0 Negative Imaginary Unit
 the complex number -i, or `Γ-`
 #.0 Euler–Mascheroni Constant
@@ -2663,6 +2708,7 @@ the integer −10
 #.0 Euler's Number
 the number 2.718281828459045, or ||euler's number@https://en.wikipedia.org/wiki/E_(mathematical_constant)|| e
 > 1^ ≡ .Φ
+see also: ||Expontential||
 ---
 :char: Θ
 :ascii: 'Q 't+
@@ -2670,7 +2716,7 @@ the number 2.718281828459045, or ||euler's number@https://en.wikipedia.org/wiki/
 #0 Minus One
 the number −1
 > Θ ≡ :-1
-#_0 
+#.0 
 the number −0.1, or `Φ/-`
 > .Θ ≡ :-0.1
 ---
@@ -2737,11 +2783,13 @@ see also: ||Excludes||
 #1 Unique
 remove duplicates from α
 > 320110433250∩ ≡ 320145
+see also: ||Occurence Count||
 #2 Intersection
 return the items in list α that are not in β
 > "hello world i am a vemf test"∩`  ≡ "      "
 > "hello world i am a vemf test"∩"aeiou " ≡ "eo o i a a e e"
 > "hello world i am a vemf test"∩"aeiou" ≡ "eooiaaee"
+see also: ||Includes||
 ---
 :char: ≡
 :ascii: '=
@@ -2750,12 +2798,13 @@ return the items in list α that are not in β
 returns 1 if the length of α is 0, otherwise 0
 > 123≡ ≡ 0
 > φ≡ ≡ 1
+see also: ||Is Empty||
 #2 Matches
 returns 1 if the values α and β are equal. functions always return false.
 > 123≡123 ≡ 1
 > 123≡1234 ≡ 0
 > (+)≡(+) ≡ 0
-see also: ||Equals||
+see also: ||Equals||, ||Not Matches||
 ---
 :char: ±
 :ascii: '+
@@ -2829,7 +2878,7 @@ a negative β acts like ||Shift Left||:
 > "yeah!!!"▐` ⌠_2 ≡ "ah!!!  "▐` 
 and if `α~≤β`, the whole list will be filled:
 > 12345678⌠8 ≡ ■■■■■■■■
-see also: ||Shift Left||, ||Rotate Right||
+see also: ||Rotate Right||
 ---
 :char: ⌡
 :ascii: 'fl
@@ -2851,7 +2900,7 @@ a negative β acts like ||Shift Right||:
 > "yeah!!!"▐` ⌡_2 ≡ "  yeah!"▐` 
 and if `α~≤β`, the whole list will be filled:
 > 12345678⌡8 ≡ ■■■■■■■■
-see also: ||Shift Right||, ||Rotate Left||
+see also: ||Rotate Left||
 ---
 :char: ÷
 :ascii: '%
@@ -2879,12 +2928,13 @@ see also: ||Remainder||, ||Floor||, ||Divide||
 returns 1 if the length of α is not 0, otherwise 0
 > 123≈ ≡ 1
 > φ≈ ≡ 0
+see also: ||Is Not Empty||
 #2 Not Matches
 equivalent to `≡¬`
 > 123≈123 ≡ 0
 > 123≈1234 ≡ 1
 > (+)≈(+) ≡ 1
-see also: ||Matches||
+see also: ||Not Equals||, ||Matches||
 ---
 :char: °
 :ascii: 'dg
@@ -2897,6 +2947,7 @@ converts α degrees to radians. equivalent to `*├π/:180`. scalar.
 > :270° ≡ 3*π½
 > :360° ≡ 2*π
 > :69°Å ± :69
+see also: ||As Radians||
 ---
 :char: ¨
 :ascii: 'nm
@@ -3013,17 +3064,19 @@ Each applies only to one level of nesting, unlike ||Conform||:
 > (│01│23)(│45│67)(89)╕╕╕,0 ≡  (││00│10││20│30)(││40│50││60│70)(│80│90)
 > (│01│23)(│45│67)(89)╕╕╕╕,0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 > (│01│23)(│45│67)(89)_╕,0   ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
-see also: ||Each Left||, ||Each Right||, ||Conform||
+Each is equivalent to using ||Depth Both|| 1 or `1╬F`
+see also: ||Each Left||, ||Each Right||, ||Conform||, ||Depth Both||
 #_1a1 Conform
 call F to every scalar in α, keeping the list's structure. this is similar to ||Each|| called arbitrarily many times.
 > (│01│23)(│45│67)(89)▲ ≡ (│12│34)(│56│78)(9Φ)
 > (│01│23)(│45│67)(89) _╕(,0) ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 #_2a1 Conform
-apply a function to every scalar in α and β, following the same rules as ||Each||, recursively.
+apply a function to every scalar in α and β, following the same rules as ||Each||, recursively. equivalent to `∞╬F`.
 > 0(123)(456)(789) _╕+ 0(123)(12)1 ≡ 0(246)(57■)(89Φ)
 > (│01│23)(│45│67)(89) _╕, 0 ≡ (││00│10││20│30)(││40│50││60│70)(│80│90)
 > 123_╕,456 ≡ (14)(25)(36)
 > 123(45)6 _╕, 6789 ≡ (16)(27)(38)(│49│59)(6■)
+see also: ||Extend Left||, ||Extend Right||, ||Depth Both||
 ---
 :char: ╒
 :ascii: 'et
@@ -3100,7 +3153,7 @@ the ||Sum|| of a list is Reduce Add:
 > 1+2+3+4+5 ≡ :15
 > 12345+    ≡ :15
 > 1234╧* ≡ :24
-you can fold starting from the right (as in `foldr` in haskell) with ||Reverse|| and ||Swap/Selfie||:
+you can fold starting from the right (as in `foldr` in haskell) with ||Reverse|| and ||Swap||:
 > 12345♠╧┴♫ ≡ 1(2(3(45)))
 an empty list will yield null. a one element list (or a scalar) will return itself.
 > φ╧+ ≡ ■

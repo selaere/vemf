@@ -36,7 +36,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
     load_func!(
         add, sub, mul, div, dive, rem, pow, log, lt, gt, and, or, max, min, atan2, approx,
         band, bor, bxor, fact, gcd, lcm, binom, abs, neg, ln, exp,
-        sin, asin, cos, acos, tan, atan, sqrt,
+        sin, asin, cos, acos, tan, atan, sinh, asinh, cosh, acosh, tanh, atanh, sqrt,
         round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
         left, right, get, set, call, islist, eval, shape, depth, len,
         index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, 
@@ -151,6 +151,12 @@ func!(a :cos   => Num(a.as_c().cos() ));
 func!(a :acos  => Num(a.as_c().acos()));
 func!(a :tan   => Num(a.as_c().tan() ));
 func!(a :atan  => Num(a.as_c().atan()));
+func!(a :sinh  => Num(a.as_c().sinh() ));
+func!(a :asinh => Num(a.as_c().asinh()));
+func!(a :cosh  => Num(a.as_c().cosh() ));
+func!(a :acosh => Num(a.as_c().acosh()));
+func!(a :tanh  => Num(a.as_c().tanh() ));
+func!(a :atanh => Num(a.as_c().atanh()));
 func!(a :sqrt  => Num(a.as_c().sqrt()));
 func!(a :fact  => Val::flt(libm::tgamma(a.as_c().re + 1.)));
 func!(a :round => match a { Int(a) => Int(a), Num(a) => Val::flt(a.re.round()), _ => NAN });

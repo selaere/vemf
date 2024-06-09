@@ -88,13 +88,13 @@ _╕:insqrt_╬/╙^→√
 _>¬→_≥
 _<¬→_≤
 
-_╕:insin_╬:inbxor→î
-_╕:incos_╬:inbor →ô
-_╕:intan_╬:inband→â
+_╕:insin_╬:inbxor→î _╕:insinh→_î
+_╕:incos_╬:inbor →ô _╕:incosh→_ô
+_╕:intan_╬:inband→â _╕:intanh→_â
 
-_╕:inasin_╬⌐║~→ï
-_╕:inacos_╬│|¬→ö
-_╕:inatan_╬│&¬→ä
+_╕:inasin_╬⌐║~→ï _╕:inasinh→_ï
+_╕:inacos_╬│|¬→ö _╕:inacosh→_ö
+_╕:inatan_╬│&¬→ä _╕:inatanh→_ä
 
 (^2)_╬_╕.inbinom→²
 (/2)_╬_╕.inlcm→½
@@ -191,7 +191,7 @@ _╘(┴~╙%)╓└↓,♀→»(»1)_╬»→»
 _╘(┴~╙%)╓└♂,↑→«(«1)_╬«→«
 
 :inconj_╕_╬.ingroup→ü
-(╛,,)╖~╙♀→æ
+:inbnot_╕_╬(╛,,)╖~╙♀→æ
 .infind→£
 (£└(=0╤+)▀▄)╓ü▐■→¥│¥Φ_╬¥→¥
 (_╕└ù♫ú) _╬ └(┴ÿ╜~╙↑╤+)╓ü↑┌│~▲→₧
