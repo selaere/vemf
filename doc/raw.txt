@@ -424,7 +424,7 @@ you also have access to a global random number generator (see `á` ||Pick||, `â
 ---
 :char: ☺
 :ascii: 'pr
-:type: verb
+:role: verb
 #1 Print
 print α to standard output
 > "Hello, "☺·"World!◙"☺
@@ -435,7 +435,7 @@ print α to standard output, and return β
 ---
 :char: ☻
 :ascii: '# 'pl
-:type: verb
+:role: verb
 #1 Print Line
 print α to standard output, with a training newline (0x0A)
 > "Hello, World!"☻
@@ -448,7 +448,7 @@ prints `αⁿ` or `αⁿβ` and returns α unchanged. useful when debugging trai
 ---
 :char: ♥
 :ascii: 'cx
-:type: verb
+:role: verb
 #1 Pairs
 split α into pairs, using the fill of α if a pair isn't full. equivalent to `♥2`
 > 123456789♥ ≡ (12)(34)(56)(78)(9■)
@@ -465,7 +465,7 @@ if β is a list, `α♥β` reshapes into groups of `β*` and reshapes them. equi
 ---
 :char: ♦
 :ascii: 'T
-:type: verb
+:role: verb
 #1 Transpose
 transpose a nested list. the shape will be the minimum of the lengths of the elements, or `╕~ñ;`
 > (123)(456)(789)♦ ≡ (147)(258)(369)
@@ -473,7 +473,7 @@ transpose a nested list. the shape will be the minimum of the lengths of the ele
 ---
 :char: ♣
 :ascii: 'dm
-:type: verb
+:role: verb
 #1 Domain
 get the domain of a list α, or list of indices. same as `~↕`.
 > 1234♣ ≡ 0123
@@ -493,7 +493,7 @@ if `β=∞`, this basically returns the indices of all the scalars. this can be 
 ---
 :char: ♠
 :ascii: 'R
-:type: verb
+:role: verb
 #1 Reverse
 reverse a list.
 > 1234♠ ≡ 4321
@@ -502,7 +502,7 @@ reverse a list.
 ---
 :char: •
 :ascii: '.
-:type: grammar
+:role: grammar
 #n 1-Adverb
 the variable `name` with 1-adverb role
 > {{αβσμ}}→d 1•d23 ≡ 1 3 2 ■
@@ -510,7 +510,7 @@ see also: ||2-Adverb||
 ---
 :char: ◘
 :ascii: 'O
-:type: statement
+:role: statement
 #x◘ Return
 returns x, breaking out of the enclosing function
 > 0{4·5◘6} ≡ 5
@@ -518,20 +518,20 @@ see also: ||Discard||, ||Then||
 ---
 :char: ○
 :ascii: ',
-:type: grammar
+:role: grammar
 #n 2-Adverb
 the variable `name` with 2-adverb role
 > {{αβσμ}}→d12○d34 ≡ 1 4 3 2
 see also: ||1-Adverb||
 ---
 :char: ◙
-:type: whitespace
+:role: whitespace
 #0 Newline
 whitespace
 ---
 :char: ♂
 :ascii: 'E
-:type: verb
+:role: verb
 #2 Drop
 return the list α, with β elements removed from the left. β-pervasive. if β is negative, `β¢` elements are removed from the right instead (see ||Drop Right||). if β is equal or greater than the length, all elements are removed; an empty list is returned.
 > "testing"♂3 ≡ "ting"
@@ -545,7 +545,7 @@ see also: ||First||
 ---
 :char: ♀
 :ascii: 'D
-:type: verb
+:role: verb
 #2 Drop Right
 returns the list α, with β elements removed from the right. β-pervasive. if β is negative, `β¢` elements are removed from the left instead (see ||Drop Left||). if β is equal or greater than the length, all elements are removed; an empty list is returned.
 > "testing"♀3 ≡ "test"
@@ -559,7 +559,7 @@ see also: ||Last||
 ---
 :char: ♪
 :ascii: ':
-:type: literal
+:role: literal
 #♪a Enclosed
 for a noun `a`, literal for a list with the one argument. same as `(a♫)`
 #♪F Nominalise
@@ -567,7 +567,7 @@ for a verb F, interpret it as a noun
 ---
 :char: ♫
 :ascii: ';
-:type: verb
+:role: verb
 #1 Enlist
 α is enclosed into a single-element list. this is equivalent to `{♪α}`
 > 1♫ ≡ ♪1
@@ -580,7 +580,7 @@ create a list with the elements α and β. this is equivalent to `{αβ}`. for s
 ---
 :char: ☼
 :ascii: 'sn
-:type: verb
+:role: verb
 #1 UTC Calendar
 interpret a UNIX timestamp, like those returned from `τ` ||Current Timestamp||, as a date and time in the proleptic Gregorian calendar in UTC. returns a list with the following numbers: year, month (1-12), day (1-31), hour, minute, second, microseconds.
 > 0☼     ≡ :1970:1:1:0:0:0:0    ' UNIX epoch: 1970-01-01 00:00:00.000000Z (arbitrary, standard)
@@ -592,7 +592,7 @@ interpret a UNIX timestamp, like those returned from `τ` ||Current Timestamp||,
 ---
 :char: ►
 :ascii: 'H
-:type: verb
+:role: verb
 #2 Right
 returns β
 > 1►2 ≡ 2
@@ -602,7 +602,7 @@ returns α
 ---
 :char: ◄
 :ascii: 'G
-:type: verb
+:role: verb
 #2 Left
 returns α
 > 1◄2 ≡ 1
@@ -612,7 +612,7 @@ returns α
 ---
 :char: ↕
 :ascii: 'I
-:type: verb
+:role: verb
 #1 Iota
 when α is a scalar, the output is the range of natural numbers [0, α); starting at 0, excluding α (see ||Inclusive Iota||).
 > 5↕ ≡ 01234
@@ -636,7 +636,7 @@ the range is [α, β)
 ---
 :char: ‼
 :ascii: '!
-:type: verb
+:role: verb
 #2 Replicate
 it pairs up the elements of α and β, and returns a new list where each element in α is repeated by the corresponding number in β. this can be used as a filter if the elements of β are 0 or 1:
 > 12345678‼10101010 ≡ 1357
@@ -662,7 +662,7 @@ replicate the ||Domain|| of α (`♣╖‼`). for a boolean list α, this finds 
 ---
 :char: ¶
 :ascii: '$
-:type: verb
+:role: verb
 #1 Ravel
 Ravel flattens all nested lists in α, yielding a list of all the scalars:
 > ((01)23)(45(67))(8♪9)¶ ≡ Φ↕
@@ -684,7 +684,7 @@ see also: ||Take||, ||Take Right||, ||Cycle||
 ---
 :char: §
 :ascii: 'ss
-:type: verb
+:role: verb
 #1 Cycle
 return α repeated infinitely as an infinite list. more precisely, it returns a function that, given an argument `x`, returns the element of α at index `x % (α~)`
 > 4↕§┴¡0123456789 ≡ 0123012301
@@ -696,7 +696,7 @@ repeat the list α, β times. right-pervasive.
 ---
 :char: ▬
 :ascii: 'M 'sh
-:type: verb
+:role: verb
 #1 Shape
 get the shape of α, that is, the maximum length for each dimension. the output will be a list with fill 1.
 > 1▬ ≡ φ▐1
@@ -718,7 +718,7 @@ get only up to a specified depth, without fill.
 ---
 :char: ↨
 :ascii: 'J
-:type: verb
+:role: verb
 #1 Inclusive Iota
 when α is a scalar, the output is the range of natural numbers [1, α]; starting at 1, including α.
 > 5↨ ≡ 12345
@@ -734,7 +734,7 @@ the range used is [α, β]. note that this means the resulting array is of lengt
 ---
 :char: ↑
 :ascii: 'W
-:type: verb
+:role: verb
 #2 Take
 make a new list with a prefix shape of β, where the elements are taken from α in order. this truncates if α is longer than the elements needed (`β*`), and uses the fill of α if α is shorter.
 > 9↕↑55 ≡ (01234)(5678■)(■■■■■)(■■■■■)(■■■■■)
@@ -758,7 +758,7 @@ see also: ||Suffixes||
 ---
 :char: ↓
 :ascii: 'S
-:type: verb
+:role: verb
 #2 Take Right
 make a new list with a prefix shape of β, where the elements are taken from α in reverse order. this truncates if α is longer than the elements needed (`β*`), and uses the fill of α if α is shorter.
 > 9↕↓55 ≡ (■■■■■)(■■■■■)(■■■■■)(■0123)(45678)
@@ -776,7 +776,7 @@ see also: ||Prefixes||
 ---
 :char: ←
 :ascii: 'vr
-:type: verb
+:role: verb
 #1 Get Variable
 get the variable with name α
 > "_a"← ≡ :12
@@ -787,7 +787,7 @@ set a new local variable with name α to β
 ---
 :char: →
 :ascii: '^
-:type: statement
+:role: statement
 #x→name Set
 sets a variable to x in the local scope.
 > 2→two .two+.two ≡ 4
@@ -799,7 +799,7 @@ see also: ||Set Function||
 ---
 :char: ∟
 :ascii: 'L
-:type: verb
+:role: verb
 #1 Natural Logarithm
 get the ||natural logarithm@https://en.m.wikipedia.org/wiki/Natural_logarithm|| of α. scalar.
 > 2∟^ ≡ 2
@@ -812,7 +812,7 @@ get the ||logarithm@https://en.m.wikipedia.org/wiki/Logarithm|| base β of α. s
 ---
 :char: ↔
 :ascii: '*
-:type: grammar
+:role: grammar
 #x↔name Mutate
 mutate a variable in any scope, by applying a function to it monadically. 
 > :21→n *3↔n n ≡ :63
@@ -828,7 +828,7 @@ see also: ||Mutate Function||
 ---
 :char: ▲
 :ascii: 'bu
-:type: verb
+:role: verb
 #1 Bump Up
 increments the number by 1. equivalent to `+1`. scalar.
 > 2▲ ≡ 3
@@ -844,7 +844,7 @@ see also: ||Bins Down||
 ---
 :char: ▼
 :ascii: 'bd
-:type: verb
+:role: verb
 #1 Bump Down
 decrements the number by 1. equivalent to `-1`. scalar.
 > 3▼ ≡ 2
@@ -861,7 +861,7 @@ run a binary search. when α is a list sorted in descending order, it finds the 
 see also: ||Bins Up||
 ---
 :char:  
-:type: whitespace
+:role: whitespace
 #&nbsp; Space
 whitespace. may change the parsing of some tokens:
 > ¨things  ≡ "things"
@@ -870,7 +870,7 @@ whitespace. may change the parsing of some tokens:
 > :202 2 ≡ (:202)(2)
 ---
 :char: !
-:type: verb
+:role: verb
 #1 Factorial
 get the factorial of α. this is extended to reals with the ||Gamma function@https://en.wikipedia.org/wiki/Gamma_function||, Γ(α + 1). scalar.
 > 0! ≡ 1
@@ -889,7 +889,7 @@ number of β-permutations in α items. also known as the ||falling factorial@htt
 > 8!3 ≡ :336
 ---
 :char: "
-:type: literal
+:role: literal
 #"abcd" Quotes
 string literal; every character until the next `"` will be put into a list with ||None|| fill
 > "" ≡ φ
@@ -902,7 +902,7 @@ with some special characters used specially: `¨` stands for `"` (0x22) and `·`
 > "umlaut ─ '¨ ← diaeresis" ≡ "umlaut ─ ",`¨," ← diaeresis"
 ---
 :char: #
-:type: verb
+:role: verb
 #1 First True
 find the first non-0 value and return its index, or else ||None||.
 > 10101010# ≡ 0
@@ -916,7 +916,7 @@ find the first exact match in the list and return its index, or else ||None||. �
 > 012073167140#0123456789 ≡ 0125Φ■74■■
 ---
 :char: $
-:type: verb
+:role: verb
 #1 Call with None
 calls the function α with ||None|| as an argument
 > .♫$ ≡ ♪■
@@ -928,7 +928,7 @@ calls the function α with `β@0` and `β@1` (only if `β~ ≥ 2`) as arguments.
 > .♫$24 ≡ 24
 ---
 :char: %
-:type: verb
+:role: verb
 #1 Power of Two
 calculate 2 to the power of α. equivalent to `┴^2`. scalar.
 > 0% ≡ 1
@@ -949,7 +949,7 @@ this is euclidean modulo; it always gives a positive result such that `β*(a÷β
 > _1%_2 ≡ 1
 ---
 :char: &
-:type: verb
+:role: verb
 #2 And
 compute boolean AND of α and β. return 1 if both α and β are nonzero, otherwise 0. scalar.
 > 0&0 ≡ 0
@@ -968,7 +968,7 @@ for an empty list, this is always 1:
 see also: ||And||, ||Any||
 ---
 :char: '
-:type: literal
+:role: literal
 #'&#x20;abc Line Comment
 all of the characters until the next line break will be ignored.
 #'A,'ab Escape
@@ -1016,7 +1016,7 @@ integer literals are mostly useful when using large numbers. if your number happ
 see also: ||Short Literal||, ||Long Literal||, ||Character Literal||, ||Digraph Literal||
 ---
 :char: (
-:type: grammar
+:role: grammar
 #(x) Opening Parenthesis
 groups multiple words in a single noun. often used to change verb or adverb precedence,
 > 1+2*3 ≡ 9
@@ -1035,12 +1035,12 @@ an empty parenthesis is the same as ||Empty List||
 > () ≡ φ
 ---
 :char: )
-:type: grammar
+:role: grammar
 #(x) Closing Parenthesis
 closing counterpart of ||Opening Parenthesis||.
 ---
 :char: *
-:type: verb
+:role: verb
 #2 Multiply
 calculate α × β. scalar.
 > 3*3 ≡ 9
@@ -1059,7 +1059,7 @@ the empty product is the multiplicative identity, 1.
 see also: ||Reduce||, ||Sum||
 ---
 :char: +
-:type: verb
+:role: verb
 #2 Add
 calculate α + β. scalar.
 > 3+2 ≡ 5
@@ -1075,7 +1075,7 @@ the empty sum is the additive identity, 0.
 see also: ||Reduce||, ||Product||
 ---
 :char: ,
-:type: verb
+:role: verb
 #1 Flatten
 same as ||Reduce|| ||Concatenate|| `╧,`. this removes one level of nesting in α.
 > ¨foo¨bar¨bash, ≡ "foobarbash"
@@ -1095,7 +1095,7 @@ a scalar argument is used as a 1-argument list:
 see also: ||Pair||, ||Append||, ||Prepend||
 ---
 :char: -
-:type: verb
+:role: verb
 #1 Negate
 calculate −α. scalar
 > 1- ≡ :-1
@@ -1110,7 +1110,7 @@ calculate α − β. scalar
 > 3-0 ≡ 3
 ---
 :char: .
-:type: grammar
+:role: grammar
 #n Noun
 the variable `name` with noun role.
 if not defined, will return ||None||.
@@ -1118,7 +1118,7 @@ if not defined, will return ||None||.
 see also: ||Set||, ||Mutate||
 ---
 :char: /
-:type: verb
+:role: verb
 #1 Reciprocal
 get the reciprocal of α, or 1/α. scalar
 > 6/ ≡ 1/6
@@ -1130,7 +1130,7 @@ calculate α / β. scalar
 > 0/0 ≡ ■
 ---
 :char: 0
-:type: noun
+:role: noun
 #0 Zero
 the integer 0
 #.0 
@@ -1139,7 +1139,7 @@ the number 0.01, or `:100/`
 the number 0.05, or `:20/`
 ---
 :char: 1
-:type: noun
+:role: noun
 #0 One
 the integer 1
 #_0 Minus One
@@ -1148,7 +1148,7 @@ the integer −1
 the number 0.1, or `Φ/`
 ---
 :char: 2
-:type: noun
+:role: noun
 #0 Two
 the integer 2
 #_0 Minus Two
@@ -1157,7 +1157,7 @@ the integer −2
 the number 0.2, or `5/`
 ---
 :char: 3
-:type: noun
+:role: noun
 #0 Three
 the integer 3
 #_0 Minus Three
@@ -1166,7 +1166,7 @@ the integer −3
 the number 0.3, or `3/Φ`
 ---
 :char: 4
-:type: noun
+:role: noun
 #0 Four
 the integer 4
 #_0 Minus Four
@@ -1175,7 +1175,7 @@ the integer −4
 the number 0.4, or `2/5`
 ---
 :char: 5
-:type: noun
+:role: noun
 #0 Five
 the integer 5
 #_0 Minus Five
@@ -1184,7 +1184,7 @@ the integer −5
 the number 0.5, or `5/Φ`
 ---
 :char: 6
-:type: noun
+:role: noun
 #0 Six
 the integer 6
 #_0 Minus Six
@@ -1193,7 +1193,7 @@ the integer −6
 the number 0.6, or `3/5`
 ---
 :char: 7
-:type: noun
+:role: noun
 #0 Seven
 the integer 7
 #_0 Minus Seven
@@ -1202,7 +1202,7 @@ the integer −7
 the number 0.7, or `7/Φ`
 ---
 :char: 8
-:type: noun
+:role: noun
 #0 Eight
 the integer 8
 #_0 Minus Eight
@@ -1211,7 +1211,7 @@ the integer −8
 the number 0.8, or `4/5`
 ---
 :char: 9
-:type: noun
+:role: noun
 #0 Nine
 the integer 9
 #_0 Minus Nine
@@ -1220,7 +1220,7 @@ the integer −9
 the number 0.9, or `9/Φ`
 ---
 :char: :
-:type: grammar
+:role: grammar
 #n Verb
 the variable `name` with verb role
 #:123 Numeric Literal
@@ -1258,7 +1258,7 @@ note that whitespace ends a literal:
 see also: ||Integer Literals||
 ---
 :char: ;
-:type: verb
+:role: verb
 #1 Duplicate
 forms a pair `αα`. same as `┴♫`
 > 5; ≡ 55
@@ -1269,7 +1269,7 @@ concatenates β to α. same as `┴,`
 > 123;456 ≡ 456123
 ---
 :char: <
-:type: verb
+:role: verb
 #1 Grade Up
 Grade Up can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array `α~↕` according to α
 > 37625< ≡ 30421
@@ -1295,7 +1295,7 @@ if both lists don't have the same length, the extra items are compared with the 
 see also: ||Lexicographic Greater Than||
 ---
 :char: =
-:type: verb
+:role: verb
 #1 Depth
 get the depth of the deepest element in α. same as `▬~`
 > 1= ≡ 0
@@ -1320,7 +1320,7 @@ two NaNs compare equal:
 see also: ||Matches||, ||Not Equals||
 ---
 :char: >
-:type: verb
+:role: verb
 #1 Grade Down
 Grade Down can be used for sorting. it returns a permutation, or list of indices, that would sort the list descendingly. you can think of this as sorting the array `α♣-` according to α.
 > 37625> ≡ 12403
@@ -1346,7 +1346,7 @@ if both lists don't have the same length, the extra items are compared with the 
 see also: ||Lexicographic Less Than||
 ---
 :char: ?
-:type: statement
+:role: statement
 #x?y Then
 execute statement y if x is not 0 or ||Null||. if x is a function, it will be called with α and, if `Σ~1`, β.
 > _3→b b<0?-↔b b ≡ 3
@@ -1357,7 +1357,7 @@ execute statement y if x is not 0 or ||Null||. if x is a function, it will be ca
 > 5→a[a<0?a-◘a] ≡ 5
 ---
 :char: @
-:type: verb
+:role: verb
 #1 First
 get the first item in a list α. this is equivalent to calling α with 0.
 > "aeiou"@ ≡ `a
@@ -1389,166 +1389,166 @@ in this case, null selects all the items. this can be useful for retrieving colu
 > (123)(456)(789)@■2 ≡ 369
 ---
 :char: A
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─a`.
 #_0 Uppercase Letters
 the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZ"`
 ---
 :char: B
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─b`.
 #_0 Letters
 the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"`
 ---
 :char: C
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─c`.
 #_0 Lowercase Letters
 the string `"abcdefghijklmnopqrstuvwxyz"`
 ---
 :char: D
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─d`.
 #_0 Digits
 the string `"0123456789"`
 ---
 :char: E
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─e`.
 #_0 Digits and Letters
 the string `"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"`
 ---
 :char: F
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─f`.
 #_0 Digits and Uppercase Letters
 the string `"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"`
 ---
 :char: G
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─g`.
 #_0 Digits and Lowercase Letters
 the string `"0123456789abcdefghijklmnopqrstuvwxyz"`
 ---
 :char: H
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─h`.
 #_0 Uppercase Hexadecimal
 the string `"0123456789ABCDEF"`
 ---
 :char: I
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─i`.
 #_0 Lowercase Hexadecimal
 the string `"0123456789abcdef"`
 ---
 :char: J
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─j`.
 #_0 Base-64
 the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"`
 ---
 :char: K
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─k`.
 #_0 Alternate Base-64
 the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"`
 ---
 :char: L
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─l`.
 ---
 :char: M
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─m`.
 ---
 :char: N
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─n`.
 ---
 :char: O
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─o`.
 ---
 :char: P
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─p`.
 ---
 :char: Q
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─q`.
 ---
 :char: R
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─r`.
 ---
 :char: S
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─s`.
 ---
 :char: T
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─t`.
 ---
 :char: U
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─u`.
 ---
 :char: V
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─v`.
 ---
 :char: W
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─w`.
 ---
 :char: X
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─x`.
 ---
 :char: Y
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─y`.
 ---
 :char: Z
-:type: verb_variable
+:role: verb_variable
 #12
 general-purpose verb variable. by default, `─z`.
 ---
 :char: [
-:type: grammar
+:role: grammar
 #[abc] Start Block
 list of statements that are executed until a ||Return|| or the end is found, and return that value. similar to a ||Define Function||, but it is immediately executed and doesn't have a scope. most useful with `?` ||Then||, as it can be used to simulate a ternary operator:
 > 6→a a%3=0?[/3↔a "a is now ",(aⁿ] ≡ "a is now 2"
 > [1+1=2?"yay"◘"oh no"]Ç ≡ "YAY"
 ---
 :char: \
-:type: verb
+:role: verb
 #1 Filter Holes
 remove ||None||s in the list α.
 > ■12■345■■67■89\ ≡ 123456789
@@ -1558,12 +1558,12 @@ return α without the items in β
 > "hello world i am a vemf test"\¨aeiou ≡ "hll wrld  m  vmf tst"
 ---
 :char: ]
-:type: grammar
+:role: grammar
 #[abc] End Block
 closing counterpart of `[` ||Start Block||.
 ---
 :char: ^
-:type: verb
+:role: verb
 #1 Exponential
 calculate ||exp α@https://en.wikipedia.org/wiki/Exponential_function||, or e^α, where e is Euler's number. scalar.
 > 1^ ≡ :2.718281828459045
@@ -1574,7 +1574,7 @@ calculate ||α raised to the power of β@https://en.wikipedia.org/wiki/Exponenti
 > 3^5 ≡ :243
 ---
 :char: _
-:type: grammar
+:role: grammar
 #&#x5f;a Alternate
 the underscore is used for accessing variant forms of functions or variables. `_a` is equivalent to `."_a"`, `:"_a"`, `•"_a"` or `○"_a"` depending on the rank of `a`
 for numbers (`123456789Φ`), this will be its negative:
@@ -1594,7 +1594,7 @@ uppercase ascii letters (`A`-`Z`) store convenient constants:
 > _L ≡ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 ---
 :char: `
-:type: literal
+:role: literal
 #`a Character Literal
 the position of `a` in the codepage
 > `a ≡ :97
@@ -1607,137 +1607,137 @@ the position of `a` in the codepage, negated
 > _`⌡ ≡ :-245
 ---
 :char: a
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 12
 ---
 :char: b
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 20
 ---
 :char: c
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 99
 ---
 :char: d
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 100
 ---
 :char: e
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 999
 ---
 :char: f
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 1000
 ---
 :char: g
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 10000
 ---
 :char: h
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 100000
 ---
 :char: i
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 1000000
 ---
 :char: j
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 10000000
 ---
 :char: k
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 15
 ---
 :char: l
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 16
 ---
 :char: m
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 31
 ---
 :char: n
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 32
 ---
 :char: o
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 63
 ---
 :char: p
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 64
 ---
 :char: q
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 127
 ---
 :char: r
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 128
 ---
 :char: s
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 255
 ---
 :char: t
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 256
 ---
 :char: u
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 512
 ---
 :char: v
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 1024
 ---
 :char: w
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 32768
 ---
 :char: x
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 65536
 ---
 :char: y
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 16777216, or `2^:24`
 ---
 :char: z
-:type: variable
+:role: variable
 #0
 a general-purpose variable. by default, 2147483648, or `2^:31`
 ---
 :char: {
-:type: grammar
+:role: grammar
 #{abc} Define Function
 return a function that executes the statements inside the braces, returning a value and stopping once a ||Return|| statement is hit. a ||Return|| statement is implicit at the end of a function. this function will have a role of verb.
 > {"Hello, World!"☻·}→sayhi 0:sayhi ≡ ■
@@ -1757,7 +1757,7 @@ there are two ways of changing this, both equivalent: not referencing the value 
 the braces don't need to be closed at the end of file.
 ---
 :char: |
-:type: verb
+:role: verb
 #2 Or
 compute boolean OR of α and β; return 1 if one of α and β are nonzero, otherwise 0. scalar.
 > 0|0 ≡ 0
@@ -1775,12 +1775,12 @@ for an empty list, this is always 0:
 see also: ||Or||, ||All||
 ---
 :char: }
-:type: grammar
+:role: grammar
 #{abc} End Function
 closing counterpart of ||Define Function||.
 ---
 :char: ~
-:type: verb
+:role: verb
 #1 Length
 get the length of α. equivalent to `▬@`.
 > 1111~ ≡ 4
@@ -1799,13 +1799,13 @@ see also: ||Equals||, ||Not Matches||
 ---
 :char: ⌂
 :ascii: 'ex
-:type: verb
+:role: verb
 #1 Exit
 exits the program. if α is an integer, it will be the return code; otherwise, α will be printed as a string before exiting.
 ---
 :char: Ç
 :ascii: 'c+
-:type: verb
+:role: verb
 #1 Uppercase
 returns α, uppercasing it if in the range 'a'..'z'. scalar.
 > "UPPERCASE"Ç ≡ "UPPERCASE"
@@ -1816,7 +1816,7 @@ see also: ||Lowercase||
 ---
 :char: ü
 :ascii: 'u"
-:type: verb
+:role: verb
 #1 Complex Conjugate
 returns α, changing the sign of the imaginary part
 > 2í3ü ≡ _2í3
@@ -1831,7 +1831,7 @@ pair up the elements of α and β, and returns a new list where each element in 
 ---
 :char: é
 :ascii: 'e'
-:type: verb
+:role: verb
 #1 Bits
 get the internal representation of the integer α. this will be a 64-element list of bits with fill 0. scalar.
 > :3054é ≡ 0000000000000000000000000000000000000000000000000000101111101110▐0
@@ -1846,7 +1846,7 @@ see also: ||Represent Base||, ||Decode Base||
 ---
 :char: â
 :ascii: 'a^
-:type: verb
+:role: verb
 #1 Tangent
 calculate `tan α`. scalar.
 > 0â ± 0
@@ -1868,7 +1868,7 @@ calculate `tanh α`. scalar.
 ---
 :char: ä
 :ascii: 'a"
-:type: verb
+:role: verb
 #1 Arctangent
 calculate `arctan α` or `tan⁻¹ α`. scalar.
 > 0ä ± 0
@@ -1887,7 +1887,7 @@ calculate `artanh α`. scalar.
 ---
 :char: à
 :ascii: 'a`
-:type: verb
+:role: verb
 #2 Sample
 get a simple random sample of the list α of length β; that is, take β distinct elements randomly from α.
 > "sample"à4 ?≡ "smae"
@@ -1901,7 +1901,7 @@ shuffle the elements from α
 ---
 :char: å
 :ascii: 'ao
-:type: verb
+:role: verb
 #1 Choice
 pick a random element in α
 > "pick"å ?≡ `c
@@ -1914,7 +1914,7 @@ these might repeat; see ||Sample||
 ---
 :char: ç
 :ascii: 'c,
-:type: verb
+:role: verb
 #1 Lowercase
 return α, lowercasing it if in the range 'A'..'Z'. scalar.
 > `Aç ≡ `a
@@ -1926,7 +1926,7 @@ see also: ||Uppercase||
 ---
 :char: ê
 :ascii: 'e^
-:type: verb
+:role: verb
 #1 Encode Codepage
 convert Unicode codepoint α into the vemf codepage, or ||None|| if not possible. scalar.
 > :8226:9829:9786:402`eê ≡ "•♥☺ƒe"
@@ -1947,7 +1947,7 @@ represent a string as a UTF-8 list of bytes, converting invalid values to � U+
 ---
 :char: ë
 :ascii: 'e"
-:type: verb
+:role: verb
 #1 Decode Codepage
 convert characters from vemf codepage into Unicode, or ||None|| if not possible. scalar.
 > "•♥☺ƒe"ë ≡ :8226:9829:9786:402`e
@@ -1967,7 +1967,7 @@ converts a list of bytes into a string, converting invalid sequences to � U+FF
 ---
 :char: è
 :ascii: 'e`
-:type: verb
+:role: verb
 #2 Decode Base
 converts a list α from positional base β, in little-endian order. pervasive in β, applies to the deepest lists in α.
 > 3054èΦ ≡ :3054
@@ -1981,7 +1981,7 @@ use 2 as the base
 ---
 :char: ï
 :ascii: 'i"
-:type: verb
+:role: verb
 #1 Arcsine
 calculate `arcsin α` or `sin⁻¹ α`. scalar.
 > Θï ± π½-
@@ -2000,7 +2000,7 @@ calculate `arsinh α`. scalar.
 ---
 :char: î
 :ascii: 'i^
-:type: verb
+:role: verb
 #1 Sine
 calculate `sin α`. scalar.
 > 0î ± 0
@@ -2022,7 +2022,7 @@ calculate `sinh α`. scalar.
 ---
 :char: ì
 :ascii: 'i`
-:type: verb
+:role: verb
 #1 Cis
 calculate `cis α` or `exp(i*α)`. scalar.
 > 0ì ± 1
@@ -2036,7 +2036,7 @@ calculate `β * cis α` or `β*exp(i*α)`. this is the same as converting from t
 ---
 :char: Ä
 :ascii: 'a+
-:type: verb
+:role: verb
 #1 Argument
 get the argument (or phase or angle) of the complex number α. scalar.
 > 2Ä ≡ 0
@@ -2054,7 +2054,7 @@ see also: ||Arctangent||
 ---
 :char: Å
 :ascii: 'aO
-:type: verb
+:role: verb
 #1 As Radians
 converts α radians to degrees. equivalent to `*├:180/π`. scalar.
 > 2*πÅ ≡ :360
@@ -2071,7 +2071,7 @@ see also: ||Approximately Equal||
 ---
 :char: É
 :ascii: 'e+
-:type: verb
+:role: verb
 #1 Is Scalar
 returns 1 if α is a scalar, otherwise 0. equivalent to `ε¬`
 > 4É ≡ 1
@@ -2088,7 +2088,7 @@ see also: ||Includes||
 ---
 :char: æ
 :ascii: 'ae
-:type: verb
+:role: verb
 #1 Bitwise Not
 return the bitwise NOT of α. scalar. equivalent to `-α-1` or `▲-`
 > 7 3æ ≡ _8_4
@@ -2101,7 +2101,7 @@ join the lists in α with the separator β
 ---
 :char: Æ
 :ascii: 'aE
-:type: verb
+:role: verb
 #1 Expand
 turn α into an infinite list, where the items outside the list are α's fill. equivalent to `{┴@α}`
 > 123~ ≡ 3
@@ -2113,7 +2113,7 @@ turn α into an infinite list, where the items outside the list are α's fill. e
 ---
 :char: ô
 :ascii: 'o^
-:type: verb
+:role: verb
 #1 Cosine
 calculate `cos α`. scalar.
 > 0ô ± 1
@@ -2134,7 +2134,7 @@ calculate `cosh α`. scalar.
 ---
 :char: ö
 :ascii: 'o"
-:type: verb
+:role: verb
 #1 Arccosine
 calculate `arccos α` or `cos⁻¹ α`. scalar.
 > Θö ± π
@@ -2153,7 +2153,7 @@ calculate `arcosh α`. scalar.
 ---
 :char: ò
 :ascii: 'o`
-:type: verb
+:role: verb
 #1 Eval
 evaluate the codepage string α in the current context, and return the value
 > "1+1"ò ≡ 2
@@ -2162,7 +2162,7 @@ it will have access to all defined variables in the enclosing scopes, all the in
 ---
 :char: û
 :ascii: 'u^
-:type: verb
+:role: verb
 #1 Occurence Count
 for every element of α, count the number of occurences of that element in the prefix before that element.
 > 320110433250û ≡ 000011012102
@@ -2177,7 +2177,7 @@ for every element in β, find the index of the first unused match in α, or ||No
 ---
 :char: ù
 :ascii: 'u`
-:type: verb
+:role: verb
 #1 Real Part
 get the real part of a complex number α. scalar.
 > 3í4ù ≡ 4
@@ -2190,7 +2190,7 @@ see also: ||Occurence Count||
 ---
 :char: ÿ
 :ascii: 'y"
-:type: verb
+:role: verb
 #1 Deindices
 a list of length `αÑ` with fill 0, where the value of an element `i` is the amount of occurences of `i` in α
 > 134679ÿ ≡ 0101101101▐0
@@ -2199,7 +2199,7 @@ a list of length `αÑ` with fill 0, where the value of an element `i` is the am
 ---
 :char: Ö
 :ascii: 'o+
-:type: verb
+:role: verb
 #2 Write
 write a string α, UTF-8 encoded, to output stream β. returns the number of bytes written, or ||None|| if there was some IO error.
 #1 Write Stdout
@@ -2212,7 +2212,7 @@ write a list of bytes α to output stream 0. equivalent to `_Ö0`.
 ---
 :char: Ü
 :ascii: 'u+
-:type: verb
+:role: verb
 #2 Read
 if α is a negative integer greater than 256, read bytes from input stream β until the byte `α-` is reached and decode them from UTF-8. invalid sequences are replaced with � U+FFFD REPLACEMENT CHARACTER.
 for `α=∞`, read until the end of file. other positive values are implementation-dependent and depend on the stream. however, some common values are:
@@ -2232,7 +2232,7 @@ read from input stream 0. equivalent to `_Ü0`.
 ---
 :char: ¢
 :ascii: 'C
-:type: verb
+:role: verb
 #1 Absolute
 get the absolute value of α. for complex numbers, this is the magnitude or modulus. scalar.
 > 5¢ ≡ 5
@@ -2247,7 +2247,7 @@ calculate `α²+(β²)√`, or the distance of (α, β) to the origin (0, 0), or
 ---
 :char: £
 :ascii: 'fd
-:type: verb
+:role: verb
 #2 Find
 finds all non-overlapping occurances of sublist β in α. returns a list of the same length as α, where the matches are represented as increasing indices of the sublist, and non-matches are ||None||. if β is a scalar or the ||Empty List||, search for the element β.
 > "sus sus amongus"£`s    ≡ 0■0■0■0■■■■■■■0
@@ -2268,7 +2268,7 @@ see also: ||Equals||, ||Scan Windows||, ||Split||
 ---
 :char: ¥
 :ascii: 'Y
-:type: verb
+:role: verb
 #2 Split
 splits a list α at all the ocurrences of the sublist β
 > "bee bees apioids"¥` ◄ ≡ "bee""bees""apioids"
@@ -2280,7 +2280,7 @@ splits at newlines (byte 0x0A). same as `¥Φ`. won't strip out carriage returns
 ---
 :char: ₧
 :ascii: 'pt
-:type: verb
+:role: verb
 #2 Partition
 partition the list α at indexes β
 > 0123456789₧46 ≡ (0123)(45)(6789)
@@ -2294,7 +2294,7 @@ see also: ||Real Part||, ||Imaginary Part||
 ---
 :char: ƒ
 :ascii: 'F 'f,
-:type: verb_variable
+:role: verb_variable
 #12 Self
 the function being executed. if not in a function definition, undefined. useful for recursive functions.
 > 6{=0?1◘α▼ƒ*α} ≡ :720
@@ -2302,7 +2302,7 @@ you shouldn't need this very often; in this case, `↨*` or `!` would have been 
 ---
 :char: á
 :ascii: 'a'
-:type: verb
+:role: verb
 #1 Pick
 pick a random integer in the range [0, α). scalar.
 > 5á ?≡ 3
@@ -2318,7 +2318,7 @@ pick β times. this is the same as doing `α§βá`
 ---
 :char: í
 :ascii: 'i'
-:type: verb
+:role: verb
 #1 Imaginary
 calculate `α*i`, where `i` is the imaginary unit. scalar.
 > 1í ≡ Γ
@@ -2332,7 +2332,7 @@ calculate `β + α*i`. scalar.
 ---
 :char: ó
 :ascii: 'o'
-:type: verb
+:role: verb
 #1 Signs
 calculate (−1)^α. if α is an integer, this means −1 for odd α, and 1 for even α. scalar. equivalent to `┴^Θ`
 > 012345ó ≡ 1Θ1Θ1Θ
@@ -2348,7 +2348,7 @@ see also: ||Remainder||
 ---
 :char: ú
 :ascii: 'u'
-:type: verb
+:role: verb
 #1 Imaginary Part
 get the imaginary part of a complex number α. scalar.
 > 3í4ú ≡ 3
@@ -2361,7 +2361,7 @@ see also: ||Index Of||
 ---
 :char: ñ
 :ascii: 'n- 'n~
-:type: verb
+:role: verb
 #2 Minimum
 return the lowest number between α and β. scalar.
 > 0ñ2 ≡ 0
@@ -2376,7 +2376,7 @@ for an empty list, this returns infinity.
 ---
 :char: Ñ
 :ascii: 'n+
-:type: verb
+:role: verb
 #2 Maximum
 return the largest number between α and β. scalar.
 > 1Ñ2 ≡ 2
@@ -2390,7 +2390,7 @@ for an empty list, this returns negative infinity.
 ---
 :char: ª
 :ascii: 'a,
-:type: verb
+:role: verb
 #1 Represent
 convert the number α to a string. scalar.
 > :123ª ≡ "123"
@@ -2410,7 +2410,7 @@ see also: ||Parse Base||, ||Encode Base||
 ---
 :char: º
 :ascii: 'o,
-:type: verb
+:role: verb
 #1 Parse
 convert the string α to a number, or ||None|| if this conversion failed.
 > "123"º ≡ :123
@@ -2434,7 +2434,7 @@ see also: ||Represent Base||, ||Decode Base||
 ---
 :char: ¿
 :ascii: '?
-:type: verb
+:role: verb
 #1 Diagonal
 get the diagonal of length `α▬2ñ` of a list α
 > "bus""red""are"¿ ≡ "bee"
@@ -2446,7 +2446,7 @@ index α with every item in β. equivalent to `╘@`.
 ---
 :char: ⌐
 :ascii: '_ 'bl
-:type: verb
+:role: verb
 #1 Bool
 returns 1 if `α~0`, otherwise 0. scalar.
 > 0⌐ ≡ 0
@@ -2461,7 +2461,7 @@ see also: ||Procatenate||, ||Append||
 ---
 :char: ¬
 :ascii: '-
-:type: verb
+:role: verb
 #1 Not
 returns 1 if `α=0`, otherwise 0. scalar
 > 0¬ ≡ 1
@@ -2476,7 +2476,7 @@ see also: ||Concatenate||, ||Prepend||
 ---
 :char: ½
 :ascii: 'hf
-:type: verb
+:role: verb
 #1 Halve
 equivalent to `/2`. scalar.
 > 1½ ≡ :0.5
@@ -2489,7 +2489,7 @@ calculates the ||lowest common denominator@https://en.wikipedia.org/wiki/Lowest_
 ---
 :char: ¼
 :ascii: 'db
-:type: verb
+:role: verb
 #1 Double
 equivalent to `*2`. scalar.
 > 1¼ ≡ 2
@@ -2503,7 +2503,7 @@ calculates the ||greatest common divisor@https://en.wikipedia.org/wiki/Greatest_
 ---
 :char: ¡
 :ascii: '@ 'ie
-:type: verb
+:role: verb
 #1 Last
 get the last element of the list in α
 > "aeiou"¡ ≡ `u
@@ -2514,7 +2514,7 @@ index the array α for every scalar in α. equivalent to `_╛┴@`.
 ---
 :char: «
 :ascii: 'rl
-:type: verb
+:role: verb
 #2 Rotate Left
 moves the last β elements of the list α to the front. β-pervasive.
 > 12345«1 ≡ 23451
@@ -2530,7 +2530,7 @@ equivalent to `«1`.
 ---
 :char: »
 :ascii: 'rr
-:type: verb
+:role: verb
 #2 Rotate Right
 moves the first β elements of the list α to the back. β-pervasive.
 > 12345»1 ≡ 51234
@@ -2546,19 +2546,19 @@ equivalent to `»1`
 ---
 :char: ░
 :ascii: 'l2
-:type: literal
+:role: literal
 #░☺☻ Short Literal
 shorthand for an ||Integer Literal|| with 2 bytes (same as `'│`)
 ---
 :char: ▒
 :ascii: 'l3
-:type: literal
+:role: literal
 #▒☺☻♥ Long Literal
 shorthand for an ||Integer Literal|| with 3 bytes (same as `'├`)
 ---
 :char: ▓
 :ascii: 'c2
-:type: literal
+:role: literal
 #▓ab Digraph Literal
 a 2 character literal.
 > ▓() ≡ `(`)
@@ -2567,7 +2567,7 @@ see also: ||Character Literal||
 ---
 :char: █
 :ascii: 'us
-:type: literal
+:role: literal
 #█äβçðḗꞙ█ Unicode String
 start a list of unicode codepoints.
 for basic ascii, this is the same as a regular string:
@@ -2581,7 +2581,7 @@ note that some characters are converted automatically, including the vemf charac
 ---
 :char: ▄
 :ascii: 'hd
-:type: verb
+:role: verb
 #1 Is None
 1 if α is none, otherwise 0. scalar.
 > ■▄ ≡ 1
@@ -2594,7 +2594,7 @@ see also: ||Nullify||
 ---
 :char: ▌
 :ascii: 'hl
-:type: verb
+:role: verb
 #1 Fill Holes
 replace ||None||s in the list α with its fill. equivalent to `▐╓▌`
 > 12■456■78▐0▌ ≡ 120456078▐0
@@ -2608,7 +2608,7 @@ note that this function is not pervasive:
 ---
 :char: ▐
 :ascii: 'hr
-:type: verb
+:role: verb
 #1 Get Fill
 gets the fill of the list α.
 > 123▐ ≡ ■
@@ -2618,7 +2618,7 @@ returns the list α with the fill changed.
 ---
 :char: ▀
 :ascii: 'hu
-:type: verb
+:role: verb
 #1 Is Some
 check if α is not null. same as `¬▄`. scalar.
 > ■▀ ≡ 0
@@ -2632,7 +2632,7 @@ see also: ||Denullify||
 ---
 :char: α
 :ascii: 'A
-:type: variable
+:role: variable
 #0 Alpha
 the left argument. if not in a function definition, the first argument passed in the command line, or `δ@0`
 > "left"{αÇ} ≡ "LEFT"
@@ -2640,7 +2640,7 @@ the left argument. if not in a function definition, the first argument passed in
 ---
 :char: β
 :ascii: 'B
-:type: variable
+:role: variable
 #0 Beta
 the right argument. if not in a function definition, the second argument passed in the command line, or `δ@1`. if the function was called monadically, this will be ||None||.
 > "left"{βÇ} ≡ ■
@@ -2648,7 +2648,7 @@ the right argument. if not in a function definition, the second argument passed 
 ---
 :char: Γ
 :ascii: 'g+
-:type: noun
+:role: noun
 #0 Imaginary Unit
 the ||imaginary Unit@https://en.wikipedia.org/wiki/Imaginary_unit|| i
 > Γ ≡ Θ√
@@ -2661,7 +2661,7 @@ the number 0.5772156649015329
 ---
 :char: π
 :ascii: 'p- 'pi
-:type: noun
+:role: noun
 #0 Pi
 ||pi@https://en.wikipedia.org/wiki/Pi||, archimedes constant, ratio of a semicircle to its radius, or at least the best approximation possible in 64-bit floating point.
 > π ≡ :3.141592653589793
@@ -2672,25 +2672,25 @@ the number 1.5707963267948966, or `π/2`
 ---
 :char: Σ
 :ascii: 's+
-:type: variable
+:role: variable
 #0 Arity
 the number of arguments passed (1 or 2). if not in a function definition, the number of arguments passed in the command-line (`δ~`, may not be 1 or 2).
 ---
 :char: σ
 :ascii: 's-
-:type: noun
+:role: noun
 #0 Outer Alpha
 references `α` from the outer scope. useful for defining adverbs or higher-order functions.
 ---
 :char: μ
 :ascii: 'm-
-:type: noun
+:role: noun
 #0 Outer Beta
 references `β` from the outer scope. useful for defining adverbs or higher-order functions.
 ---
 :char: τ
 :ascii: 't-
-:type: variable
+:role: variable
 #0 Current Timestamp
 return the current UNIX timestamp, in seconds, with microsecond precision. can be 0 if this operation is not supported.
 > τ ?≡ :1717795741.658366   ' or well, at least it was when i just typed it.
@@ -2698,7 +2698,7 @@ see also: ||UTC Calendar||, ||Local Calendar||
 ---
 :char: Φ
 :ascii: 'X 'f+
-:type: noun
+:role: noun
 #0 Ten
 the integer 10
 > Φ ≡ :10
@@ -2712,7 +2712,7 @@ see also: ||Expontential||
 ---
 :char: Θ
 :ascii: 'Q 't+
-:type: noun
+:role: noun
 #0 Minus One
 the number −1
 > Θ ≡ :-1
@@ -2722,20 +2722,20 @@ the number −0.1, or `Φ/-`
 ---
 :char: Ω
 :ascii: 'w+
-:type: noun
+:role: noun
 #0 All Input
 Ω stores all the input until EOF decoded as text from stream 0, as if read with `∞Ü`. the variable is only filled at its first use, so you can read from the file before ever mentioning Ω, but probably not the other way around.
 see also: ||Read||
 ---
 :char: δ
 :ascii: 'd-
-:type: noun
+:role: noun
 #0 Arguments
 the list of arguments passed in the command line (not including the executable name, flags or the script filename)
 ---
 :char: ∞
 :ascii: 'if
-:type: noun
+:role: noun
 #0 Infinity
 positive infinity
 > 5<∞ ≡ 1
@@ -2750,7 +2750,7 @@ the maximum integer representable by a signed 64-bit integer, or `:9223372036854
 ---
 :char: φ
 :ascii: 'Z 'f-
-:type: noun
+:role: noun
 #0 Empty List
 literal for an empty list with ||None|| fill
 > φ~ ≡ 0
@@ -2761,7 +2761,7 @@ the number -0.6180339887498949, or `5√▼-½`
 ---
 :char: ε
 :ascii: 'in 'e-
-:type: verb
+:role: verb
 #1 Is List
 returns 0 if α is a scalar, otherwise 1
 > 4ε ≡ 0
@@ -2779,7 +2779,7 @@ see also: ||Excludes||
 ---
 :char: ∩
 :ascii: 'is
-:type: verb
+:role: verb
 #1 Unique
 remove duplicates from α
 > 320110433250∩ ≡ 320145
@@ -2793,7 +2793,7 @@ see also: ||Includes||
 ---
 :char: ≡
 :ascii: '=
-:type: verb
+:role: verb
 #1 Is Not Empty
 returns 1 if the length of α is 0, otherwise 0
 > 123≡ ≡ 0
@@ -2808,7 +2808,7 @@ see also: ||Equals||, ||Not Matches||
 ---
 :char: ±
 :ascii: '+
-:type: verb
+:role: verb
 #1 Signum
 returns the signum of α. this is −1 for negative numbers, 1 for positive numbers, and 0 for zero. for complex numbers, this is generalised as `α/abs(α)` or `¢╓/`
 > 5± ≡ 1
@@ -2826,7 +2826,7 @@ see also: ||Matches||
 ---
 :char: ≥
 :ascii: '>
-:type: verb
+:role: verb
 #1 Sort Down
 sorts the list α in descending order
 > 143042≥ ≡ 443210
@@ -2843,7 +2843,7 @@ see also: ||Lexicographic Greater Than||, ||Lexicographic Less Than||
 ---
 :char: ≤
 :ascii: '<
-:type: verb
+:role: verb
 #1 Sort Up
 sorts the list α in ascending order
 > 143042≤ ≡ 012344
@@ -2860,7 +2860,7 @@ see also: ||Lexicographic Less Than||, ||Lexicographic Greater Than||
 ---
 :char: ⌠
 :ascii: 'cl
-:type: verb
+:role: verb
 #1 Ceiling
 round up α. scalar.
 > :3.1⌠ ≡ 4
@@ -2882,7 +2882,7 @@ see also: ||Rotate Right||
 ---
 :char: ⌡
 :ascii: 'fl
-:type: verb
+:role: verb
 #1 Floor
 round down α. scalar.
 > :3.1⌡ ≡ 3
@@ -2904,7 +2904,7 @@ see also: ||Rotate Left||
 ---
 :char: ÷
 :ascii: '%
-:type: verb
+:role: verb
 #1 Round
 rounds α to the closest integer. may do round-half-to-even rounding. scalar.
 > :3.1÷ ≡ 3
@@ -2923,7 +2923,7 @@ see also: ||Remainder||, ||Floor||, ||Divide||
 ---
 :char: ≈
 :ascii: '~
-:type: verb
+:role: verb
 #1 Is Empty
 returns 1 if the length of α is not 0, otherwise 0
 > 123≈ ≡ 1
@@ -2938,7 +2938,7 @@ see also: ||Not Equals||, ||Matches||
 ---
 :char: °
 :ascii: 'dg
-:type: verb
+:role: verb
 #1 As Degrees
 converts α degrees to radians. equivalent to `*├π/:180`. scalar.
 > 0° ≡ 0
@@ -2951,7 +2951,7 @@ see also: ||As Radians||
 ---
 :char: ¨
 :ascii: 'nm
-:type: literal
+:role: literal
 #n Name
 the identifier `name` as a string.
 > ¨bee ≡ "bee"
@@ -2959,7 +2959,7 @@ the identifier `name` as a string.
 ---
 :char: ·
 :ascii: '&
-:type: statement
+:role: statement
 #a· Discard
 statement that discards the value `a` and continues with the function or program.
 > 0{4·5·6} ≡ 6
@@ -2967,7 +2967,7 @@ see also: ||Return||
 ---
 :char: √
 :ascii: 'V
-:type: verb
+:role: verb
 #1 Square Root
 calculate the square root of α. scalar.
 > 2√ ≡ :1.4142135623730951
@@ -2978,7 +2978,7 @@ calculate the βth root of α. scalar.
 ---
 :char: ⁿ
 :ascii: 'n, 'ft
-:type: verb
+:role: verb
 #1 Default Format
 format α with default settings. equivalent to `ⁿ1`
 > :123ⁿ ≡ "123"
@@ -3004,7 +3004,7 @@ you can also use multiple of these in a list, like `ⁿ74` (line-separated list 
 ---
 :char: ²
 :ascii: 'z, 'sq
-:type: verb
+:role: verb
 #1 Square
 equivalent to `^2`. scalar.
 > 4² ≡ :16
@@ -3015,14 +3015,14 @@ calculate the binomial coefficient `α choose β`. scalar.
 ---
 :char: ■
 :ascii: 'N
-:type: noun
+:role: noun
 #0 None
 none, null, nil, NaN. used as a dummy value sometimes.
 see also: ||Is None||, ||Is Some||, ||Fill Holes||, ||Replace Holes||, ||Filter Holes||, ||Nullify||
 ---
 :char: ╕
 :ascii: '"
-:type: 1-adverb
+:role: 1-adverb
 #1a1 Each
 call G with each item in α.
 > 123╕▲ ≡ 234
@@ -3080,7 +3080,7 @@ see also: ||Extend Left||, ||Extend Right||, ||Depth Both||
 ---
 :char: ╒
 :ascii: 'et
-:type: 1-adverb
+:role: 1-adverb
 #a1 Each Trim
 similar to ||Each||, but instead of extending the shorter list to fit, it will clip the longer list to match the shorter one. the resulting list will always have ||None|| fill.
 > 123╒+45 ≡ 57
@@ -3092,7 +3092,7 @@ this also means it is useful with functions, taking as many items as needed:
 ---
 :char: ╛
 :ascii: '}
-:type: 1-adverb
+:role: 1-adverb
 #2a1 Each Left
 iterates through α, passing β in each iteration. same as `1╝F`.
 > 123╛♫456 ≡ (1├456)(2├456)(3├456)
@@ -3112,7 +3112,7 @@ monadically, it is the same as ||Conform||:
 ---
 :char: ╘
 :ascii: '{
-:type: 1-adverb
+:role: 1-adverb
 #2a1 Each Right
 iterates through β, passing α in each iteration. same as `1╚F`
 > 123╘♫456 ≡ (├1234)(├1235)(├1236)
@@ -3131,7 +3131,7 @@ monadically, this is equivalent to `┴_╘G`:
 ---
 :char: ╤
 :ascii: '\
-:type: 1-adverb
+:role: 1-adverb
 #1a1 Scan
 ||Reduce||, but keeping the intermediate results. the first element will be left unchanged.
 > 12345╤+ ≡ :1:3:6:10:15
@@ -3142,7 +3142,7 @@ give an element to start with.
 ---
 :char: ╧
 :ascii: '/
-:type: 1-adverb
+:role: 1-adverb
 #1a1 Reduce
 apply a dyadic operation over the elements a list, left to right, progressively building up a value.
 this can be thought of as inserting the function between every element:
@@ -3166,7 +3166,7 @@ gives an element to start with. `α╧fβ` is always `α⌐β╧f`. this also me
 ---
 :char: ┬
 :ascii: '|
-:type: 1-adverb
+:role: 1-adverb
 #1a1 Filter
 call G to all elements of α, and return the list including only the items that returned a non-zero value. equivalent to `(╛G⌐)╓‼` or `α╛G⌐‼α`
 > 2370236075060501070613┬(<3) ≡ 20200001001
@@ -3178,7 +3178,7 @@ bind β to G
 ---
 :char: ┴
 :ascii: '`
-:type: 1-adverb
+:role: 1-adverb
 #1a1 Selfie
 equivalent to `αGα`
 > 5+5 ≡ 5┴+
@@ -3188,7 +3188,7 @@ equivalent to `βGα`
 ---
 :char: ┐
 :ascii: 'tl
-:type: 1-adverb
+:role: 1-adverb
 #a1 To Left
 executes G with the left argument, ignoring the right argument. equivalent to `(◄G)`.
 > 3▲   ≡ 4
@@ -3197,7 +3197,7 @@ executes G with the left argument, ignoring the right argument. equivalent to `(
 ---
 :char: ┌
 :ascii: 'tr
-:type: 1-adverb
+:role: 1-adverb
 #a1 To Right
 executes G with the right argument, or the left argument if not given. equivalent to `(►G)`.
 > 3▲   ≡ 4
@@ -3206,7 +3206,7 @@ executes G with the right argument, or the left argument if not given. equivalen
 ---
 :char: ┼
 :ascii: 'fp
-:type: 1-adverb
+:role: 1-adverb
 #1a1 Fix Point
 execute G repeatedly until the value stops changing. equivalent to `≡_╩`
 > 1┼(/▲) ≡ 5√▲½  ' golden ratio
@@ -3214,7 +3214,7 @@ see also: ||Until Compare||
 ---
 :char: ╪
 :ascii: 's2
-:type: 1-adverb
+:role: 1-adverb
 #1a1 Scan Pairs
 run F through 2-item pairs of α, passing the left item as the left argument and the right item as the right argument. the first item will be left unchanged.
 > 12345 ╪+ ≡ 13579
@@ -3226,7 +3226,7 @@ run F through 2-item pairs of α, passing the left item as the left argument and
 ---
 :char: ╦
 :ascii: 'su
-:type: 2-adverb
+:role: 2-adverb
 #1a2 Scan Until
 call a function G repeatedly, returning all the different iterations, until F passes. F is passed the current iteration as α and the last iteration as β.
 > :100(<5)╦½ ≡ :100:50:25:12.5:6.25:3.125
@@ -3242,7 +3242,7 @@ bind β to G
 ---
 :char: ╩
 :ascii: 'U
-:type: 2-adverb
+:role: 2-adverb
 #1a2 Until
 call a function G repeatedly, returning the first result where `αF` passes.
 > :100(<5)╩½ ≡ :3.125
@@ -3258,7 +3258,7 @@ bind β to G
 ---
 :char: ╥
 :ascii: 'sp
-:type: 2-adverb
+:role: 2-adverb
 #1a2 Scan Power
 call a function G repeatedly, `αF` times. F will be executed with the arguments. this will return a list of length `αf+1`, including the original value.
 > :100 7╥½ ≡ :100:50:25:12.5:6.25:3.125:1.5625:0.78125
@@ -3267,7 +3267,7 @@ bind β to F and G
 ---
 :char: ╨
 :ascii: 'P
-:type: 2-adverb
+:role: 2-adverb
 #1a2 Power
 call a function G repeatedly, `αF` times. F will be executed with the arguments.
 > :100 7╨½ ≡ :0.78125
@@ -3279,7 +3279,7 @@ bind β to F and G
 ---
 :char: ╫
 :ascii: 'wn
-:type: 2-adverb
+:role: 2-adverb
 #1a2 Scan Windows
 apply a function G to each successive slice ("window") of length `αF` of the list α.
 > "things" 3╫► ≡ "thi""hin""ing""ngs"
@@ -3292,7 +3292,7 @@ bind β to G
 ---
 :char: ╗
 :ascii: 'ad
-:type: 2-adverb
+:role: 2-adverb
 #1a2 Amend Deep
 return a list `α` with an item modified. the function G is run on item `αF`.
 > (123)(456)(789) φ╗▲ ≡ (234)(567)(89Φ)
@@ -3305,7 +3305,7 @@ bind β to F
 ---
 :char: ╔
 :ascii: 'am
-:type: 2-adverb
+:role: 2-adverb
 #1a2 Amend
 return a list where the items at indices `αF` are modified by `G`.
 > "hello world"(46789)╔Ç ≡ "hellO WORLd"
@@ -3327,7 +3327,7 @@ bind β to F and G
 ---
 :char: ╝
 :ascii: 'dl
-:type: 2-adverb
+:role: 2-adverb
 #a2 Depth Left
 call the function G at depth F, passing β unchanged if present. same as applying `╛` ||Each Left|| a specific number of times.
 > (12(34))(45)6 0╝, 78 ≡ (12(34))(45)678                   ' depth 0 is expectedly useless
@@ -3344,7 +3344,7 @@ effectively, a value of -F limits the maximum depth that G can take as a left ar
 ---
 :char: ╚
 :ascii: 'dr
-:type: 2-adverb
+:role: 2-adverb
 #a2 Depth Right
 call the function G at depth F, passing α unchanged if present. same as applying `╘` ||Each Right|| a specific number of times.
 > 78 0╚, (12(34))(45)6 ≡ 78(12(34))(45)6
@@ -3360,7 +3360,7 @@ when called dyadically, the one argument is duplicated, just like ||Each Right||
 ---
 :char: ╬
 :ascii: 'vl
-:type: 2-adverb
+:role: 2-adverb
 #α│AB╬Gβ Depth Both
 this 2-adverb takes a list of two numbers, A and B, in its left operand. if it's a single number, that number will be the value for both A and B. it specifies the depths at which G will apply to each of its operands, A being the depth of its left operand α, and B being the depth of its left operand β. negative depths are interpreted as absolute, being converted to relative depths of `α=+A⌠0` and `β=+B⌠0` respectively. using Depth Both is not the same as applying ||Depth Left|| and ||Depth Right|| separately like `A╝B╚G`, as Depth Both tries to match up the arguments (like Each). Depth Both is, however, the most generic list iteration primitive, which also means that you probably won't actually need to use it. look:
 > Each          ╕F ↔   1╚F
@@ -3387,7 +3387,7 @@ call G.
 ---
 :char: ╜
 :ascii: ')
-:type: 2-adverb
+:role: 2-adverb
 #1a2 At Left
 equivalent to `αFG`.
 #2a2 At Left
@@ -3398,7 +3398,7 @@ see also: ||Trains||
 ---
 :char: ╙
 :ascii: '(
-:type: 2-adverb
+:role: 2-adverb
 #1a2 At Right
 equivalent to `aG`.
 #2a2 At Right
@@ -3409,7 +3409,7 @@ see also: ||Trains||
 ---
 :char: ╖
 :ascii: ']
-:type: 2-adverb
+:role: 2-adverb
 #1a2 On Left
 equivalent to `αFGα`.
 #2a2 On Left
@@ -3417,7 +3417,7 @@ equivalent to `αFβGβ`.
 ---
 :char: ╓
 :ascii: '[
-:type: 2-adverb
+:role: 2-adverb
 #1a2 On Right
 equivalent to `αG(αF)`.
 #2a2 On Right
@@ -3425,7 +3425,7 @@ equivalent to `αG(αFβ)`.
 ---
 :char: ║
 :ascii: 'ov
-:type: 2-adverb
+:role: 2-adverb
 #1a2 Over
 equivalent to `αFG`.
 #2a2 Over
@@ -3433,7 +3433,7 @@ equivalent to `αFG(βF)`.
 ---
 :char: └
 :ascii: 'K
-:type: grammar
+:role: grammar
 #α└FGH Fork
 equivalent to `αFG(αH)`.
 #α└FGHβ Fork
@@ -3441,7 +3441,7 @@ equivalent to `αFβG(αHβ)`.
 ---
 :char: ─
 :ascii: 'st
-:type: grammar
+:role: grammar
 #α─name Set Function
 set a local variable `.name` to the value α. similar to `→name` ||Set|| but acts as a function.
 > 2─two· .two+.two ≡ 4
@@ -3460,7 +3460,7 @@ see also: ||Mutate Function||, ||Set||
 ---
 :char: ═
 :ascii: 'mt
-:type: grammar
+:role: grammar
 #a═name Mutate Function
 change the variable `.name` using the function β. similar `↔name` ||Mutate|| but acts as a function. returns the changed value.
 > 1→a .▲═a· a ≡ 2
@@ -3472,7 +3472,7 @@ see also: ||Set Function||, ||Mutate||
 ---
 :char: ┘
 :ascii: '1
-:type: grammar
+:role: grammar
 #┘m Verbise
 turns the following word into a verb. acts as a 1-grouper, see ||Groups||
 #.0
@@ -3482,7 +3482,7 @@ the number -0.5, or `Θ½`
 ---
 :char: │
 :ascii: '2
-:type: grouper
+:role: grouper
 #│mn 2-Group
 see ||Groups||
 #.0
@@ -3492,7 +3492,7 @@ the number 1.4142135623730951, or `2√`
 ---
 :char: ├
 :ascii: '3
-:type: grouper
+:role: grouper
 #├mno 3-Group
 see ||Groups||
 #.0
@@ -3502,7 +3502,7 @@ the number 1.7320508075688772, or `3√`
 ---
 :char: ╞
 :ascii: '4
-:type: grouper
+:role: grouper
 #╞mnop 4-Group
 see ||Groups||
 #.0
@@ -3512,7 +3512,7 @@ the number 420`
 ---
 :char: ╟
 :ascii: '5
-:type: grouper
+:role: grouper
 #╟mnopq 5-Group
 see ||Groups||
 #.0
@@ -3522,7 +3522,7 @@ the number 2.23606797749979, `5√`
 ---
 :char: ╠
 :ascii: '6
-:type: grouper
+:role: grouper
 #╠mnopqr 6-Group
 see ||Groups||
 #.0
@@ -3532,7 +3532,7 @@ the number 360
 ---
 :char: ┤
 :ascii: '7
-:type: grouper
+:role: grouper
 #┤mnopqrs 7-Group
 see ||Groups||
 #.0
@@ -3542,7 +3542,7 @@ the number 273.15
 ---
 :char: ╡
 :ascii: '8
-:type: grouper
+:role: grouper
 #╡mnopqrst 8-Group
 see ||Groups||
 #.0
@@ -3552,7 +3552,7 @@ the number 2.54
 ---
 :char: ╢
 :ascii: '9
-:type: grouper
+:role: grouper
 #╢mnopqrstu 9-Group
 see ||Groups||
 #.0
@@ -3562,7 +3562,7 @@ the number 365
 ---
 :char: ╣
 :ascii: '0
-:type: grouper
+:role: grouper
 #╣mnopqrstuv 10-Group
 see ||Groups||
 #.0
