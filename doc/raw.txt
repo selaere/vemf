@@ -573,7 +573,7 @@ for a verb F, interpret it as a noun
 > 1♫ ≡ ♪1
 > 1♫♫♫ ≡ ♪♪♪1
 #2 Pair
-create a list with the elements α and β. this is equivalent to `{αβ}`. for scalar arguments, this is the same as ||Concatenate||
+create a list with the elements α and β. this is equivalent to `{αβ}`. for scalar arguments, this is the same as ||Concatenate||.
 > 1♫2 ≡ 12
 > 1♫2♫3♫4 ≡ ((12)3)4
 > 12♫34 ≡ (12)(34)
@@ -1363,6 +1363,7 @@ get the first item in a list α. this is equivalent to calling α with 0.
 > "aeiou"@ ≡ `a
 > (12)(34)@ ≡ 12
 > (+2)@ ≡ 2
+see also: ||Behead||, ||Last||
 #2 Index
 get the element in list α at index β
 > "aeiou"@2 ≡ `i
@@ -2277,6 +2278,9 @@ splits a list α at all the ocurrences of the sublist β
 see also: ||Find||
 #1 Split Newlines
 splits at newlines (byte 0x0A). same as `¥Φ`. won't strip out carriage returns.
+#_2 Split Once
+splits a list α at the first occurrence of the item β
+> "bee bees apioids"_¥` ◄ ≡ "bee""bees apioids"
 ---
 :char: ₧
 :ascii: 'pt
