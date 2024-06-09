@@ -3363,7 +3363,7 @@ deals with negative depths like ||Depth Left||.
 when called dyadically, the one argument is duplicated, just like ||Each Right||.
 ---
 :char: ╬
-:ascii: 'vl
+:ascii: 'de 'vl
 :role: 2-adverb
 #α│AB╬Gβ Depth Both
 this 2-adverb takes a list of two numbers, A and B, in its left operand. if it's a single number, that number will be the value for both A and B. it specifies the depths at which G will apply to each of its operands, A being the depth of its left operand α, and B being the depth of its left operand β. negative depths are interpreted as absolute, being converted to relative depths of `α=+A⌠0` and `β=+B⌠0` respectively. using Depth Both is not the same as applying ||Depth Left|| and ||Depth Right|| separately like `A╝B╚G`, as Depth Both tries to match up the arguments (like Each). Depth Both is, however, the most generic list iteration primitive, which also means that you probably won't actually need to use it. look:
