@@ -178,7 +178,8 @@ func!(a :concat b => {
 
 func!(a :reverse => {
     if a.is_infinite() { return iter::empty::<Val>().collect() }
-    a.into_iterf().rev().collect()
+    let fill = a.fill();
+    Val::lis_fill(a.into_iterf().rev().collect(), fill)
 });
 
 func!(@env, a :takeleft  b => reshape(env, a, b, false));

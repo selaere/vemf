@@ -44,7 +44,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
         print, println, output, input, inputraw, fromutf8, toutf8, fromcp, tocp, exit,
         format, numfmt, parse, time, date, dateloc,
         takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find, uio,
-        reverse, gradeup, gradedown, sortup, sortdown, binsup, binsdown, encode, group, occcount,
+        gradeup, gradedown, sortup, sortdown, binsup, binsdown, encode, group, occcount,
         domainto,
     );
     macro_rules! load_av {($($name:ident,)*) => { $( {
@@ -136,8 +136,8 @@ intfunc!(a :bxor b   => Int(a ^ b));
 intfunc!(a :bnot     => Int(!a));
 intfunc!(a :brepr    => Val::lis_fill(
     a.to_be_bytes()
-        .into_iter()
-        .flat_map(|x| (0..8).rev().map(move |y| Val::bool(x & (1 << y) != 0)))
+        .into_iter().rev()
+        .flat_map(|x| (0..8).map(move |y| Val::bool(x & (1 << y) != 0)))
         .collect(),
     Int(0)
 ));
