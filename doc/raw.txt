@@ -586,32 +586,43 @@ create a list with the elements α and β. this is equivalent to `{αβ}`. for s
 :ascii: 'sn
 :role: verb
 #1 UTC Calendar
-interpret a UNIX timestamp, like those returned from `τ` ||Current Timestamp||, as a date and time in the proleptic Gregorian calendar in UTC. returns a list with the following numbers: year, month (1-12), day (1-31), hour, minute, second, microseconds.
+interpret α as a UNIX timestamp (in seconds, possibly fractional), like those returned from `τ` ||Current Timestamp||, as a date and time in the proleptic Gregorian calendar in UTC. returns a list with the following numbers: year, month (1-12), day (1-31), hour, minute, second, microseconds. pervasive in α.
 > 0☼     ≡ :1970:1:1:0:0:0:0    ' UNIX epoch: 1970-01-01 00:00:00.000000Z (arbitrary, standard)
 > Φ^9☼   ≡ :2001:9:9:1:46:40:0  ' UNIX billenium: 2001-09-09 01:46:40.000000Z (a few nerds celebrated)
 > 2^:31☼ ≡ :2038:1:19:3:14:8:0  ' i32 rollover time: 2038-01-19 3:14:08.000000Z (stuff will break)
+#2 UTC Calendar
+return one field from the date and time in the UNIX timestamp α in UTC according to the number in β. pervasive.
+β can have any of these values:
+- -1 (`Θ`): offset from UTC in seconds (useful for ||Local Calendar||)
+- from 0 to 6: year, month (1-12), day (1-31), hour, minute, second, microseconds
+- 7: weekday, where Monday is 0 and Sunday is 6.
+therefore, `α☼(7↕)` is the same as `α☼`.
+> 0☼7 ≡ 3  ' New Year's Day 1970 was a Thursday
 #_1 Local Calendar
 interpret a UNIX timestamp, like those returned from `τ` ||Current Timestamp||, as a date and time in the proleptic Gregorian calendar in local time. UTC might be used if there is no local timezone known. returns a list in the same format as ||UTC Calendar||
 > 2^:31_☼ ?≡ :2038:1:19:4:14:8:0  ' oh no! it's one hour ahead! in my machine, anyway.
+#_2 Local Calendar
+return one field from the date and time in the UNIX timestamp α in local time according to the number in β. pervasive.
+> 2^:31_☼Θ ?≡ 3600  ' aha! that's why
 ---
 :char: ►
 :ascii: 'H
 :role: verb
 #2 Right
-returns β
+return β
 > 1►2 ≡ 2
 #1 Left
-returns α
+return α
 > 1► ≡ 1
 ---
 :char: ◄
 :ascii: 'G
 :role: verb
 #2 Left
-returns α
+return α
 > 1◄2 ≡ 1
 #1 Left
-returns α
+return α
 > 1◄ ≡ 1
 ---
 :char: ↕

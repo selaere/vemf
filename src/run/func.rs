@@ -1,4 +1,4 @@
-use chrono::{DateTime, Datelike, Local, TimeZone, Timelike};
+use chrono::{DateTime, Datelike, Local, Offset, TimeZone, Timelike};
 use crate::prelude::*;
 use super::{Val::{self, Num, Int}, NAN, adverb, c64, val::complexcmp, list};
 
@@ -295,11 +295,21 @@ func!(@env, a :eval =>
     .map_or(NAN, |x| env.include_bytes(&x)));
 func!(@env, _a :time =>
     Val::flt(if env.can_time {Local::now().timestamp_micros() as f64 / 1.0e6} else {0.}));
-fn gregory<T: TimeZone>(d: DateTime<T>) -> Val {
-    Val::lis([d.year().into(), d.month() .into(), d.day()   .into(),
-              d.hour().into(), d.minute().into(), d.second().into(),d.timestamp_subsec_micros().into()]
-             .into_iter().map(Val::Int).collect())
+fn gregory<T: TimeZone>(d: &DateTime<T>, i: Option<Val>) -> Val { match i {
+    Some(i) => i.try_int().map_or(NAN, |x| gregory2(d,x)),
+    None => Val::lis((0..7).map(|x| gregory2(d,x)).collect())
+}}
+fn gregory2<T: TimeZone>(d: &DateTime<T>, i: i64) -> Val {
+    Val::Int(match i {
+        -1=> d.offset().fix().local_minus_utc().into(),
+        0 => d.year().into(), 1 => d.month() .into(), 2 => d.day()   .into(),
+        3 => d.hour().into(), 4 => d.minute().into(), 5 => d.second().into(),
+        6 => d.timestamp_subsec_micros().into(),
+        7 => d.weekday().num_days_from_monday().into(),
+        _ => return NAN,
+    })
 }
-func!(a :date    => DateTime::from_timestamp_micros((a.as_c().re*1.0e6) as i64).map_or(NAN, gregory));
-func!(a :dateloc => DateTime::from_timestamp_micros((a.as_c().re*1.0e6) as i64)
-                     .map(DateTime::<Local>::from).map_or(NAN, gregory));
+func!(a :date    b? => DateTime::from_timestamp_micros((a.as_c().re*1.0e6) as i64)
+    .map_or(NAN, |x| gregory(&x,b)));
+func!(a :dateloc b? => DateTime::from_timestamp_micros((a.as_c().re*1.0e6) as i64)
+    .map(DateTime::<Local>::from).map_or(NAN, |x| gregory(&x,b)));
