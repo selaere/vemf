@@ -1471,21 +1471,29 @@ the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"`
 :role: verb_variable
 #12
 general-purpose verb variable. by default, `─l`.
+#_0 Letters and Digits
+the string `"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"`
 ---
 :char: M
 :role: verb_variable
 #12
 general-purpose verb variable. by default, `─m`.
+#_0 Month Abbreviations
+a list of the strings `"Jan" "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"`
 ---
 :char: N
 :role: verb_variable
 #12
 general-purpose verb variable. by default, `─n`.
+#_0 Month Day Count
+a list of the numbers 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 ---
 :char: O
 :role: verb_variable
 #12
 general-purpose verb variable. by default, `─o`.
+#_0 Weekday Abbreviations
+a list of the strings `"Mon" "Tue" "Wed" "Thu" "Fri" "Sun" "Sat"`
 ---
 :char: P
 :role: verb_variable
@@ -1594,6 +1602,9 @@ uppercase ascii letters (`A`-`Z`) store convenient constants:
 > _J ≡ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 > _K ≡ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 > _L ≡ "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+> _M ≡ "Jan""Feb""Mar""Apr""May""Jun""Jul""Aug""Sep""Oct""Nov""Dec"
+> _N ≡ :31:28:31:30:31:30:31:31:30:31:30:31
+> _O ≡ "Mon""Tue""Wed""Thu""Fri""Sun""Sat"
 ---
 :char: `
 :role: literal
