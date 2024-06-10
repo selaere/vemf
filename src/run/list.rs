@@ -254,7 +254,7 @@ func!(a :shape b => Val::lis_fill(
 pub fn ishape(a: &Val, lim: i64) -> Vec<usize> {
     if !a.is_list() { return vec![]; };
     let mut shp = vec![a.len()];
-    if lim == 0 { return shp; }
+    if lim == 1 { return shp; }
     //if lim < 64 {shp.resize(lim as _, 0)}
     for v in a.iterf() {
         let inr = ishape(v, lim-1);

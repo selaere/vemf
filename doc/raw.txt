@@ -393,7 +393,7 @@ here is the vemf codepage. if you are reading in a browser, you might be seeing 
 this is based on the ||CP-437@https://en.wikipedia.org/wiki/Code_page_437|| codepage. this is the codepage used in the very first IBM PCs! note that
 - `◙ 0A` doubles as a ||Line Break||, it is whitespace
 - `  20` is a space
-- `¨ F9` represents `¨ U+00A8 DIAERESIS`, while CP-437 uses a small middle dot. it is encoded in Unicode as `∙ U+2219 BULLET OPERATOR`, but most modern fonts don't make the distinction with `· FA` or `• F7`. (the related codepage ||CP-850@https://en.wikipedia.org/wiki/Code_page_850|| does this too)
+- `¨ F9` represents `¨ U+00A8 DIAERESIS`, while CP-437 uses a small middle dot. it is encoded in Unicode as `∙ U+2219 BULLET OPERATOR`, but most modern fonts don't make the distinction with `· FA` or `• 07`. (the related codepage ||CP-850@https://en.wikipedia.org/wiki/Code_page_850|| does this too)
 - `¤ 00` and `⎕ FF` are control characters in CP-437. they are assigned other characters in vemf (`¤ U+00A4 CURRENCY SIGN` and `⎕ U+2395 APL FUNCTIONAL SYMBOL QUAD` respectively) but (for now) they are syntax errors outside of literals
 these are all of the symbols available to vemf programs. vemf files can be encoded in Unicode (UTF-8) or the vemf codepage byte-by-byte.
 some confusable characters are translated to the codepage:
@@ -419,8 +419,8 @@ the return value of the program (either from a `◘` ||Return|| in the top scope
 - if the result is a flat list, it is printed as a Unicode string, where every element is a codepoint
 - if the result is a nested list, each of the inner lists will be printed as a separate line and delimited with newlines
 there are also input and output streams. there can be any number, but the cli uses input stream 0 for stdin, output stream 0 for stdout, and output stream 1 for stderr. `☺` ||Print|| and `☻` ||Print Line|| always print text to output stream 0.
-the streams are byte streams, and the functions `Ö` ||Write|| and `Ü` ||Read|| convert to/from UTF-8. you may use `_Ö` ||Write Bytes|| and `_Ü` ||Read Bytes|| to manipulate the byte streams directly.
-you also have access to a global random number generator (see `á` ||Pick||, `â` ||Sample||, `å` ||Choice||)
+the streams are byte streams, and the functions `Ö` ||Write|| and `Ü` ||Read|| convert to/from UTF-8. you may use `_Ö` ||Write Bytes|| and `_Ü` ||Read Bytes|| to manipulate the byte streams directly, or `Ω` ||All Input|| to read it all at once.
+you also have access to a global random number generator (see `á` ||Pick||, `â` ||Sample||, `å` ||Choice||), the current time (`τ` ||Current Timestamp||) and timezone (`_☼` ||Local Calendar||)
 ---
 :char: ☺
 :ascii: 'pr
@@ -470,6 +470,9 @@ if β is a list, `α♥β` reshapes into groups of `β*` and reshapes them. equi
 transpose a nested list. the shape will be the minimum of the lengths of the elements, or `╕~ñ;`
 > (123)(456)(789)♦ ≡ (147)(258)(369)
 > ("one""two")("three""four")♦ ≡ ("one""three")("two""four")
+if the list's depth is not two, it will be enclosed until it is. this means that Transpose will double-enclose a single scalar, and enclose each element of a string.
+> `t♦ ≡ ♪"t"
+> "bee"♦ ≡ "b""e""e"
 ---
 :char: ♣
 :ascii: 'dm
@@ -712,7 +715,7 @@ see also: ||Length||, ||Depth||
 #2 Shape Up To
 get only up to a specified depth, without fill.
 > (1234)((56)(78))(90)▬  ≡ 342▐1
-> (1234)((56)(78))(90)▬4 ≡ 3421
+> (1234)((56)(78))(90)▬4 ≡ 342
 > (1234)((56)(78))(90)▬3 ≡ 342
 > (1234)((56)(78))(90)▬2 ≡ 34
 > (1234)((56)(78))(90)▬1 ≡ ♪3
