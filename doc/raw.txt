@@ -1647,12 +1647,12 @@ a general-purpose variable. by default, 20
 :char: c
 :role: variable
 #0
-a general-purpose variable. by default, 99
+a general-purpose variable. by default, 99. also the character `c`.
 ---
 :char: d
 :role: variable
 #0
-a general-purpose variable. by default, 100
+a general-purpose variable. by default, 100. also the character `d`.
 ---
 :char: e
 :role: variable
@@ -1702,17 +1702,17 @@ a general-purpose variable. by default, 31
 :char: n
 :role: variable
 #0
-a general-purpose variable. by default, 32
+a general-purpose variable. by default, 32. also a space character.
 ---
 :char: o
 :role: variable
 #0
-a general-purpose variable. by default, 63
+a general-purpose variable. by default, 63. also a `?` character.
 ---
 :char: p
 :role: variable
 #0
-a general-purpose variable. by default, 64
+a general-purpose variable. by default, 64. also a `@` character.
 ---
 :char: q
 :role: variable
@@ -2730,7 +2730,7 @@ see also: ||UTC Calendar||, ||Local Calendar||
 :ascii: 'X 'f+
 :role: noun
 #0 Ten
-the integer 10
+the integer 10. also stands for a line break.
 > Φ ≡ :10
 #_0 Minus Ten
 the integer −10
