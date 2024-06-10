@@ -110,5 +110,5 @@ mod standard {
 
 }
 
-#[cfg(any(feature = "std", test))]
+#[cfg(feature = "std")]
 pub use standard::*;

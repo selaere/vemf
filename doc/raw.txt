@@ -702,7 +702,7 @@ repeat the list α, β times. right-pervasive.
 :ascii: 'M 'sh
 :role: verb
 #1 Shape
-get the shape of α, that is, the maximum length for each dimension. the output will be a list with fill 1.
+get the shape of α, that is, the maximum length for each dimension. the output will be a list with fill 1. note that this requires iterating through the whole structure of a nested list, which could be inefficient.
 > 1▬ ≡ φ▐1
 > 123▬ ≡ ♪3▐1
 > ((01)23)(45(67)7)(8♪9)▬ ≡ 342▐1
@@ -719,6 +719,7 @@ get only up to a specified depth, without fill.
 > (1234)((56)(78))(90)▬3 ≡ 342
 > (1234)((56)(78))(90)▬2 ≡ 34
 > (1234)((56)(78))(90)▬1 ≡ ♪3
+> (1234)((56)(78))(90)▬0 ≡ φ  ' useless
 ---
 :char: ↨
 :ascii: 'J
