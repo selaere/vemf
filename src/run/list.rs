@@ -314,13 +314,40 @@ func!(@env, a :sortdown => if let Lis {l, ..} = a {
     Val::lis(list)
 } else { Val::lis(vec![a]) });
 
-func!(@env, a :binsup b => if let Lis {l, ..} = a {
-    Int(l.partition_point(|x| x.cmpval(env, &b).is_le()) as i64)
-} else { Int(0) } );
+func!(@env, a :binsup b => {
+    if a.is_infinite() {
+        for i in 0.. {
+            let ai = a.index(env, i);
+            if ai.cmpval(env, &b).is_gt() { return Val::Int(i as i64); }
+        }
+    }
+    if let Lis {l, ..} = a {
+        Int(l.partition_point(|x| x.cmpval(env, &b).is_le()) as i64)
+    } else { Int(0) }
+}
+);
 
-func!(@env, a :binsdown b => if let Lis {l, ..} = a {
-    Int(l.partition_point(|x| x.cmpval(env, &b).is_gt()) as i64)
-} else { Int(0) });
+func!(@env, a :binsdown b => {
+    if a.is_infinite() {
+        for i in 0.. {
+            let ai = a.index(env, i);
+            if ai.cmpval(env, &b).is_le() { return Val::Int(i as i64); }
+        }
+    }
+    if let Lis {l, ..} = a {
+        Int(l.partition_point(|x| x.cmpval(env, &b).is_gt()) as i64)
+    } else { Int(0) }
+});
+
+func!(@env, a :findfirst b => {
+    if a.is_infinite() {
+        for i in 0.. {
+            let ai = a.index(env, i);
+            if ai == b { return Val::Int(i as i64); }
+        }
+    } 
+    return a.into_iterf().enumerate().find(|(_,x)| x==&b).map_or(NAN, |x| Val::Int(x.0 as _));
+});
 
 func!( @env, a :group b => {
     if a.is_infinite() { return NAN; }

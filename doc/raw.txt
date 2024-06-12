@@ -856,6 +856,8 @@ run a binary search. when α is a list sorted in ascending order, it finds the p
 > 0259▲6 ≡ 3
 > 0259▲Θ0123456789Φ ≡ 011222333344
 > "Sample text was first invented in 1894 by James Sample."┴▲"0:" ≡ 2222220222202220222220222222220220111102202222202222220
+this also works for infinite lists, although not as efficiently:
+> (↨+)▲:25 ≡ 7  ' 7↨+ ≡ 21
 see also: ||Bins Down||
 ---
 :char: ▼
@@ -871,9 +873,12 @@ see also: ||Bump Up||, ||Subtract||
 run a binary search. when α is a list sorted in descending order, it finds the position of the first element in α that is greater than or equal to β.
 > :18:13:8▼:20 ≡ 0
 > :18:13:8▼:18 ≡ 0
+> :18:13:8▼:17 ≡ 1
 > :18:13:8▼:15 ≡ 1
 > :18:13:8▼:12 ≡ 2
 > :18:13:8▼:2 ≡ 3
+this also works for infinite lists, although not as efficiently:
+> (▲/)▼:0.08 ≡ :12  ' :12▲/0.07692307692307693
 see also: ||Bins Up||
 ---
 :char:  
@@ -920,7 +925,7 @@ with some special characters used specially: `¨` stands for `"` (0x22) and `·`
 :char: #
 :role: verb
 #1 First True
-find the first non-0 value and return its index, or else ||None||.
+find the first non-0 value and return its index, or else ||None||. equivalent to `⌐#1`
 > 10101010# ≡ 0
 > 0001010# ≡ 3
 > 00002010# ≡ 4
@@ -930,6 +935,8 @@ find the first exact match in the list and return its index, or else ||None||. �
 > "hello"#`l ≡ 2
 > "abcdefghijklmnopqrs"#"beeimpostor" ≡ :1:4:4:8:12:15:14:18■:14:17
 > 012073167140#0123456789 ≡ 0125Φ■74■■
+also works if α is an infinite list, though here it cannot return ||None||
+> (√)#5 ≡ :25
 ---
 :char: $
 :role: verb

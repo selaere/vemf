@@ -40,7 +40,7 @@ pub fn load_intrinsics(env: &mut super::Env) {
         round, ceil, floor, isnan, sign, bnot, brepr, complex, cis, real, imag, conj, arg,
         left, right, get, set, call, islist, eval, shape, depth, len,
         index, iota, pair, enlist, ravel, concat, reverse, getfill, setfill, 
-        matches,
+        matches, findfirst,
         print, println, output, input, inputraw, fromutf8, toutf8, fromcp, tocp, exit,
         format, numfmt, parse, time, date, dateloc,
         takeleft, takeright, dropleft, dropright, replist, pick, sample, replicate, find, uio,
