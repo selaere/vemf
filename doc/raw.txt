@@ -3545,7 +3545,7 @@ see ||Groups||
 #.0
 the number 0.25, or `1/4`
 #_0 
-the number 420`
+the number 420
 ---
 :char: ╟
 :ascii: '5
